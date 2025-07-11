@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>23plusone Happiness Scan</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 400px;
+      padding: 20px;
+    }
+    
+    #game {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      text-align: center;
+      min-height: 500px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    
+    #progress {
+      background: #e0e0e0;
+      height: 6px;
+      border-radius: 3px;
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    
+    #progressBar {
+      height: 100%;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    
+    #cardContainer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    #card {
+      margin: 20px 0;
+    }
+    
+    #cardLabel {
+      font-size: 24px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    
+    #cardImages {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px 0;
+      min-height: 200px;
+    }
+    
+    .card-image {
+      max-width: 100%;
+      max-height: 200px;
+      width: auto;
+      height: auto;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      opacity: 0;
+      animation: fadeInUp 0.6s ease forwards;
+      object-fit: contain;
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    #timerContainer {
+      margin: 20px 0;
+    }
+    
+    #timerBar {
+      height: 8px;
+      background: #e0e0e0;
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 10px 0;
+    }
+    
+    #timerProgress {
+      height: 100%;
+      background: linear-gradient(90deg, #4CAF50, #FF9800, #F44336);
+      width: 100%;
+      transition: width 4s linear;
+    }
+    
+    #timerText {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    
+    .buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    button {
+      padding: 15px 30px;
+      border: none;
+      border-radius: 25px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      min-width: 100px;
+    }
+    
+    #yesBtn {
+      background: #4CAF50;
+      color: white;
+    }
+    
+    #yesBtn:hover {
+      background: #45a049;
+      transform: translateY(-2px);
+    }
+    
+    #noBtn {
+      background: #f44336;
+      color: white;
+    }
+    
+    #noBtn:hover {
+      background: #da190b;
+      transform: translateY(-2px);
+    }
+    
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+    
+    #results {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    
+    #results h2 {
+      color: #333;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+    
+    #totalScore {
+      font-size: 48px;
+      font-weight: bold;
+      color: #667eea;
+      margin: 20px 0;
+    }
+    
+    #ihsLabel {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    
+    #perDomain {
+      text-align: left;
+      margin: 30px 0;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+    
+    .domain-score {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      padding: 8px 0;
+      border-bottom: 1px solid #e0e0e0;
+    }
+    
+    .domain-score:last-child {
+      border-bottom: none;
+    }
+    
+    .domain-name {
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .domain-count {
+      color: #667eea;
+      font-weight: 600;
+    }
+    
+    #shareSection {
+      margin-top: 30px;
+    }
+    
+    #shareBtn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    
+    #shareBtn:hover {
+      transform: translateY(-2px);
+    }
+    
+    #socialLinks {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+    
+    #socialLinks a {
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 20px;
+      font-weight: 600;
+      transition: transform 0.3s ease;
+    }
+    
+    #tweetLink {
+      background: #1da1f2;
+      color: white;
+    }
+    
+    #fbLink {
+      background: #1877f2;
+      color: white;
+    }
+    
+    #socialLinks a:hover {
+      transform: translateY(-2px);
+    }
+    
+    .loading {
+      font-size: 18px;
+      color: #666;
+    }
+    
+    .practice-indicator {
+      background: #FF9800;
+      color: white;
+      padding: 5px 15px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      display: inline-block;
+    }
+    
+    @media (max-width: 480px) {
+      .container {
+        padding: 10px;
+      }
+      
+      #game, #results {
+        padding: 20px;
+        min-height: 450px;
+      }
+      
+      #cardLabel {
+        font-size: 20px;
+      }
+      
+      .card-emoji {
+        font-size: 35px;
+      }
+      
+      button {
+        padding: 12px 25px;
+        font-size: 16px;
+        min-width: 80px;
+      }
+      
+      #totalScore {
+        font-size: 40px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div id="game">
+      <div id="progress">
+        <div id="progressBar"></div>
+      </div>
+      
+      <div id="cardContainer">
+        <div id="practiceIndicator" class="practice-indicator" style="display: none;">
+          Practice Round
+        </div>
+        
+        <div id="card">
+          <div class="loading">Loading cards...</div>
+        </div>
+        
+        <div id="timerContainer" style="display: none;">
+          <div id="timerText">Time remaining</div>
+          <div id="timerBar">
+            <div id="timerProgress"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="buttons" style="display: none;">
+        <button id="noBtn">No</button>
+        <button id="yesBtn">Yes</button>
+      </div>
+    </div>
+
+    <div id="results" style="display: none;">
+      <h2>Your Happiness Scan Results</h2>
+      <div id="totalScore">--</div>
+      <div id="ihsLabel">Individual Happiness Score (IHS)</div>
+      <div id="perDomain"></div>
+      <div id="shareSection">
+        <button id="shareBtn">Share Your Score</button>
+        <div id="socialLinks" style="display: none;">
+          <a id="tweetLink" target="_blank">Tweet</a>
+          <a id="fbLink" target="_blank">Facebook</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    let cards = [];
+    let deck = [];
+    let currentCardIndex = 0;
+    let answers = [];
+    let startTime = 0;
+    let timerInterval = null;
+    let isPractice = true;
+    
+    // DOM elements
+    const gameDiv = document.getElementById('game');
+    const resultsDiv = document.getElementById('results');
+    const cardDiv = document.getElementById('card');
+    const progressBar = document.getElementById('progressBar');
+    const practiceIndicator = document.getElementById('practiceIndicator');
+    const timerContainer = document.getElementById('timerContainer');
+    const timerProgress = document.getElementById('timerProgress');
+    const buttonsDiv = document.querySelector('.buttons');
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    
+    // Load cards and initialize
+    fetch('cards.json')
+      .then(r => r.json())
+      .then(json => {
+        cards = json;
+        initializeScan();
+      })
+      .catch(err => {
+        console.error('Error loading cards:', err);
+        cardDiv.innerHTML = '<div class="loading">Error loading cards. Please refresh.</div>';
+      });
+    
+    function initializeScan() {
+      // Shuffle cards
+      const shuffled = [...cards].sort(() => Math.random() - 0.5);
+      
+      // Create deck: 4 practice + 24 real cards
+      deck = [
+        ...shuffled.slice(0, 4).map(card => ({...card, isPractice: true})),
+        ...shuffled.slice(4, 28).map(card => ({...card, isPractice: false}))
+      ];
+      
+      currentCardIndex = 0;
+      answers = [];
+      showCard();
+    }
+    
+    function showCard() {
+      if (currentCardIndex >= deck.length) {
+        finishScan();
+        return;
+      }
+      
+      const card = deck[currentCardIndex];
+      isPractice = card.isPractice;
+      
+      // Update progress
+      const progress = (currentCardIndex / deck.length) * 100;
+      progressBar.style.width = progress + '%';
+      
+      // Show/hide practice indicator
+      practiceIndicator.style.display = isPractice ? 'block' : 'none';
+      
+      // Display card
+      cardDiv.innerHTML = `
+        <div id="cardLabel">${card.label}</div>
+        <div id="cardImages">
+          <img src="${card.images[0]}" alt="${card.label}" class="card-image" 
+               onerror="this.style.display='none'">
+        </div>
+      `;
+      
+      // Show timer and buttons
+      timerContainer.style.display = 'block';
+      buttonsDiv.style.display = 'flex';
+      
+      // Reset and start timer
+      startTimer();
+      
+      // Record start time
+      startTime = Date.now();
+    }
+    
+    function startTimer() {
+      // Reset timer
+      timerProgress.style.transition = 'none';
+      timerProgress.style.width = '100%';
+      
+      // Start countdown
+      setTimeout(() => {
+        timerProgress.style.transition = 'width 4s linear';
+        timerProgress.style.width = '0%';
+      }, 50);
+      
+      // Auto-submit "No" after 4 seconds
+      timerInterval = setTimeout(() => {
+        recordAnswer(false);
+      }, 4000);
+    }
+    
+    function recordAnswer(isYes) {
+      if (timerInterval) {
+        clearTimeout(timerInterval);
+        timerInterval = null;
+      }
+      
+      const responseTime = Date.now() - startTime;
+      const card = deck[currentCardIndex];
+      
+      // Only record non-practice answers
+      if (!isPractice) {
+        answers.push({
+          id: card.id,
+          domain: card.domain,
+          label: card.label,
+          yes: isYes,
+          time: responseTime
+        });
+      }
+      
+      currentCardIndex++;
+      showCard();
+    }
+    
+    function calculateIHS() {
+      // Time multipliers based on response speed
+      function getTimeMultiplier(time) {
+        if (time <= 1000) return 1.0;
+        if (time <= 2000) return 0.8;
+        if (time <= 3000) return 0.6;
+        return 0.4;
+      }
+      
+      // N1: Affirmations + Time
+      const n1 = answers
+        .filter(a => a.yes)
+        .reduce((sum, a) => sum + (4 * getTimeMultiplier(a.time)), 0);
+      
+      // N2: Domain Coverage
+      const uniqueDomains = new Set(answers.filter(a => a.yes).map(a => a.domain));
+      const n2 = uniqueDomains.size * 19.2;
+      
+      // N3: Spread Score
+      const domainCounts = {};
+      const totalAnswers = answers.length;
+      
+      answers.filter(a => a.yes).forEach(a => {
+        domainCounts[a.domain] = (domainCounts[a.domain] || 0) + 1;
+      });
+      
+      const domainPercentages = Object.values(domainCounts).map(count => count / totalAnswers);
+      const spreadDeviation = domainPercentages.reduce((sum, pct) => sum + Math.abs(pct - 0.2), 0);
+      const n3 = ((1.6 - spreadDeviation) / 1.6) * 100;
+      
+      // Final IHS
+      const ihs = (0.4 * n1) + (0.4 * n2) + (0.2 * Math.max(0, n3));
+      
+      return {
+        ihs: Math.round(ihs * 10) / 10,
+        n1: Math.round(n1 * 10) / 10,
+        n2: Math.round(n2 * 10) / 10,
+        n3: Math.round(n3 * 10) / 10,
+        domainCounts
+      };
+    }
+    
+    function finishScan() {
+      const results = calculateIHS();
+      
+      // Hide game, show results
+      gameDiv.style.display = 'none';
+      resultsDiv.style.display = 'block';
+      
+      // Display IHS
+      document.getElementById('totalScore').textContent = results.ihs;
+      
+      // Display domain breakdown
+      const domainDiv = document.getElementById('perDomain');
+      domainDiv.innerHTML = '<h3 style="margin-bottom: 15px; color: #333;">Domain Breakdown:</h3>';
+      
+      const allDomains = ['Basics', 'Ambition', 'Self-development', 'Vitality', 'Attraction'];
+      allDomains.forEach(domain => {
+        const count = results.domainCounts[domain] || 0;
+        domainDiv.innerHTML += `
+          <div class="domain-score">
+            <span class="domain-name">${domain}</span>
+            <span class="domain-count">${count} Yes</span>
+          </div>
+        `;
+      });
+      
+      // Submit to backend
+      submitResults(results.ihs);
+      
+      // Setup sharing
+      setupSharing(results.ihs);
+    }
+    
+    function submitResults(ihs) {
+      const payload = {
+        timestamp: new Date().toISOString(),
+        responses: answers,
+        ihs: ihs
+      };
+      
+      fetch('/api/responses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        if (!response.ok) {
+          console.warn('Failed to submit results');
+        }
+      })
+      .catch(err => {
+        console.warn('Error submitting results:', err);
+      });
+    }
+    
+    function setupSharing(ihs) {
+      const shareBtn = document.getElementById('shareBtn');
+      const socialLinks = document.getElementById('socialLinks');
+      const tweetLink = document.getElementById('tweetLink');
+      const fbLink = document.getElementById('fbLink');
+      
+      const shareText = `I just completed the 23plusone Happiness Scan and scored ${ihs}! Discover what drives your happiness.`;
+      const shareUrl = window.location.href;
+      
+      // Setup share button
+      shareBtn.addEventListener('click', async () => {
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: '23plusone Happiness Scan Results',
+              text: shareText,
+              url: shareUrl
+            });
+          } catch (err) {
+            // User cancelled or error occurred
+            showSocialLinks();
+          }
+        } else {
+          showSocialLinks();
+        }
+      });
+      
+      function showSocialLinks() {
+        socialLinks.style.display = 'flex';
+        
+        // Setup social links
+        tweetLink.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+        fbLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+      }
+    }
+    
+    // Event listeners
+    yesBtn.addEventListener('click', () => recordAnswer(true));
+    noBtn.addEventListener('click', () => recordAnswer(false));
+    
+    // Keyboard support
+    document.addEventListener('keydown', (e) => {
+      if (gameDiv.style.display !== 'none') {
+        if (e.key === 'y' || e.key === 'Y') {
+          recordAnswer(true);
+        } else if (e.key === 'n' || e.key === 'N') {
+          recordAnswer(false);
+        }
+      }
+    });
+  })();
+  </script>
+</body>
+</html> 
