@@ -16,8 +16,20 @@
       "dest": "/server/server.js"
     },
     {
-      "src": "/(.*)",
+      "src": "/cards.json",
+      "dest": "/public/cards.json"
+    },
+    {
+      "src": "/23plusoneCards/(.*)",
+      "dest": "/public/23plusoneCards/$1"
+    },
+    {
+      "src": "/(.*\\.(html|css|js|json|jpg|png|gif))",
       "dest": "/public/$1"
+    },
+    {
+      "src": "/",
+      "dest": "/public/index.html"
     }
   ],
   "env": {
