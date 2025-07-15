@@ -588,6 +588,141 @@
       transform: translateY(-2px);
     }
     
+    /* Share Modal Styles */
+    #shareModal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    
+    .share-modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      animation: modalSlideIn 0.3s ease-out;
+    }
+    
+    @keyframes modalSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    
+    .share-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .share-modal-header h3 {
+      color: #333;
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #666;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: all 0.2s ease;
+    }
+    
+    .close-modal:hover {
+      background: #f0f0f0;
+      color: #333;
+    }
+    
+    .share-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .share-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 15px 20px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: left;
+    }
+    
+    .share-option.twitter {
+      background: #1da1f2;
+      color: white;
+    }
+    
+    .share-option.twitter:hover {
+      background: #1a91da;
+      transform: translateY(-1px);
+    }
+    
+    .share-option.facebook {
+      background: #1877f2;
+      color: white;
+    }
+    
+    .share-option.facebook:hover {
+      background: #166fe5;
+      transform: translateY(-1px);
+    }
+    
+    .share-option.copy {
+      background: #f8f9fa;
+      color: #333;
+      border: 2px solid #e0e0e0;
+    }
+    
+    .share-option.copy:hover {
+      background: #e9ecef;
+      border-color: #ccc;
+      transform: translateY(-1px);
+    }
+    
+    .share-option.copy.copied {
+      background: #d4edda;
+      border-color: #4CAF50;
+      color: #155724;
+    }
+    
+    .share-icon {
+      font-size: 20px;
+    }
+    
     /* Brand Logo Styling */
     .brand-logo {
       width: 150px;
@@ -950,9 +1085,29 @@
         <p class="share-intro">More color = more joy. Want to try again and mix it up?</p>
         <button id="shareBtn">Share Your Happiness Mix</button>
         <button id="retakeBtn" onclick="location.reload()">Take Again</button>
-        <div id="socialLinks" style="display: none;">
-          <a id="tweetLink" target="_blank">Tweet</a>
-          <a id="fbLink" target="_blank">Facebook</a>
+        
+        <!-- Share Modal -->
+        <div id="shareModal" style="display: none;">
+          <div class="share-modal-content">
+            <div class="share-modal-header">
+              <h3>Share Your Results</h3>
+              <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <div class="share-options">
+              <button id="tweetBtn" class="share-option twitter">
+                <span class="share-icon">🐦</span>
+                Share on Twitter
+              </button>
+              <button id="fbBtn" class="share-option facebook">
+                <span class="share-icon">📘</span>
+                Share on Facebook
+              </button>
+              <button id="copyLinkBtn" class="share-option copy">
+                <span class="share-icon">🔗</span>
+                Copy Link
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -1240,11 +1395,7 @@
         return { isValid: false, reason: 'You said "No" to everything. Please retake the scan and engage more thoughtfully.' };
       }
       
-      // Reject all "Yes" responses  
-      if (selectedCount === 24) {
-        console.log('❌ Frontend: All Yes responses');
-        return { isValid: false, reason: 'You said "Yes" to everything. Please retake the scan and be more selective.' };
-      }
+      // Allow all "Yes" responses - removed restriction
       
       // Allow fast individual clicks but prevent completing entire scan too quickly
       if (totalTime < 5) {
@@ -1528,14 +1679,16 @@
     
     function setupSharing(results) {
       const shareBtn = document.getElementById('shareBtn');
-      const socialLinks = document.getElementById('socialLinks');
-      const tweetLink = document.getElementById('tweetLink');
-      const fbLink = document.getElementById('fbLink');
+      const shareModal = document.getElementById('shareModal');
+      const closeModal = document.getElementById('closeModal');
+      const tweetBtn = document.getElementById('tweetBtn');
+      const fbBtn = document.getElementById('fbBtn');
+      const copyLinkBtn = document.getElementById('copyLinkBtn');
       
       const shareText = `I just completed the 23plusone Happiness Scan and scored ${results.ihs}! Discover what drives your happiness.`;
       const shareUrl = window.location.href;
       
-      // Setup share button
+      // Setup share button to show modal
       shareBtn.addEventListener('click', async () => {
         if (navigator.share) {
           try {
@@ -1545,21 +1698,77 @@
               url: shareUrl
             });
           } catch (err) {
-            // User cancelled or error occurred
-            showSocialLinks();
+            // User cancelled or error occurred, show modal
+            showShareModal();
           }
         } else {
-          showSocialLinks();
+          showShareModal();
         }
       });
       
-      function showSocialLinks() {
-        socialLinks.style.display = 'flex';
-        
-        // Setup social links
-        tweetLink.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-        fbLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+      function showShareModal() {
+        shareModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
       }
+      
+      function hideShareModal() {
+        shareModal.style.display = 'none';
+        document.body.style.overflow = ''; // Restore scrolling
+      }
+      
+      // Close modal handlers
+      closeModal.addEventListener('click', hideShareModal);
+      shareModal.addEventListener('click', (e) => {
+        if (e.target === shareModal) hideShareModal(); // Close on backdrop click
+      });
+      
+      // Escape key to close modal
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && shareModal.style.display === 'flex') {
+          hideShareModal();
+        }
+      });
+      
+      // Social share handlers
+      tweetBtn.addEventListener('click', () => {
+        const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+        window.open(tweetUrl, '_blank', 'width=550,height=420');
+        hideShareModal();
+      });
+      
+      fbBtn.addEventListener('click', () => {
+        const fbUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+        window.open(fbUrl, '_blank', 'width=555,height=500');
+        hideShareModal();
+      });
+      
+      // Copy link handler
+      copyLinkBtn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(shareUrl);
+          copyLinkBtn.textContent = '✓ Link Copied!';
+          copyLinkBtn.classList.add('copied');
+          setTimeout(() => {
+            copyLinkBtn.innerHTML = '<span class="share-icon">🔗</span>Copy Link';
+            copyLinkBtn.classList.remove('copied');
+          }, 2000);
+        } catch (err) {
+          // Fallback for older browsers
+          const textArea = document.createElement('textarea');
+          textArea.value = shareUrl;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+          
+          copyLinkBtn.textContent = '✓ Link Copied!';
+          copyLinkBtn.classList.add('copied');
+          setTimeout(() => {
+            copyLinkBtn.innerHTML = '<span class="share-icon">🔗</span>Copy Link';
+            copyLinkBtn.classList.remove('copied');
+          }, 2000);
+        }
+      });
     }
     
     function getBenchmarkData(results) {
