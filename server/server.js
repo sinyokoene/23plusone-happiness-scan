@@ -107,10 +107,10 @@ function validateScanQuality(cardSelections, completionTime) {
     return { isValid: false, reason: 'All responses were "Yes" - likely clicking through' };
   }
   
-  // Only reject truly inhuman speeds - someone could click through 24 cards very quickly
-  // But still want to catch obvious bots/scripts
-  if (completionTime && completionTime < 2) {
-    return { isValid: false, reason: `Inhuman completion speed: ${completionTime}s (minimum 2s)` };
+  // Allow fast individual clicks but prevent completing entire scan too quickly
+  // Someone can click very fast on each card, but completing all 24 cards in under 5s is suspicious
+  if (completionTime && completionTime < 5) {
+    return { isValid: false, reason: `Scan completed too quickly: ${completionTime}s (minimum 5s for 24 cards)` };
   }
   
   // All validation passed - allow normal human variations in speed

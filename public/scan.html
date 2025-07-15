@@ -615,10 +615,10 @@
         return { isValid: false, reason: 'You said "Yes" to everything. Please retake the scan and be more selective.' };
       }
       
-      // Only reject truly inhuman speeds - someone could click through 24 cards very quickly
+      // Allow fast individual clicks but prevent completing entire scan too quickly
       const totalTime = answers.length > 0 ? (Date.now() - startTime) / 1000 : 0;
-      if (totalTime < 2) {
-        return { isValid: false, reason: 'Completion was extremely fast. Please retake and view each image carefully.' };
+      if (totalTime < 5) {
+        return { isValid: false, reason: 'Scan completed too quickly. Please take more time to view each image.' };
       }
       
       return { isValid: true, reason: 'Valid scan' };
