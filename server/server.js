@@ -110,8 +110,8 @@ function validateScanQuality(cardSelections, completionTime) {
   // Only check for EXTREMELY fast completion (inhuman speed)
   // 24 cards × 4 seconds = 96 seconds minimum if auto-timeout on every card
   // Allow much faster for humans who click quickly
-  if (completionTime && completionTime < 20) {
-    return { isValid: false, reason: `Inhuman completion speed: ${completionTime}s (minimum 20s)` };
+  if (completionTime && completionTime < 5) {
+    return { isValid: false, reason: `Inhuman completion speed: ${completionTime}s (minimum 5s)` };
   }
   
   // All validation passed - allow normal human variations in speed
