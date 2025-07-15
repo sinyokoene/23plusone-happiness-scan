@@ -1,30 +1,30 @@
 [
-  { "id": 1, "domain": "Attraction", "label": "Idealism Better World", "images": ["23plusoneCards/1. idealism_better world.jpg"] },
+  { "id": 1, "domain": "Basics", "label": "Idealism Better World", "images": ["23plusoneCards/1. idealism_better world.jpg"] },
   { "id": 2, "domain": "Basics", "label": "Loyal Moral", "images": ["23plusoneCards/2. loyal_moral.jpg"] },
-  { "id": 3, "domain": "Attraction", "label": "Connected Together", "images": ["23plusoneCards/3. connected_together.jpg"] },
-  { "id": 4, "domain": "Attraction", "label": "Warm Caring", "images": ["23plusoneCards/4. warm_caring.jpg"] },
+  { "id": 3, "domain": "Basics", "label": "Connected Together", "images": ["23plusoneCards/3. connected_together.jpg"] },
+  { "id": 4, "domain": "Basics", "label": "Warm Caring", "images": ["23plusoneCards/4. warm_caring.jpg"] },
   { "id": 5, "domain": "Basics", "label": "Order Structure", "images": ["23plusoneCards/5. order_structure.jpg"] },
   
   { "id": 6, "domain": "Basics", "label": "Safe Secure", "images": ["23plusoneCards/6. safe_secure.jpg"] },
-  { "id": 7, "domain": "Vitality", "label": "Relaxed Carefree", "images": ["23plusoneCards/7. relaxed_carefree.jpg"] },
-  { "id": 8, "domain": "Vitality", "label": "Play Fun", "images": ["23plusoneCards/8. play_fun.jpg"] },
+  { "id": 7, "domain": "Self-development", "label": "Relaxed Carefree", "images": ["23plusoneCards/7. relaxed_carefree.jpg"] },
+  { "id": 8, "domain": "Self-development", "label": "Play Fun", "images": ["23plusoneCards/8. play_fun.jpg"] },
   { "id": 9, "domain": "Self-development", "label": "Unbound Independent", "images": ["23plusoneCards/9. unbound_independent.jpg"] },
   { "id": 10, "domain": "Self-development", "label": "Creative Fantasy", "images": ["23plusoneCards/10. creative_fantasy.jpg"] },
   
   { "id": 11, "domain": "Self-development", "label": "Individual Unique", "images": ["23plusoneCards/11. individual_unique.jpg"] },
   { "id": 12, "domain": "Self-development", "label": "Discover Curious", "images": ["23plusoneCards/12. discover_curious.jpg"] },
-  { "id": 13, "domain": "Self-development", "label": "Capable Talent", "images": ["23plusoneCards/13. capable_talent.jpg"] },
+  { "id": 13, "domain": "Ambition", "label": "Capable Talent", "images": ["23plusoneCards/13. capable_talent.jpg"] },
   { "id": 14, "domain": "Ambition", "label": "Achievement Innovation", "images": ["23plusoneCards/14. achievement_innovation.jpg"] },
   { "id": 15, "domain": "Ambition", "label": "Challenge Winning", "images": ["23plusoneCards/15. challenge_winning.jpg"] },
   
   { "id": 16, "domain": "Ambition", "label": "Pride Self-Assured", "images": ["23plusoneCards/16. pride_self-assured.jpg"] },
   { "id": 17, "domain": "Ambition", "label": "Appreciation Recognition", "images": ["23plusoneCards/17. appreciation_recognition.jpg"] },
   { "id": 18, "domain": "Ambition", "label": "Standing Prestige", "images": ["23plusoneCards/18. standing_prestige.jpg"] },
-  { "id": 19, "domain": "Basics", "label": "Collect Possess", "images": ["23plusoneCards/19. collect_possess.jpg"] },
+  { "id": 19, "domain": "Ambition", "label": "Collect Possess", "images": ["23plusoneCards/19. collect_possess.jpg"] },
   { "id": 20, "domain": "Ambition", "label": "Influence Leadership", "images": ["23plusoneCards/20. influence_leadership.jpg"] },
   
   { "id": 21, "domain": "Vitality", "label": "Fit Sporty", "images": ["23plusoneCards/21. fit_sporty.jpg"] },
-  { "id": 22, "domain": "Basics", "label": "Health Nutrition", "images": ["23plusoneCards/22. health_nutrition.jpg"] },
-  { "id": 23, "domain": "Vitality", "label": "Beauty Esthetics", "images": ["23plusoneCards/23. beauty_esthetics.jpg"] },
+  { "id": 22, "domain": "Vitality", "label": "Health Nutrition", "images": ["23plusoneCards/22. health_nutrition.jpg"] },
+  { "id": 23, "domain": "Attraction", "label": "Beauty Esthetics", "images": ["23plusoneCards/23. beauty_esthetics.jpg"] },
   { "id": 24, "domain": "Attraction", "label": "Sexy Aroused", "images": ["23plusoneCards/24. sexy_aroused.jpg"] }
 ]
