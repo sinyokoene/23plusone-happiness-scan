@@ -738,6 +738,28 @@
       color: #2c5aa0;
       font-weight: 800;
     }
+    
+    /* Practice Round Indicator */
+    .practice-indicator {
+      background: #FF9800;
+      color: white;
+      padding: 6px 16px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 auto 15px auto;
+      display: inline-block;
+      opacity: 0.9;
+    }
+    
+    /* Practice mode styling for game container */
+    #game.practice-mode {
+      background: rgba(255, 152, 0, 0.02);
+    }
+    
+    /* ...existing code... */
   </style>
 </head>
 <body>
@@ -766,7 +788,7 @@
       
       <div id="cardContainer">
         <div id="practiceIndicator" class="practice-indicator" style="display: none;">
-          Practice Round
+          Practice
         </div>
         
         <div id="card">
@@ -1031,6 +1053,13 @@
       
       // Show/hide practice indicator
       practiceIndicator.style.display = isPractice ? 'block' : 'none';
+      
+      // Add/remove practice mode styling
+      if (isPractice) {
+        gameDiv.classList.add('practice-mode');
+      } else {
+        gameDiv.classList.remove('practice-mode');
+      }
       
       // Display card (visual only - no text labels)
       cardDiv.innerHTML = `
