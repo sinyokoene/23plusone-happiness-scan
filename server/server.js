@@ -84,57 +84,47 @@ app.get('/api/debug', async (req, res) => {
 // Post a scan response
 app.post('/api/responses', async (req, res) => {
   try {
-    const { timestamp, responses, ihs } = req.body;
+    const { sessionId, cardSelections, ihsScore, n1Score, n2Score, n3Score, completionTime, userAgent } = req.body;
     
     // Validation
-    if (!timestamp || !responses || !Array.isArray(responses) || typeof ihs !== 'number') {
+    if (!sessionId || !cardSelections || typeof ihsScore !== 'number') {
       return res.status(400).json({ error: 'Invalid request format' });
-    }
-    
-    if (responses.length === 0) {
-      return res.status(400).json({ error: 'No responses provided' });
     }
     
     const client = await pool.connect();
     
     try {
-      // Begin transaction
-      await client.query('BEGIN');
-      
-      // Insert each answer row
-      const insertPromises = responses.map(r => {
-        if (!r.id || !r.domain || typeof r.yes !== 'boolean' || typeof r.time !== 'number') {
-          throw new Error('Invalid response format');
-        }
-        
-        return client.query(
-          `INSERT INTO scan_responses 
-           (timestamp, card_id, domain, yes_no, response_time, ihs)
-           VALUES ($1, $2, $3, $4, $5, $6)`,
-          [timestamp, r.id, r.domain, r.yes, r.time, ihs]
-        );
-      });
-      
-      await Promise.all(insertPromises);
-      
-      // Commit transaction
-      await client.query('COMMIT');
+      // Insert scan response using current schema
+      const result = await client.query(
+        `INSERT INTO scan_responses 
+         (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, ip_address)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         RETURNING id`,
+        [
+          sessionId, 
+          JSON.stringify(cardSelections), 
+          ihsScore,
+          n1Score || 0,
+          n2Score || 0, 
+          n3Score || 0,
+          completionTime || 0,
+          userAgent || null,
+          req.ip || null
+        ]
+      );
       
       res.status(201).json({ 
-        message: 'Responses saved successfully',
-        count: responses.length 
+        message: 'Response saved successfully',
+        id: result.rows[0].id 
       });
       
-    } catch (error) {
-      await client.query('ROLLBACK');
-      throw error;
     } finally {
       client.release();
     }
     
   } catch (err) {
-    console.error('Error saving responses:', err);
-    res.status(500).json({ error: 'Failed to save responses' });
+    console.error('Error saving response:', err);
+    res.status(500).json({ error: 'Failed to save response' });
   }
 });
 
@@ -146,7 +136,7 @@ app.get('/api/benchmarks', async (req, res) => {
     try {
       // Check if we have enough data for meaningful percentiles
       const countResult = await client.query(
-        'SELECT COUNT(DISTINCT timestamp) as response_count FROM scan_responses'
+        'SELECT COUNT(*) as response_count FROM scan_responses'
       );
       
       const responseCount = parseInt(countResult.rows[0].response_count);
@@ -159,22 +149,19 @@ app.get('/api/benchmarks', async (req, res) => {
         });
       }
       
-      // Compute percentiles from unique IHS scores (one per response session)
+      // Compute percentiles from IHS scores
       const result = await client.query(`
         SELECT 
           percentile_cont(ARRAY[0.1, 0.25, 0.5, 0.75, 0.9]) 
-            WITHIN GROUP (ORDER BY ihs) AS percentiles
-        FROM (
-          SELECT DISTINCT timestamp, ihs 
-          FROM scan_responses 
-          WHERE ihs IS NOT NULL
-        ) unique_responses
+            WITHIN GROUP (ORDER BY ihs_score) AS percentiles
+        FROM scan_responses 
+        WHERE ihs_score IS NOT NULL
       `);
       
       const percentiles = result.rows[0].percentiles;
       
       res.json({ 
-        percentiles: percentiles ? percentiles.map(p => Math.round(p * 10) / 10) : null,
+        percentiles: percentiles ? percentiles.map(p => Math.round(parseFloat(p) * 10) / 10) : null,
         responseCount,
         labels: ['10th', '25th', '50th', '75th', '90th']
       });
@@ -197,23 +184,23 @@ app.get('/api/stats', async (req, res) => {
     try {
       const result = await client.query(`
         SELECT 
-          COUNT(DISTINCT timestamp) as total_responses,
-          AVG(ihs) as avg_ihs,
-          MIN(ihs) as min_ihs,
-          MAX(ihs) as max_ihs,
-          COUNT(*) as total_answers
+          COUNT(*) as total_responses,
+          AVG(ihs_score) as avg_ihs,
+          MIN(ihs_score) as min_ihs,
+          MAX(ihs_score) as max_ihs,
+          AVG(completion_time) as avg_completion_time
         FROM scan_responses
-        WHERE ihs IS NOT NULL
+        WHERE ihs_score IS NOT NULL
       `);
       
       const stats = result.rows[0];
       
       res.json({
         totalResponses: parseInt(stats.total_responses),
-        totalAnswers: parseInt(stats.total_answers),
-        averageIHS: stats.avg_ihs ? Math.round(stats.avg_ihs * 10) / 10 : null,
-        minIHS: stats.min_ihs ? Math.round(stats.min_ihs * 10) / 10 : null,
-        maxIHS: stats.max_ihs ? Math.round(stats.max_ihs * 10) / 10 : null
+        averageIHS: stats.avg_ihs ? Math.round(parseFloat(stats.avg_ihs) * 10) / 10 : null,
+        minIHS: stats.min_ihs ? Math.round(parseFloat(stats.min_ihs) * 10) / 10 : null,
+        maxIHS: stats.max_ihs ? Math.round(parseFloat(stats.max_ihs) * 10) / 10 : null,
+        averageCompletionTime: stats.avg_completion_time ? Math.round(parseFloat(stats.avg_completion_time)) : null
       });
       
     } finally {
