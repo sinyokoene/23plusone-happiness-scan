@@ -570,19 +570,35 @@
     }
     
     function submitResults(ihs) {
-      // Create proper card selections format
+      // Create complete card selections with ALL responses
       const cardSelections = {
         domains: [],
-        selected: []
+        selected: [],    // Cards answered "Yes"
+        rejected: [],    // Cards answered "No"
+        allResponses: [] // Complete response data
       };
       
-      // Process answers to get selected cards and domains
+      // Process ALL answers (both Yes and No)
       answers.forEach(answer => {
-        if (answer.answer) {
-          cardSelections.selected.push(answer.cardId);
-          if (!cardSelections.domains.includes(answer.domain)) {
-            cardSelections.domains.push(answer.domain);
-          }
+        // Add to complete responses
+        cardSelections.allResponses.push({
+          cardId: answer.id,
+          domain: answer.domain,
+          label: answer.label,
+          response: answer.yes,
+          responseTime: answer.time
+        });
+        
+        // Track selected vs rejected
+        if (answer.yes) {
+          cardSelections.selected.push(answer.id);
+        } else {
+          cardSelections.rejected.push(answer.id);
+        }
+        
+        // Track unique domains from all responses
+        if (!cardSelections.domains.includes(answer.domain)) {
+          cardSelections.domains.push(answer.domain);
         }
       });
       
@@ -594,8 +610,18 @@
         n2Score: 0,
         n3Score: 0,
         completionTime: answers.length > 0 ? Math.round((Date.now() - startTime) / 1000) : 0,
-        userAgent: navigator.userAgent
+        userAgent: navigator.userAgent,
+        totalCards: answers.length, // Should be 24
+        selectedCount: cardSelections.selected.length,
+        rejectedCount: cardSelections.rejected.length
       };
+      
+      console.log('Submitting complete scan data:', {
+        totalResponses: answers.length,
+        selectedCards: cardSelections.selected.length,
+        rejectedCards: cardSelections.rejected.length,
+        domains: cardSelections.domains.length
+      });
       
       fetch('/api/responses', {
         method: 'POST',
@@ -606,7 +632,7 @@
         if (!response.ok) {
           console.warn('Failed to submit results:', response.status);
         } else {
-          console.log('Results submitted successfully');
+          console.log('Results submitted successfully - all 24 cards recorded');
         }
       })
       .catch(err => {
