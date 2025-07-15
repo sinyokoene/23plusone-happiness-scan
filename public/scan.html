@@ -314,6 +314,8 @@
       opacity: 1.0;
       display: block;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+      background: rgba(255,0,0,0.1); /* Temporary debug background */
+      border: 1px solid red; /* Temporary debug border */
     }
     
     @media (max-width: 480px) {
@@ -345,7 +347,7 @@
 <body>
   <div class="container">
     <div id="game">
-      <img src="23plusone-logo.svg" alt="23plusone" class="brand-logo">
+      <img src="23plusone.png" alt="23plusone" class="brand-logo">
       
       <div id="progress">
         <div id="progressBar"></div>
@@ -375,7 +377,7 @@
     </div>
 
     <div id="results" style="display: none;">
-      <img src="23plusone-logo.svg" alt="23plusone" class="brand-logo">
+      <img src="23plusone.png" alt="23plusone" class="brand-logo">
       <h2>Your Happiness Scan Results</h2>
       <div id="totalScore">--</div>
       <div id="ihsLabel">Individual Happiness Score (IHS)</div>
