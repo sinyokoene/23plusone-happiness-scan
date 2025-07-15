@@ -595,28 +595,29 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.6);
       z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
-      backdrop-filter: blur(4px);
+      backdrop-filter: blur(8px);
     }
     
     .share-modal-content {
       background: white;
-      border-radius: 20px;
-      padding: 30px;
-      max-width: 400px;
+      border-radius: 24px;
+      padding: 32px;
+      max-width: 380px;
       width: 90%;
-      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-      animation: modalSlideIn 0.3s ease-out;
+      box-shadow: 0 24px 48px rgba(0,0,0,0.15);
+      animation: modalSlideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      border: 1px solid rgba(255,255,255,0.2);
     }
     
     @keyframes modalSlideIn {
       from {
         opacity: 0;
-        transform: translateY(-20px) scale(0.95);
+        transform: translateY(-30px) scale(0.9);
       }
       to {
         opacity: 1;
@@ -625,102 +626,120 @@
     }
     
     .share-modal-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-      padding-bottom: 15px;
-      border-bottom: 2px solid #f0f0f0;
+      text-align: center;
+      margin-bottom: 28px;
+      position: relative;
     }
     
     .share-modal-header h3 {
       color: #333;
-      font-size: 22px;
+      font-size: 24px;
       font-weight: 700;
       margin: 0;
+      letter-spacing: -0.5px;
     }
     
     .close-modal {
-      background: none;
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #f8f9fa;
       border: none;
-      font-size: 28px;
+      font-size: 20px;
       color: #666;
       cursor: pointer;
       padding: 0;
-      width: 32px;
-      height: 32px;
+      width: 36px;
+      height: 36px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
       transition: all 0.2s ease;
+      font-weight: 300;
     }
     
     .close-modal:hover {
-      background: #f0f0f0;
+      background: #e9ecef;
       color: #333;
+      transform: scale(1.05);
     }
     
     .share-options {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 16px;
     }
     
     .share-option {
       display: flex;
       align-items: center;
+      justify-content: center;
       gap: 12px;
-      padding: 15px 20px;
+      padding: 16px 24px;
       border: none;
-      border-radius: 12px;
+      border-radius: 16px;
       font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.2s ease;
-      text-align: left;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .share-option:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.15);
     }
     
     .share-option.twitter {
-      background: #1da1f2;
+      background: linear-gradient(135deg, #000000 0%, #333333 100%);
       color: white;
     }
     
     .share-option.twitter:hover {
-      background: #1a91da;
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, #333333 0%, #000000 100%);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
     }
     
     .share-option.facebook {
-      background: #1877f2;
+      background: linear-gradient(135deg, #1877f2 0%, #166fe5 100%);
       color: white;
     }
     
     .share-option.facebook:hover {
-      background: #166fe5;
-      transform: translateY(-1px);
+      background: linear-gradient(135deg, #166fe5 0%, #1460d1 100%);
+      box-shadow: 0 8px 24px rgba(24, 119, 242, 0.3);
     }
     
     .share-option.copy {
       background: #f8f9fa;
       color: #333;
-      border: 2px solid #e0e0e0;
+      border: 2px solid #e9ecef;
     }
     
     .share-option.copy:hover {
       background: #e9ecef;
-      border-color: #ccc;
-      transform: translateY(-1px);
+      border-color: #dee2e6;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
     }
     
     .share-option.copy.copied {
-      background: #d4edda;
+      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
       border-color: #4CAF50;
       color: #155724;
+      animation: successPulse 0.6s ease;
+    }
+    
+    @keyframes successPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
     }
     
     .share-icon {
       font-size: 20px;
+      font-weight: bold;
     }
     
     /* Brand Logo Styling */
@@ -1091,20 +1110,20 @@
           <div class="share-modal-content">
             <div class="share-modal-header">
               <h3>Share Your Results</h3>
-              <button class="close-modal" id="closeModal">&times;</button>
+              <button class="close-modal" id="closeModal">×</button>
             </div>
             <div class="share-options">
               <button id="tweetBtn" class="share-option twitter">
-                <span class="share-icon">🐦</span>
-                Share on Twitter
+                <span class="share-icon">𝕏</span>
+                <span>Share on X</span>
               </button>
               <button id="fbBtn" class="share-option facebook">
-                <span class="share-icon">📘</span>
-                Share on Facebook
+                <span class="share-icon">f</span>
+                <span>Share on Facebook</span>
               </button>
               <button id="copyLinkBtn" class="share-option copy">
                 <span class="share-icon">🔗</span>
-                Copy Link
+                <span>Copy Link</span>
               </button>
             </div>
           </div>
@@ -1731,7 +1750,7 @@
       
       // Social share handlers
       tweetBtn.addEventListener('click', () => {
-        const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+        const tweetUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
         window.open(tweetUrl, '_blank', 'width=550,height=420');
         hideShareModal();
       });
@@ -1746,10 +1765,10 @@
       copyLinkBtn.addEventListener('click', async () => {
         try {
           await navigator.clipboard.writeText(shareUrl);
-          copyLinkBtn.textContent = '✓ Link Copied!';
+          copyLinkBtn.innerHTML = '<span class="share-icon">✓</span><span>Copied!</span>';
           copyLinkBtn.classList.add('copied');
           setTimeout(() => {
-            copyLinkBtn.innerHTML = '<span class="share-icon">🔗</span>Copy Link';
+            copyLinkBtn.innerHTML = '<span class="share-icon">🔗</span><span>Copy Link</span>';
             copyLinkBtn.classList.remove('copied');
           }, 2000);
         } catch (err) {
@@ -1761,10 +1780,10 @@
           document.execCommand('copy');
           document.body.removeChild(textArea);
           
-          copyLinkBtn.textContent = '✓ Link Copied!';
+          copyLinkBtn.innerHTML = '<span class="share-icon">✓</span><span>Copied!</span>';
           copyLinkBtn.classList.add('copied');
           setTimeout(() => {
-            copyLinkBtn.innerHTML = '<span class="share-icon">🔗</span>Copy Link';
+            copyLinkBtn.innerHTML = '<span class="share-icon">🔗</span><span>Copy Link</span>';
             copyLinkBtn.classList.remove('copied');
           }, 2000);
         }
