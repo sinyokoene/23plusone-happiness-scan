@@ -641,28 +641,31 @@
     
     .close-modal {
       position: absolute;
-      top: -8px;
-      right: -8px;
-      background: #f8f9fa;
-      border: none;
-      font-size: 20px;
+      top: -12px;
+      right: -12px;
+      background: white;
+      border: 2px solid #e9ecef;
+      font-size: 18px;
       color: #666;
       cursor: pointer;
       padding: 0;
-      width: 36px;
-      height: 36px;
+      width: 32px;
+      height: 32px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
       transition: all 0.2s ease;
-      font-weight: 300;
+      font-weight: 400;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
     
     .close-modal:hover {
-      background: #e9ecef;
+      background: #f8f9fa;
+      border-color: #dee2e6;
       color: #333;
-      transform: scale(1.05);
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
     
     .share-options {
@@ -1708,21 +1711,8 @@
       const shareUrl = window.location.href;
       
       // Setup share button to show modal
-      shareBtn.addEventListener('click', async () => {
-        if (navigator.share) {
-          try {
-            await navigator.share({
-              title: '23plusone Happiness Scan Results',
-              text: shareText,
-              url: shareUrl
-            });
-          } catch (err) {
-            // User cancelled or error occurred, show modal
-            showShareModal();
-          }
-        } else {
-          showShareModal();
-        }
+      shareBtn.addEventListener('click', () => {
+        showShareModal();
       });
       
       function showShareModal() {
