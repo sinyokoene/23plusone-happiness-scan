@@ -229,6 +229,10 @@
       cursor: pointer;
       transition: all 0.3s ease;
       min-width: 100px;
+      user-select: none;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
     }
     
     #yesBtn {
@@ -240,6 +244,12 @@
     #yesBtn:hover {
       background: #45a049;
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+    }
+    
+    #yesBtn:active {
+      transform: scale(0.95);
+      background: #66bb6a;
     }
     
     #noBtn {
@@ -251,6 +261,12 @@
     #noBtn:hover {
       background: #da190b;
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+    }
+    
+    #noBtn:active {
+      transform: scale(0.95);
+      background: #ef5350;
     }
     
     button:disabled {
@@ -663,6 +679,65 @@
         margin: 8px 0;
       }
     }
+    
+    /* Benchmark Section Styles */
+    #benchmarkSection {
+      margin: 45px 0;
+      padding: 25px;
+      background: linear-gradient(135deg, #f8f9ff 0%, #e8f5e8 100%);
+      border-radius: 15px;
+      border: 1px solid #e3f2fd;
+      text-align: center;
+    }
+    
+    #benchmarkSection h3 {
+      color: #2c5aa0;
+      margin-bottom: 15px;
+      font-size: 22px;
+      font-weight: 700;
+    }
+    
+    #benchmarkMessage {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      font-weight: 500;
+      padding: 15px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 10px;
+      border-left: 4px solid #4CAF50;
+    }
+    
+    #benchmarkStats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    
+    .benchmark-item {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .benchmark-label {
+      display: block;
+      font-size: 13px;
+      color: #666;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .benchmark-value {
+      display: block;
+      font-size: 20px;
+      color: #2c5aa0;
+      font-weight: 800;
+    }
   </style>
 </head>
 <body>
@@ -818,6 +893,26 @@
         </div>
       </div>
 
+      <!-- Benchmark Section -->
+      <div id="benchmarkSection" style="display: none;">
+        <h3>How You Compare</h3>
+        <div id="benchmarkMessage">Calculating your ranking...</div>
+        <div id="benchmarkStats">
+          <div class="benchmark-item">
+            <span class="benchmark-label">Your Percentile:</span>
+            <span class="benchmark-value" id="benchmarkPercentile">--</span>
+          </div>
+          <div class="benchmark-item">
+            <span class="benchmark-label">Total Participants:</span>
+            <span class="benchmark-value" id="benchmarkTotal">--</span>
+          </div>
+          <div class="benchmark-item">
+            <span class="benchmark-label">Average Score:</span>
+            <span class="benchmark-value" id="benchmarkAverage">--</span>
+          </div>
+        </div>
+      </div>
+
       <!-- Personalized Insights -->
       <div id="personalInsights">
         <h3>Your Happiness Profile</h3>
@@ -949,6 +1044,9 @@
       // Show timer and buttons
       timerContainer.style.display = 'block';
       buttonsDiv.style.display = 'flex';
+      
+      // Setup swipe listeners for the new card
+      setTimeout(() => setupSwipeListeners(), 100);
       
       // Reset and start timer
       startTimer();
@@ -1161,6 +1259,9 @@
       
       // Display enhanced results
       displayEnhancedResults(results);
+      
+      // Get benchmarking data and display
+      getBenchmarkData(results);
       
       // Submit to backend
       submitResults(results);
@@ -1432,139 +1533,207 @@
       }
     }
     
-    // Event listeners
+    function getBenchmarkData(results) {
+      // Show the benchmark section
+      const benchmarkSection = document.getElementById('benchmarkSection');
+      benchmarkSection.style.display = 'block';
+      
+      // Convert domain counts to the expected format for the API
+      const domainScores = {
+        red: results.domainCounts['Attraction'] || 0,      // Beauty/Attraction
+        orange: results.domainCounts['Self-development'] || 0, // Growth
+        yellow: results.domainCounts['Ambition'] || 0,     // Achievement  
+        green: results.domainCounts['Basics'] || 0,        // Fundamentals
+        blue: results.domainCounts['Vitality'] || 0        // Energy
+      };
+      
+      const benchmarkPayload = {
+        ihsScore: results.ihs,
+        domainScores: domainScores
+      };
+      
+      console.log('Requesting benchmark for:', benchmarkPayload);
+      
+      fetch('/api/benchmarks', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(benchmarkPayload)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Benchmark data received:', data);
+        displayBenchmarkResults(data.benchmark);
+      })
+      .catch(err => {
+        console.warn('Error fetching benchmark:', err);
+        // Hide benchmark section if there's an error
+        benchmarkSection.style.display = 'none';
+      });
+    }
+    
+    function displayBenchmarkResults(benchmark) {
+      // Update the main benchmark message
+      const messageEl = document.getElementById('benchmarkMessage');
+      messageEl.textContent = benchmark.message;
+      
+      // Update the statistics
+      document.getElementById('benchmarkPercentile').textContent = `${benchmark.ihsPercentile}th percentile`;
+      document.getElementById('benchmarkTotal').textContent = benchmark.totalResponses.toLocaleString();
+      document.getElementById('benchmarkAverage').textContent = benchmark.context.averageScore || '--';
+      
+      // Add some visual flair based on percentile
+      const benchmarkSection = document.getElementById('benchmarkSection');
+      if (benchmark.ihsPercentile >= 90) {
+        benchmarkSection.style.background = 'linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%)';
+        benchmarkSection.style.borderColor = '#ff9800';
+      } else if (benchmark.ihsPercentile >= 75) {
+        benchmarkSection.style.background = 'linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%)';
+        benchmarkSection.style.borderColor = '#4caf50';
+      } else if (benchmark.ihsPercentile >= 50) {
+        benchmarkSection.style.background = 'linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%)';
+        benchmarkSection.style.borderColor = '#2196f3';
+      }
+      
+      console.log('Benchmark display updated with percentile:', benchmark.ihsPercentile);
+    }
+    
+    // Button event listeners
     yesBtn.addEventListener('click', () => recordAnswer(true));
     noBtn.addEventListener('click', () => recordAnswer(false));
     
-    // Keyboard support
-    document.addEventListener('keydown', (e) => {
-      if (gameDiv.style.display !== 'none') {
-        if (e.key === 'y' || e.key === 'Y') {
-          recordAnswer(true);
-        } else if (e.key === 'n' || e.key === 'N') {
-          recordAnswer(false);
-        }
-      }
-    });
+    // Touch/swipe functionality for mobile
+    let startX = null;
+    let startY = null;
+    let currentCard = null;
     
-    // Touch/Swipe support for mobile
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchEndX = 0;
-    let touchEndY = 0;
-    let cardElement = null;
+    function setupSwipeListeners() {
+      const cardImage = document.querySelector('.card-image');
+      if (!cardImage) return;
+      
+      currentCard = cardImage;
+      
+      // Touch events
+      cardImage.addEventListener('touchstart', handleTouchStart, { passive: false });
+      cardImage.addEventListener('touchmove', handleTouchMove, { passive: false });
+      cardImage.addEventListener('touchend', handleTouchEnd, { passive: false });
+      
+      // Mouse events for desktop
+      cardImage.addEventListener('mousedown', handleMouseDown);
+      cardImage.addEventListener('mousemove', handleMouseMove);
+      cardImage.addEventListener('mouseup', handleMouseUp);
+      cardImage.addEventListener('mouseleave', handleMouseUp);
+    }
     
     function handleTouchStart(e) {
-      if (gameDiv.style.display === 'none') return;
-      
-      touchStartX = e.changedTouches[0].screenX;
-      touchStartY = e.changedTouches[0].screenY;
-      cardElement = e.target.closest('.card-image');
-      
-      if (cardElement) {
-        cardElement.style.transition = 'none';
-      }
+      e.preventDefault();
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
     }
     
     function handleTouchMove(e) {
-      if (gameDiv.style.display === 'none' || !cardElement) return;
+      e.preventDefault();
+      if (!startX || !startY) return;
       
-      const currentX = e.changedTouches[0].screenX;
-      const currentY = e.changedTouches[0].screenY;
-      const deltaX = currentX - touchStartX;
-      const deltaY = currentY - touchStartY;
+      const currentX = e.touches[0].clientX;
+      const deltaX = currentX - startX;
       
-      // Only handle horizontal swipes (ignore vertical scrolling)
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
-        e.preventDefault();
-        
-        // Apply transform and visual feedback
-        const rotation = deltaX * 0.1;
-        const opacity = Math.max(0.7, 1 - Math.abs(deltaX) / 300);
-        
-        cardElement.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
-        cardElement.style.opacity = opacity;
-        
-        // Add color overlay based on swipe direction
-        if (deltaX > 50) {
-          cardElement.style.boxShadow = '0 12px 24px rgba(76, 175, 80, 0.3)'; // Green for Yes
-        } else if (deltaX < -50) {
-          cardElement.style.boxShadow = '0 12px 24px rgba(244, 67, 54, 0.3)'; // Red for No
-        } else {
-          cardElement.style.boxShadow = '0 12px 24px rgba(0,0,0,0.15)'; // Default
-        }
+      if (currentCard) {
+        currentCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX * 0.1}deg)`;
+        currentCard.style.opacity = Math.max(0.3, 1 - Math.abs(deltaX) / 300);
       }
     }
     
     function handleTouchEnd(e) {
-      if (gameDiv.style.display === 'none' || !cardElement) return;
+      e.preventDefault();
+      if (!startX || !currentCard) return;
       
-      touchEndX = e.changedTouches[0].screenX;
-      touchEndY = e.changedTouches[0].screenY;
+      const endX = e.changedTouches[0].clientX;
+      const deltaX = endX - startX;
       
-      const deltaX = touchEndX - touchStartX;
-      const deltaY = touchEndY - touchStartY;
-      
-      // Determine swipe direction and threshold
-      const swipeThreshold = 80;
-      
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
-        // Break the card out of its container completely
-        cardElement.style.position = 'fixed';
-        cardElement.style.zIndex = '9999';
-        cardElement.style.top = cardElement.getBoundingClientRect().top + 'px';
-        cardElement.style.left = cardElement.getBoundingClientRect().left + 'px';
-        cardElement.style.transition = 'all 0.4s ease-out';
-        
-        if (deltaX > 0) {
-          // Swipe right = Yes - card flies RIGHT off screen
-          cardElement.style.transform = 'translateX(100vw) rotate(30deg)';
-          cardElement.style.opacity = '0';
-          
-          // Animate Yes button
-          yesBtn.style.transform = 'scale(1.1)';
-          yesBtn.style.backgroundColor = '#45a049';
-          setTimeout(() => {
-            yesBtn.style.transform = '';
-            yesBtn.style.backgroundColor = '';
-          }, 200);
-          
-          // Record answer after animation starts
-          setTimeout(() => recordAnswer(true), 50);
-        } else {
-          // Swipe left = No - card flies LEFT off screen
-          cardElement.style.transform = 'translateX(-100vw) rotate(-30deg)';
-          cardElement.style.opacity = '0';
-          
-          // Animate No button
-          noBtn.style.transform = 'scale(1.1)';
-          noBtn.style.backgroundColor = '#da190b';
-          setTimeout(() => {
-            noBtn.style.transform = '';
-            noBtn.style.backgroundColor = '';
-          }, 200);
-          
-          // Record answer after animation starts
-          setTimeout(() => recordAnswer(false), 50);
-        }
+      if (Math.abs(deltaX) > 100) {
+        // Swipe detected
+        const isYes = deltaX > 0;
+        animateCardExit(isYes);
+        setTimeout(() => recordAnswer(isYes), 300);
       } else {
-        // Reset card if swipe wasn't strong enough
-        cardElement.style.transition = 'all 0.3s ease';
-        cardElement.style.transform = '';
-        cardElement.style.opacity = '';
-        cardElement.style.position = '';
-        cardElement.style.zIndex = '';
-        cardElement.style.top = '';
-        cardElement.style.left = '';
+        // Snap back
+        currentCard.style.transform = '';
+        currentCard.style.opacity = '';
       }
       
-      cardElement = null;
+      startX = null;
+      startY = null;
     }
     
-    // Add touch event listeners
-    document.addEventListener('touchstart', handleTouchStart, { passive: false });
-    document.addEventListener('touchmove', handleTouchMove, { passive: false });
-    document.addEventListener('touchend', handleTouchEnd, { passive: false });
+    function handleMouseDown(e) {
+      e.preventDefault();
+      startX = e.clientX;
+      startY = e.clientY;
+    }
+    
+    function handleMouseMove(e) {
+      if (!startX || !currentCard) return;
+      
+      const deltaX = e.clientX - startX;
+      currentCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX * 0.1}deg)`;
+      currentCard.style.opacity = Math.max(0.3, 1 - Math.abs(deltaX) / 300);
+    }
+    
+    function handleMouseUp(e) {
+      if (!startX || !currentCard) return;
+      
+      const deltaX = e.clientX - startX;
+      
+      if (Math.abs(deltaX) > 100) {
+        // Swipe detected
+        const isYes = deltaX > 0;
+        animateCardExit(isYes);
+        setTimeout(() => recordAnswer(isYes), 300);
+      } else {
+        // Snap back
+        currentCard.style.transform = '';
+        currentCard.style.opacity = '';
+      }
+      
+      startX = null;
+      startY = null;
+    }
+    
+    function animateCardExit(isYes) {
+      if (!currentCard) return;
+      
+      const direction = isYes ? 1 : -1;
+      currentCard.style.transform = `translateX(${direction * 400}px) rotate(${direction * 30}deg)`;
+      currentCard.style.opacity = '0';
+      currentCard.style.transition = 'all 0.3s ease-out';
+      
+      // Visual feedback on buttons
+      if (isYes) {
+        yesBtn.style.background = '#66bb6a';
+        yesBtn.style.transform = 'scale(1.1)';
+      } else {
+        noBtn.style.background = '#ef5350';
+        noBtn.style.transform = 'scale(1.1)';
+      }
+      
+      setTimeout(() => {
+        if (yesBtn) {
+          yesBtn.style.background = '';
+          yesBtn.style.transform = '';
+        }
+        if (noBtn) {
+          noBtn.style.background = '';
+          noBtn.style.transform = '';
+        }
+      }, 200);
+    }
+    
+    // ...existing code...
   })();
   </script>
 </body>

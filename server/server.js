@@ -282,6 +282,99 @@ app.get('/api/stats', async (req, res) => {
   }
 });
 
+// Benchmarking endpoint - Calculate user's percentile ranking
+app.post('/api/benchmarks', async (req, res) => {
+  console.log('📊 Benchmark request received:', JSON.stringify(req.body, null, 2));
+  
+  const { ihsScore, domainScores } = req.body;
+  
+  if (!ihsScore || !domainScores) {
+    return res.status(400).json({ error: 'IHS score and domain scores are required' });
+  }
+  
+  try {
+    const client = await pool.connect();
+    
+    try {
+      // Calculate overall IHS percentile
+      const ihsPercentileQuery = `
+        SELECT 
+          COUNT(*) as total_responses,
+          COUNT(CASE WHEN ihs_score < $1 THEN 1 END) as lower_scores
+        FROM scan_responses 
+        WHERE ihs_score IS NOT NULL
+      `;
+      
+      const ihsResult = await client.query(ihsPercentileQuery, [ihsScore]);
+      const totalResponses = parseInt(ihsResult.rows[0].total_responses);
+      const lowerScores = parseInt(ihsResult.rows[0].lower_scores);
+      
+      let ihsPercentile = 0;
+      if (totalResponses > 0) {
+        ihsPercentile = Math.round((lowerScores / totalResponses) * 100);
+      }
+      
+      // Skip domain percentiles for now since domain_scores column doesn't exist
+      const domainPercentiles = {};
+      
+      // Get some additional context stats
+      const contextQuery = `
+        SELECT 
+          AVG(ihs_score) as avg_ihs,
+          STDDEV(ihs_score) as stddev_ihs,
+          MIN(ihs_score) as min_ihs,
+          MAX(ihs_score) as max_ihs
+        FROM scan_responses 
+        WHERE ihs_score IS NOT NULL
+      `;
+      
+      const contextResult = await client.query(contextQuery);
+      const stats = contextResult.rows[0];
+      
+      // Generate contextual messages
+      const generateMessage = (percentile, score, avgScore) => {
+        if (percentile >= 90) {
+          return `Outstanding! You're in the top ${100 - percentile}% - that's exceptional happiness levels! 🌟`;
+        } else if (percentile >= 75) {
+          return `Great news! You're happier than ${percentile}% of people who took this scan 😊`;
+        } else if (percentile >= 50) {
+          return `You're doing well - happier than ${percentile}% of people, with room to grow 🌱`;
+        } else if (percentile >= 25) {
+          return `Your happiness is ${percentile}th percentile - there's opportunity to flourish 💪`;
+        } else {
+          return `You're at the ${percentile}th percentile - every small step towards happiness counts 🌈`;
+        }
+      };
+      
+      const response = {
+        benchmark: {
+          totalResponses,
+          ihsScore,
+          ihsPercentile,
+          domainPercentiles,
+          message: generateMessage(ihsPercentile, ihsScore, parseFloat(stats.avg_ihs)),
+          context: {
+            averageScore: stats.avg_ihs ? Math.round(parseFloat(stats.avg_ihs) * 10) / 10 : null,
+            minScore: stats.min_ihs ? Math.round(parseFloat(stats.min_ihs) * 10) / 10 : null,
+            maxScore: stats.max_ihs ? Math.round(parseFloat(stats.max_ihs) * 10) / 10 : null,
+            standardDeviation: stats.stddev_ihs ? Math.round(parseFloat(stats.stddev_ihs) * 10) / 10 : null
+          }
+        }
+      };
+      
+      console.log('📈 Benchmark calculated:', JSON.stringify(response, null, 2));
+      res.json(response);
+      
+    } finally {
+      client.release();
+    }
+    
+  } catch (err) {
+    console.error('Error calculating benchmark:', err);
+    res.status(500).json({ error: 'Failed to calculate benchmark' });
+  }
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
