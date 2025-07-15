@@ -1509,14 +1509,16 @@
       const swipeThreshold = 80;
       
       if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
-        // Fast, clean card exit animation
-        cardElement.style.transition = 'all 0.3s ease-out';
-        cardElement.style.position = 'relative';
-        cardElement.style.zIndex = '1000';
+        // Break the card out of its container completely
+        cardElement.style.position = 'fixed';
+        cardElement.style.zIndex = '9999';
+        cardElement.style.top = cardElement.getBoundingClientRect().top + 'px';
+        cardElement.style.left = cardElement.getBoundingClientRect().left + 'px';
+        cardElement.style.transition = 'all 0.4s ease-out';
         
         if (deltaX > 0) {
-          // Swipe right = Yes - card flies RIGHT
-          cardElement.style.transform = 'translateX(400px) rotate(20deg)';
+          // Swipe right = Yes - card flies RIGHT off screen
+          cardElement.style.transform = 'translateX(100vw) rotate(30deg)';
           cardElement.style.opacity = '0';
           
           // Animate Yes button
@@ -1530,8 +1532,8 @@
           // Record answer after animation starts
           setTimeout(() => recordAnswer(true), 50);
         } else {
-          // Swipe left = No - card flies LEFT
-          cardElement.style.transform = 'translateX(-400px) rotate(-20deg)';
+          // Swipe left = No - card flies LEFT off screen
+          cardElement.style.transform = 'translateX(-100vw) rotate(-30deg)';
           cardElement.style.opacity = '0';
           
           // Animate No button
@@ -1552,6 +1554,8 @@
         cardElement.style.opacity = '';
         cardElement.style.position = '';
         cardElement.style.zIndex = '';
+        cardElement.style.top = '';
+        cardElement.style.left = '';
       }
       
       cardElement = null;
