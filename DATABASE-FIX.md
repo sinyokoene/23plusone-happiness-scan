@@ -32,7 +32,7 @@ Your Vercel deployment is missing the DATABASE_URL environment variable.
 ## CURRENT STATUS:
 ✅ Frontend working (scan shows results)
 ✅ API server running (health check OK)
-❌ Database connection missing (stats API fails)
+🔄 Testing transaction pooler connection...
 ❌ Scan responses not saving (500 error)
 
-The fix is just adding that one environment variable!
+The fix is using the transaction pooler connection string!
