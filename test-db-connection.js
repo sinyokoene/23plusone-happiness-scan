@@ -2,7 +2,7 @@
 const { Pool } = require('pg');
 
 // Replace with your actual DATABASE_URL
-const DATABASE_URL = 'postgresql://postgres.owlgsgtlupuwdfvafv:YOUR_PASSWORD@aws-0-us-west-1.pooler.supabase.co:6543/postgres';
+const DATABASE_URL = 'postgresql://postgres.owtgssgttupuwdfdvafv:23PlusoneSUPA@aws-0-eu-west-3.pooler.supabase.com:6543/postgres';
 
 const pool = new Pool({
   connectionString: DATABASE_URL,

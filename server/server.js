@@ -4,6 +4,7 @@ const { Pool } = require('pg');
 const path = require('path');
 const cors = require('cors');
 
+// Force deployment update - July 15, 2025
 const app = express();
 
 // CORS configuration for iframe embedding
