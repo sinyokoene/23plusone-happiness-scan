@@ -117,9 +117,24 @@
     
     #timerProgress {
       height: 100%;
-      background: linear-gradient(90deg, #4CAF50, #FF9800, #F44336);
+      background: #4CAF50; /* Start with green */
       width: 100%;
-      transition: width 4s linear;
+      transition: width 4s linear, background-color 0.3s ease;
+      border-radius: 4px;
+    }
+    
+    #timerProgress.warning {
+      background: #FF9800 !important; /* Orange when time is running low */
+    }
+    
+    #timerProgress.danger {
+      background: #F44336 !important; /* Red when almost out of time */
+      animation: pulse 0.5s infinite alternate;
+    }
+    
+    @keyframes pulse {
+      from { opacity: 0.7; }
+      to { opacity: 1.0; }
     }
     
     #timerText {
@@ -387,6 +402,7 @@
     const practiceIndicator = document.getElementById('practiceIndicator');
     const timerContainer = document.getElementById('timerContainer');
     const timerProgress = document.getElementById('timerProgress');
+    const timerText = document.getElementById('timerText');
     const buttonsDiv = document.querySelector('.buttons');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
@@ -458,12 +474,30 @@
       // Reset timer
       timerProgress.style.transition = 'none';
       timerProgress.style.width = '100%';
+      timerProgress.className = ''; // Remove any existing classes
+      timerProgress.style.background = '#4CAF50'; // Start with green
+      timerText.textContent = 'Time remaining';
+      timerText.style.color = '#666';
       
       // Start countdown
       setTimeout(() => {
-        timerProgress.style.transition = 'width 4s linear';
+        timerProgress.style.transition = 'width 4s linear, background-color 0.3s ease';
         timerProgress.style.width = '0%';
       }, 50);
+      
+      // Color changes during countdown
+      setTimeout(() => {
+        timerProgress.className = 'warning'; // Orange at 2 seconds remaining
+        timerText.textContent = 'Time running out...';
+        timerText.style.color = '#FF9800';
+      }, 2000);
+      
+      setTimeout(() => {
+        timerProgress.className = 'danger'; // Red + pulse at 1 second remaining
+        timerText.textContent = 'Almost out of time!';
+        timerText.style.color = '#F44336';
+        timerText.style.fontWeight = 'bold';
+      }, 3000);
       
       // Auto-submit "No" after 4 seconds
       timerInterval = setTimeout(() => {
