@@ -97,34 +97,24 @@ function validateScanQuality(cardSelections, completionTime) {
     return { isValid: false, reason: `Incomplete scan: ${totalResponses}/24 responses` };
   }
   
-  // Reject all "No" responses (0 selected)
+  // Reject all "No" responses (0 selected) - clearly not engaging
   if (selectedCount === 0) {
     return { isValid: false, reason: 'All responses were "No" - likely not engaging properly' };
   }
   
-  // Reject all "Yes" responses (24 selected)
+  // Reject all "Yes" responses (24 selected) - clearly clicking through
   if (selectedCount === 24) {
     return { isValid: false, reason: 'All responses were "Yes" - likely clicking through' };
   }
   
-  // Check for suspiciously fast completion
-  if (completionTime && completionTime < 30) {
-    return { isValid: false, reason: `Too fast completion: ${completionTime}s (minimum 30s expected)` };
+  // Only check for EXTREMELY fast completion (inhuman speed)
+  // 24 cards × 4 seconds = 96 seconds minimum if auto-timeout on every card
+  // Allow much faster for humans who click quickly
+  if (completionTime && completionTime < 20) {
+    return { isValid: false, reason: `Inhuman completion speed: ${completionTime}s (minimum 20s)` };
   }
   
-  // Check for suspiciously fast individual responses
-  const avgResponseTime = responses.reduce((sum, r) => sum + (r.responseTime || 0), 0) / responses.length;
-  if (avgResponseTime < 500) {
-    return { isValid: false, reason: `Average response time too fast: ${Math.round(avgResponseTime)}ms` };
-  }
-  
-  // Check for too many extremely fast responses (< 300ms)
-  const veryFastResponses = responses.filter(r => (r.responseTime || 0) < 300).length;
-  if (veryFastResponses > 18) { // Allow some fast responses, but not most
-    return { isValid: false, reason: `Too many very fast responses: ${veryFastResponses}/24` };
-  }
-  
-  // All validation passed
+  // All validation passed - allow normal human variations in speed
   return { isValid: true, reason: 'Valid response' };
 }
 
