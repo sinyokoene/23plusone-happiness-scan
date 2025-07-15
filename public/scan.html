@@ -387,6 +387,7 @@
     let startTime = 0;
     let timerInterval = null;
     let timerTimeouts = []; // Track all timer-related timeouts
+    let timerActive = false; // Flag to prevent timer conflicts
     let isPractice = true;
     
     // DOM elements
@@ -475,7 +476,10 @@
       timerTimeouts.forEach(timeout => clearTimeout(timeout));
       timerTimeouts = [];
       
-      // Reset timer
+      // Set timer as active
+      timerActive = true;
+      
+      // Reset timer immediately
       timerProgress.style.transition = 'none';
       timerProgress.style.width = '100%';
       timerProgress.className = ''; // Remove any existing classes
@@ -484,23 +488,26 @@
       timerText.style.color = '#666';
       timerText.style.fontWeight = 'normal';
       
-      // Start countdown
+      // Start countdown after a tiny delay
       const timeout1 = setTimeout(() => {
+        if (!timerActive) return; // Don't execute if timer was stopped
         timerProgress.style.transition = 'width 4s linear, background-color 0.3s ease';
         timerProgress.style.width = '0%';
       }, 50);
       timerTimeouts.push(timeout1);
       
-      // Color changes during countdown
+      // Color changes during countdown - only if timer still active
       const timeout2 = setTimeout(() => {
-        timerProgress.className = 'warning'; // Orange at 2 seconds remaining
+        if (!timerActive) return;
+        timerProgress.className = 'warning';
         timerText.textContent = 'Time running out...';
         timerText.style.color = '#FF9800';
       }, 2000);
       timerTimeouts.push(timeout2);
       
       const timeout3 = setTimeout(() => {
-        timerProgress.className = 'danger'; // Red + pulse at 1 second remaining
+        if (!timerActive) return;
+        timerProgress.className = 'danger';
         timerText.textContent = 'Almost out of time!';
         timerText.style.color = '#F44336';
         timerText.style.fontWeight = 'bold';
@@ -509,11 +516,15 @@
       
       // Auto-submit "No" after 4 seconds
       timerInterval = setTimeout(() => {
+        if (!timerActive) return;
         recordAnswer(false);
       }, 4000);
     }
     
     function recordAnswer(isYes) {
+      // Stop timer immediately
+      timerActive = false;
+      
       // Clear main timer
       if (timerInterval) {
         clearTimeout(timerInterval);
@@ -604,9 +615,9 @@
         return { isValid: false, reason: 'You said "Yes" to everything. Please retake the scan and be more selective.' };
       }
       
-      // Only check for EXTREMELY fast completion (removed individual response time checks)
+      // Only reject truly inhuman speeds - someone could click through 24 cards very quickly
       const totalTime = answers.length > 0 ? (Date.now() - startTime) / 1000 : 0;
-      if (totalTime < 5) {
+      if (totalTime < 2) {
         return { isValid: false, reason: 'Completion was extremely fast. Please retake and view each image carefully.' };
       }
       
