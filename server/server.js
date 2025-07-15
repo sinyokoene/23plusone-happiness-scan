@@ -83,8 +83,18 @@ app.get('/api/debug', async (req, res) => {
 
 // Validation function to prevent spam and invalid responses
 function validateScanQuality(cardSelections, completionTime) {
+  console.log('🔍 Validating scan:', {
+    hasCardSelections: !!cardSelections,
+    hasAllResponses: !!cardSelections?.allResponses,
+    isArray: Array.isArray(cardSelections?.allResponses),
+    responsesLength: cardSelections?.allResponses?.length,
+    selectedLength: cardSelections?.selected?.length,
+    completionTime
+  });
+
   // Check if we have the required data structure
   if (!cardSelections || !cardSelections.allResponses || !Array.isArray(cardSelections.allResponses)) {
+    console.log('❌ Missing response data structure');
     return { isValid: false, reason: 'Missing response data' };
   }
   
@@ -92,27 +102,38 @@ function validateScanQuality(cardSelections, completionTime) {
   const selectedCount = cardSelections.selected?.length || 0;
   const totalResponses = responses.length;
   
+  console.log('📊 Scan details:', {
+    totalResponses,
+    selectedCount,
+    completionTime: `${completionTime}s`
+  });
+  
   // Must have 24 responses (full scan)
   if (totalResponses !== 24) {
+    console.log('❌ Incomplete scan');
     return { isValid: false, reason: `Incomplete scan: ${totalResponses}/24 responses` };
   }
   
   // Reject all "No" responses (0 selected) - clearly not engaging
   if (selectedCount === 0) {
+    console.log('❌ All No responses');
     return { isValid: false, reason: 'All responses were "No" - likely not engaging properly' };
   }
   
   // Reject all "Yes" responses (24 selected) - clearly clicking through
   if (selectedCount === 24) {
+    console.log('❌ All Yes responses');
     return { isValid: false, reason: 'All responses were "Yes" - likely clicking through' };
   }
   
   // Allow fast individual clicks but prevent completing entire scan too quickly
   // Someone can click very fast on each card, but completing all 24 cards in under 5s is suspicious
   if (completionTime && completionTime < 5) {
+    console.log('❌ Too fast completion');
     return { isValid: false, reason: `Scan completed too quickly: ${completionTime}s (minimum 5s for 24 cards)` };
   }
   
+  console.log('✅ Validation passed');
   // All validation passed - allow normal human variations in speed
   return { isValid: true, reason: 'Valid response' };
 }

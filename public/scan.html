@@ -385,6 +385,7 @@
     let currentCardIndex = 0;
     let answers = [];
     let startTime = 0;
+    let scanStartTime = 0; // Track start of entire scan
     let timerInterval = null;
     let timerTimeouts = []; // Track all timer-related timeouts
     let timerActive = false; // Flag to prevent timer conflicts
@@ -427,6 +428,7 @@
       
       currentCardIndex = 0;
       answers = [];
+      scanStartTime = Date.now(); // Record start of entire scan
       showCard();
     }
     
@@ -461,7 +463,7 @@
       // Reset and start timer
       startTimer();
       
-      // Record start time
+      // Record start time for individual card response time
       startTime = Date.now();
     }
     
@@ -599,28 +601,41 @@
     function validateScanQuality() {
       const selectedCount = answers.filter(a => a.yes).length;
       const totalResponses = answers.length;
+      const totalTime = scanStartTime > 0 ? (Date.now() - scanStartTime) / 1000 : 0; // Use scan start time
+      
+      console.log('🔍 Frontend validation:', {
+        totalResponses,
+        selectedCount,
+        totalTime: `${totalTime}s`,
+        scanStartTime,
+        now: Date.now()
+      });
       
       // Must have 24 responses
       if (totalResponses !== 24) {
+        console.log('❌ Frontend: Incomplete scan');
         return { isValid: false, reason: `Incomplete scan: only ${totalResponses} responses recorded.` };
       }
       
       // Reject all "No" responses
       if (selectedCount === 0) {
+        console.log('❌ Frontend: All No responses');
         return { isValid: false, reason: 'You said "No" to everything. Please retake the scan and engage more thoughtfully.' };
       }
       
       // Reject all "Yes" responses  
       if (selectedCount === 24) {
+        console.log('❌ Frontend: All Yes responses');
         return { isValid: false, reason: 'You said "Yes" to everything. Please retake the scan and be more selective.' };
       }
       
       // Allow fast individual clicks but prevent completing entire scan too quickly
-      const totalTime = answers.length > 0 ? (Date.now() - startTime) / 1000 : 0;
       if (totalTime < 5) {
+        console.log('❌ Frontend: Too fast completion');
         return { isValid: false, reason: 'Scan completed too quickly. Please take more time to view each image.' };
       }
       
+      console.log('✅ Frontend validation passed');
       return { isValid: true, reason: 'Valid scan' };
     }
     
@@ -719,7 +734,7 @@
         n1Score: 0, // Will be calculated properly when full IHS algorithm is implemented
         n2Score: 0,
         n3Score: 0,
-        completionTime: answers.length > 0 ? Math.round((Date.now() - startTime) / 1000) : 0,
+        completionTime: scanStartTime > 0 ? Math.round((Date.now() - scanStartTime) / 1000) : 0,
         userAgent: navigator.userAgent,
         totalCards: answers.length, // Should be 24
         selectedCount: cardSelections.selected.length,
