@@ -229,6 +229,7 @@
     #yesBtn {
       background: #4CAF50;
       color: white;
+      transition: all 0.2s ease;
     }
     
     #yesBtn:hover {
@@ -239,6 +240,7 @@
     #noBtn {
       background: #f44336;
       color: white;
+      transition: all 0.2s ease;
     }
     
     #noBtn:hover {
@@ -1498,23 +1500,50 @@
       const deltaX = touchEndX - touchStartX;
       const deltaY = touchEndY - touchStartY;
       
-      // Reset card styles
-      cardElement.style.transition = 'all 0.3s ease';
-      cardElement.style.transform = '';
-      cardElement.style.opacity = '';
-      cardElement.style.boxShadow = '0 12px 24px rgba(0,0,0,0.15)';
-      
       // Determine swipe direction and threshold
       const swipeThreshold = 80;
       
       if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
+        // Animate card exit
+        cardElement.style.transition = 'all 0.5s ease-out';
+        
         if (deltaX > 0) {
-          // Swipe right = Yes
-          recordAnswer(true);
+          // Swipe right = Yes - animate card flying off to the right
+          cardElement.style.transform = 'translateX(400px) rotate(30deg)';
+          cardElement.style.opacity = '0';
+          
+          // Animate Yes button
+          yesBtn.style.transform = 'scale(1.1)';
+          yesBtn.style.backgroundColor = '#45a049';
+          setTimeout(() => {
+            yesBtn.style.transform = '';
+            yesBtn.style.backgroundColor = '';
+          }, 200);
+          
+          // Record answer after animation starts
+          setTimeout(() => recordAnswer(true), 100);
         } else {
-          // Swipe left = No
-          recordAnswer(false);
+          // Swipe left = No - animate card flying off to the left
+          cardElement.style.transform = 'translateX(-400px) rotate(-30deg)';
+          cardElement.style.opacity = '0';
+          
+          // Animate No button
+          noBtn.style.transform = 'scale(1.1)';
+          noBtn.style.backgroundColor = '#da190b';
+          setTimeout(() => {
+            noBtn.style.transform = '';
+            noBtn.style.backgroundColor = '';
+          }, 200);
+          
+          // Record answer after animation starts
+          setTimeout(() => recordAnswer(false), 100);
         }
+      } else {
+        // Reset card if swipe wasn't strong enough
+        cardElement.style.transition = 'all 0.3s ease';
+        cardElement.style.transform = '';
+        cardElement.style.opacity = '';
+        cardElement.style.boxShadow = '0 12px 24px rgba(0,0,0,0.15)';
       }
       
       cardElement = null;
