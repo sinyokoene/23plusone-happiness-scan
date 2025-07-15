@@ -13,7 +13,7 @@
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%); /* Updated to pink brand colors */
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -49,7 +49,7 @@
     
     #progressBar {
       height: 100%;
-      background: linear-gradient(90deg, #667eea, #764ba2);
+      background: linear-gradient(90deg, #e91e63, #ad1457); /* Updated to pink brand colors */
       width: 0%;
       transition: width 0.3s ease;
     }
@@ -202,7 +202,7 @@
     #totalScore {
       font-size: 48px;
       font-weight: bold;
-      color: #667eea;
+      color: #e91e63; /* Updated to pink brand color */
       margin: 20px 0;
     }
     
@@ -238,7 +238,7 @@
     }
     
     .domain-count {
-      color: #667eea;
+      color: #e91e63; /* Updated to pink brand color */
       font-weight: 600;
     }
     
@@ -247,7 +247,7 @@
     }
     
     #shareBtn {
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%); /* Updated to pink brand colors */
       color: white;
       padding: 15px 30px;
       border: none;
@@ -307,6 +307,13 @@
       display: inline-block;
     }
     
+    .brand-logo {
+      width: 120px;
+      height: auto;
+      margin-bottom: 15px;
+      opacity: 0.9;
+    }
+    
     @media (max-width: 480px) {
       .container {
         padding: 10px;
@@ -336,6 +343,8 @@
 <body>
   <div class="container">
     <div id="game">
+      <img src="23plusone-logo.svg" alt="23plusone" class="brand-logo">
+      
       <div id="progress">
         <div id="progressBar"></div>
       </div>
@@ -364,6 +373,7 @@
     </div>
 
     <div id="results" style="display: none;">
+      <img src="23plusone-logo.svg" alt="23plusone" class="brand-logo">
       <h2>Your Happiness Scan Results</h2>
       <div id="totalScore">--</div>
       <div id="ihsLabel">Individual Happiness Score (IHS)</div>
@@ -654,7 +664,7 @@
         <div style="text-align: center; color: #F44336; padding: 20px;">
           <h3 style="color: #F44336; margin-bottom: 15px;">⚠️ Invalid Scan</h3>
           <p style="margin-bottom: 20px;">${reason}</p>
-          <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">
+          <button onclick="location.reload()" style="background: #e91e63; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">
             Retake Scan
           </button>
         </div>
