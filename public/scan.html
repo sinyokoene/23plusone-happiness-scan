@@ -65,31 +65,29 @@
       margin: 20px 0;
     }
     
-    #cardLabel {
-      font-size: 24px;
-      font-weight: 600;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    
     #cardImages {
       display: flex;
       justify-content: center;
       align-items: center;
       margin: 20px 0;
-      min-height: 200px;
+      min-height: 250px; /* Increased height for better visual focus */
     }
     
     .card-image {
       max-width: 100%;
-      max-height: 200px;
+      max-height: 250px; /* Increased from 200px for better visibility */
       width: auto;
       height: auto;
       border-radius: 15px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15); /* Enhanced shadow for focus */
       opacity: 0;
       animation: fadeInUp 0.6s ease forwards;
       object-fit: contain;
+      transition: transform 0.2s ease; /* Add subtle hover effect */
+    }
+    
+    .card-image:hover {
+      transform: scale(1.02); /* Subtle zoom on hover */
     }
     
     @keyframes fadeInUp {
@@ -319,12 +317,8 @@
         min-height: 450px;
       }
       
-      #cardLabel {
-        font-size: 20px;
-      }
-      
-      .card-emoji {
-        font-size: 35px;
+      .card-image {
+        max-height: 180px; /* Slightly smaller on mobile */
       }
       
       button {
@@ -450,11 +444,10 @@
       // Show/hide practice indicator
       practiceIndicator.style.display = isPractice ? 'block' : 'none';
       
-      // Display card
+      // Display card (visual only - no text labels)
       cardDiv.innerHTML = `
-        <div id="cardLabel">${card.label}</div>
         <div id="cardImages">
-          <img src="${card.images[0]}" alt="${card.label}" class="card-image" 
+          <img src="${card.images[0]}" alt="Happiness card" class="card-image" 
                onerror="this.style.display='none'">
         </div>
       `;
