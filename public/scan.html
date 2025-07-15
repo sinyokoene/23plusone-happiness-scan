@@ -420,11 +420,21 @@
       // Shuffle cards
       const shuffled = [...cards].sort(() => Math.random() - 0.5);
       
-      // Create deck: 4 practice + 24 real cards
+      console.log('📋 Total cards available:', cards.length);
+      console.log('🔀 Cards after shuffle:', shuffled.length);
+      
+      // Create deck: 4 practice cards + all 24 cards for real scan
+      // Practice cards are separate from the real scan cards
       deck = [
         ...shuffled.slice(0, 4).map(card => ({...card, isPractice: true})),
-        ...shuffled.slice(4, 28).map(card => ({...card, isPractice: false}))
+        ...shuffled.slice(0, 24).map(card => ({...card, isPractice: false})) // Use all 24 cards for real scan
       ];
+      
+      console.log('🎯 Deck created:', {
+        total: deck.length,
+        practice: deck.filter(c => c.isPractice).length,
+        real: deck.filter(c => !c.isPractice).length
+      });
       
       currentCardIndex = 0;
       answers = [];
