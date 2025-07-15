@@ -570,10 +570,31 @@
     }
     
     function submitResults(ihs) {
+      // Create proper card selections format
+      const cardSelections = {
+        domains: [],
+        selected: []
+      };
+      
+      // Process answers to get selected cards and domains
+      answers.forEach(answer => {
+        if (answer.answer) {
+          cardSelections.selected.push(answer.cardId);
+          if (!cardSelections.domains.includes(answer.domain)) {
+            cardSelections.domains.push(answer.domain);
+          }
+        }
+      });
+      
       const payload = {
-        timestamp: new Date().toISOString(),
-        responses: answers,
-        ihs: ihs
+        sessionId: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        cardSelections: cardSelections,
+        ihsScore: ihs,
+        n1Score: 0, // Will be calculated properly when full IHS algorithm is implemented
+        n2Score: 0,
+        n3Score: 0,
+        completionTime: answers.length > 0 ? Math.round((Date.now() - startTime) / 1000) : 0,
+        userAgent: navigator.userAgent
       };
       
       fetch('/api/responses', {
@@ -583,7 +604,9 @@
       })
       .then(response => {
         if (!response.ok) {
-          console.warn('Failed to submit results');
+          console.warn('Failed to submit results:', response.status);
+        } else {
+          console.log('Results submitted successfully');
         }
       })
       .catch(err => {
