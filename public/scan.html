@@ -698,13 +698,13 @@
       });
       
       // Submit to backend
-      submitResults(results.ihs);
+      submitResults(results);
       
       // Setup sharing
-      setupSharing(results.ihs);
+      setupSharing(results);
     }
     
-    function submitResults(ihs) {
+    function submitResults(results) {
       // Create complete card selections with ALL responses
       const cardSelections = {
         domains: [],
@@ -740,10 +740,10 @@
       const payload = {
         sessionId: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         cardSelections: cardSelections,
-        ihsScore: ihs,
-        n1Score: 0, // Will be calculated properly when full IHS algorithm is implemented
-        n2Score: 0,
-        n3Score: 0,
+        ihsScore: results.ihs,
+        n1Score: results.n1, // Now properly sending calculated N1 score
+        n2Score: results.n2, // Now properly sending calculated N2 score
+        n3Score: results.n3, // Now properly sending calculated N3 score
         completionTime: scanStartTime > 0 ? Math.round((Date.now() - scanStartTime) / 1000) : 0,
         userAgent: navigator.userAgent,
         totalCards: answers.length, // Should be 24
@@ -755,7 +755,11 @@
         totalResponses: answers.length,
         selectedCards: cardSelections.selected.length,
         rejectedCards: cardSelections.rejected.length,
-        domains: cardSelections.domains.length
+        domains: cardSelections.domains.length,
+        ihsScore: results.ihs,
+        n1Score: results.n1,
+        n2Score: results.n2,
+        n3Score: results.n3
       });
       
       fetch('/api/responses', {
@@ -775,13 +779,13 @@
       });
     }
     
-    function setupSharing(ihs) {
+    function setupSharing(results) {
       const shareBtn = document.getElementById('shareBtn');
       const socialLinks = document.getElementById('socialLinks');
       const tweetLink = document.getElementById('tweetLink');
       const fbLink = document.getElementById('fbLink');
       
-      const shareText = `I just completed the 23plusone Happiness Scan and scored ${ihs}! Discover what drives your happiness.`;
+      const shareText = `I just completed the 23plusone Happiness Scan and scored ${results.ihs}! Discover what drives your happiness.`;
       const shareUrl = window.location.href;
       
       // Setup share button
