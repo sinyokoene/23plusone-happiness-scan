@@ -575,10 +575,36 @@
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
     }
     
-    /* Smaller logo on results page */
-    #results .brand-logo {
-      width: 100px;
-      margin: 0 auto 15px auto;
+    /* Swipe instructions for mobile */
+    .swipe-hint {
+      display: none;
+      font-size: 14px;
+      color: #888;
+      text-align: center;
+      margin-top: 10px;
+      font-style: italic;
+    }
+    
+    @media (max-width: 768px) and (pointer: coarse) {
+      .swipe-hint {
+        display: block;
+      }
+      
+      .buttons {
+        margin-top: 30px;
+      }
+      
+      .card-image {
+        cursor: grab;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+      
+      .card-image:active {
+        cursor: grabbing;
+      }
     }
     
     /* Mobile Improvements */
@@ -910,6 +936,7 @@
           <img src="${card.images[0]}" alt="Happiness card" class="card-image" 
                onerror="this.style.display='none'">
         </div>
+        <div class="swipe-hint">Swipe right for Yes, left for No</div>
       `;
       
       // Show timer and buttons
@@ -1412,6 +1439,91 @@
         }
       }
     });
+    
+    // Touch/Swipe support for mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+    let cardElement = null;
+    
+    function handleTouchStart(e) {
+      if (gameDiv.style.display === 'none') return;
+      
+      touchStartX = e.changedTouches[0].screenX;
+      touchStartY = e.changedTouches[0].screenY;
+      cardElement = e.target.closest('.card-image');
+      
+      if (cardElement) {
+        cardElement.style.transition = 'none';
+      }
+    }
+    
+    function handleTouchMove(e) {
+      if (gameDiv.style.display === 'none' || !cardElement) return;
+      
+      const currentX = e.changedTouches[0].screenX;
+      const currentY = e.changedTouches[0].screenY;
+      const deltaX = currentX - touchStartX;
+      const deltaY = currentY - touchStartY;
+      
+      // Only handle horizontal swipes (ignore vertical scrolling)
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > 10) {
+        e.preventDefault();
+        
+        // Apply transform and visual feedback
+        const rotation = deltaX * 0.1;
+        const opacity = Math.max(0.7, 1 - Math.abs(deltaX) / 300);
+        
+        cardElement.style.transform = `translateX(${deltaX}px) rotate(${rotation}deg)`;
+        cardElement.style.opacity = opacity;
+        
+        // Add color overlay based on swipe direction
+        if (deltaX > 50) {
+          cardElement.style.boxShadow = '0 12px 24px rgba(76, 175, 80, 0.3)'; // Green for Yes
+        } else if (deltaX < -50) {
+          cardElement.style.boxShadow = '0 12px 24px rgba(244, 67, 54, 0.3)'; // Red for No
+        } else {
+          cardElement.style.boxShadow = '0 12px 24px rgba(0,0,0,0.15)'; // Default
+        }
+      }
+    }
+    
+    function handleTouchEnd(e) {
+      if (gameDiv.style.display === 'none' || !cardElement) return;
+      
+      touchEndX = e.changedTouches[0].screenX;
+      touchEndY = e.changedTouches[0].screenY;
+      
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+      
+      // Reset card styles
+      cardElement.style.transition = 'all 0.3s ease';
+      cardElement.style.transform = '';
+      cardElement.style.opacity = '';
+      cardElement.style.boxShadow = '0 12px 24px rgba(0,0,0,0.15)';
+      
+      // Determine swipe direction and threshold
+      const swipeThreshold = 80;
+      
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > swipeThreshold) {
+        if (deltaX > 0) {
+          // Swipe right = Yes
+          recordAnswer(true);
+        } else {
+          // Swipe left = No
+          recordAnswer(false);
+        }
+      }
+      
+      cardElement = null;
+    }
+    
+    // Add touch event listeners
+    document.addEventListener('touchstart', handleTouchStart, { passive: false });
+    document.addEventListener('touchmove', handleTouchMove, { passive: false });
+    document.addEventListener('touchend', handleTouchEnd, { passive: false });
   })();
   </script>
 </body>
