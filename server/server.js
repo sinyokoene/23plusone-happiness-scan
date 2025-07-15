@@ -81,14 +81,71 @@ app.get('/api/debug', async (req, res) => {
   }
 });
 
+// Validation function to prevent spam and invalid responses
+function validateScanQuality(cardSelections, completionTime) {
+  // Check if we have the required data structure
+  if (!cardSelections || !cardSelections.allResponses || !Array.isArray(cardSelections.allResponses)) {
+    return { isValid: false, reason: 'Missing response data' };
+  }
+  
+  const responses = cardSelections.allResponses;
+  const selectedCount = cardSelections.selected?.length || 0;
+  const totalResponses = responses.length;
+  
+  // Must have 24 responses (full scan)
+  if (totalResponses !== 24) {
+    return { isValid: false, reason: `Incomplete scan: ${totalResponses}/24 responses` };
+  }
+  
+  // Reject all "No" responses (0 selected)
+  if (selectedCount === 0) {
+    return { isValid: false, reason: 'All responses were "No" - likely not engaging properly' };
+  }
+  
+  // Reject all "Yes" responses (24 selected)
+  if (selectedCount === 24) {
+    return { isValid: false, reason: 'All responses were "Yes" - likely clicking through' };
+  }
+  
+  // Check for suspiciously fast completion
+  if (completionTime && completionTime < 30) {
+    return { isValid: false, reason: `Too fast completion: ${completionTime}s (minimum 30s expected)` };
+  }
+  
+  // Check for suspiciously fast individual responses
+  const avgResponseTime = responses.reduce((sum, r) => sum + (r.responseTime || 0), 0) / responses.length;
+  if (avgResponseTime < 500) {
+    return { isValid: false, reason: `Average response time too fast: ${Math.round(avgResponseTime)}ms` };
+  }
+  
+  // Check for too many extremely fast responses (< 300ms)
+  const veryFastResponses = responses.filter(r => (r.responseTime || 0) < 300).length;
+  if (veryFastResponses > 18) { // Allow some fast responses, but not most
+    return { isValid: false, reason: `Too many very fast responses: ${veryFastResponses}/24` };
+  }
+  
+  // All validation passed
+  return { isValid: true, reason: 'Valid response' };
+}
+
 // Post a scan response
 app.post('/api/responses', async (req, res) => {
   try {
     const { sessionId, cardSelections, ihsScore, n1Score, n2Score, n3Score, completionTime, userAgent } = req.body;
     
-    // Validation
+    // Basic validation
     if (!sessionId || !cardSelections || typeof ihsScore !== 'number') {
       return res.status(400).json({ error: 'Invalid request format' });
+    }
+    
+    // Quality validation to prevent spam/invalid responses
+    const validationResult = validateScanQuality(cardSelections, completionTime);
+    if (!validationResult.isValid) {
+      console.log(`🚫 Rejected submission: ${validationResult.reason}`, { sessionId, completionTime });
+      return res.status(400).json({ 
+        error: 'Invalid scan submission',
+        reason: validationResult.reason
+      });
     }
     
     const client = await pool.connect();
@@ -112,6 +169,8 @@ app.post('/api/responses', async (req, res) => {
           req.ip || null
         ]
       );
+      
+      console.log(`✅ Valid scan saved: ${sessionId} (${cardSelections.selected?.length || 0} selected)`);
       
       res.status(201).json({ 
         message: 'Response saved successfully',

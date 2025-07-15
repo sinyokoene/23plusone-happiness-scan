@@ -571,8 +571,60 @@
       };
     }
     
+    // Frontend validation to match server-side validation
+    function validateScanQuality() {
+      const selectedCount = answers.filter(a => a.yes).length;
+      const totalResponses = answers.length;
+      
+      // Must have 24 responses
+      if (totalResponses !== 24) {
+        return { isValid: false, reason: `Incomplete scan: only ${totalResponses} responses recorded.` };
+      }
+      
+      // Reject all "No" responses
+      if (selectedCount === 0) {
+        return { isValid: false, reason: 'You said "No" to everything. Please retake the scan and engage more thoughtfully.' };
+      }
+      
+      // Reject all "Yes" responses  
+      if (selectedCount === 24) {
+        return { isValid: false, reason: 'You said "Yes" to everything. Please retake the scan and be more selective.' };
+      }
+      
+      // Check average response time
+      const avgResponseTime = answers.reduce((sum, a) => sum + a.time, 0) / answers.length;
+      if (avgResponseTime < 500) {
+        return { isValid: false, reason: 'Your responses were too fast. Please retake the scan and consider each card carefully.' };
+      }
+      
+      return { isValid: true, reason: 'Valid scan' };
+    }
+    
+    function showValidationError(reason) {
+      cardDiv.innerHTML = `
+        <div style="text-align: center; color: #F44336; padding: 20px;">
+          <h3 style="color: #F44336; margin-bottom: 15px;">⚠️ Invalid Scan</h3>
+          <p style="margin-bottom: 20px;">${reason}</p>
+          <button onclick="location.reload()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">
+            Retake Scan
+          </button>
+        </div>
+      `;
+      
+      // Hide timer and buttons
+      timerContainer.style.display = 'none';
+      buttonsDiv.style.display = 'none';
+    }
+    
     function finishScan() {
       const results = calculateIHS();
+      
+      // Validate scan quality before showing results
+      const validationResult = validateScanQuality();
+      if (!validationResult.isValid) {
+        showValidationError(validationResult.reason);
+        return;
+      }
       
       // Hide game, show results
       gameDiv.style.display = 'none';
@@ -727,4 +779,4 @@
   })();
   </script>
 </body>
-</html> 
+</html>
