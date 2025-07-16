@@ -1765,7 +1765,7 @@
       
       if (currentCard) {
         currentCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX * 0.1}deg)`;
-        currentCard.style.opacity = Math.max(0.3, 1 - Math.abs(deltaX) / 300);
+        // Remove opacity change during swipe - keep cards fully visible
       }
     }
     
@@ -1784,7 +1784,7 @@
       } else {
         // Snap back
         currentCard.style.transform = '';
-        currentCard.style.opacity = '';
+        // Keep opacity at 1 when snapping back
       }
       
       startX = null;
@@ -1802,7 +1802,7 @@
       
       const deltaX = e.clientX - startX;
       currentCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX * 0.1}deg)`;
-      currentCard.style.opacity = Math.max(0.3, 1 - Math.abs(deltaX) / 300);
+      // Remove opacity change during swipe - keep cards fully visible
     }
     
     function handleMouseUp(e) {
@@ -1818,7 +1818,7 @@
       } else {
         // Snap back
         currentCard.style.transform = '';
-        currentCard.style.opacity = '';
+        // Keep opacity at 1 when snapping back
       }
       
       startX = null;
