@@ -119,7 +119,7 @@
     
     #startBtn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.2);
+      box-shadow: none;
     }
     
     #progress {
@@ -721,9 +721,13 @@
       }
       
       #benchmarkStats {
-        grid-template-columns: 1fr;
+        flex-direction: column;
         gap: 15px;
-        max-width: 100%;
+        align-items: center;
+      }
+      
+      .benchmark-item {
+        min-width: 150px;
       }
       
       #resultsHeader h2 {
@@ -782,70 +786,70 @@
       }
       
       #benchmarkStats {
-        grid-template-columns: repeat(2, 1fr);
-        max-width: 500px;
+        gap: 20px;
       }
     }
     
     /* Benchmark Section Styles */
     #benchmarkSection {
       margin: 45px 0;
-      padding: 25px;
-      background: #f8f9ff;
+      padding: 30px;
+      background: #f8f9fa;
       border-radius: 8px;
-      border: 1px solid #e3f2fd;
+      border: 1px solid #e9ecef;
       text-align: center;
     }
     
     #benchmarkSection h3 {
-      color: #2c5aa0;
-      margin-bottom: 15px;
+      color: #333;
+      margin-bottom: 20px;
       font-size: 22px;
       font-weight: 700;
     }
     
     #benchmarkMessage {
-      font-size: 18px;
-      color: #333;
-      margin-bottom: 20px;
-      line-height: 1.6;
-      font-weight: 500;
-      padding: 15px;
-      background: rgba(255,255,255,0.7);
-      border-radius: 6px;
-      border-left: 4px solid #4CAF50;
+      font-size: 24px;
+      color: #e91e63;
+      margin-bottom: 25px;
+      line-height: 1.4;
+      font-weight: 700;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      border: 2px solid #e91e63;
     }
     
     #benchmarkStats {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
       margin-top: 20px;
-      max-width: 600px;
-      margin: 20px auto 0 auto;
+      flex-wrap: wrap;
     }
     
     .benchmark-item {
       background: white;
-      padding: 15px;
+      padding: 12px 20px;
       border-radius: 6px;
-      border: 1px solid #e0e0e0;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      border: 1px solid #e9ecef;
+      min-width: 120px;
     }
     
     .benchmark-label {
       display: block;
-      font-size: 13px;
+      font-size: 12px;
       color: #666;
       font-weight: 600;
-      margin-bottom: 8px;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
     }
     
     .benchmark-value {
       display: block;
-      font-size: 20px;
-      color: #2c5aa0;
-      font-weight: 800;
+      font-size: 16px;
+      color: #333;
+      font-weight: 700;
     }
     
     /* Practice Round Indicator */
@@ -947,7 +951,6 @@
         <div id="domainBars">
           <div class="domain-bar" data-domain="Basics">
             <div class="bar-header">
-              <span class="bar-icon">🌱</span>
               <span class="bar-name">Basics</span>
               <span class="bar-count">0</span>
             </div>
@@ -958,7 +961,6 @@
           
           <div class="domain-bar" data-domain="Self-development">
             <div class="bar-header">
-              <span class="bar-icon">🎨</span>
               <span class="bar-name">Growth</span>
               <span class="bar-count">0</span>
             </div>
@@ -969,7 +971,6 @@
           
           <div class="domain-bar" data-domain="Ambition">
             <div class="bar-header">
-              <span class="bar-icon">🚀</span>
               <span class="bar-name">Ambition</span>
               <span class="bar-count">0</span>
             </div>
@@ -980,7 +981,6 @@
           
           <div class="domain-bar" data-domain="Vitality">
             <div class="bar-header">
-              <span class="bar-icon">💪</span>
               <span class="bar-name">Vitality</span>
               <span class="bar-count">0</span>
             </div>
@@ -991,7 +991,6 @@
           
           <div class="domain-bar" data-domain="Attraction">
             <div class="bar-header">
-              <span class="bar-icon">✨</span>
               <span class="bar-name">Beauty</span>
               <span class="bar-count">0</span>
             </div>
@@ -1008,15 +1007,15 @@
         <div id="benchmarkMessage">Calculating your ranking...</div>
         <div id="benchmarkStats">
           <div class="benchmark-item">
-            <span class="benchmark-label">Your Percentile:</span>
+            <span class="benchmark-label">Your Ranking:</span>
             <span class="benchmark-value" id="benchmarkPercentile">--</span>
           </div>
           <div class="benchmark-item">
-            <span class="benchmark-label">Total Participants:</span>
+            <span class="benchmark-label">Participants:</span>
             <span class="benchmark-value" id="benchmarkTotal">--</span>
           </div>
           <div class="benchmark-item">
-            <span class="benchmark-label">Average Score:</span>
+            <span class="benchmark-label">Average:</span>
             <span class="benchmark-value" id="benchmarkAverage">--</span>
           </div>
         </div>
@@ -1698,29 +1697,32 @@
     }
     
     function displayBenchmarkResults(benchmark) {
+      // Convert percentile to "top X%" format
+      const topPercentage = 100 - benchmark.ihsPercentile;
+      let performanceMessage = '';
+      
+      if (topPercentage <= 5) {
+        performanceMessage = `You're in the top ${topPercentage}%! 🏆`;
+      } else if (topPercentage <= 10) {
+        performanceMessage = `You're in the top ${topPercentage}%! 🌟`;
+      } else if (topPercentage <= 25) {
+        performanceMessage = `You're in the top ${topPercentage}%! ✨`;
+      } else if (topPercentage <= 50) {
+        performanceMessage = `You're in the top ${topPercentage}%!`;
+      } else {
+        performanceMessage = `You scored higher than ${benchmark.ihsPercentile}% of participants!`;
+      }
+      
       // Update the main benchmark message
       const messageEl = document.getElementById('benchmarkMessage');
-      messageEl.textContent = benchmark.message;
+      messageEl.textContent = performanceMessage;
       
-      // Update the statistics
-      document.getElementById('benchmarkPercentile').textContent = `${benchmark.ihsPercentile}th percentile`;
+      // Update the statistics with cleaner labels
+      document.getElementById('benchmarkPercentile').textContent = `Top ${topPercentage}%`;
       document.getElementById('benchmarkTotal').textContent = benchmark.totalResponses.toLocaleString();
       document.getElementById('benchmarkAverage').textContent = benchmark.context.averageScore || '--';
       
-      // Add some visual flair based on percentile
-      const benchmarkSection = document.getElementById('benchmarkSection');
-      if (benchmark.ihsPercentile >= 90) {
-        benchmarkSection.style.background = '#fff3e0';
-        benchmarkSection.style.borderColor = '#ff9800';
-      } else if (benchmark.ihsPercentile >= 75) {
-        benchmarkSection.style.background = '#e8f5e8';
-        benchmarkSection.style.borderColor = '#4caf50';
-      } else if (benchmark.ihsPercentile >= 50) {
-        benchmarkSection.style.background = '#e3f2fd';
-        benchmarkSection.style.borderColor = '#2196f3';
-      }
-      
-      console.log('Benchmark display updated with percentile:', benchmark.ihsPercentile);
+      console.log('Benchmark display updated with top percentage:', topPercentage);
     }
     
     // Button event listeners
