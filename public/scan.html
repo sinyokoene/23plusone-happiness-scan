@@ -58,9 +58,22 @@
     #introContent {
       flex: 1;
       display: flex;
-      flex-direction: column;
-      justify-content: center;
+      flex-direction: row;
+      align-items: center;
+      gap: 40px;
       padding: 20px 0;
+    }
+    
+    .intro-left {
+      flex: 1;
+      text-align: left;
+    }
+    
+    .intro-right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     
     #introContent h1 {
@@ -106,7 +119,7 @@
     
     #startBtn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.3);
+      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.2);
     }
     
     #progress {
@@ -243,7 +256,7 @@
     #yesBtn:hover {
       background: #45a049;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+      box-shadow: 0 4px 12px rgba(76, 175, 80, 0.2);
     }
     
     #yesBtn:active {
@@ -260,7 +273,7 @@
     #noBtn:hover {
       background: #da190b;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.3);
+      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
     }
     
     #noBtn:active {
@@ -547,7 +560,7 @@
     
     #shareBtn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.25);
+      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.15);
     }
     
     #retakeBtn {
@@ -617,7 +630,7 @@
     
     .share-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
     }
     
     .share-button.native {
@@ -682,9 +695,8 @@
     /* Hero Image Styling */
     .hero-image {
       width: 100%;
-      max-width: 500px;
+      max-width: 400px;
       height: auto;
-      margin: 0 auto 30px auto;
       display: block;
       border-radius: 8px;
       box-shadow: 0 12px 24px rgba(0,0,0,0.15);
@@ -730,9 +742,18 @@
         padding: 15px;
       }
       
+      #introContent {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+      }
+      
+      .intro-left {
+        text-align: center;
+      }
+      
       .hero-image {
         max-width: 100%;
-        margin-bottom: 25px;
         border-radius: 6px;
       }
       
@@ -802,6 +823,16 @@
       .container {
         max-width: 95%;
         padding: 20px;
+      }
+      
+      #introContent {
+        flex-direction: column;
+        gap: 30px;
+        text-align: center;
+      }
+      
+      .intro-left {
+        text-align: center;
       }
       
       #domainBars {
@@ -905,16 +936,21 @@
       <img src="23plusone.png" alt="23plusone" class="brand-logo">
       
       <div id="introContent">
-        <img src="23plusoneunited.gif" alt="United in happiness" class="hero-image">
-        <h1>Hello you.</h1>
-        <p>Ready for a quick but meaningful test?</p>
-        <p>You'll see 24 cards—each showing something we humans love and live for.</p>
-        <p>Tap 'Yes' when it speaks to you, swipe it away if not.</p>
-        <p>Your happiness score will pop up at the end. Fast instincts = best instincts!</p>
-        <p class="lets-go">Let's go!</p>
+        <div class="intro-left">
+          <h1>Hello you.</h1>
+          <p>Ready for a quick but meaningful test?</p>
+          <p>You'll see 24 cards—each showing something we humans love and live for.</p>
+          <p>Tap 'Yes' when it speaks to you, swipe it away if not.</p>
+          <p>Your happiness score will pop up at the end. Fast instincts = best instincts!</p>
+          <p class="lets-go">Let's go!</p>
+        </div>
         
-        <button id="startBtn">Start Happiness Scan</button>
+        <div class="intro-right">
+          <img src="23plusoneunited.gif" alt="United in happiness" class="hero-image">
+        </div>
       </div>
+      
+      <button id="startBtn">Start Happiness Scan</button>
     </div>
 
     <div id="game" style="display: none;">
@@ -1088,11 +1124,9 @@
         
         <div class="share-buttons">
           <button id="nativeShareBtn" class="share-button native">
-            <span class="share-icon">📤</span>
             <span>Share</span>
           </button>
           <button id="copyLinkBtn" class="share-button copy">
-            <span class="share-icon">🔗</span>
             <span>Copy Link</span>
           </button>
         </div>
@@ -1696,10 +1730,10 @@
       async function copyToClipboard(text, button) {
         try {
           await navigator.clipboard.writeText(text);
-          button.innerHTML = '<span class="share-icon">✓</span><span>Copied!</span>';
+          button.innerHTML = '<span>Copied!</span>';
           button.classList.add('copied');
           setTimeout(() => {
-            button.innerHTML = '<span class="share-icon">🔗</span><span>Copy Link</span>';
+            button.innerHTML = '<span>Copy Link</span>';
             button.classList.remove('copied');
           }, 2000);
         } catch (err) {
@@ -1711,10 +1745,10 @@
           document.execCommand('copy');
           document.body.removeChild(textArea);
           
-          button.innerHTML = '<span class="share-icon">✓</span><span>Copied!</span>';
+          button.innerHTML = '<span>Copied!</span>';
           button.classList.add('copied');
           setTimeout(() => {
-            button.innerHTML = '<span class="share-icon">🔗</span><span>Copy Link</span>';
+            button.innerHTML = '<span>Copy Link</span>';
             button.classList.remove('copied');
           }, 2000);
         }
