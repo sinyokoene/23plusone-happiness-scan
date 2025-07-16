@@ -882,7 +882,6 @@
         </div>
         
         <div id="timerContainer" style="display: none;">
-          <div id="timerText">Time remaining</div>
           <div id="timerBar">
             <div id="timerProgress"></div>
           </div>
@@ -1078,7 +1077,6 @@
     const practiceIndicator = document.getElementById('practiceIndicator');
     const timerContainer = document.getElementById('timerContainer');
     const timerProgress = document.getElementById('timerProgress');
-    const timerText = document.getElementById('timerText');
     const buttonsDiv = document.querySelector('.buttons');
     const yesBtn = document.getElementById('yesBtn');
     const noBtn = document.getElementById('noBtn');
@@ -1110,23 +1108,26 @@
       });
     
     function initializeScan() {
-      // Shuffle cards
+      // Shuffle all cards once
       const shuffled = [...cards].sort(() => Math.random() - 0.5);
       
       console.log('📋 Total cards available:', cards.length);
       console.log('🔀 Cards after shuffle:', shuffled.length);
       
-      // Create deck: 4 practice cards + all 24 cards for real scan
-      // Practice cards are separate from the real scan cards
-      deck = [
-        ...shuffled.slice(0, 4).map(card => ({...card, isPractice: true})),
-        ...shuffled.slice(0, 24).map(card => ({...card, isPractice: false})) // Use all 24 cards for real scan
-      ];
+      // Create deck: 4 practice cards + ALL 24 cards for real scan
+      // Practice cards can be any 4 random cards, real scan uses ALL 24 cards
+      const practiceCards = shuffled.slice(0, 4).map(card => ({...card, isPractice: true}));
+      const realScanCards = [...cards].sort(() => Math.random() - 0.5).map(card => ({...card, isPractice: false})); // All 24 cards, reshuffled
+      
+      deck = [...practiceCards, ...realScanCards];
       
       console.log('🎯 Deck created:', {
         total: deck.length,
         practice: deck.filter(c => c.isPractice).length,
-        real: deck.filter(c => !c.isPractice).length
+        real: deck.filter(c => !c.isPractice).length,
+        practiceCardIds: practiceCards.map(c => c.id),
+        realCardIds: realScanCards.map(c => c.id),
+        note: 'Practice uses 4 random cards, real scan uses ALL 24 cards (some may repeat from practice)'
       });
       
       currentCardIndex = 0;
@@ -1200,9 +1201,6 @@
       timerProgress.style.width = '100%';
       timerProgress.className = ''; // Remove any existing classes
       timerProgress.style.background = '#4CAF50'; // Start with green
-      timerText.textContent = 'Time remaining';
-      timerText.style.color = '#666';
-      timerText.style.fontWeight = 'normal';
       
       // Start countdown after a tiny delay
       const timeout1 = setTimeout(() => {
@@ -1216,17 +1214,12 @@
       const timeout2 = setTimeout(() => {
         if (!timerActive) return;
         timerProgress.className = 'warning';
-        timerText.textContent = 'Time running out...';
-        timerText.style.color = '#FF9800';
       }, 2000);
       timerTimeouts.push(timeout2);
       
       const timeout3 = setTimeout(() => {
         if (!timerActive) return;
         timerProgress.className = 'danger';
-        timerText.textContent = 'Almost out of time!';
-        timerText.style.color = '#F44336';
-        timerText.style.fontWeight = 'bold';
       }, 3000);
       timerTimeouts.push(timeout3);
       
