@@ -13,7 +13,7 @@
     
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: white;
+      background: #291D1B;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -1707,10 +1707,8 @@
         performanceMessage = `You're in the top ${topPercentage}%! 🌟`;
       } else if (topPercentage <= 25) {
         performanceMessage = `You're in the top ${topPercentage}%! ✨`;
-      } else if (topPercentage <= 50) {
-        performanceMessage = `You're in the top ${topPercentage}%!`;
       } else {
-        performanceMessage = `You scored higher than ${benchmark.ihsPercentile}% of participants!`;
+        performanceMessage = `You're in the top ${topPercentage}%!`;
       }
       
       // Update the main benchmark message
