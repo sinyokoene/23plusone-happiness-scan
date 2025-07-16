@@ -1158,7 +1158,7 @@
       cardDiv.innerHTML = `
         <div id="cardImages">
           <img src="${card.images[0]}" alt="Happiness card" class="card-image" 
-               onerror="this.style.display='none'">
+               onerror="this.style.display='none'" style="opacity: 1 !important;">
         </div>
         <div class="swipe-hint">Swipe right for Yes, left for No</div>
       `;
@@ -1168,7 +1168,16 @@
       buttonsDiv.style.display = 'flex';
       
       // Setup swipe listeners for the new card
-      setTimeout(() => setupSwipeListeners(), 100);
+      setTimeout(() => {
+        setupSwipeListeners();
+        // Ensure card is fully visible and reset any lingering styles
+        const cardImage = document.querySelector('.card-image');
+        if (cardImage) {
+          cardImage.style.opacity = '1';
+          cardImage.style.transform = '';
+          cardImage.style.transition = '';
+        }
+      }, 100);
       
       // Reset and start timer
       startTimer();
