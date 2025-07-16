@@ -273,7 +273,7 @@
     #noBtn:hover {
       background: #da190b;
       transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(244, 67, 54, 0.2);
+      box-shadow: none;
     }
     
     #noBtn:active {
@@ -364,54 +364,6 @@
       margin-bottom: 25px;
       font-size: 22px;
       font-weight: 700;
-    }
-    
-    #colorWheel {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 30px;
-      margin: 25px 0;
-      padding: 0 10px;
-      max-width: 600px;
-      margin: 25px auto;
-    }
-    
-    .domain-slice {
-      text-align: center;
-    }
-    
-    .slice-color {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      margin: 0 auto 12px auto;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-      position: relative;
-      overflow: hidden;
-      transition: transform 0.2s ease;
-    }
-    
-    .slice-color:hover {
-      transform: scale(1.05);
-    }
-    
-    .slice-basics { background: #4CAF50; }
-    .slice-self-dev { background: #FF9800; }
-    .slice-ambition { background: #9C27B0; }
-    .slice-vitality { background: #2196F3; }
-    .slice-attraction { background: #E91E63; }
-    
-    .slice-label {
-      font-size: 13px;
-      color: #666;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    
-    .slice-count {
-      font-size: 20px;
-      color: #333;
-      font-weight: 800;
     }
     
     #domainBars {
@@ -560,7 +512,7 @@
     
     #shareBtn:hover {
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(233, 30, 99, 0.15);
+      box-shadow: none;
     }
     
     #retakeBtn {
@@ -630,7 +582,7 @@
     
     .share-button:hover {
       transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      box-shadow: none;
     }
     
     .share-button.native {
@@ -763,12 +715,6 @@
         max-width: 100%;
       }
       
-      #colorWheel {
-        grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
-        gap: 15px;
-        max-width: 100%;
-      }
-      
       #domainBars {
         grid-template-columns: 1fr;
         gap: 15px;
@@ -790,11 +736,6 @@
       
       #totalScore {
         font-size: 48px;
-      }
-      
-      .slice-color {
-        width: 50px;
-        height: 50px;
       }
       
       .domain-bar {
@@ -998,92 +939,65 @@
         <div id="ihsLabel">Individual Happiness Score (IHS)</div>
       </div>
 
-      <!-- Color Visualization -->
+      <!-- Your Happiness Palette -->
       <div id="colorVisualization">
         <h3>Your Happiness Palette</h3>
-        <div id="colorWheel">
-          <div class="domain-slice" data-domain="Basics">
-            <div class="slice-color slice-basics"></div>
-            <div class="slice-label">Basics</div>
-            <div class="slice-count">0</div>
-          </div>
-          <div class="domain-slice" data-domain="Self-development">
-            <div class="slice-color slice-self-dev"></div>
-            <div class="slice-label">Growth</div>
-            <div class="slice-count">0</div>
-          </div>
-          <div class="domain-slice" data-domain="Ambition">
-            <div class="slice-color slice-ambition"></div>
-            <div class="slice-label">Ambition</div>
-            <div class="slice-count">0</div>
-          </div>
-          <div class="domain-slice" data-domain="Vitality">
-            <div class="slice-color slice-vitality"></div>
-            <div class="slice-label">Vitality</div>
-            <div class="slice-count">0</div>
-          </div>
-          <div class="domain-slice" data-domain="Attraction">
-            <div class="slice-color slice-attraction"></div>
-            <div class="slice-label">Beauty</div>
-            <div class="slice-count">0</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Domain Bars -->
-      <div id="domainBars">
-        <div class="domain-bar" data-domain="Basics">
-          <div class="bar-header">
-            <span class="bar-icon">🌱</span>
-            <span class="bar-name">Fundamentals</span>
-            <span class="bar-count">0</span>
-          </div>
-          <div class="bar-container">
-            <div class="bar-fill bar-basics" style="width: 0%"></div>
-          </div>
-        </div>
         
-        <div class="domain-bar" data-domain="Self-development">
-          <div class="bar-header">
-            <span class="bar-icon">🎨</span>
-            <span class="bar-name">Self-Growth</span>
-            <span class="bar-count">0</span>
+        <!-- Domain Bars -->
+        <div id="domainBars">
+          <div class="domain-bar" data-domain="Basics">
+            <div class="bar-header">
+              <span class="bar-icon">🌱</span>
+              <span class="bar-name">Basics</span>
+              <span class="bar-count">0</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill bar-basics" style="width: 0%"></div>
+            </div>
           </div>
-          <div class="bar-container">
-            <div class="bar-fill bar-self-dev" style="width: 0%"></div>
+          
+          <div class="domain-bar" data-domain="Self-development">
+            <div class="bar-header">
+              <span class="bar-icon">🎨</span>
+              <span class="bar-name">Growth</span>
+              <span class="bar-count">0</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill bar-self-dev" style="width: 0%"></div>
+            </div>
           </div>
-        </div>
-        
-        <div class="domain-bar" data-domain="Ambition">
-          <div class="bar-header">
-            <span class="bar-icon">🚀</span>
-            <span class="bar-name">Achievement</span>
-            <span class="bar-count">0</span>
+          
+          <div class="domain-bar" data-domain="Ambition">
+            <div class="bar-header">
+              <span class="bar-icon">🚀</span>
+              <span class="bar-name">Ambition</span>
+              <span class="bar-count">0</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill bar-ambition" style="width: 0%"></div>
+            </div>
           </div>
-          <div class="bar-container">
-            <div class="bar-fill bar-ambition" style="width: 0%"></div>
+          
+          <div class="domain-bar" data-domain="Vitality">
+            <div class="bar-header">
+              <span class="bar-icon">💪</span>
+              <span class="bar-name">Vitality</span>
+              <span class="bar-count">0</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill bar-vitality" style="width: 0%"></div>
+            </div>
           </div>
-        </div>
-        
-        <div class="domain-bar" data-domain="Vitality">
-          <div class="bar-header">
-            <span class="bar-icon">💪</span>
-            <span class="bar-name">Energy</span>
-            <span class="bar-count">0</span>
-          </div>
-          <div class="bar-container">
-            <div class="bar-fill bar-vitality" style="width: 0%"></div>
-          </div>
-        </div>
-        
-        <div class="domain-bar" data-domain="Attraction">
-          <div class="bar-header">
-            <span class="bar-icon">✨</span>
-            <span class="bar-name">Allure</span>
-            <span class="bar-count">0</span>
-          </div>
-          <div class="bar-container">
-            <div class="bar-fill bar-attraction" style="width: 0%"></div>
+          
+          <div class="domain-bar" data-domain="Attraction">
+            <div class="bar-header">
+              <span class="bar-icon">✨</span>
+              <span class="bar-name">Beauty</span>
+              <span class="bar-count">0</span>
+            </div>
+            <div class="bar-container">
+              <div class="bar-fill bar-attraction" style="width: 0%"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -1478,9 +1392,6 @@
       const topDomainsText = getDominantDomainsText(domainData);
       document.getElementById('topDomains').textContent = topDomainsText;
       
-      // Update color wheel
-      updateColorWheel(results.domainCounts);
-      
       // Update domain bars with animation
       updateDomainBars(results.domainCounts);
       
@@ -1522,18 +1433,6 @@
       };
       
       return `${domainNames[topDomains[0].name]} and ${domainNames[topDomains[1].name]}`;
-    }
-    
-    function updateColorWheel(domainCounts) {
-      const allDomains = ['Basics', 'Self-development', 'Ambition', 'Vitality', 'Attraction'];
-      
-      allDomains.forEach(domain => {
-        const count = domainCounts[domain] || 0;
-        const slice = document.querySelector(`[data-domain="${domain}"] .slice-count`);
-        if (slice) {
-          slice.textContent = count;
-        }
-      });
     }
     
     function updateDomainBars(domainCounts) {
