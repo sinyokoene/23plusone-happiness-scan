@@ -1830,7 +1830,7 @@
       
       const direction = isYes ? 1 : -1;
       currentCard.style.transform = `translateX(${direction * 400}px) rotate(${direction * 30}deg)`;
-      currentCard.style.opacity = '0';
+      // Remove opacity change - keep cards visible during exit animation
       currentCard.style.transition = 'all 0.3s ease-out';
       
       // Visual feedback on buttons
