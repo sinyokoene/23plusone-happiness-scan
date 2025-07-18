@@ -891,20 +891,12 @@
       opacity: 0.9;
     }
     
-    /* Text-based logo */
-    .bottom-branding-logo-text {
-      font-size: 16px;
-      font-weight: 800;
-      color: white;
+    /* BR-ND SVG logo */
+    .bottom-branding-logo {
       width: 40px;
       height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       flex-shrink: 0;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 4px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      filter: brightness(0) invert(1); /* Makes the logo white */
     }
     
     .bottom-branding-text {
@@ -919,7 +911,7 @@
         font-size: 12px;
       }
       
-      .bottom-branding img {
+      .bottom-branding-logo {
         width: 30px;
         height: 30px;
       }
@@ -929,7 +921,7 @@
 <body>
   <!-- Bottom Branding -->
   <div class="bottom-branding">
-    <div class="bottom-branding-logo-text">BR</div>
+    <img src="br-nd-logo.svg" alt="BR-ND Logo" class="bottom-branding-logo">
     <div class="bottom-branding-text">The happiness scan by BR-ND People</div>
   </div>
   
