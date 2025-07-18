@@ -875,9 +875,54 @@
     }
     
     /* ...existing code... */
+    
+    /* Bottom Branding */
+    .bottom-branding {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 1000;
+      color: white;
+      font-size: 14px;
+      font-weight: 500;
+      opacity: 0.9;
+    }
+    
+    .bottom-branding img {
+      width: 40px;
+      height: 40px;
+      filter: brightness(0) invert(1); /* Makes SVG white */
+    }
+    
+    .bottom-branding-text {
+      line-height: 1.2;
+    }
+    
+    /* Mobile adjustment */
+    @media (max-width: 480px) {
+      .bottom-branding {
+        bottom: 15px;
+        left: 15px;
+        font-size: 12px;
+      }
+      
+      .bottom-branding img {
+        width: 30px;
+        height: 30px;
+      }
+    }
   </style>
 </head>
 <body>
+  <!-- Bottom Branding -->
+  <div class="bottom-branding">
+    <img src="BR-ND Logo Element.svg" alt="BR-ND Logo">
+    <div class="bottom-branding-text">The happiness scan by BR-ND PEOPLE</div>
+  </div>
+  
   <div class="container">
     <div id="intro">
       <img src="23plusone.png" alt="23plusone" class="brand-logo">
