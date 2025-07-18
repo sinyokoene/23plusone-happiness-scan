@@ -891,12 +891,20 @@
       opacity: 0.9;
     }
     
-    .bottom-branding img {
+    /* Text-based logo */
+    .bottom-branding-logo-text {
+      font-size: 16px;
+      font-weight: 800;
+      color: white;
       width: 40px;
       height: 40px;
-      filter: brightness(0) invert(1); /* Makes SVG white */
-      display: block;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       flex-shrink: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
     }
     
     .bottom-branding-text {
@@ -921,7 +929,7 @@
 <body>
   <!-- Bottom Branding -->
   <div class="bottom-branding">
-    <img src="br-nd-logo.svg" alt="BR-ND" onerror="this.style.display='none'">
+    <div class="bottom-branding-logo-text">BR</div>
     <div class="bottom-branding-text">The happiness scan by BR-ND People</div>
   </div>
   
