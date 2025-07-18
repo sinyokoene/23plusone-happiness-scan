@@ -21,7 +21,7 @@
       justify-content: center;
       color: #333;
       overflow-x: hidden; /* Prevent horizontal scrollbars */
-      padding-bottom: 80px; /* Space for bottom branding bar */
+      padding-bottom: 0; /* No extra space needed, handled by container margin */
     }
     
     .container {
@@ -29,6 +29,7 @@
       max-width: 1080px;
       padding: 20px;
       overflow: visible; /* Allow cards to animate outside */
+      margin-bottom: 72px; /* Prevent overlap with bottom branding bar */
     }
     
     #game {
@@ -694,6 +695,7 @@
       .container {
         max-width: 100%;
         padding: 15px;
+        margin-bottom: 56px; /* Adjust for smaller bottom bar on mobile */
       }
       
       #introContent {
