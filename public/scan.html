@@ -1008,16 +1008,16 @@
         <div id="benchmarkMessage">Calculating your ranking...</div>
         <div id="benchmarkStats">
           <div class="benchmark-item">
-            <span class="benchmark-label">Your Ranking:</span>
-            <span class="benchmark-value" id="benchmarkPercentile">--</span>
+            <span class="benchmark-label">Your Score:</span>
+            <span class="benchmark-value" id="benchmarkYourScore">--</span>
+          </div>
+          <div class="benchmark-item">
+            <span class="benchmark-label">Average Score:</span>
+            <span class="benchmark-value" id="benchmarkAverage">--</span>
           </div>
           <div class="benchmark-item">
             <span class="benchmark-label">Participants:</span>
             <span class="benchmark-value" id="benchmarkTotal">--</span>
-          </div>
-          <div class="benchmark-item">
-            <span class="benchmark-label">Average:</span>
-            <span class="benchmark-value" id="benchmarkAverage">--</span>
           </div>
         </div>
       </div>
@@ -1697,7 +1697,7 @@
       })
       .then(data => {
         console.log('Benchmark data received:', data);
-        displayBenchmarkResults(data.benchmark);
+        displayBenchmarkResults(data.benchmark, results);
       })
       .catch(err => {
         console.warn('Error fetching benchmark:', err);
@@ -1706,7 +1706,7 @@
       });
     }
     
-    function displayBenchmarkResults(benchmark) {
+    function displayBenchmarkResults(benchmark, results) {
       // Convert percentile to "top X%" format
       const topPercentage = 100 - benchmark.ihsPercentile;
       let performanceMessage = '';
@@ -1725,8 +1725,8 @@
       const messageEl = document.getElementById('benchmarkMessage');
       messageEl.textContent = performanceMessage;
       
-      // Update the statistics with cleaner labels
-      document.getElementById('benchmarkPercentile').textContent = `Top ${topPercentage}%`;
+      // Update the statistics with cleaner, non-redundant labels
+      document.getElementById('benchmarkYourScore').textContent = results.ihs;
       document.getElementById('benchmarkTotal').textContent = benchmark.totalResponses.toLocaleString();
       document.getElementById('benchmarkAverage').textContent = benchmark.context.averageScore || '--';
       
