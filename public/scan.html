@@ -889,12 +889,18 @@
       font-size: 14px;
       font-weight: 500;
       opacity: 0.9;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 8px 12px;
+      border-radius: 6px;
+      backdrop-filter: blur(5px);
     }
     
     .bottom-branding img {
       width: 40px;
       height: 40px;
       filter: brightness(0) invert(1); /* Makes SVG white */
+      display: block;
+      flex-shrink: 0;
     }
     
     .bottom-branding-text {
@@ -919,8 +925,8 @@
 <body>
   <!-- Bottom Branding -->
   <div class="bottom-branding">
-    <img src="BR-ND Logo Element.svg" alt="BR-ND Logo">
-    <div class="bottom-branding-text">The happiness scan by BR-ND PEOPLE</div>
+    <img src="BR-ND Logo Element.svg" alt="BR-ND" onerror="this.style.display='none'">
+    <div class="bottom-branding-text">The happiness scan by BR-ND People</div>
   </div>
   
   <div class="container">
