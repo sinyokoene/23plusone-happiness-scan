@@ -33,9 +33,15 @@
     introDiv.style.display = 'none';
     gameDiv.style.display = 'flex';
     
+    // Remove results layout
+    document.body.classList.remove('showing-results');
+    
     // Initialize the scan
     initializeScan();
   }
+  
+  // Initialize page state
+  document.body.classList.remove('showing-results');
   
   // Load cards and initialize
   fetch('cards.json')
@@ -335,6 +341,9 @@
     // Hide game, show results
     gameDiv.style.display = 'none';
     resultsDiv.style.display = 'block';
+    
+    // Change body layout for results
+    document.body.classList.add('showing-results');
     
     // Display enhanced results
     displayEnhancedResults(results);

@@ -259,7 +259,12 @@ body {
   justify-content: center;
   color: var(--text-primary);
   overflow-x: hidden; /* Prevent horizontal scrollbars */
-  padding-bottom: 0; /* No extra space needed, handled by container margin */
+  padding-bottom: 0;
+}
+
+/* Keep results container positioned consistently with intro/game */
+body.showing-results {
+  /* Removed align-items and padding-top to match intro/game positioning */
 }
 
 .container {
@@ -267,16 +272,16 @@ body {
   max-width: 1080px;
   padding: var(--spacing-lg);
   overflow: visible; /* Allow cards to animate outside */
-  margin-bottom: 140px; /* Even more space to rigorously prevent overlap */
 }
 
 #game {
   background: var(--card-bg);
   border-radius: var(--radius);
-  padding: var(--spacing-xl);
+  padding: var(--spacing-xxl) var(--spacing-xl); /* Same as intro and results */
   box-shadow: var(--shadow-xl);
   text-align: center;
-  min-height: 500px;
+  height: 600px; /* Fixed consistent height */
+  margin: 0 auto 100px auto; /* Bottom margin to stay above footer */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -289,7 +294,8 @@ body {
   padding: var(--spacing-xxl) var(--spacing-xl);
   box-shadow: var(--shadow-xl);
   text-align: center;
-  min-height: 500px;
+  height: 600px; /* Fixed consistent height */
+  margin: 0 auto 100px auto; /* Bottom margin to stay above footer */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -522,19 +528,22 @@ button:disabled {
   transform: none !important;
 }
 
-/* Improved Results Section Styling */
+/* Results Section - Perfectly consistent with intro and game */
 #results {
-  background: white;
-  border-radius: 8px;
-  padding: 40px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: var(--spacing-xxl) var(--spacing-xl); /* Same as intro container */
+  box-shadow: var(--shadow-xl);
   text-align: center;
-  max-width: 900px;
-  margin: 0 auto;
-  max-height: 90vh;
-  overflow-y: auto;
-  margin-bottom: 140px; /* Even more space to rigorously prevent overlap */
+  height: 600px; /* Fixed consistent height like other containers */
+  margin: 0 auto 100px auto; /* Bottom margin to stay above footer */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Same as intro and game for perfect alignment */
+  overflow-y: auto; /* Keep scrolling for long results */
 }
+
+
 
 #resultsHeader {
   margin-bottom: 35px;
@@ -928,7 +937,12 @@ button:disabled {
   .container {
     max-width: 100%;
     padding: 15px;
-    margin-bottom: 120px; /* Even more space for mobile bottom bar */
+  }
+
+  /* Consistent mobile heights and margins for all white containers */
+  #intro, #game, #results {
+    height: 500px; /* Slightly shorter for mobile */
+    margin: 0 auto 120px auto; /* Consistent bottom spacing above footer */
   }
   
   #introContent {
@@ -947,10 +961,8 @@ button:disabled {
   }
   
   #results {
-    padding: 25px 20px;
-    margin: 10px;
+    margin: 0 auto 120px auto; /* Consistent with other containers */
     max-width: 100%;
-    margin-bottom: 120px;
   }
   
   #domainBars {
@@ -1006,6 +1018,12 @@ button:disabled {
   .container {
     max-width: 95%;
     padding: 20px;
+  }
+
+  /* Consistent tablet heights and margins for all white containers */
+  #intro, #game, #results {
+    height: 550px; /* Medium height for tablets */
+    margin: 0 auto 100px auto; /* Consistent bottom spacing above footer */
   }
   
   #introContent {
@@ -1111,54 +1129,53 @@ button:disabled {
   border: 2px solid #FF9800; /* Add orange border to indicate practice */
 }
 
-/* Bottom Branding */
+/* Bottom Branding - Clean footer style */
 .bottom-branding {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
   background: var(--brand-dark);
-  padding: var(--spacing-sm) 24px var(--spacing-lg) 16px;
+  padding: 20px 40px; /* Consistent padding all around */
   display: flex;
-  align-items: flex-start;
+  align-items: center; /* Center align - no conflicts */
   justify-content: space-between;
   z-index: var(--z-bottom-bar);
   color: var(--white);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
-  opacity: 0.97;
-  box-shadow: none;
-  border-top-left-radius: var(--radius-xl);
-  border-top-right-radius: var(--radius-xl);
-  min-height: 48px;
+  opacity: 0.98;
+  height: auto; /* Auto height based on content */
+  min-height: 80px; /* Minimum height for spacing */
   pointer-events: none;
 }
 
 .bottom-branding-left {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  gap: 18px;
+  align-items: center; /* Center align - clean and simple */
+  gap: 20px;
   pointer-events: auto;
 }
 
 .bottom-branding-right {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
-  gap: 12px;
+  align-items: center; /* Center align */
+  gap: 20px;
   pointer-events: auto;
 }
 
-/* BR-ND SVG logo */
+/* BR-ND SVG logo - Sits at very bottom edge */
 .bottom-branding-logo {
-  width: 80px;
-  height: 80px;
-  min-width: 80px;
-  min-height: 80px;
+  width: 120px;
+  height: 120px;
+  min-width: 120px;
+  min-height: 120px;
   flex-shrink: 0;
   display: block;
-  margin-bottom: 0;
+  align-self: flex-end; /* This logo aligns to bottom */
+  margin-bottom: -25px; /* Pull it way down to eliminate brown underneath */
 }
 
 .bottom-branding-logo .cls-1 {
@@ -1170,88 +1187,64 @@ button:disabled {
 }
 
 .bottom-branding-text {
-  line-height: 80px;
-  font-size: 15px;
-  font-weight: 500;
-  opacity: 0.92;
-  margin-top: 0;
-  margin-bottom: 0;
-  height: 80px;
-  display: flex;
-  align-items: flex-start;
+  font-size: 12px;
+  font-weight: 400;
+  opacity: 0.9;
 }
 
 /* 23plusone logo in bottom bar */
 .bottom-brand-logo {
-  height: 28px;
+  height: 40px;
   width: auto;
-  opacity: 0.92;
+  opacity: 0.9;
   filter: brightness(0) invert(1);
-  margin-left: 8px;
-  margin-bottom: 0;
-  margin-top: 0;
-  align-self: center;
+  margin-left: 12px;
 }
 
 /* Copyright text */
 .bottom-copyright {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 80px;
-  margin-right: 15px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
   text-align: right;
-  height: 80px;
-  display: flex;
-  align-items: flex-start;
+  margin-left: 8px;
 }
 
-/* Mobile adjustment */
+/* Mobile adjustment - Clean and simple */
 @media (max-width: 480px) {
   .bottom-branding {
-    padding: 8px 8px 4px 8px;
-    flex-direction: column;
-    gap: 6px;
+    padding: 16px;
+    height: auto;
+    min-height: 70px;
+    align-items: center; /* Center align on mobile too */
     text-align: center;
-    min-height: 36px;
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
   }
   .bottom-branding-left,
   .bottom-branding-right {
     justify-content: center;
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 6px;
+    align-items: center; /* Center align */
+    flex-direction: row;
+    gap: 12px;
   }
   .bottom-branding-text {
-    margin-top: 0;
-    margin-bottom: 0;
     font-size: 13px;
-    height: 48px;
-    line-height: 48px;
   }
   .bottom-branding-logo {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
-    min-height: 48px;
-    margin-top: 0;
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    min-height: 60px;
+    align-self: flex-end; /* Bottom align on mobile too */
+    margin-bottom: -15px; /* Pull way down to eliminate brown on mobile */
   }
   .bottom-brand-logo {
-    height: 18px;
-    margin-left: 4px;
-    margin-top: 0;
-    margin-bottom: 0;
-    align-self: center;
+    height: 24px;
+    margin-left: 6px;
   }
   .bottom-copyright {
     font-size: 10px;
     text-align: center;
-    margin-right: 0;
-    margin-bottom: 0;
-    height: 48px;
-    line-height: 48px;
-    display: flex;
-    align-items: flex-start;
+    margin-left: 4px;
   }
 }
