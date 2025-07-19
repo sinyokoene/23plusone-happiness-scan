@@ -8,7 +8,7 @@ CREATE TABLE scan_responses (
   n1_score REAL,
   n2_score REAL, 
   n3_score REAL,
-  domain_scores JSONB,
+
   completion_time INTEGER,
   user_agent TEXT,
   total_cards INTEGER DEFAULT 24,
@@ -21,7 +21,7 @@ CREATE TABLE scan_responses (
 CREATE INDEX idx_scan_responses_timestamp ON scan_responses(timestamp);
 CREATE INDEX idx_scan_responses_ihs_score ON scan_responses(ihs_score);
 CREATE INDEX idx_scan_responses_session_id ON scan_responses(session_id);
-CREATE INDEX idx_scan_responses_domain_scores ON scan_responses USING GIN(domain_scores);
+
 
 -- Legacy table for compatibility (if needed)
 CREATE TABLE IF NOT EXISTS scan_responses_legacy (

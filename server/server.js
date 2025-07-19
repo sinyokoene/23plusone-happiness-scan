@@ -26,7 +26,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 // Database connection pool
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
+  connectionString: process.env.DATABASE_URL || 'postgresql://sinyo@localhost:5432/happiness_benchmark',
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
 });
 
@@ -314,8 +314,7 @@ app.post('/api/benchmarks', async (req, res) => {
         ihsPercentile = Math.round((lowerScores / totalResponses) * 100);
       }
       
-      // Skip domain percentiles for now since domain_scores column doesn't exist
-      const domainPercentiles = {};
+      // Domain percentiles removed - not used by frontend and always showing 0
       
       // Get some additional context stats
       const contextQuery = `
@@ -351,7 +350,6 @@ app.post('/api/benchmarks', async (req, res) => {
           totalResponses,
           ihsScore,
           ihsPercentile,
-          domainPercentiles,
           message: generateMessage(ihsPercentile, ihsScore, parseFloat(stats.avg_ihs)),
           context: {
             averageScore: stats.avg_ihs ? Math.round(parseFloat(stats.avg_ihs) * 10) / 10 : null,
