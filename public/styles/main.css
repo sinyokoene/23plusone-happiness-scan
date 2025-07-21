@@ -283,26 +283,26 @@ body {
 
 @media (max-width: 480px) {
   #startBtn {
-    padding: 15px var(--spacing-lg);
+    padding: 12px var(--spacing-md);
     font-size: 16px;
-    margin: var(--spacing-md) auto 0 auto;
-    max-width: 260px;
+    margin: var(--spacing-sm) auto 0 auto;
+    max-width: 240px;
   }
 
   #introContent h1 {
-    font-size: 28px;
-    margin-bottom: var(--spacing-md);
+    font-size: 24px;
+    margin-bottom: var(--spacing-sm);
   }
 
   #introContent p {
-    font-size: 16px;
+    font-size: 15px;
     margin-bottom: var(--spacing-sm);
   }
 
   #introContent p.lets-go {
-    font-size: 18px;
+    font-size: 16px;
     margin-top: var(--spacing-sm);
-    margin-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
   }
 }
 
@@ -911,12 +911,10 @@ button:disabled {
     min-height: calc(100vh - 40px); /* Account for footer */
   }
 
-  /* Container sizing - critical fix for button overflow */
+  /* Container sizing - fixed height approach */
   #intro, #game, #results {
-    height: calc(100vh - 120px); /* Dynamic height based on viewport */
-    max-height: 580px; /* Cap maximum height */
-    min-height: 400px; /* Ensure minimum usability */
-    padding: var(--spacing-md);
+    height: 500px; /* Fixed height that works on mobile */
+    padding: var(--spacing-sm);
     border-radius: 12px; /* Slightly larger radius for mobile */
   }
 
@@ -924,7 +922,7 @@ button:disabled {
   #game {
     justify-content: space-between;
     gap: var(--spacing-sm);
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
   }
 
   /* Timer improvements for mobile */
@@ -940,13 +938,13 @@ button:disabled {
 
   /* Card display optimization */
   #cardImages {
-    min-height: 240px; /* Reduced but optimized */
+    min-height: 200px; /* Smaller for mobile */
     margin: var(--spacing-sm) 0;
     flex: 1; /* Take available space */
   }
   
   .card-image {
-    max-height: 240px;
+    max-height: 200px; /* Smaller for mobile */
     border-radius: 8px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.12); /* Softer shadow */
     transform: translateZ(0); /* Hardware acceleration */
@@ -958,14 +956,15 @@ button:disabled {
   /* Button improvements */
   .buttons {
     margin-top: var(--spacing-sm);
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
+    flex-shrink: 0; /* Prevent buttons from shrinking */
   }
 
   button {
     font-size: 16px;
-    padding: 14px 24px;
+    padding: 12px 20px;
     border-radius: 8px;
-    min-width: 80px;
+    min-width: 70px;
     font-weight: 600;
   }
 
@@ -978,9 +977,13 @@ button:disabled {
   }
   
   /* Intro section mobile optimization */
+  #intro {
+    justify-content: space-between;
+  }
+
   #introContent {
     flex-direction: column;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
     text-align: center;
     padding: 0;
     flex: 1; /* Use available space */
@@ -998,7 +1001,7 @@ button:disabled {
   
   .hero-image {
     max-width: 100%;
-    max-height: 180px; /* Limit height on mobile */
+    max-height: 150px; /* Smaller for mobile */
     border-radius: 8px;
     object-fit: cover;
   }
@@ -1006,13 +1009,16 @@ button:disabled {
   /* Results section mobile optimization */
   #results {
     max-width: 100%;
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
+    overflow: hidden; /* Prevent main container scroll */
   }
 
   .results-page {
-    padding: var(--spacing-sm) 0 60px 0;
+    padding: var(--spacing-sm) 0 50px 0; /* Less bottom padding */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    height: calc(500px - 80px); /* Fixed height minus navigation */
+    max-height: calc(500px - 80px);
   }
   
   /* Results content scaling */
