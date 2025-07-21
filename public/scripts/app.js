@@ -389,8 +389,70 @@
       });
     });
     
+    // Add swipe navigation for results pages on mobile
+    setupResultsSwipeNavigation();
+    
     // Show first page initially
     showResultsPage(1);
+  }
+
+  // Swipe navigation for results pages
+  function setupResultsSwipeNavigation() {
+    const resultsContainer = document.getElementById('results');
+    if (!resultsContainer) return;
+
+    let startX = null;
+    let startY = null;
+    let isSwipeActive = false;
+
+    resultsContainer.addEventListener('touchstart', (e) => {
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      isSwipeActive = true;
+    }, { passive: true });
+
+    resultsContainer.addEventListener('touchmove', (e) => {
+      if (!isSwipeActive || !startX || !startY) return;
+      
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      const deltaX = Math.abs(currentX - startX);
+      const deltaY = Math.abs(currentY - startY);
+      
+      // If vertical swipe is more significant, don't interfere with scrolling
+      if (deltaY > deltaX) {
+        isSwipeActive = false;
+        return;
+      }
+      
+      // Prevent horizontal scrolling for page navigation
+      if (deltaX > 30) {
+        e.preventDefault();
+      }
+    }, { passive: false });
+
+    resultsContainer.addEventListener('touchend', (e) => {
+      if (!isSwipeActive || !startX) return;
+      
+      const endX = e.changedTouches[0].clientX;
+      const deltaX = endX - startX;
+      const deltaY = Math.abs(e.changedTouches[0].clientY - startY);
+      
+      // Only trigger if horizontal swipe is more significant than vertical
+      if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > deltaY) {
+        if (deltaX > 0) {
+          // Swipe right - go to previous page
+          navigateResultsPage(-1);
+        } else {
+          // Swipe left - go to next page
+          navigateResultsPage(1);
+        }
+      }
+      
+      startX = null;
+      startY = null;
+      isSwipeActive = false;
+    }, { passive: true });
   }
   
   function navigateResultsPage(direction) {

@@ -283,26 +283,26 @@ body {
 
 @media (max-width: 480px) {
   #startBtn {
-    padding: 12px var(--spacing-md);
-    font-size: 16px;
-    margin: var(--spacing-sm) auto 0 auto;
-    max-width: 240px;
+    padding: 8px 16px; /* Smaller padding */
+    font-size: 14px; /* Smaller text */
+    margin: 4px auto 0 auto; /* Minimal margin */
+    max-width: 200px; /* Smaller width */
   }
 
   #introContent h1 {
-    font-size: 24px;
-    margin-bottom: var(--spacing-sm);
+    font-size: 20px; /* Smaller heading */
+    margin-bottom: 4px; /* Minimal margin */
   }
 
   #introContent p {
-    font-size: 15px;
-    margin-bottom: var(--spacing-sm);
+    font-size: 13px; /* Smaller text */
+    margin-bottom: 4px; /* Minimal margin */
   }
 
   #introContent p.lets-go {
-    font-size: 16px;
-    margin-top: var(--spacing-sm);
-    margin-bottom: var(--spacing-sm);
+    font-size: 14px; /* Smaller text */
+    margin-top: 4px; /* Minimal margin */
+    margin-bottom: 4px; /* Minimal margin */
   }
 }
 
@@ -911,42 +911,42 @@ button:disabled {
     min-height: calc(100vh - 40px); /* Account for footer */
   }
 
-  /* Container sizing - fixed height approach */
+  /* Container sizing - much smaller for mobile */
   #intro, #game, #results {
-    height: 500px; /* Fixed height that works on mobile */
-    padding: var(--spacing-sm);
-    border-radius: 12px; /* Slightly larger radius for mobile */
+    height: 420px; /* Much smaller height */
+    padding: 6px; /* Minimal padding */
+    border-radius: 8px;
   }
 
   /* Game section optimization */
   #game {
     justify-content: space-between;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm);
+    gap: 4px; /* Minimal gap */
+    padding: 6px; /* Minimal padding */
   }
 
   /* Timer improvements for mobile */
   #timerContainer {
-    margin: 0 0 var(--spacing-sm) 0;
+    margin: 0 0 4px 0; /* Minimal margin */
   }
 
   #timerBar {
-    max-width: calc(100% - 40px); /* Full width with margin */
-    height: 6px; /* Thicker for better visibility */
-    margin: 8px auto;
+    max-width: calc(100% - 20px); /* Less margin */
+    height: 4px; /* Thinner */
+    margin: 4px auto;
   }
 
   /* Card display optimization */
   #cardImages {
-    min-height: 200px; /* Smaller for mobile */
-    margin: var(--spacing-sm) 0;
+    min-height: 160px; /* Much smaller */
+    margin: 4px 0; /* Minimal margin */
     flex: 1; /* Take available space */
   }
   
   .card-image {
-    max-height: 200px; /* Smaller for mobile */
-    border-radius: 8px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.12); /* Softer shadow */
+    max-height: 160px; /* Much smaller */
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Lighter shadow */
     transform: translateZ(0); /* Hardware acceleration */
     backface-visibility: hidden; /* Prevent flicker */
     -webkit-backface-visibility: hidden;
@@ -955,24 +955,24 @@ button:disabled {
 
   /* Button improvements */
   .buttons {
-    margin-top: var(--spacing-sm);
-    gap: var(--spacing-sm);
+    margin-top: 4px; /* Minimal margin */
+    gap: 8px; /* Small gap */
     flex-shrink: 0; /* Prevent buttons from shrinking */
   }
 
   button {
-    font-size: 16px;
-    padding: 12px 20px;
-    border-radius: 8px;
-    min-width: 70px;
+    font-size: 14px; /* Smaller text */
+    padding: 8px 16px; /* Smaller padding */
+    border-radius: 6px;
+    min-width: 60px; /* Smaller width */
     font-weight: 600;
   }
 
   /* Swipe hint styling */
   .swipe-hint {
-    font-size: 13px;
+    font-size: 11px; /* Smaller text */
     color: #666;
-    margin-top: var(--spacing-sm);
+    margin-top: 2px; /* Minimal margin */
     font-weight: 500;
   }
   
@@ -983,7 +983,7 @@ button:disabled {
 
   #introContent {
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: 6px; /* Minimal gap */
     text-align: center;
     padding: 0;
     flex: 1; /* Use available space */
@@ -992,7 +992,7 @@ button:disabled {
   
   .intro-left {
     text-align: center;
-    margin-bottom: var(--spacing-sm);
+    margin-bottom: 4px; /* Minimal margin */
   }
   
   .intro-right {
@@ -1001,61 +1001,61 @@ button:disabled {
   
   .hero-image {
     max-width: 100%;
-    max-height: 150px; /* Smaller for mobile */
-    border-radius: 8px;
+    max-height: 120px; /* Much smaller */
+    border-radius: 6px;
     object-fit: cover;
   }
   
   /* Results section mobile optimization */
   #results {
     max-width: 100%;
-    padding: var(--spacing-sm);
+    padding: 6px; /* Minimal padding */
     overflow: hidden; /* Prevent main container scroll */
   }
 
   .results-page {
-    padding: var(--spacing-sm) 0 50px 0; /* Less bottom padding */
+    padding: 4px 0 40px 0; /* Minimal padding */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(500px - 80px); /* Fixed height minus navigation */
-    max-height: calc(500px - 80px);
+    height: calc(420px - 60px); /* Fixed height minus navigation */
+    max-height: calc(420px - 60px);
   }
   
   /* Results content scaling */
   #resultsHeader h2 {
-    font-size: 24px;
-    margin-bottom: var(--spacing-sm);
+    font-size: 18px; /* Much smaller */
+    margin-bottom: 4px; /* Minimal margin */
   }
   
   #dominantDomainsText {
-    font-size: 16px;
-    line-height: 1.4;
+    font-size: 12px; /* Much smaller */
+    line-height: 1.3;
   }
   
   #totalScore {
-    font-size: 42px;
-    margin: var(--spacing-md) 0;
+    font-size: 32px; /* Smaller */
+    margin: 6px 0; /* Minimal margin */
   }
 
   /* Domain visualization */
   #domainBars {
     grid-template-columns: 1fr;
-    gap: var(--spacing-sm);
-    margin: var(--spacing-md) 0;
+    gap: 4px; /* Minimal gap */
+    margin: 6px 0; /* Minimal margin */
   }
   
   .domain-bar {
-    padding: var(--spacing-sm);
-    margin: var(--spacing-sm) 0;
-    border-radius: 6px;
+    padding: 4px; /* Minimal padding */
+    margin: 2px 0; /* Minimal margin */
+    border-radius: 4px;
   }
 
   .bar-name {
-    font-size: 14px;
+    font-size: 11px; /* Much smaller */
   }
 
   .bar-count {
-    font-size: 16px;
+    font-size: 13px; /* Smaller */
   }
 
   /* Insights section */
@@ -1065,50 +1065,57 @@ button:disabled {
   }
   
   #insightText {
-    font-size: 14px;
-    line-height: 1.5;
+    font-size: 11px; /* Much smaller */
+    line-height: 1.4;
+  }
+
+  /* Insights section */
+  #personalInsights {
+    padding: 6px; /* Minimal padding */
+    margin: 6px 0; /* Minimal margin */
   }
 
   /* Share section optimization */
   .share-buttons {
-    gap: var(--spacing-sm);
-    margin: var(--spacing-md) 0;
+    gap: 4px; /* Minimal gap */
+    margin: 6px 0; /* Minimal margin */
   }
   
   .share-button {
-    padding: 12px 20px;
-    font-size: 14px;
-    border-radius: 6px;
+    padding: 6px 12px; /* Smaller padding */
+    font-size: 12px; /* Smaller text */
+    border-radius: 4px;
     font-weight: 600;
   }
 
   #shareBtn, #retakeBtn {
-    padding: 12px 24px;
-    font-size: 14px;
+    padding: 6px 12px; /* Smaller padding */
+    font-size: 12px; /* Smaller text */
     display: block;
     width: 100%;
-    margin: var(--spacing-sm) 0;
-    border-radius: 6px;
+    margin: 3px 0; /* Minimal margin */
+    border-radius: 4px;
     font-weight: 600;
   }
   
   /* Mobile navigation improvements */
   .results-navigation {
-    padding: var(--spacing-sm) var(--spacing-lg);
+    padding: 4px 12px; /* Minimal padding */
     border-top: 1px solid #f0f0f0; /* Subtle separator */
+    height: 40px; /* Fixed height */
   }
   
   .nav-arrow {
-    width: 48px;
-    height: 36px;
-    font-size: 14px;
-    border-radius: 6px;
+    width: 40px; /* Smaller */
+    height: 28px; /* Smaller */
+    font-size: 12px; /* Smaller text */
+    border-radius: 4px;
     touch-action: manipulation; /* Prevent zoom on double tap */
   }
   
   .page-dot {
-    width: 10px;
-    height: 10px;
+    width: 8px; /* Smaller */
+    height: 8px; /* Smaller */
     touch-action: manipulation; /* Prevent zoom on double tap */
   }
 
