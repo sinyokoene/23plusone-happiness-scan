@@ -283,10 +283,12 @@ body {
 
 @media (max-width: 480px) {
   #startBtn {
-    padding: 8px 16px; /* Smaller padding */
-    font-size: 14px; /* Smaller text */
-    margin: 4px auto 0 auto; /* Minimal margin */
-    max-width: 200px; /* Smaller width */
+    padding: 12px 24px; /* Better padding for touch targets */
+    font-size: 15px; /* Readable text size */
+    margin: 12px auto 8px auto; /* Better margins */
+    max-width: 240px; /* Slightly wider */
+    border-radius: 8px; /* Match other button styling */
+    box-shadow: 0 2px 8px rgba(233, 30, 99, 0.2); /* Subtle shadow with brand color */
 }
 
   #introContent h1 {
@@ -979,8 +981,8 @@ button:disabled {
 
   /* Button improvements - CRITICAL FIX */
   .buttons {
-    margin-top: 8px; /* Small margin */
-    gap: 12px; /* Adequate gap */
+    margin: 16px 8px 8px 8px; /* Increased top margin and added horizontal margins for aesthetics */
+    gap: 16px; /* Increased gap for better visual separation */
     flex-shrink: 0; /* Prevent buttons from shrinking */
     display: flex !important; /* Force display */
     justify-content: center !important;
@@ -1002,24 +1004,26 @@ button:disabled {
 
   /* Ensure Yes/No buttons have proper styling */
   #yesBtn, #noBtn {
-    font-size: 14px !important;
-    padding: 10px 20px !important;
+    font-size: 15px !important; /* Slightly larger for better readability */
+    padding: 12px 24px !important; /* Increased padding for better touch targets */
     border: none !important;
-    border-radius: 6px !important;
+    border-radius: 8px !important; /* Slightly more rounded */
     font-weight: 600 !important;
-    min-width: 80px !important;
+    min-width: 90px !important; /* Slightly wider */
     display: inline-block !important; /* Changed to inline-block for better flex behavior */
     flex: 0 0 auto; /* Don't grow or shrink */
-    margin: 0 !important; /* Reset any conflicting margins */
+    margin: 0 4px !important; /* Small horizontal margin for spacing */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important; /* Subtle shadow for depth */
+    transition: all 0.2s ease !important; /* Smooth transitions */
   }
 
   /* Force button visibility in game mode */
   #game .buttons {
     background: rgba(255, 255, 255, 0.02); /* Subtle background for debugging */
-    border-radius: 6px;
-    padding: 8px;
-    margin: 8px 0 0 0;
-    width: 100%; /* Full width */
+    border-radius: 8px; /* Match button border radius */
+    padding: 12px; /* Increased padding */
+    margin: 16px 8px 8px 8px; /* Match the updated margin from above */
+    width: calc(100% - 16px); /* Full width minus horizontal margins */
     box-sizing: border-box; /* Include padding in width */
   }
 
@@ -1053,11 +1057,12 @@ button:disabled {
   /* Intro section mobile optimization */
   #intro {
     justify-content: space-between;
+    padding: 12px; /* Slightly reduced padding to make room for content */
   }
   
   #introContent {
     flex-direction: column;
-    gap: 6px; /* Minimal gap */
+    gap: 12px; /* Increased gap for better spacing */
     text-align: center;
     padding: 0;
     flex: 1; /* Use available space */
@@ -1066,18 +1071,25 @@ button:disabled {
   
   .intro-left {
     text-align: center;
-    margin-bottom: 4px; /* Minimal margin */
+    margin-bottom: 8px; /* Slightly more margin */
+    flex-shrink: 1; /* Allow text to shrink if needed */
   }
   
   .intro-right {
     flex-shrink: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
   
   .hero-image {
     max-width: 100%;
-    max-height: 120px; /* Much smaller */
+    max-height: 180px; /* Increased from 120px for better visibility */
+    width: auto;
+    height: auto;
     border-radius: 6px;
-    object-fit: cover;
+    object-fit: contain; /* Changed from cover to contain to show full GIF */
+    display: block;
   }
   
   /* Results section mobile optimization */
