@@ -870,10 +870,13 @@ button:disabled {
 @media (max-width: 768px) and (pointer: coarse) {
   .swipe-hint {
     display: block;
+    font-size: 13px;
+    color: #666;
+    margin-top: var(--spacing-sm);
   }
   
   .buttons {
-    margin-top: 30px;
+    margin-top: var(--spacing-md);
   }
   
   .card-image {
@@ -882,6 +885,7 @@ button:disabled {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
+    touch-action: pan-y; /* Allow vertical scrolling but prevent horizontal */
   }
   
   .card-image:active {
@@ -889,134 +893,242 @@ button:disabled {
   }
 }
 
-/* Mobile Improvements */
+/* Mobile Improvements - Clean, Optimized Design */
 @media (max-width: 480px) {
+  /* Mobile body optimizations */
+  body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Main layout optimization */
   .main-content {
     padding: var(--spacing-sm);
     display: flex;
     align-items: center;
     justify-content: center;
+    min-height: calc(100vh - 40px); /* Account for footer */
   }
 
+  /* Container sizing - critical fix for button overflow */
   #intro, #game, #results {
-    padding: var(--spacing-lg) var(--spacing-md); /* Reduced padding for mobile */
+    height: calc(100vh - 120px); /* Dynamic height based on viewport */
+    max-height: 580px; /* Cap maximum height */
+    min-height: 400px; /* Ensure minimum usability */
+    padding: var(--spacing-md);
+    border-radius: 12px; /* Slightly larger radius for mobile */
   }
 
-  #intro, #game, #results {
-    height: 450px; /* Reduced height for mobile to prevent scrolling */
+  /* Game section optimization */
+  #game {
+    justify-content: space-between;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
   }
-  
+
+  /* Timer improvements for mobile */
   #timerContainer {
-    margin: 0 0 15px 0;
+    margin: 0 0 var(--spacing-sm) 0;
   }
 
+  #timerBar {
+    max-width: calc(100% - 40px); /* Full width with margin */
+    height: 6px; /* Thicker for better visibility */
+    margin: 8px auto;
+  }
+
+  /* Card display optimization */
   #cardImages {
-    min-height: 280px;
-    margin: 20px 0; /* Reduced margin for mobile */
+    min-height: 240px; /* Reduced but optimized */
+    margin: var(--spacing-sm) 0;
+    flex: 1; /* Take available space */
   }
   
   .card-image {
-    max-height: 280px;
+    max-height: 240px;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12); /* Softer shadow */
+    transform: translateZ(0); /* Hardware acceleration */
+    backface-visibility: hidden; /* Prevent flicker */
+    -webkit-backface-visibility: hidden;
+    image-rendering: -webkit-optimize-contrast; /* Improve image quality */
   }
-  
-  #timerBar {
-    max-width: 280px; /* Match mobile card size */
-    margin: 8px auto; /* Ensure centering on mobile */
-  }
-  
-  #game {
-    justify-content: space-between;
+
+  /* Button improvements */
+  .buttons {
+    margin-top: var(--spacing-sm);
     gap: var(--spacing-md);
-    padding: var(--spacing-lg) var(--spacing-md);
+  }
+
+  button {
+    font-size: 16px;
+    padding: 14px 24px;
+    border-radius: 8px;
+    min-width: 80px;
+    font-weight: 600;
+  }
+
+  /* Swipe hint styling */
+  .swipe-hint {
+    font-size: 13px;
+    color: #666;
+    margin-top: var(--spacing-sm);
+    font-weight: 500;
   }
   
+  /* Intro section mobile optimization */
   #introContent {
     flex-direction: column;
-    gap: 15px;
+    gap: var(--spacing-md);
     text-align: center;
     padding: 0;
+    flex: 1; /* Use available space */
+    justify-content: center;
   }
   
   .intro-left {
     text-align: center;
+    margin-bottom: var(--spacing-sm);
+  }
+  
+  .intro-right {
+    flex-shrink: 0;
   }
   
   .hero-image {
     max-width: 100%;
-    border-radius: 6px;
+    max-height: 180px; /* Limit height on mobile */
+    border-radius: 8px;
+    object-fit: cover;
   }
   
+  /* Results section mobile optimization */
   #results {
     max-width: 100%;
+    padding: var(--spacing-md);
+  }
+
+  .results-page {
+    padding: var(--spacing-sm) 0 60px 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
   }
   
-  #domainBars {
-    grid-template-columns: 1fr;
-    gap: 12px;
-    margin: 15px 0;
-  }
-  
+  /* Results content scaling */
   #resultsHeader h2 {
-    font-size: 20px;
+    font-size: 24px;
+    margin-bottom: var(--spacing-sm);
   }
   
   #dominantDomainsText {
-    font-size: 15px;
+    font-size: 16px;
+    line-height: 1.4;
   }
   
   #totalScore {
-    font-size: 36px;
+    font-size: 42px;
+    margin: var(--spacing-md) 0;
+  }
+
+  /* Domain visualization */
+  #domainBars {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-md) 0;
   }
   
   .domain-bar {
-    padding: 6px;
-    margin: 4px 0;
+    padding: var(--spacing-sm);
+    margin: var(--spacing-sm) 0;
+    border-radius: 6px;
   }
-  
+
+  .bar-name {
+    font-size: 14px;
+  }
+
+  .bar-count {
+    font-size: 16px;
+  }
+
+  /* Insights section */
   #personalInsights {
-    padding: 12px;
+    padding: var(--spacing-md);
+    margin: var(--spacing-md) 0;
   }
   
   #insightText {
-    font-size: 13px;
-  }
-  
-  #shareBtn, #retakeBtn {
-    padding: 10px 20px;
     font-size: 14px;
-    display: block;
-    width: 100%;
-    margin: 6px 0;
+    line-height: 1.5;
   }
-  
+
+  /* Share section optimization */
   .share-buttons {
-    gap: 6px;
-    margin: 12px 0;
+    gap: var(--spacing-sm);
+    margin: var(--spacing-md) 0;
   }
   
   .share-button {
-    padding: 8px 16px;
-    font-size: 13px;
+    padding: 12px 20px;
+    font-size: 14px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+
+  #shareBtn, #retakeBtn {
+    padding: 12px 24px;
+    font-size: 14px;
+    display: block;
+    width: 100%;
+    margin: var(--spacing-sm) 0;
+    border-radius: 6px;
+    font-weight: 600;
   }
   
-  /* Mobile navigation adjustments */
+  /* Mobile navigation improvements */
   .results-navigation {
     padding: var(--spacing-sm) var(--spacing-lg);
-  }
-  
-  .results-page {
-    padding: var(--spacing-sm) 0 60px 0; /* Smaller bottom padding for mobile */
+    border-top: 1px solid #f0f0f0; /* Subtle separator */
   }
   
   .nav-arrow {
-    width: 45px;
-    height: 32px;
+    width: 48px;
+    height: 36px;
     font-size: 14px;
+    border-radius: 6px;
+    touch-action: manipulation; /* Prevent zoom on double tap */
   }
   
   .page-dot {
-    width: 8px;
-    height: 8px;
+    width: 10px;
+    height: 10px;
+    touch-action: manipulation; /* Prevent zoom on double tap */
+  }
+
+  /* Mobile footer adjustments */
+  .bottom-branding {
+    min-height: 40px;
+    padding: 8px 16px;
+  }
+
+  .bottom-branding-logo {
+    width: 35px;
+    height: 35px;
+    min-width: 35px;
+    min-height: 35px;
+  }
+
+  .bottom-brand-logo {
+    height: 16px;
+  }
+
+  .bottom-branding-text {
+    font-size: 8px;
+  }
+
+  .bottom-copyright {
+    font-size: 7px;
   }
   
   .palette-tagline {
