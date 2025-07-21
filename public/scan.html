@@ -20,21 +20,7 @@
   <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
-  <!-- Bottom Branding -->
-  <div class="bottom-branding">
-    <div class="bottom-branding-left">
-      <svg class="bottom-branding-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.84 51.28">
-        <defs><style>.cls-1{fill:#672d21;}.cls-2{fill:#da006b;}</style></defs>
-        <g><rect class="cls-1" y="17.5" width="2.06" height="33.78"/><rect class="cls-1" x="4.12" y="5.15" width="2.06" height="46.13"/><rect class="cls-1" x="12.35" y="21.62" width="2.06" height="29.66"/><path class="cls-2" d="M26.75,2.55c-.8,0-1.52.3-2.07.8,0-.09.01-.17.01-.26,0-1.7-1.38-3.09-3.09-3.09s-3.09,1.38-3.09,3.09c0,.35.13.96.31,1.35.32.7.38,1.54.37,2.03-.08,2.23-1.2,2.91-2.99,3.6-4.68,1.81-7.97,6.27-7.97,11.55v29.66h2.06v-29.66c0-4.4,2.76-8.15,6.65-9.63,6.72-2.55,11.02-2.35,12.57-4.96.21-.42.33-.89.33-1.4,0-1.71-1.38-3.09-3.09-3.09Z"/></g>
-      </svg>
-      <div class="bottom-branding-text">The happiness scan by BR-ND People</div>
-    </div>
-    <div class="bottom-branding-right">
-      <div class="bottom-copyright">® 23plusone is a registered brand. © 2006-2025 Cramer & Koene</div>
-      <img src="23plusone.png" alt="23plusone" class="bottom-brand-logo">
-    </div>
-  </div>
-  
+  <div class="main-content">
   <div class="container">
     <section id="intro" role="banner" aria-labelledby="intro-heading">
       <div id="introContent">
@@ -56,20 +42,20 @@
       <h2 id="game-heading" class="sr-only">Happiness Scan Question</h2>
       
       <!-- Progress indicator -->
-      <div id="progress" role="progressbar" aria-label="Scan progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+      <!-- <div id="progress" role="progressbar" aria-label="Scan progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
         <div id="progressBar"></div>
-      </div>
+      </div> -->
       
       <div id="cardContainer" role="region" aria-live="polite" aria-label="Card presentation area">
-        
-        <div id="card" aria-live="assertive">
-          <div class="loading">Loading cards...</div>
-        </div>
-        
+        <!-- Timer positioned above cards -->
         <div id="timerContainer" role="timer" aria-label="Response timer" style="display: none;">
           <div id="timerBar" role="progressbar" aria-label="Time remaining" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
             <div id="timerProgress"></div>
           </div>
+        </div>
+        
+        <div id="card" aria-live="assertive">
+          <div class="loading">Loading cards...</div>
         </div>
       </div>
       
@@ -84,25 +70,45 @@
     </main>
 
     <section id="results" role="region" aria-labelledby="results-heading" style="display: none;">
-      <!-- Main Results Header -->
+      <!-- Page 1: Your Score & Overview -->
+      <div class="results-page" id="results-page-1">
       <header id="resultsHeader">
         <h2 id="results-heading">Done! Here's your happiness mix:</h2>
         <p id="dominantDomainsText" aria-live="polite">You're fueled by <span id="topDomains">--</span> — nice combo!</p>
         <p id="personalityInsight" class="subtitle">Your score shows how rich your emotional landscape is today.</p>
       </header>
 
-      <!-- IHS Score Display -->
       <section id="scoreSection" aria-labelledby="score-heading">
         <h3 id="score-heading" class="sr-only">Your Happiness Score</h3>
         <div id="totalScore" role="img" aria-label="Individual Happiness Score">--</div>
         <div id="ihsLabel">Individual Happiness Score (IHS)</div>
       </section>
 
-      <!-- Your Happiness Palette -->
+        <section id="benchmarkSection" aria-labelledby="benchmark-heading">
+          <h3 id="benchmark-heading">How You Compare</h3>
+          <div id="benchmarkMessage" role="status" aria-live="polite">Calculating your ranking...</div>
+          <div id="benchmarkStats" role="list" aria-label="Comparison statistics">
+            <div class="benchmark-item" role="listitem">
+              <span class="benchmark-label">Your Score:</span>
+              <span class="benchmark-value" id="benchmarkYourScore" aria-label="Your happiness score">--</span>
+            </div>
+            <div class="benchmark-item" role="listitem">
+              <span class="benchmark-label">Average Score:</span>
+              <span class="benchmark-value" id="benchmarkAverage" aria-label="Average participant score">--</span>
+            </div>
+            <div class="benchmark-item" role="listitem">
+              <span class="benchmark-label">Participants:</span>
+              <span class="benchmark-value" id="benchmarkTotal" aria-label="Total number of participants">--</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Page 2: Your Happiness Palette -->
+      <div class="results-page" id="results-page-2" style="display: none;">
       <section id="colorVisualization" aria-labelledby="palette-heading">
         <h3 id="palette-heading">Your Happiness Palette</h3>
         
-        <!-- Domain Bars -->
         <div id="domainBars" role="list" aria-label="Happiness domains breakdown">
           <div class="domain-bar" role="listitem" data-domain="Basics" aria-labelledby="basics-label">
             <div class="bar-header">
@@ -154,29 +160,13 @@
             </div>
           </div>
         </div>
+          
+          <p class="palette-tagline">More color = more joy. Want to try again and mix it up?</p>
       </section>
-
-      <!-- Benchmark Section -->
-      <section id="benchmarkSection" aria-labelledby="benchmark-heading" style="display: none;">
-        <h3 id="benchmark-heading">How You Compare</h3>
-        <div id="benchmarkMessage" role="status" aria-live="polite">Calculating your ranking...</div>
-        <div id="benchmarkStats" role="list" aria-label="Comparison statistics">
-          <div class="benchmark-item" role="listitem">
-            <span class="benchmark-label">Your Score:</span>
-            <span class="benchmark-value" id="benchmarkYourScore" aria-label="Your happiness score">--</span>
-          </div>
-          <div class="benchmark-item" role="listitem">
-            <span class="benchmark-label">Average Score:</span>
-            <span class="benchmark-value" id="benchmarkAverage" aria-label="Average participant score">--</span>
-          </div>
-          <div class="benchmark-item" role="listitem">
-            <span class="benchmark-label">Participants:</span>
-            <span class="benchmark-value" id="benchmarkTotal" aria-label="Total number of participants">--</span>
-          </div>
         </div>
-      </section>
 
-      <!-- Personalized Insights -->
+      <!-- Page 3: Insights & Actions -->
+      <div class="results-page" id="results-page-3" style="display: none;">
       <section id="personalInsights" aria-labelledby="insights-heading">
         <h3 id="insights-heading">Your Happiness Profile</h3>
         <p id="insightText" role="region" aria-live="polite">Analyzing your unique happiness mix...</p>
@@ -186,10 +176,8 @@
         </div>
       </section>
 
-      <!-- Share Section -->
       <section id="shareSection" aria-labelledby="share-heading">
-        <h3 id="share-heading" class="sr-only">Share Your Results</h3>
-        <p class="share-intro">More color = more joy. Want to try again and mix it up?</p>
+          <h3 id="share-heading">Share & Explore More</h3>
         
         <div class="share-buttons" role="group" aria-label="Sharing options">
           <button id="nativeShareBtn" type="button" class="share-button native" aria-label="Share results using device's native sharing">
@@ -202,8 +190,36 @@
         
         <button id="retakeBtn" type="button" class="btn" aria-label="Start a new happiness scan" onclick="location.reload()">Take Again</button>
       </section>
+      </div>
+
+      <!-- Navigation Footer -->
+      <div class="results-navigation">
+        <button id="prevBtn" class="nav-arrow nav-prev" aria-label="Previous page" disabled>Prev</button>
+        <div class="page-indicator">
+          <div class="page-dot active" data-page="1" aria-label="Page 1" tabindex="0" role="button"></div>
+          <div class="page-dot" data-page="2" aria-label="Page 2" tabindex="0" role="button"></div>
+          <div class="page-dot" data-page="3" aria-label="Page 3" tabindex="0" role="button"></div>
+        </div>
+        <button id="nextBtn" class="nav-arrow nav-next" aria-label="Next page">Next</button>
+      </div>
     </section>
+    </div>
   </div>
+
+  <!-- Footer -->
+  <footer class="bottom-branding">
+    <div class="bottom-branding-left">
+      <svg class="bottom-branding-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.84 51.28">
+        <defs><style>.cls-1{fill:#672d21;}.cls-2{fill:#da006b;}</style></defs>
+        <g><rect class="cls-1" y="17.5" width="2.06" height="33.78"/><rect class="cls-1" x="4.12" y="5.15" width="2.06" height="46.13"/><rect class="cls-1" x="12.35" y="21.62" width="2.06" height="29.66"/><path class="cls-2" d="M26.75,2.55c-.8,0-1.52.3-2.07.8,0-.09.01-.17.01-.26,0-1.7-1.38-3.09-3.09-3.09s-3.09,1.38-3.09,3.09c0,.35.13.96.31,1.35.32.7.38,1.54.37,2.03-.08,2.23-1.2,2.91-2.99,3.6-4.68,1.81-7.97,6.27-7.97,11.55v29.66h2.06v-29.66c0-4.4,2.76-8.15,6.65-9.63,6.72-2.55,11.02-2.35,12.57-4.96.21-.42.33-.89.33-1.4,0-1.71-1.38-3.09-3.09-3.09Z"/></g>
+      </svg>
+      <div class="bottom-branding-text">The happiness scan by BR-ND People</div>
+    </div>
+    <div class="bottom-branding-right">
+      <div class="bottom-copyright">® 23plusone is a registered brand. © 2006-2025 Cramer & Koene</div>
+      <img src="23plusone.png" alt="23plusone" class="bottom-brand-logo">
+    </div>
+  </footer>
 
   <script src="scripts/app.js" defer></script>
 </body>

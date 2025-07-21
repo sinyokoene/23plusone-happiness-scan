@@ -4,7 +4,6 @@
 @font-face {
   font-family: 'Poppins';
   font-display: swap;
-  /* This ensures text remains visible during webfont load */
 }
 
 /* GPU acceleration for smooth animations */
@@ -32,8 +31,6 @@
   --card-bg: #ffffff;
   --text-primary: #333333;
   --text-secondary: #555555;
-  --text-tertiary: #777777;
-  --text-light: #888888;
   --text-muted: #666666;
   
   /* Status Colors */
@@ -43,12 +40,9 @@
   --danger: #f44336;
   --danger-hover: #da190b;
   --danger-active: #ef5350;
-  --warning: #FF9800;
-  --info: #2196F3;
   
   /* Background Colors */
   --bg-light: #f8f9fa;
-  --bg-lighter: #fafafa;
   --border-light: #f0f0f0;
   --border-medium: #e9ecef;
   --border-dark: #dee2e6;
@@ -62,7 +56,6 @@
   --domain-beauty: #E91E63;
   
   /* Spacing */
-  --spacing-xs: 4px;
   --spacing-sm: 8px;
   --spacing-md: 12px;
   --spacing-lg: 20px;
@@ -71,74 +64,24 @@
   
   /* Border Radius */
   --radius-sm: 3px;
-  --radius-md: 4px;
-  --radius-lg: 6px;
   --radius: 8px;
-  --radius-xl: 12px;
   
   /* Shadows */
-  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
   --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
-  --shadow-lg: 0 12px 24px rgba(0,0,0,0.15);
   --shadow-xl: 0 20px 40px rgba(0,0,0,0.1);
   
   /* Typography */
   --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-mono: 'Courier New', Courier, monospace;
   
   /* Transitions */
   --transition-fast: 0.2s ease;
   --transition: 0.3s ease;
   --transition-slow: 0.6s ease;
-  
-  /* Z-index */
-  --z-bottom-bar: 1000;
 }
-
-/* Utility Classes */
-.card {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-xl);
-  padding: var(--spacing-xl);
-}
-
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.flex { display: flex; }
-.flex-column { flex-direction: column; }
-.flex-center { 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-}
-.space-between { justify-content: space-between; }
-.align-center { align-items: center; }
-
-/* Spacing utilities */
-.m-0 { margin: 0; }
-.mt-sm { margin-top: var(--spacing-sm); }
-.mt-md { margin-top: var(--spacing-md); }
-.mt-lg { margin-top: var(--spacing-lg); }
-.mb-sm { margin-bottom: var(--spacing-sm); }
-.mb-md { margin-bottom: var(--spacing-md); }
-.mb-lg { margin-bottom: var(--spacing-lg); }
-
-.p-sm { padding: var(--spacing-sm); }
-.p-md { padding: var(--spacing-md); }
-.p-lg { padding: var(--spacing-lg); }
-.p-xl { padding: var(--spacing-xl); }
-
-/* Color utilities */
-.text-primary { color: var(--text-primary); }
-.text-secondary { color: var(--text-secondary); }
-.text-brand { color: var(--brand-pink); }
-.bg-light { background: var(--bg-light); }
 
 /* Button utilities */
 .btn {
+  font-family: var(--font-family);
   padding: 15px var(--spacing-xl);
   border: none;
   border-radius: var(--radius);
@@ -177,8 +120,6 @@
   border: 0 !important;
 }
 
-
-
 /* Enhanced Keyboard Navigation */
 *:focus-visible {
   outline: 2px solid var(--brand-pink);
@@ -186,19 +127,16 @@
   border-radius: var(--radius-sm);
 }
 
-/* Remove focus outline for mouse users */
 *:focus:not(:focus-visible) {
   outline: none;
 }
 
-/* Enhanced button focus states */
 .btn:focus-visible {
   outline: 2px solid var(--brand-pink);
   outline-offset: 2px;
   transform: translateY(-1px);
 }
 
-/* Card image focus for keyboard navigation */
 .card-image:focus {
   outline: 2px solid var(--brand-pink);
   outline-offset: 2px;
@@ -208,13 +146,11 @@
 /* High contrast mode support */
 @media (prefers-contrast: high) {
   :root {
-    --shadow-sm: none;
     --shadow-md: none;
-    --shadow-lg: none;
     --shadow-xl: 0 0 0 1px var(--text-primary);
   }
   
-  .card, #intro, #game, #results {
+  #intro, #game, #results {
     border: 2px solid var(--text-primary);
   }
 }
@@ -233,17 +169,6 @@
   }
 }
 
-/* Improve kbd styling */
-kbd {
-  background-color: var(--bg-light);
-  border: 1px solid var(--border-dark);
-  border-radius: var(--radius-sm);
-  padding: 2px var(--spacing-xs);
-  font-size: 0.875em;
-  color: var(--text-muted);
-  font-family: var(--font-mono);
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -255,50 +180,42 @@ body {
   background: var(--brand-dark);
   min-height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: space-between;
   color: var(--text-primary);
-  overflow-x: hidden; /* Prevent horizontal scrollbars */
-  padding-bottom: 0;
+  overflow-x: hidden;
 }
 
-/* Keep results container positioned consistently with intro/game */
-body.showing-results {
-  /* Removed align-items and padding-top to match intro/game positioning */
+.main-content {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-md);
 }
 
 .container {
   width: 100%;
-  max-width: 1080px;
-  padding: var(--spacing-lg);
-  overflow: visible; /* Allow cards to animate outside */
+  max-width: 1250px;
+  overflow: visible;
 }
 
-#game {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  padding: var(--spacing-xxl) var(--spacing-xl); /* Same as intro and results */
-  box-shadow: var(--shadow-xl);
-  text-align: center;
-  height: 600px; /* Fixed consistent height */
-  margin: 0 auto 100px auto; /* Bottom margin to stay above footer */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow: visible; /* Allow swipe animations to extend outside */
-}
-
-#intro {
+/* Consistent container styling for all states */
+#game, #intro, #results {
   background: var(--card-bg);
   border-radius: var(--radius);
   padding: var(--spacing-xxl) var(--spacing-xl);
   box-shadow: var(--shadow-xl);
   text-align: center;
-  height: 600px; /* Fixed consistent height */
-  margin: 0 auto 100px auto; /* Bottom margin to stay above footer */
+  width: 100%;
+  height: 700px; /* Fixed height for perfect consistency */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  overflow: visible;
+}
+
+#intro {
   animation: fadeInUp 0.8s ease forwards;
 }
 
@@ -369,21 +286,6 @@ body.showing-results {
   box-shadow: none;
 }
 
-#progress {
-  background: var(--progress-bg);
-  height: 6px;
-  border-radius: var(--radius-sm);
-  margin-bottom: var(--spacing-lg);
-  overflow: hidden;
-}
-
-#progressBar {
-  height: 100%;
-  background: var(--brand-pink);
-  width: 0%;
-  transition: width var(--transition);
-}
-
 #cardContainer {
   flex: 1;
   display: flex;
@@ -399,26 +301,26 @@ body.showing-results {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 20px 0;
-  min-height: 250px; /* Increased height for better visual focus */
-  overflow: visible; /* Allow cards to animate outside bounds */
+  margin: 30px 0;
+  min-height: 350px; /* Increased from 250px */
+  overflow: visible;
   position: relative;
 }
 
 .card-image {
   max-width: 100%;
-  max-height: 250px; /* Increased from 200px for better visibility */
+  max-height: 350px; /* Increased from 250px */
   width: auto;
   height: auto;
   border-radius: 8px;
-  box-shadow: 0 12px 24px rgba(0,0,0,0.15); /* Enhanced shadow for focus */
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
   opacity: 1;
   object-fit: contain;
-  transition: transform 0.2s ease; /* Add subtle hover effect */
+  transition: transform 0.2s ease;
 }
 
 .card-image:hover {
-  transform: scale(1.02); /* Subtle zoom on hover */
+  transform: scale(1.02);
 }
 
 @keyframes fadeInUp {
@@ -433,7 +335,9 @@ body.showing-results {
 }
 
 #timerContainer {
-  margin: 20px 0;
+  margin: 0 0 20px 0;
+  display: flex;
+  justify-content: center;
 }
 
 #timerBar {
@@ -441,35 +345,31 @@ body.showing-results {
   background: #e0e0e0;
   border-radius: 4px;
   overflow: hidden;
-  margin: 10px 0;
+  margin: 10px auto;
+  width: 100%;
+  max-width: 350px; /* Match card container width */
 }
 
 #timerProgress {
   height: 100%;
-  background: #4CAF50; /* Start with green */
+  background: #4CAF50;
   width: 100%;
   transition: width 4s linear, background-color 0.3s ease;
   border-radius: 4px;
 }
 
 #timerProgress.warning {
-  background: #FF9800 !important; /* Orange when time is running low */
+  background: #FF9800 !important;
 }
 
 #timerProgress.danger {
-  background: #F44336 !important; /* Red when almost out of time */
+  background: #F44336 !important;
   animation: pulse 0.5s infinite alternate;
 }
 
 @keyframes pulse {
   from { opacity: 0.7; }
   to { opacity: 1.0; }
-}
-
-#timerText {
-  font-size: 14px;
-  color: #666;
-  margin-bottom: 10px;
 }
 
 .buttons {
@@ -480,6 +380,7 @@ body.showing-results {
 }
 
 button {
+  font-family: var(--font-family);
   font-size: 18px;
   min-width: 100px;
   user-select: none;
@@ -528,40 +429,130 @@ button:disabled {
   transform: none !important;
 }
 
-/* Results Section - Perfectly consistent with intro and game */
+/* Results specific styling */
 #results {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  padding: var(--spacing-xxl) var(--spacing-xl); /* Same as intro container */
-  box-shadow: var(--shadow-xl);
-  text-align: center;
-  height: 600px; /* Fixed consistent height like other containers */
-  margin: 0 auto 100px auto; /* Bottom margin to stay above footer */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between; /* Same as intro and game for perfect alignment */
-  overflow-y: auto; /* Keep scrolling for long results */
+  justify-content: space-between; /* Space content and navigation */
+  overflow: hidden; /* Prevent scrolling in paginated view */
+  position: relative;
 }
 
+/* Results Navigation */
+.results-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-xl);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+}
 
+.nav-arrow {
+  background: var(--bg-light);
+  color: var(--brand-pink);
+  border: 2px solid var(--brand-pink);
+  border-radius: var(--radius);
+  width: 50px;
+  height: 35px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+}
+
+.nav-arrow:hover:not(:disabled) {
+  background: var(--brand-pink);
+  color: var(--white);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-arrow:disabled {
+  background: #f5f5f5;
+  color: #ccc;
+  border-color: #ddd;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.page-indicator {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.page-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ddd;
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.page-dot:hover {
+  background: #bbb;
+  transform: scale(1.1);
+}
+
+.page-dot.active {
+  background: var(--brand-pink);
+  transform: scale(1.2);
+}
+
+.page-dot.active:hover {
+  background: var(--brand-pink);
+  transform: scale(1.2);
+}
+
+/* Results Pages */
+.results-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Allow content to flow from top */
+  min-height: 0; /* Allow flex child to shrink */
+  overflow-y: auto; /* Allow scrolling if needed */
+  padding: var(--spacing-sm) 0 80px 0; /* Add bottom padding for navigation */
+}
+
+/* Palette tagline styling */
+.palette-tagline {
+  font-size: 14px;
+  color: #666;
+  margin-top: 15px;
+  font-style: italic;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.results-page:not([style*="display: none"]) {
+  animation: fadeInUp 0.5s ease forwards;
+}
 
 #resultsHeader {
-  margin-bottom: 35px;
+  margin-bottom: 20px;
 }
 
 #resultsHeader h2 {
   color: #333;
-  margin-bottom: 20px;
-  font-size: 28px;
+  margin-bottom: 12px;
+  font-size: 22px;
   font-weight: 700;
 }
 
 #dominantDomainsText {
-  font-size: 20px;
+  font-size: 16px;
   color: #555;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   font-weight: 600;
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 #topDomains {
@@ -570,59 +561,59 @@ button:disabled {
 }
 
 #personalityInsight {
-  font-size: 16px;
+  font-size: 14px;
   color: #777;
   margin-bottom: 0;
   font-style: italic;
 }
 
 #scoreSection {
-  margin: 40px 0;
-  padding: 30px;
+  margin: 20px 0;
+  padding: 20px;
   background: #f8f9fa;
   border-radius: 8px;
   border: 1px solid #e9ecef;
 }
 
 #totalScore {
-  font-size: 56px;
+  font-size: 42px;
   font-weight: 800;
   color: #e91e63;
-  margin: 15px 0;
+  margin: 10px 0;
   letter-spacing: -1px;
 }
 
 #ihsLabel {
-  font-size: 14px;
+  font-size: 12px;
   color: #777;
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: 1.2px;
   font-weight: 600;
 }
 
 #colorVisualization {
-  margin: 45px 0;
+  margin: 15px 0;
 }
 
 #colorVisualization h3 {
   color: #333;
-  margin-bottom: 25px;
-  font-size: 22px;
+  margin-bottom: 15px;
+  font-size: 18px;
   font-weight: 700;
 }
 
 #domainBars {
-  margin: 45px 0;
+  margin: 15px 0;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 20px;
+  gap: 8px;
 }
 
 .domain-bar {
-  margin: 20px 0;
-  padding: 15px;
+  margin: 6px 0;
+  padding: 8px;
   background: #fafafa;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid #f0f0f0;
 }
 
@@ -630,12 +621,7 @@ button:disabled {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 12px;
-}
-
-.bar-icon {
-  font-size: 18px;
-  margin-right: 8px;
+  margin-bottom: 6px;
 }
 
 .bar-name {
@@ -643,14 +629,14 @@ button:disabled {
   text-align: left;
   font-weight: 700;
   color: #333;
-  font-size: 16px;
+  font-size: 14px;
 }
 
 .bar-count {
   font-weight: 800;
   color: #e91e63;
-  font-size: 18px;
-  min-width: 30px;
+  font-size: 16px;
+  min-width: 25px;
   text-align: right;
 }
 
@@ -676,35 +662,35 @@ button:disabled {
 .bar-attraction { background: var(--domain-beauty); }
 
 #personalInsights {
-  margin: 45px 0;
-  padding: 30px;
+  margin: 15px 0;
+  padding: 15px;
   background: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 6px;
   text-align: left;
   border: 1px solid #e9ecef;
 }
 
 #personalInsights h3 {
   color: #333;
-  margin-bottom: 20px;
-  font-size: 22px;
+  margin-bottom: 12px;
+  font-size: 18px;
   text-align: center;
   font-weight: 700;
 }
 
 #insightText {
-  font-size: 17px;
+  font-size: 14px;
   color: #555;
-  line-height: 1.7;
-  margin-bottom: 25px;
+  line-height: 1.5;
+  margin-bottom: 15px;
   text-align: center;
-  padding: 0 10px;
+  padding: 0 8px;
 }
 
 #recommendations h4 {
   color: #333;
-  margin-bottom: 15px;
-  font-size: 18px;
+  margin-bottom: 10px;
+  font-size: 16px;
   font-weight: 700;
 }
 
@@ -714,40 +700,42 @@ button:disabled {
 }
 
 #recommendationsList li {
-  padding: 12px 0;
+  padding: 8px 0;
   color: #555;
-  border-left: 4px solid #e91e63;
-  padding-left: 20px;
-  margin: 12px 0;
-  font-size: 16px;
-  line-height: 1.5;
+  border-left: 3px solid #e91e63;
+  padding-left: 12px;
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.4;
   background: rgba(233, 30, 99, 0.02);
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 3px 3px 0;
 }
 
 #shareSection {
-  margin-top: 45px;
-  padding-top: 30px;
+  margin-top: 15px;
+  padding-top: 12px;
   border-top: 2px solid #f0f0f0;
 }
 
-.share-intro {
-  font-size: 17px;
-  color: #666;
-  margin-bottom: 25px;
-  font-style: italic;
-  line-height: 1.5;
+#shareSection h3 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 18px;
+  text-align: center;
+  font-weight: 700;
 }
 
+
+
 #shareBtn, #retakeBtn {
-  padding: 15px 30px;
+  padding: 12px 24px;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin: 5px;
+  margin: 4px;
 }
 
 #shareBtn {
@@ -772,53 +760,24 @@ button:disabled {
   transform: translateY(-2px);
 }
 
-#socialLinks {
-  margin-top: 25px;
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-}
-
-#socialLinks a {
-  padding: 12px 25px;
-  text-decoration: none;
-  border-radius: 8px;
-  font-weight: 600;
-  transition: transform 0.3s ease;
-  font-size: 15px;
-}
-
-#tweetLink {
-  background: #1da1f2;
-  color: white;
-}
-
-#fbLink {
-  background: #1877f2;
-  color: white;
-}
-
-#socialLinks a:hover {
-  transform: translateY(-2px);
-}
-
 /* Share Buttons Styling */
 .share-buttons {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  margin: 25px 0;
+  gap: 8px;
+  margin: 15px 0;
 }
 
 .share-button {
+  font-family: var(--font-family);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  padding: 14px 24px;
+  gap: 8px;
+  padding: 10px 18px;
   border: none;
-  border-radius: 8px;
-  font-size: 16px;
+  border-radius: 6px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -860,33 +819,6 @@ button:disabled {
 @keyframes successPulse {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.02); }
-}
-
-.share-icon {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-@media (max-width: 768px) {
-  .share-buttons {
-    gap: 10px;
-    margin: 20px 0;
-  }
-  
-  .share-button {
-    padding: 12px 20px;
-    font-size: 15px;
-  }
-}
-
-/* Brand Logo Styling */
-.brand-logo {
-  width: 150px;
-  height: auto;
-  margin: 0 auto 20px auto;
-  opacity: 1.0;
-  display: block;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
 /* Hero Image Styling */
@@ -934,15 +866,39 @@ button:disabled {
 
 /* Mobile Improvements */
 @media (max-width: 480px) {
-  .container {
-    max-width: 100%;
-    padding: 15px;
+  .main-content {
+    padding: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  /* Consistent mobile heights and margins for all white containers */
   #intro, #game, #results {
-    height: 500px; /* Slightly shorter for mobile */
-    margin: 0 auto 120px auto; /* Consistent bottom spacing above footer */
+    height: 600px; /* Increased height for mobile to show all content */
+  }
+  
+  #timerContainer {
+    margin: 0 0 15px 0;
+  }
+
+  #cardImages {
+    min-height: 280px;
+    margin: 20px 0; /* Reduced margin for mobile */
+  }
+  
+  .card-image {
+    max-height: 280px;
+  }
+  
+  #timerBar {
+    max-width: 280px; /* Match mobile card size */
+    margin: 8px auto; /* Ensure centering on mobile */
+  }
+  
+  #game {
+    justify-content: space-between;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg) var(--spacing-md);
   }
   
   #introContent {
@@ -961,69 +917,113 @@ button:disabled {
   }
   
   #results {
-    margin: 0 auto 120px auto; /* Consistent with other containers */
     max-width: 100%;
   }
   
   #domainBars {
     grid-template-columns: 1fr;
-    gap: 15px;
-  }
-  
-  #benchmarkStats {
-    flex-direction: column;
-    gap: 15px;
-    align-items: center;
-  }
-  
-  .benchmark-item {
-    min-width: 150px;
+    gap: 12px;
+    margin: 15px 0;
   }
   
   #resultsHeader h2 {
-    font-size: 24px;
+    font-size: 20px;
   }
   
   #dominantDomainsText {
-    font-size: 18px;
+    font-size: 15px;
   }
   
   #totalScore {
-    font-size: 48px;
+    font-size: 36px;
   }
   
   .domain-bar {
-    padding: 12px;
+    padding: 6px;
+    margin: 4px 0;
   }
   
   #personalInsights {
-    padding: 20px;
+    padding: 12px;
   }
   
   #insightText {
-    font-size: 16px;
+    font-size: 13px;
   }
   
   #shareBtn, #retakeBtn {
-    padding: 12px 25px;
-    font-size: 15px;
+    padding: 10px 20px;
+    font-size: 14px;
     display: block;
     width: 100%;
-    margin: 8px 0;
+    margin: 6px 0;
+  }
+  
+  .share-buttons {
+    gap: 6px;
+    margin: 12px 0;
+  }
+  
+  .share-button {
+    padding: 8px 16px;
+    font-size: 13px;
+  }
+  
+  /* Mobile navigation adjustments */
+  .results-navigation {
+    padding: var(--spacing-sm) var(--spacing-lg);
+  }
+  
+  .results-page {
+    padding: var(--spacing-sm) 0 70px 0; /* Smaller bottom padding for mobile */
+  }
+  
+  .nav-arrow {
+    width: 45px;
+    height: 32px;
+    font-size: 14px;
+  }
+  
+  .page-dot {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .palette-tagline {
+    font-size: 13px;
+    margin-top: 12px;
   }
 }
 
 /* Tablet and medium screen improvements */
 @media (max-width: 768px) and (min-width: 481px) {
-  .container {
-    max-width: 95%;
-    padding: 20px;
+  .main-content {
+    padding: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
-  /* Consistent tablet heights and margins for all white containers */
   #intro, #game, #results {
-    height: 550px; /* Medium height for tablets */
-    margin: 0 auto 100px auto; /* Consistent bottom spacing above footer */
+    height: 650px; /* Increased height for tablet to show all content */
+  }
+  
+  #timerContainer {
+    margin: 0 0 20px 0;
+  }
+
+  #cardImages {
+    min-height: 320px;
+    margin: 25px 0; /* Balanced margin for tablet */
+  }
+  
+  .card-image {
+    max-height: 320px;
+  }
+  
+  #timerBar {
+    max-width: 320px; /* Match tablet card size */
+    margin: 8px auto; /* Ensure centering on tablet */
   }
   
   #introContent {
@@ -1041,141 +1041,112 @@ button:disabled {
     gap: 20px;
   }
   
-  #benchmarkStats {
-    gap: 20px;
+  .results-page {
+    padding: var(--spacing-sm) 0 75px 0; /* Medium bottom padding for tablet */
+  }
+  
+  .results-navigation {
+    padding: var(--spacing-md) var(--spacing-xl);
   }
 }
 
 /* Benchmark Section Styles */
 #benchmarkSection {
-  margin: 45px 0;
-  padding: 30px;
+  margin: 15px 0;
+  padding: 15px;
   background: #f8f9fa;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 1px solid #e9ecef;
   text-align: center;
 }
 
 #benchmarkSection h3 {
   color: #333;
-  margin-bottom: 20px;
-  font-size: 22px;
+  margin-bottom: 12px;
+  font-size: 18px;
   font-weight: 700;
 }
 
 #benchmarkMessage {
-  font-size: 24px;
+  font-size: 16px;
   color: #e91e63;
-  margin-bottom: 25px;
-  line-height: 1.4;
-  font-weight: 700;
-  padding: 20px;
+  margin-bottom: 15px;
+  line-height: 1.3;
+  font-weight: 600;
+  padding: 12px;
   background: white;
-  border-radius: 8px;
+  border-radius: 6px;
   border: 2px solid #e91e63;
 }
 
 #benchmarkStats {
   display: flex;
   justify-content: center;
-  gap: 30px;
-  margin-top: 20px;
+  gap: 15px;
+  margin-top: 12px;
   flex-wrap: wrap;
 }
 
 .benchmark-item {
   background: white;
-  padding: 12px 20px;
-  border-radius: 6px;
+  padding: 8px 12px;
+  border-radius: 4px;
   border: 1px solid #e9ecef;
-  min-width: 120px;
+  min-width: 80px;
 }
 
 .benchmark-label {
   display: block;
-  font-size: 12px;
+  font-size: 10px;
   color: #666;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.3px;
 }
 
 .benchmark-value {
   display: block;
-  font-size: 16px;
+  font-size: 14px;
   color: #333;
   font-weight: 700;
 }
 
-/* Practice Round Indicator */
-.practice-indicator {
-  background: #FF9800;
-  color: white;
-  padding: 6px 16px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin: 0 auto 15px auto;
-  display: inline-block;
-  opacity: 0.9;
-}
-
-/* Practice mode styling for game container */
-#game.practice-mode {
-  background: white; /* Keep white background even in practice mode */
-  border: 2px solid #FF9800; /* Add orange border to indicate practice */
-}
-
-/* Bottom Branding - Clean footer style */
+/* Footer */
 .bottom-branding {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
   background: var(--brand-dark);
-  padding: 20px 40px; /* Consistent padding all around */
+  padding: 12px 24px;
   display: flex;
-  align-items: center; /* Center align - no conflicts */
+  align-items: center;
   justify-content: space-between;
-  z-index: var(--z-bottom-bar);
   color: var(--white);
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 500;
-  opacity: 0.98;
-  height: auto; /* Auto height based on content */
-  min-height: 80px; /* Minimum height for spacing */
-  pointer-events: none;
+  min-height: 50px;
 }
 
 .bottom-branding-left {
   display: flex;
   flex-direction: row;
-  align-items: center; /* Center align - clean and simple */
-  gap: 20px;
-  pointer-events: auto;
+  align-items: center;
+  gap: 12px;
 }
 
 .bottom-branding-right {
   display: flex;
   flex-direction: row;
-  align-items: center; /* Center align */
-  gap: 20px;
-  pointer-events: auto;
+  align-items: center;
+  gap: 12px;
 }
 
-/* BR-ND SVG logo - Sits at very bottom edge */
 .bottom-branding-logo {
-  width: 120px;
-  height: 120px;
-  min-width: 120px;
-  min-height: 120px;
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  min-height: 80px;
   flex-shrink: 0;
   display: block;
-  align-self: flex-end; /* This logo aligns to bottom */
-  margin-bottom: -25px; /* Pull it way down to eliminate brown underneath */
+  align-self: center;
 }
 
 .bottom-branding-logo .cls-1 {
@@ -1187,64 +1158,58 @@ button:disabled {
 }
 
 .bottom-branding-text {
-  font-size: 12px;
+  font-size: 10px;
   font-weight: 400;
   opacity: 0.9;
 }
 
-/* 23plusone logo in bottom bar */
 .bottom-brand-logo {
-  height: 40px;
+  height: 28px;
   width: auto;
   opacity: 0.9;
   filter: brightness(0) invert(1);
-  margin-left: 12px;
-}
-
-/* Copyright text */
-.bottom-copyright {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.7);
-  text-align: right;
   margin-left: 8px;
 }
 
-/* Mobile adjustment - Clean and simple */
+.bottom-copyright {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: right;
+  margin-left: 6px;
+}
+
+/* Mobile footer */
 @media (max-width: 480px) {
   .bottom-branding {
-    padding: 16px;
-    height: auto;
-    min-height: 70px;
-    align-items: center; /* Center align on mobile too */
+    padding: 8px 12px;
+    min-height: 40px;
+    align-items: center;
     text-align: center;
-    border-top-left-radius: 12px;
-    border-top-right-radius: 12px;
   }
   .bottom-branding-left,
   .bottom-branding-right {
     justify-content: center;
-    align-items: center; /* Center align */
+    align-items: center;
     flex-direction: row;
-    gap: 12px;
+    gap: 8px;
   }
   .bottom-branding-text {
-    font-size: 13px;
+    font-size: 9px;
   }
   .bottom-branding-logo {
-    width: 60px;
-    height: 60px;
-    min-width: 60px;
-    min-height: 60px;
-    align-self: flex-end; /* Bottom align on mobile too */
-    margin-bottom: -15px; /* Pull way down to eliminate brown on mobile */
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    align-self: center;
   }
   .bottom-brand-logo {
-    height: 24px;
-    margin-left: 6px;
+    height: 18px;
+    margin-left: 4px;
   }
   .bottom-copyright {
-    font-size: 10px;
+    font-size: 8px;
     text-align: center;
-    margin-left: 4px;
+    margin-left: 2px;
   }
 }

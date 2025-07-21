@@ -78,13 +78,16 @@
     
     const card = deck[currentCardIndex];
     
-    // Update progress
+    // Update progress (only if progress bar exists)
+    if (progressBar) {
     const progress = (currentCardIndex / deck.length) * 100;
     progressBar.style.width = progress + '%';
+    }
     
-    // Update ARIA attributes for progress
+    // Update ARIA attributes for progress (only if progress container exists)
     const progressContainer = document.getElementById('progress');
     if (progressContainer) {
+      const progress = (currentCardIndex / deck.length) * 100;
       progressContainer.setAttribute('aria-valuenow', Math.round(progress));
     }
     
@@ -345,6 +348,9 @@
     // Change body layout for results
     document.body.classList.add('showing-results');
     
+    // Initialize pagination
+    initializeResultsPagination();
+    
     // Display enhanced results
     displayEnhancedResults(results);
     
@@ -356,6 +362,74 @@
     
     // Setup sharing
     setupSharing(results);
+  }
+
+  // Results Pagination System
+  let currentResultsPage = 1;
+  const totalResultsPages = 3;
+
+  function initializeResultsPagination() {
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    prevBtn.addEventListener('click', () => navigateResultsPage(-1));
+    nextBtn.addEventListener('click', () => navigateResultsPage(1));
+    
+    // Add click listeners to dots
+    const allDots = document.querySelectorAll('.page-dot');
+    allDots.forEach((dot, index) => {
+      dot.addEventListener('click', () => showResultsPage(index + 1));
+      
+      // Add keyboard support for dots
+      dot.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          showResultsPage(index + 1);
+        }
+      });
+    });
+    
+    // Show first page initially
+    showResultsPage(1);
+  }
+  
+  function navigateResultsPage(direction) {
+    const newPage = currentResultsPage + direction;
+    if (newPage >= 1 && newPage <= totalResultsPages) {
+      showResultsPage(newPage);
+    }
+  }
+  
+  function showResultsPage(pageNumber) {
+    // Hide all pages
+    for (let i = 1; i <= totalResultsPages; i++) {
+      const page = document.getElementById(`results-page-${i}`);
+      if (page) page.style.display = 'none';
+    }
+    
+    // Show selected page
+    const selectedPage = document.getElementById(`results-page-${pageNumber}`);
+    if (selectedPage) selectedPage.style.display = 'flex';
+    
+    // Update current page
+    currentResultsPage = pageNumber;
+    
+    // Update dots indicator
+    const allDots = document.querySelectorAll('.page-dot');
+    allDots.forEach((dot, index) => {
+      if (index + 1 === pageNumber) {
+        dot.classList.add('active');
+      } else {
+        dot.classList.remove('active');
+      }
+    });
+    
+    // Update navigation buttons
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    
+    prevBtn.disabled = (pageNumber === 1);
+    nextBtn.disabled = (pageNumber === totalResultsPages);
   }
   
   function displayEnhancedResults(results) {
