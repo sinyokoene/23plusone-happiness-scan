@@ -283,28 +283,32 @@ body {
 
 @media (max-width: 480px) {
   #startBtn {
-    padding: 12px 24px; /* Better padding for touch targets */
-    font-size: 15px; /* Readable text size */
-    margin: 12px auto 8px auto; /* Better margins */
-    max-width: 240px; /* Slightly wider */
+    padding: 10px 20px; /* Slightly reduced padding to save space */
+    font-size: 14px; /* Slightly smaller text to save space */
+    margin: 8px auto 4px auto; /* Reduced margins to save space */
+    max-width: 220px; /* Slightly narrower */
     border-radius: 8px; /* Match other button styling */
     box-shadow: 0 2px 8px rgba(233, 30, 99, 0.2); /* Subtle shadow with brand color */
+    flex-shrink: 0; /* Don't let button shrink */
 }
 
   #introContent h1 {
-    font-size: 20px; /* Smaller heading */
-    margin-bottom: 4px; /* Minimal margin */
+    font-size: 18px; /* Even smaller heading to save space */
+    margin-bottom: 2px; /* Minimal margin */
+    line-height: 1.2; /* Tighter line height */
   }
 
   #introContent p {
-    font-size: 13px; /* Smaller text */
-    margin-bottom: 4px; /* Minimal margin */
+    font-size: 12px; /* Even smaller text to save space */
+    margin-bottom: 2px; /* Minimal margin */
+    line-height: 1.3; /* Tighter line height */
 }
 
   #introContent p.lets-go {
-    font-size: 14px; /* Smaller text */
-    margin-top: 4px; /* Minimal margin */
-    margin-bottom: 4px; /* Minimal margin */
+    font-size: 13px; /* Smaller text */
+    margin-top: 2px; /* Minimal margin */
+    margin-bottom: 6px; /* Small margin before GIF */
+    font-weight: 700; /* Make it stand out despite smaller size */
   }
 }
 
@@ -1056,40 +1060,42 @@ button:disabled {
   
   /* Intro section mobile optimization */
   #intro {
-    justify-content: space-between;
-    padding: 12px; /* Slightly reduced padding to make room for content */
+    justify-content: flex-start; /* Changed from space-between to allow more content flow */
+    padding: 8px; /* Further reduced padding to maximize content space */
   }
   
   #introContent {
     flex-direction: column;
-    gap: 12px; /* Increased gap for better spacing */
+    gap: 8px; /* Reduced gap to save space */
     text-align: center;
     padding: 0;
     flex: 1; /* Use available space */
-    justify-content: center;
+    justify-content: flex-start; /* Changed to flex-start to optimize space usage */
   }
   
   .intro-left {
     text-align: center;
-    margin-bottom: 8px; /* Slightly more margin */
+    margin-bottom: 4px; /* Reduced margin to save space */
     flex-shrink: 1; /* Allow text to shrink if needed */
   }
   
   .intro-right {
-    flex-shrink: 0;
+    flex: 1; /* Allow GIF container to grow */
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 200px; /* Ensure minimum space for GIF */
   }
   
   .hero-image {
-    max-width: 100%;
-    max-height: 180px; /* Increased from 120px for better visibility */
-    width: auto;
-    height: auto;
+    max-width: calc(100% - 16px); /* Leave small margin */
+    max-height: 220px; /* Increased even more for better GIF visibility */
+    width: auto !important;
+    height: auto !important;
     border-radius: 6px;
-    object-fit: contain; /* Changed from cover to contain to show full GIF */
-    display: block;
+    object-fit: contain; /* Show full GIF without cropping */
+    display: block !important;
+    margin: 0 auto; /* Center the image */
   }
   
   /* Results section mobile optimization */
