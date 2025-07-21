@@ -287,7 +287,7 @@ body {
     font-size: 14px; /* Smaller text */
     margin: 4px auto 0 auto; /* Minimal margin */
     max-width: 200px; /* Smaller width */
-  }
+}
 
   #introContent h1 {
     font-size: 20px; /* Smaller heading */
@@ -297,7 +297,7 @@ body {
   #introContent p {
     font-size: 13px; /* Smaller text */
     margin-bottom: 4px; /* Minimal margin */
-  }
+}
 
   #introContent p.lets-go {
     font-size: 14px; /* Smaller text */
@@ -908,79 +908,153 @@ button:disabled {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(100vh - 40px); /* Account for footer */
+    min-height: calc(100vh - 50px); /* Account for footer */
   }
 
-  /* Container sizing - much smaller for mobile */
+  /* Container sizing - optimized for mobile */
   #intro, #game, #results {
-    height: 420px; /* Much smaller height */
-    padding: 6px; /* Minimal padding */
+    height: 500px; /* Increased height for better visibility */
+    padding: 16px; /* More padding for better content spacing */
     border-radius: 8px;
+    position: relative; /* Ensure proper positioning */
   }
 
   /* Game section optimization */
   #game {
     justify-content: space-between;
-    gap: 4px; /* Minimal gap */
-    padding: 6px; /* Minimal padding */
+    gap: 8px; /* Slightly more gap */
+    padding: 16px; /* More padding */
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Card container optimization */
+  #cardContainer {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Changed from center to space-between */
+    position: relative;
+    min-height: 0; /* Allow shrinking */
   }
 
   /* Timer improvements for mobile */
   #timerContainer {
-    margin: 0 0 4px 0; /* Minimal margin */
+    margin: 0 0 8px 0; /* Small margin */
+    order: 1; /* Ensure timer comes first */
   }
 
   #timerBar {
     max-width: calc(100% - 20px); /* Less margin */
-    height: 4px; /* Thinner */
-    margin: 4px auto;
+    height: 6px; /* Slightly thicker for visibility */
+    margin: 8px auto;
   }
 
-  /* Card display optimization */
+  /* Card display optimization - CRITICAL FIX */
   #cardImages {
-    min-height: 160px; /* Much smaller */
-    margin: 4px 0; /* Minimal margin */
+    min-height: 200px; /* Increased for better visibility */
+    margin: 8px 0; /* Balanced margin */
     flex: 1; /* Take available space */
+    display: flex !important; /* Force display */
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative;
   }
   
   .card-image {
-    max-height: 160px; /* Much smaller */
+    max-height: 200px; /* Increased for visibility */
+    max-width: calc(100% - 20px); /* Ensure it fits */
+    width: auto !important; /* Maintain aspect ratio */
+    height: auto !important; /* Maintain aspect ratio */
     border-radius: 6px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Lighter shadow */
     transform: translateZ(0); /* Hardware acceleration */
     backface-visibility: hidden; /* Prevent flicker */
     -webkit-backface-visibility: hidden;
     image-rendering: -webkit-optimize-contrast; /* Improve image quality */
+    display: block !important; /* Force visibility */
+    opacity: 1 !important; /* Force opacity */
+    object-fit: contain; /* Ensure full image is visible */
   }
 
-  /* Button improvements */
+  /* Button improvements - CRITICAL FIX */
   .buttons {
-    margin-top: 4px; /* Minimal margin */
-    gap: 8px; /* Small gap */
+    margin-top: 8px; /* Small margin */
+    gap: 12px; /* Adequate gap */
     flex-shrink: 0; /* Prevent buttons from shrinking */
+    display: flex !important; /* Force display */
+    justify-content: center !important;
+    order: 3; /* Ensure buttons come last */
+    position: relative; /* Ensure proper positioning within container */
+    z-index: 10; /* Ensure buttons are above other elements */
   }
 
   button {
-    font-size: 14px; /* Smaller text */
-    padding: 8px 16px; /* Smaller padding */
+    font-size: 14px; /* Readable text */
+    padding: 10px 20px; /* Better padding */
     border-radius: 6px;
-    min-width: 60px; /* Smaller width */
+    min-width: 80px; /* Better width */
     font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  /* Ensure Yes/No buttons have proper styling */
+  #yesBtn, #noBtn {
+    font-size: 14px !important;
+    padding: 10px 20px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    font-weight: 600 !important;
+    min-width: 80px !important;
+    display: inline-block !important; /* Changed to inline-block for better flex behavior */
+    flex: 0 0 auto; /* Don't grow or shrink */
+    margin: 0 !important; /* Reset any conflicting margins */
+  }
+
+  /* Force button visibility in game mode */
+  #game .buttons {
+    background: rgba(255, 255, 255, 0.02); /* Subtle background for debugging */
+    border-radius: 6px;
+    padding: 8px;
+    margin: 8px 0 0 0;
+    width: 100%; /* Full width */
+    box-sizing: border-box; /* Include padding in width */
+  }
+
+  /* Ensure buttons are visible when shown */
+  #game .buttons[style*="flex"], #game .buttons:not([style*="none"]) {
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  /* Card element mobile optimization */
+  #card {
+    margin: 8px 0; /* Reduced margin for mobile */
+    flex: 1; /* Take available space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center card content */
+    align-items: center; /* Center horizontally */
+    order: 2; /* Card comes after timer */
+    min-height: 0; /* Allow shrinking */
   }
 
   /* Swipe hint styling */
   .swipe-hint {
-    font-size: 11px; /* Smaller text */
+    font-size: 12px; /* Readable text */
     color: #666;
-    margin-top: 2px; /* Minimal margin */
+    margin-top: 4px; /* Small margin */
     font-weight: 500;
+    order: 2; /* Between card and buttons */
   }
   
   /* Intro section mobile optimization */
   #intro {
     justify-content: space-between;
   }
-
+  
   #introContent {
     flex-direction: column;
     gap: 6px; /* Minimal gap */
@@ -1009,16 +1083,16 @@ button:disabled {
   /* Results section mobile optimization */
   #results {
     max-width: 100%;
-    padding: 6px; /* Minimal padding */
+    padding: 16px; /* More padding for mobile */
     overflow: hidden; /* Prevent main container scroll */
   }
 
   .results-page {
-    padding: 4px 0 40px 0; /* Minimal padding */
+    padding: 8px 0 50px 0; /* Better padding */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(420px - 60px); /* Fixed height minus navigation */
-    max-height: calc(420px - 60px);
+    height: calc(500px - 70px); /* Fixed height minus navigation - updated for new container height */
+    max-height: calc(500px - 70px);
   }
   
   /* Results content scaling */
@@ -1049,7 +1123,7 @@ button:disabled {
     margin: 2px 0; /* Minimal margin */
     border-radius: 4px;
   }
-
+  
   .bar-name {
     font-size: 11px; /* Much smaller */
   }
@@ -1087,7 +1161,7 @@ button:disabled {
     border-radius: 4px;
     font-weight: 600;
   }
-
+  
   #shareBtn, #retakeBtn {
     padding: 6px 12px; /* Smaller padding */
     font-size: 12px; /* Smaller text */
@@ -1100,9 +1174,9 @@ button:disabled {
   
   /* Mobile navigation improvements */
   .results-navigation {
-    padding: 4px 12px; /* Minimal padding */
+    padding: 8px 16px; /* Better padding */
     border-top: 1px solid #f0f0f0; /* Subtle separator */
-    height: 40px; /* Fixed height */
+    height: 50px; /* Increased height */
   }
   
   .nav-arrow {
@@ -1121,8 +1195,8 @@ button:disabled {
 
   /* Mobile footer adjustments */
   .bottom-branding {
-    min-height: 40px;
-    padding: 8px 16px;
+    min-height: 50px;
+    padding: 10px 16px;
   }
 
   .bottom-branding-logo {
