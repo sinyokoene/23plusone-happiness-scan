@@ -98,7 +98,7 @@
              tabindex="0" role="img" aria-describedby="swipe-hint"
              onerror="this.style.display='none'" style="opacity: 1 !important;">
       </div>
-      <div id="swipe-hint" class="swipe-hint">Swipe right for Yes, left for No, or use Y/N keys</div>
+      <div id="swipe-hint" class="swipe-hint">Swipe right for Yes, left for No</div>
     `;
     
     // Show timer and buttons

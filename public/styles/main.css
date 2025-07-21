@@ -281,6 +281,31 @@ body {
   animation: fadeInUp var(--transition-slow) ease 0.8s both;
 }
 
+@media (max-width: 480px) {
+  #startBtn {
+    padding: 15px var(--spacing-lg);
+    font-size: 16px;
+    margin: var(--spacing-md) auto 0 auto;
+    max-width: 260px;
+  }
+
+  #introContent h1 {
+    font-size: 28px;
+    margin-bottom: var(--spacing-md);
+  }
+
+  #introContent p {
+    font-size: 16px;
+    margin-bottom: var(--spacing-sm);
+  }
+
+  #introContent p.lets-go {
+    font-size: 18px;
+    margin-top: var(--spacing-sm);
+    margin-bottom: var(--spacing-md);
+  }
+}
+
 #startBtn:hover {
   transform: translateY(-3px);
   box-shadow: none;
@@ -874,7 +899,11 @@ button:disabled {
   }
 
   #intro, #game, #results {
-    height: 600px; /* Increased height for mobile to show all content */
+    padding: var(--spacing-lg) var(--spacing-md); /* Reduced padding for mobile */
+  }
+
+  #intro, #game, #results {
+    height: 450px; /* Reduced height for mobile to prevent scrolling */
   }
   
   #timerContainer {
@@ -903,8 +932,9 @@ button:disabled {
   
   #introContent {
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
     text-align: center;
+    padding: 0;
   }
   
   .intro-left {
@@ -975,7 +1005,7 @@ button:disabled {
   }
   
   .results-page {
-    padding: var(--spacing-sm) 0 70px 0; /* Smaller bottom padding for mobile */
+    padding: var(--spacing-sm) 0 60px 0; /* Smaller bottom padding for mobile */
   }
   
   .nav-arrow {
@@ -1005,7 +1035,7 @@ button:disabled {
   }
 
   #intro, #game, #results {
-    height: 650px; /* Increased height for tablet to show all content */
+    height: 550px; /* Balanced height for tablet viewport */
   }
   
   #timerContainer {
@@ -1042,7 +1072,7 @@ button:disabled {
   }
   
   .results-page {
-    padding: var(--spacing-sm) 0 75px 0; /* Medium bottom padding for tablet */
+    padding: var(--spacing-sm) 0 65px 0; /* Medium bottom padding for tablet */
   }
   
   .results-navigation {
