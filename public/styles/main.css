@@ -924,9 +924,9 @@ button:disabled {
     margin: 12px;
     padding: 20px;
     width: calc(100% - 24px);
-    height: 400px;
-    max-height: 400px;
-    min-height: 400px;
+    height: 520px; /* Increased by 30% from 400px */
+    max-height: 520px;
+    min-height: 520px;
     text-align: center;
     position: relative;
     overflow: hidden;
@@ -1153,23 +1153,20 @@ button:disabled {
     flex-shrink: 0 !important;
   }
   
-  /* Results section - mockup-matching layout */
+  /* Results section - updated for new height */
   #results {
-    max-width: 100% !important;
-    padding: 16px 20px !important; /* Match other sections */
-    overflow: visible !important; /* Allow natural flow */
-    height: 320px !important; /* Match other sections */
-    display: flex !important;
-    flex-direction: column !important;
+    max-width: 100%;
+    padding: 20px; /* Match other sections */
+    overflow: hidden; /* Match other sections */
   }
 
   .results-page {
-    padding: 8px 0 40px 0 !important; /* Space for navigation */
-    overflow-y: auto !important;
-    -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
-    height: calc(320px - 45px) !important; /* Height minus navigation */
-    max-height: calc(320px - 45px) !important;
-    flex: 1 !important; /* Take available space */
+    padding: 8px 0 40px 0; /* Space for navigation */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    height: calc(520px - 80px); /* Updated height minus navigation and padding */
+    max-height: calc(520px - 80px);
+    flex: 1; /* Take available space */
   }
   
   /* Results content scaling - ultra compact */
