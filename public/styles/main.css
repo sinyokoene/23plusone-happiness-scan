@@ -900,7 +900,7 @@ button:disabled {
 
 /* Mobile Improvements - Full Screen Optimized Design */
 @media (max-width: 480px) {
-  /* Mobile body optimizations - allow natural height */
+  /* Mobile body optimizations - with fixed footer space */
   body {
     -webkit-text-size-adjust: 100%;
     -webkit-touch-callout: none;
@@ -909,9 +909,10 @@ button:disabled {
     min-height: 100vh; /* At least full height */
     overflow-x: hidden; /* Prevent horizontal scroll only */
     width: 100%;
+    padding-bottom: 45px; /* Space for fixed footer */
   }
 
-  /* Main layout optimization - compact with footer space */
+  /* Main layout optimization - ensure footer visibility */
   .main-content {
     padding: 8px; /* Small padding */
     display: flex;
@@ -919,38 +920,38 @@ button:disabled {
     justify-content: center;
     height: auto; /* Let content determine height */
     min-height: auto; /* No minimum height constraint */
-    max-height: none; /* Allow content to determine max height */
-    margin-bottom: 8px; /* Space above footer */
+    max-height: calc(100vh - 60px); /* Ensure space for footer */
+    margin-bottom: 12px; /* More space above footer */
   }
 
-  /* Container sizing - compact for all sections */
+  /* Container sizing - compact for all sections with better padding */
   #intro, #game, #results {
     height: auto; /* Let content determine height */
     max-height: calc(100vh - 80px); /* Leave space for footer */
     min-height: 300px; /* Minimum reasonable height */
-    padding: 8px; /* Minimal padding to maximize content space */
+    padding: 12px 16px; /* Better padding - more left/right space */
     border-radius: 6px;
     position: relative;
     overflow: hidden; /* Prevent container scroll */
   }
   
-  /* Specific heights for each section */
+  /* Consistent heights for all sections - same white block size */
   #intro {
-    height: 350px; /* Compact intro */
+    height: 350px; /* Consistent height */
     max-height: 350px;
     min-height: 350px;
   }
   
   #game {
-    height: 400px; /* Compact game section */
-    max-height: 400px;
-    min-height: 400px;
+    height: 350px; /* Same height as intro */
+    max-height: 350px;
+    min-height: 350px;
   }
   
   #results {
-    height: 450px; /* Compact results section */
-    max-height: 450px;
-    min-height: 450px;
+    height: 350px; /* Same height as intro */
+    max-height: 350px;
+    min-height: 350px;
   }
 
   /* Game section optimization - full screen */
@@ -1143,22 +1144,22 @@ button:disabled {
     margin: 0 auto; /* Center the image */
   }
   
-  /* Results section mobile optimization - compact */
+  /* Results section mobile optimization - consistent height */
   #results {
     max-width: 100%;
-    padding: 8px; /* Minimal padding */
+    padding: 12px 16px; /* Better padding for readability */
     overflow: hidden; /* Prevent main container scroll */
-    height: 450px; /* Fixed compact height */
+    height: 350px; /* Same height as other sections */
     display: flex;
     flex-direction: column;
   }
 
   .results-page {
-    padding: 4px 0 35px 0; /* Minimal padding with space for navigation */
+    padding: 8px 0 35px 0; /* Better padding with space for navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(450px - 40px); /* Height minus navigation space */
-    max-height: calc(450px - 40px);
+    height: calc(350px - 50px); /* Height minus navigation space */
+    max-height: calc(350px - 50px);
     flex: 1; /* Take available space */
   }
   
@@ -1276,15 +1277,19 @@ button:disabled {
     touch-action: manipulation; /* Prevent zoom on double tap */
   }
 
-  /* Mobile footer adjustments - visible and compact */
+  /* Mobile footer adjustments - always visible */
   .bottom-branding {
-    min-height: 40px; /* Slightly taller for visibility */
-    height: 40px; /* Fixed height */
-    max-height: 40px;
-    padding: 6px 12px; /* Better padding for readability */
+    min-height: 45px; /* Taller for better visibility */
+    height: 45px; /* Fixed height */
+    max-height: 45px;
+    padding: 8px 12px; /* Better padding for readability */
     overflow: visible; /* Allow content to show */
-    position: relative; /* Ensure proper positioning */
-    z-index: 100; /* Above other content */
+    position: fixed; /* Fix to bottom of screen */
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000; /* Ensure it's always on top */
+    background: var(--brand-dark); /* Ensure background is visible */
   }
 
   .bottom-branding-logo {
