@@ -179,7 +179,7 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Remove space between content and footer */
+    justify-content: space-between;
     color: var(--text-primary);
     overflow-x: hidden;
   }
@@ -1512,7 +1512,7 @@ button:disabled {
 /* Footer */
 .bottom-branding {
   background: var(--brand-dark);
-  padding: 12px 0;
+  padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
