@@ -171,23 +171,41 @@
   box-sizing: border-box;
 }
 
+/* Desktop body styles */
+@media (min-width: 481px) {
+  body {
+    font-family: var(--font-family);
+    background: var(--brand-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+  }
+}
+
+/* Base mobile-first styles */
 body {
   font-family: var(--font-family);
   background: var(--brand-dark);
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   color: var(--text-primary);
-  overflow-x: hidden;
+  margin: 0;
+  padding: 0;
 }
 
 .main-content {
-  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--spacing-md);
 }
 
 .container {
@@ -196,19 +214,21 @@ body {
   overflow: visible;
 }
 
-/* Consistent container styling for all states */
-#game, #intro, #results {
-  background: var(--card-bg);
-  border-radius: var(--radius);
-  padding: var(--spacing-xxl) var(--spacing-xl);
-  box-shadow: var(--shadow-xl);
-  text-align: center;
-  width: 100%;
-  height: 700px; /* Fixed height for perfect consistency */
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow: visible;
+/* Consistent container styling for all states - DESKTOP ONLY */
+@media (min-width: 481px) {
+  #game, #intro, #results {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: var(--spacing-xxl) var(--spacing-xl);
+    box-shadow: var(--shadow-xl);
+    text-align: center;
+    width: 100%;
+    height: 700px; /* Fixed height for perfect consistency */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: visible;
+  }
 }
 
 #intro {
@@ -277,40 +297,7 @@ body {
   animation: fadeInUp var(--transition-slow) ease 0.8s both;
 }
 
-@media (max-width: 480px) {
-  #startBtn {
-    padding: 12px 24px !important; /* Better padding matching mockup */
-    font-size: 15px !important; /* Readable text like mockup */
-    margin: 8px auto 0 auto !important; /* Compact margin */
-    max-width: 220px !important; /* Good width for mobile */
-    border-radius: 8px !important; /* Rounded like mockup */
-    box-shadow: 0 3px 12px rgba(233, 30, 99, 0.3) !important; /* Nice shadow */
-    flex-shrink: 0 !important; /* Don't let button shrink */
-    height: 44px !important; /* Good touch target */
-    position: relative !important; /* Ensure proper positioning */
-    font-weight: 600 !important; /* Bold like mockup */
-}
 
-  #introContent h1 {
-    font-size: 18px !important; /* Good readable size like mockup */
-    margin-bottom: 4px !important; /* Small margin */
-    line-height: 1.2 !important; /* Good readability */
-    font-weight: 700 !important; /* Bold for impact */
-  }
-
-  #introContent p {
-    font-size: 13px !important; /* Readable text like mockup */
-    margin-bottom: 3px !important; /* Small margin */
-    line-height: 1.3 !important; /* Good readability */
-}
-
-  #introContent p.lets-go {
-    font-size: 14px !important; /* Slightly larger for emphasis */
-    margin-top: 2px !important; /* Small margin */
-    margin-bottom: 4px !important; /* Margin before GIF */
-    font-weight: 700 !important; /* Bold like mockup */
-  }
-}
 
 #startBtn:hover {
   transform: translateY(-3px);
@@ -899,63 +886,53 @@ button:disabled {
   }
 }
 
-/* Mobile Improvements - Full Screen Optimized Design */
+/* MOBILE DESIGN - MOCKUP MATCHING */
 @media (max-width: 480px) {
-  /* Mobile body optimizations - mockup-matching flow */
+  /* Mobile body - natural flow */
   body {
+    font-family: var(--font-family) !important;
+    background: var(--brand-dark) !important;
+    color: var(--text-primary) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
     -webkit-text-size-adjust: 100% !important;
     -webkit-touch-callout: none !important;
     -webkit-tap-highlight-color: transparent !important;
-    height: auto !important; /* Natural content height */
-    min-height: 100vh !important; /* At least full height */
-    overflow-x: hidden !important; /* Prevent horizontal scroll */
-    overflow-y: auto !important; /* Allow natural vertical scroll */
-    width: 100% !important;
-    padding-bottom: 0 !important; /* No padding - natural flow */
-    margin: 0 !important; /* No body margins */
   }
 
-  /* Main layout optimization - mockup-matching natural flow */
+  /* Main content - let containers handle all spacing */
   .main-content {
-    padding: 0 !important; /* No padding - let containers handle spacing */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    height: auto !important; /* Natural height */
-    min-height: auto !important; /* No constraints */
-    max-height: none !important; /* No restrictions */
-    margin-bottom: 0 !important; /* Natural flow to footer */
+    padding: 0 !important;
+    margin: 0 !important;
+    height: auto !important;
+    min-height: auto !important;
+    flex: none !important;
   }
 
-  /* Container sizing - mockup-matching compact design */
+  /* Mobile containers - exactly like mockup */
   #intro, #game, #results {
-    height: auto !important; /* Content-driven height */
-    max-height: none !important; /* No height restrictions */
-    min-height: auto !important; /* No minimum height */
-    padding: 16px 20px !important; /* Better padding matching mockup */
-    border-radius: 8px !important; /* Slightly more rounded like mockup */
+    background: var(--card-bg) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+    margin: 12px !important;
+    padding: 20px !important;
+    width: calc(100% - 24px) !important;
+    height: 400px !important;
+    max-height: 400px !important;
+    min-height: 400px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    text-align: center !important;
     position: relative !important;
-    overflow: visible !important; /* Allow natural content flow */
-    margin: 8px !important; /* Small margin around containers */
-  }
-  
-  /* Mockup-matching heights - compact and content-driven */
-  #intro {
-    height: 320px !important; /* Compact height matching mockup */
-    max-height: 320px !important;
-    min-height: 320px !important;
-  }
-  
-  #game {
-    height: 320px !important; /* Same compact height */
-    max-height: 320px !important;
-    min-height: 320px !important;
-  }
-  
-  #results {
-    height: 320px !important; /* Same compact height */
-    max-height: 320px !important;
-    min-height: 320px !important;
+    overflow: hidden !important;
   }
 
   /* Game section optimization - full screen */
@@ -1101,51 +1078,80 @@ button:disabled {
     order: 2; /* Between card and buttons */
   }
   
-  /* Intro section - mockup-matching layout */
-  #intro {
-    justify-content: space-between !important; /* Distribute content like mockup */
-    padding: 16px 20px !important; /* Match container padding */
+  /* Intro section - exactly matching mockup layout */
+  #introContent {
     display: flex !important;
     flex-direction: column !important;
-    gap: 12px !important; /* Controlled gap matching mockup */
-  }
-  
-  #introContent {
-    flex-direction: column !important;
-    gap: 12px !important; /* Consistent gap */
-    text-align: center !important;
-    padding: 0 !important;
-    flex: 1 !important; /* Use available space */
-    justify-content: space-between !important; /* Distribute like mockup */
-    height: auto !important; /* Natural height */
-    max-height: none !important; /* No restrictions */
+    justify-content: space-between !important;
+    height: 100% !important;
+    gap: 16px !important;
   }
   
   .intro-left {
+    flex: 0 0 auto !important;
     text-align: center !important;
-    margin-bottom: 0 !important; /* No extra margin */
-    flex-shrink: 0 !important; /* Don't shrink text */
+  }
+  
+  .intro-left h1 {
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    color: var(--text-primary) !important;
+    margin-bottom: 12px !important;
+    line-height: 1.2 !important;
+  }
+  
+  .intro-left p {
+    font-size: 16px !important;
+    color: var(--text-secondary) !important;
+    line-height: 1.4 !important;
+    margin-bottom: 8px !important;
+  }
+  
+  .intro-left p.lets-go {
+    font-size: 18px !important;
+    color: var(--brand-pink) !important;
+    font-weight: 600 !important;
+    margin-bottom: 0 !important;
   }
   
   .intro-right {
-    flex: 0 0 auto !important; /* Fixed size */
+    flex: 1 !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    height: 120px !important; /* Compact height matching mockup */
-    max-height: 120px !important;
-    overflow: visible !important; /* Allow natural flow */
+    margin: 16px 0 !important;
   }
   
   .hero-image {
-    max-width: calc(100% - 8px) !important; /* Minimal margin */
-    max-height: 110px !important; /* Compact size matching mockup */
+    max-width: 100% !important;
+    max-height: 160px !important;
     width: auto !important;
     height: auto !important;
-    border-radius: 6px !important; /* Slightly rounded like mockup */
-    object-fit: contain !important; /* Show full GIF without cropping */
+    border-radius: 8px !important;
+    object-fit: contain !important;
     display: block !important;
-    margin: 0 auto !important; /* Center the image */
+    margin: 0 auto !important;
+  }
+  
+  /* Start button - exactly like mockup */
+  #startBtn {
+    background: var(--brand-pink) !important;
+    color: var(--white) !important;
+    padding: 16px 32px !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    max-width: 280px !important;
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto !important;
+    box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3) !important;
+    flex-shrink: 0 !important;
   }
   
   /* Results section - mockup-matching layout */
