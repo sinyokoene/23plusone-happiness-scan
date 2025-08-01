@@ -924,9 +924,9 @@ button:disabled {
     margin: 12px;
     padding: 20px;
     width: calc(100% - 24px);
-    height: 520px; /* Increased by 30% from 400px */
-    max-height: 520px;
-    min-height: 520px;
+    height: 600px; 
+    max-height: 600px;
+    min-height: 600px;
     text-align: center;
     position: relative;
     overflow: hidden;
