@@ -43,6 +43,9 @@
   // Initialize page state
   document.body.classList.remove('showing-results');
   
+  // Prevent scrolling on mobile
+  document.body.classList.add('no-scroll');
+  
   // Load cards and initialize
   fetch('cards.json')
     .then(r => r.json())
