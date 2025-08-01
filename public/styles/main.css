@@ -189,7 +189,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--spacing-md);
+    padding: 12px 12px 6px 12px; /* Reduced bottom padding for tighter footer spacing */
   }
 }
 
