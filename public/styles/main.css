@@ -1,10 +1,6 @@
 /* 23plusone Happiness Scan - Main Styles */
 
 /* Performance Optimizations */
-@font-face {
-  font-family: 'Poppins';
-  font-display: swap;
-}
 
 /* GPU acceleration for smooth animations */
 .card-image,
@@ -283,31 +279,33 @@ body {
 
 @media (max-width: 480px) {
   #startBtn {
-    padding: 10px 20px; /* Slightly reduced padding to save space */
-    font-size: 14px; /* Slightly smaller text to save space */
-    margin: 8px auto 4px auto; /* Reduced margins to save space */
-    max-width: 220px; /* Slightly narrower */
-    border-radius: 8px; /* Match other button styling */
-    box-shadow: 0 2px 8px rgba(233, 30, 99, 0.2); /* Subtle shadow with brand color */
+    padding: 8px 16px; /* Further reduced padding */
+    font-size: 13px; /* Smaller text */
+    margin: 4px auto 2px auto; /* Minimal margins */
+    max-width: 180px; /* More compact */
+    border-radius: 6px; /* Smaller radius */
+    box-shadow: 0 1px 4px rgba(233, 30, 99, 0.2); /* Lighter shadow */
     flex-shrink: 0; /* Don't let button shrink */
+    height: 32px; /* Fixed height for consistency */
 }
 
   #introContent h1 {
-    font-size: 18px; /* Even smaller heading to save space */
-    margin-bottom: 2px; /* Minimal margin */
-    line-height: 1.2; /* Tighter line height */
+    font-size: 16px; /* Smaller heading */
+    margin-bottom: 1px; /* Minimal margin */
+    line-height: 1.1; /* Tighter line height */
+    font-weight: 700; /* Keep bold for impact */
   }
 
   #introContent p {
-    font-size: 12px; /* Even smaller text to save space */
-    margin-bottom: 2px; /* Minimal margin */
-    line-height: 1.3; /* Tighter line height */
+    font-size: 11px; /* Smaller text */
+    margin-bottom: 1px; /* Minimal margin */
+    line-height: 1.2; /* Tighter line height */
 }
 
   #introContent p.lets-go {
-    font-size: 13px; /* Smaller text */
-    margin-top: 2px; /* Minimal margin */
-    margin-bottom: 6px; /* Small margin before GIF */
+    font-size: 12px; /* Smaller text */
+    margin-top: 1px; /* Minimal margin */
+    margin-bottom: 3px; /* Small margin before GIF */
     font-weight: 700; /* Make it stand out despite smaller size */
   }
 }
@@ -899,81 +897,93 @@ button:disabled {
   }
 }
 
-/* Mobile Improvements - Clean, Optimized Design */
+/* Mobile Improvements - Full Screen Optimized Design */
 @media (max-width: 480px) {
   /* Mobile body optimizations */
   body {
     -webkit-text-size-adjust: 100%;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
+    height: 100vh;
+    overflow: hidden; /* Prevent body scroll */
   }
 
-  /* Main layout optimization */
+  /* Main layout optimization - full viewport usage */
   .main-content {
-    padding: var(--spacing-sm);
+    padding: 4px; /* Minimal padding to maximize space */
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: calc(100vh - 50px); /* Account for footer */
+    height: calc(100vh - 35px); /* Account for minimized footer */
+    min-height: calc(100vh - 35px);
+    max-height: calc(100vh - 35px);
   }
 
-  /* Container sizing - optimized for mobile */
+  /* Container sizing - full viewport adaptive */
   #intro, #game, #results {
-    height: 500px; /* Increased height for better visibility */
-    padding: 16px; /* More padding for better content spacing */
-    border-radius: 8px;
-    position: relative; /* Ensure proper positioning */
+    height: calc(100vh - 45px); /* Dynamic height based on viewport minus footer */
+    max-height: calc(100vh - 45px);
+    min-height: calc(100vh - 45px);
+    padding: 8px; /* Minimal padding to maximize content space */
+    border-radius: 6px;
+    position: relative;
+    overflow: hidden; /* Prevent container scroll */
   }
 
-  /* Game section optimization */
+  /* Game section optimization - full screen */
   #game {
-    justify-content: space-between;
-    gap: 8px; /* Slightly more gap */
-    padding: 16px; /* More padding */
+    justify-content: space-between; /* Distribute elements evenly */
+    gap: 4px; /* Minimal gap to maximize space */
+    padding: 8px; /* Minimal padding */
     display: flex;
     flex-direction: column;
+    height: 100%; /* Use full container height */
   }
 
-  /* Card container optimization */
+  /* Card container optimization - space efficient */
   #cardContainer {
-    flex: 1;
+    flex: 1; /* Take most available space */
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* Changed from center to space-between */
+    justify-content: center; /* Center the card content */
     position: relative;
     min-height: 0; /* Allow shrinking */
+    max-height: calc(100% - 80px); /* Reserve space for timer and buttons */
   }
 
-  /* Timer improvements for mobile */
+  /* Timer improvements for mobile - compact */
   #timerContainer {
-    margin: 0 0 8px 0; /* Small margin */
-    order: 1; /* Ensure timer comes first */
+    margin: 0 0 4px 0; /* Minimal margin */
+    order: 1; /* Timer comes first */
+    flex-shrink: 0; /* Don't shrink timer */
   }
 
   #timerBar {
-    max-width: calc(100% - 20px); /* Less margin */
-    height: 6px; /* Slightly thicker for visibility */
-    margin: 8px auto;
+    max-width: calc(100% - 8px); /* Minimal margin */
+    height: 4px; /* Thinner for space efficiency */
+    margin: 4px auto;
   }
 
-  /* Card display optimization - CRITICAL FIX */
+  /* Card display optimization - space maximized */
   #cardImages {
-    min-height: 200px; /* Increased for better visibility */
-    margin: 8px 0; /* Balanced margin */
+    min-height: 160px; /* Reduced but adequate for visibility */
+    max-height: 180px; /* Limit maximum height */
+    margin: 4px 0; /* Minimal margin */
     flex: 1; /* Take available space */
     display: flex !important; /* Force display */
     justify-content: center !important;
     align-items: center !important;
     position: relative;
+    overflow: hidden; /* Prevent overflow */
   }
   
   .card-image {
-    max-height: 200px; /* Increased for visibility */
-    max-width: calc(100% - 20px); /* Ensure it fits */
+    max-height: 170px; /* Optimized for mobile viewport */
+    max-width: calc(100% - 8px); /* Minimal margin */
     width: auto !important; /* Maintain aspect ratio */
     height: auto !important; /* Maintain aspect ratio */
-    border-radius: 6px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* Lighter shadow */
+    border-radius: 4px; /* Smaller radius */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Lighter shadow */
     transform: translateZ(0); /* Hardware acceleration */
     backface-visibility: hidden; /* Prevent flicker */
     -webkit-backface-visibility: hidden;
@@ -983,52 +993,57 @@ button:disabled {
     object-fit: contain; /* Ensure full image is visible */
   }
 
-  /* Button improvements - CRITICAL FIX */
+  /* Button improvements - space optimized */
   .buttons {
-    margin: 16px 8px 8px 8px; /* Increased top margin and added horizontal margins for aesthetics */
-    gap: 16px; /* Increased gap for better visual separation */
+    margin: 8px 4px 4px 4px; /* Minimal margins */
+    gap: 12px; /* Reduced gap */
     flex-shrink: 0; /* Prevent buttons from shrinking */
     display: flex !important; /* Force display */
     justify-content: center !important;
     order: 3; /* Ensure buttons come last */
     position: relative; /* Ensure proper positioning within container */
     z-index: 10; /* Ensure buttons are above other elements */
+    height: 40px; /* Fixed height to prevent expansion */
   }
 
   button {
-    font-size: 14px; /* Readable text */
-    padding: 10px 20px; /* Better padding */
-    border-radius: 6px;
-    min-width: 80px; /* Better width */
+    font-size: 13px; /* Compact text */
+    padding: 8px 16px; /* Compact padding */
+    border-radius: 4px; /* Smaller radius */
+    min-width: 70px; /* Compact width */
     font-weight: 600;
     border: none;
     cursor: pointer;
     transition: all 0.2s ease;
+    height: 32px; /* Fixed height */
   }
 
-  /* Ensure Yes/No buttons have proper styling */
+  /* Ensure Yes/No buttons have proper styling - compact */
   #yesBtn, #noBtn {
-    font-size: 15px !important; /* Slightly larger for better readability */
-    padding: 12px 24px !important; /* Increased padding for better touch targets */
+    font-size: 13px !important; /* Compact text */
+    padding: 8px 18px !important; /* Compact padding */
     border: none !important;
-    border-radius: 8px !important; /* Slightly more rounded */
+    border-radius: 6px !important; /* Slightly rounded */
     font-weight: 600 !important;
-    min-width: 90px !important; /* Slightly wider */
-    display: inline-block !important; /* Changed to inline-block for better flex behavior */
+    min-width: 75px !important; /* Compact width */
+    max-width: 85px !important; /* Limit width */
+    display: inline-block !important; /* Inline-block for flex behavior */
     flex: 0 0 auto; /* Don't grow or shrink */
-    margin: 0 4px !important; /* Small horizontal margin for spacing */
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important; /* Subtle shadow for depth */
+    margin: 0 2px !important; /* Minimal horizontal margin */
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; /* Subtle shadow */
     transition: all 0.2s ease !important; /* Smooth transitions */
+    height: 32px !important; /* Fixed height */
   }
 
-  /* Force button visibility in game mode */
+  /* Force button visibility in game mode - compact */
   #game .buttons {
-    background: rgba(255, 255, 255, 0.02); /* Subtle background for debugging */
-    border-radius: 8px; /* Match button border radius */
-    padding: 12px; /* Increased padding */
-    margin: 16px 8px 8px 8px; /* Match the updated margin from above */
-    width: calc(100% - 16px); /* Full width minus horizontal margins */
+    background: transparent; /* No background needed */
+    border-radius: 6px; /* Match button border radius */
+    padding: 4px; /* Minimal padding */
+    margin: 8px 4px 4px 4px; /* Minimal margins */
+    width: calc(100% - 8px); /* Full width minus minimal margins */
     box-sizing: border-box; /* Include padding in width */
+    height: 40px; /* Fixed height */
   }
 
   /* Ensure buttons are visible when shown */
@@ -1058,187 +1073,260 @@ button:disabled {
     order: 2; /* Between card and buttons */
   }
   
-  /* Intro section mobile optimization */
+  /* Intro section mobile optimization - full screen */
   #intro {
-    justify-content: flex-start; /* Changed from space-between to allow more content flow */
-    padding: 8px; /* Further reduced padding to maximize content space */
+    justify-content: space-between; /* Distribute content evenly */
+    padding: 8px; /* Minimal padding */
+    display: flex;
+    flex-direction: column;
   }
   
   #introContent {
     flex-direction: column;
-    gap: 8px; /* Reduced gap to save space */
+    gap: 4px; /* Minimal gap to maximize space */
     text-align: center;
     padding: 0;
-    flex: 1; /* Use available space */
-    justify-content: flex-start; /* Changed to flex-start to optimize space usage */
+    flex: 1; /* Use all available space */
+    justify-content: space-between; /* Distribute content */
+    height: 100%; /* Full height usage */
   }
   
   .intro-left {
     text-align: center;
-    margin-bottom: 4px; /* Reduced margin to save space */
-    flex-shrink: 1; /* Allow text to shrink if needed */
+    margin-bottom: 2px; /* Minimal margin */
+    flex-shrink: 0; /* Don't shrink text container */
   }
   
   .intro-right {
-    flex: 1; /* Allow GIF container to grow */
+    flex: 1; /* Take remaining space */
     display: flex;
     justify-content: center;
     align-items: center;
-    min-height: 200px; /* Ensure minimum space for GIF */
+    min-height: 120px; /* Reduced minimum space for GIF */
+    max-height: 150px; /* Limit GIF height */
   }
   
   .hero-image {
-    max-width: calc(100% - 16px); /* Leave small margin */
-    max-height: 220px; /* Increased even more for better GIF visibility */
+    max-width: calc(100% - 8px); /* Minimal margin */
+    max-height: 140px; /* Significantly reduced for space efficiency */
     width: auto !important;
     height: auto !important;
-    border-radius: 6px;
+    border-radius: 4px;
     object-fit: contain; /* Show full GIF without cropping */
     display: block !important;
     margin: 0 auto; /* Center the image */
   }
   
-  /* Results section mobile optimization */
+  /* Results section mobile optimization - full screen */
   #results {
     max-width: 100%;
-    padding: 16px; /* More padding for mobile */
+    padding: 8px; /* Minimal padding */
     overflow: hidden; /* Prevent main container scroll */
+    height: 100%; /* Use full container height */
+    display: flex;
+    flex-direction: column;
   }
 
   .results-page {
-    padding: 8px 0 50px 0; /* Better padding */
+    padding: 4px 0 35px 0; /* Minimal padding with space for navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(500px - 70px); /* Fixed height minus navigation - updated for new container height */
-    max-height: calc(500px - 70px);
+    height: calc(100vh - 80px); /* Dynamic height minus footer and navigation */
+    max-height: calc(100vh - 80px);
+    flex: 1; /* Take available space */
   }
   
-  /* Results content scaling */
+  /* Results content scaling - ultra compact */
   #resultsHeader h2 {
-    font-size: 18px; /* Much smaller */
-    margin-bottom: 4px; /* Minimal margin */
+    font-size: 16px; /* Compact */
+    margin-bottom: 2px; /* Minimal margin */
+    line-height: 1.1;
   }
   
   #dominantDomainsText {
-    font-size: 12px; /* Much smaller */
-    line-height: 1.3;
+    font-size: 11px; /* Compact */
+    line-height: 1.2;
+    margin-bottom: 2px;
   }
   
   #totalScore {
-    font-size: 32px; /* Smaller */
-    margin: 6px 0; /* Minimal margin */
+    font-size: 28px; /* More compact */
+    margin: 4px 0; /* Minimal margin */
+    line-height: 1;
   }
 
-  /* Domain visualization */
+  /* Domain visualization - compact */
   #domainBars {
     grid-template-columns: 1fr;
-    gap: 4px; /* Minimal gap */
-    margin: 6px 0; /* Minimal margin */
+    gap: 2px; /* Minimal gap */
+    margin: 4px 0; /* Minimal margin */
   }
   
   .domain-bar {
-    padding: 4px; /* Minimal padding */
-    margin: 2px 0; /* Minimal margin */
-    border-radius: 4px;
+    padding: 3px; /* Minimal padding */
+    margin: 1px 0; /* Minimal margin */
+    border-radius: 3px;
   }
   
   .bar-name {
-    font-size: 11px; /* Much smaller */
+    font-size: 10px; /* Ultra compact */
+    line-height: 1.2;
   }
 
   .bar-count {
-    font-size: 13px; /* Smaller */
+    font-size: 12px; /* Compact */
+    line-height: 1.2;
   }
 
-  /* Insights section */
+  /* Insights section - ultra compact */
   #personalInsights {
-    padding: var(--spacing-md);
-    margin: var(--spacing-md) 0;
+    padding: 4px; /* Ultra minimal padding */
+    margin: 4px 0; /* Ultra minimal margin */
+    border-radius: 4px;
+  }
+  
+  #personalInsights h3 {
+    font-size: 14px; /* Compact heading */
+    margin-bottom: 4px;
+    line-height: 1.2;
   }
   
   #insightText {
-    font-size: 11px; /* Much smaller */
-    line-height: 1.4;
+    font-size: 10px; /* Ultra compact */
+    line-height: 1.3;
+    margin-bottom: 8px;
+    padding: 0 4px;
   }
 
-  /* Insights section */
-  #personalInsights {
-    padding: 6px; /* Minimal padding */
-    margin: 6px 0; /* Minimal margin */
-  }
-
-  /* Share section optimization */
+  /* Share section optimization - ultra compact */
   .share-buttons {
-    gap: 4px; /* Minimal gap */
-    margin: 6px 0; /* Minimal margin */
+    gap: 2px; /* Ultra minimal gap */
+    margin: 4px 0; /* Ultra minimal margin */
   }
   
   .share-button {
-    padding: 6px 12px; /* Smaller padding */
-    font-size: 12px; /* Smaller text */
-    border-radius: 4px;
+    padding: 4px 8px; /* Ultra compact padding */
+    font-size: 10px; /* Ultra compact text */
+    border-radius: 3px;
     font-weight: 600;
+    height: 24px; /* Fixed compact height */
   }
   
   #shareBtn, #retakeBtn {
-    padding: 6px 12px; /* Smaller padding */
-    font-size: 12px; /* Smaller text */
+    padding: 4px 8px; /* Ultra compact padding */
+    font-size: 10px; /* Ultra compact text */
     display: block;
     width: 100%;
-    margin: 3px 0; /* Minimal margin */
-    border-radius: 4px;
+    margin: 2px 0; /* Ultra minimal margin */
+    border-radius: 3px;
     font-weight: 600;
+    height: 24px; /* Fixed compact height */
   }
   
-  /* Mobile navigation improvements */
+  /* Mobile navigation improvements - ultra compact */
   .results-navigation {
-    padding: 8px 16px; /* Better padding */
+    padding: 4px 8px; /* Minimal padding */
     border-top: 1px solid #f0f0f0; /* Subtle separator */
-    height: 50px; /* Increased height */
+    height: 35px; /* Compact height */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    flex-shrink: 0; /* Don't shrink navigation */
   }
   
   .nav-arrow {
-    width: 40px; /* Smaller */
-    height: 28px; /* Smaller */
-    font-size: 12px; /* Smaller text */
-    border-radius: 4px;
+    width: 32px; /* More compact */
+    height: 24px; /* More compact */
+    font-size: 11px; /* Smaller text */
+    border-radius: 3px;
     touch-action: manipulation; /* Prevent zoom on double tap */
   }
   
   .page-dot {
-    width: 8px; /* Smaller */
-    height: 8px; /* Smaller */
+    width: 6px; /* More compact */
+    height: 6px; /* More compact */
     touch-action: manipulation; /* Prevent zoom on double tap */
   }
 
-  /* Mobile footer adjustments */
+  /* Mobile footer adjustments - minimized */
   .bottom-branding {
-    min-height: 50px;
-    padding: 10px 16px;
+    min-height: 35px; /* Reduced from 50px */
+    height: 35px; /* Fixed height */
+    max-height: 35px;
+    padding: 4px 8px; /* Minimal padding */
+    overflow: hidden; /* Prevent footer expansion */
   }
 
   .bottom-branding-logo {
-    width: 35px;
-    height: 35px;
-    min-width: 35px;
-    min-height: 35px;
+    width: 25px; /* Smaller logo */
+    height: 25px;
+    min-width: 25px;
+    min-height: 25px;
   }
 
   .bottom-brand-logo {
-    height: 16px;
+    height: 12px; /* Smaller brand logo */
   }
 
   .bottom-branding-text {
-    font-size: 8px;
+    font-size: 7px; /* Smaller text */
+    line-height: 1.2;
   }
 
   .bottom-copyright {
-    font-size: 7px;
+    font-size: 6px; /* Smaller copyright */
+    line-height: 1.2;
   }
   
   .palette-tagline {
-    font-size: 13px;
-    margin-top: 12px;
+    font-size: 9px; /* Ultra compact */
+    margin-top: 6px; /* Minimal margin */
+    line-height: 1.2;
+  }
+  
+  /* Additional compact styling for results elements */
+  #scoreSection {
+    margin: 8px 0; /* Reduced margin */
+    padding: 8px; /* Reduced padding */
+    border-radius: 4px;
+  }
+  
+  #ihsLabel {
+    font-size: 9px; /* Ultra compact */
+    margin-bottom: 2px;
+  }
+  
+  #colorVisualization h3 {
+    font-size: 14px; /* Compact */
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  
+  #personalityInsight {
+    font-size: 10px; /* Ultra compact */
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  
+  #recommendations h4 {
+    font-size: 12px; /* Compact */
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  
+  #recommendationsList li {
+    font-size: 10px; /* Ultra compact */
+    line-height: 1.3;
+    padding: 4px 0 4px 8px;
+    margin: 4px 0;
+  }
+  
+  #shareSection h3 {
+    font-size: 14px; /* Compact */
+    margin-bottom: 8px;
+    line-height: 1.2;
   }
 }
 
