@@ -912,6 +912,16 @@ button:disabled {
     height: 100% !important;
   }
 
+  /* Prevent double-tap zoom on interactive elements */
+  .buttons button, 
+  #cardImages .card-image,
+  #startBtn {
+    touch-action: manipulation !important;
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-touch-callout: none !important;
+  }
+
   /* Main content - let containers handle all spacing */
   .main-content {
     display: flex !important;
