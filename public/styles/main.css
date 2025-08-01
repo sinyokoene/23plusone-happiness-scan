@@ -688,6 +688,14 @@ button:disabled {
   border: 1px solid #e9ecef;
 }
 
+/* Title above grey block - matches palette heading style */
+.results-page #insights-heading {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
 #personalInsights h3 {
   color: #333;
   margin-bottom: 12px;
