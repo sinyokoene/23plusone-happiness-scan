@@ -903,6 +903,14 @@ button:disabled {
     -webkit-touch-callout: none !important;
     -webkit-tap-highlight-color: transparent !important;
   }
+  
+  /* Option F: Conditional scroll prevention */
+  body.no-scroll {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
 
   /* Main content - let containers handle all spacing */
   .main-content {
@@ -929,9 +937,14 @@ button:disabled {
     min-height: 600px;
     text-align: center;
     position: relative;
-    overflow: hidden;
+    overflow: visible; /* Allow card animations to show outside container */
     flex-direction: column;
     justify-content: space-between;
+  }
+  
+  /* Ensure game section allows card animations */
+  #game {
+    overflow: visible !important; /* Critical for swipe animations */
   }
 
   /* Game section optimization - full screen */
@@ -968,7 +981,7 @@ button:disabled {
     margin: 4px auto;
   }
 
-  /* Card display optimization - space maximized */
+  /* Card display optimization - allow animations */
   #cardImages {
     min-height: 160px; /* Reduced but adequate for visibility */
     max-height: 180px; /* Limit maximum height */
@@ -978,7 +991,7 @@ button:disabled {
     justify-content: center !important;
     align-items: center !important;
     position: relative;
-    overflow: hidden; /* Prevent overflow */
+    overflow: visible; /* Allow swipe animations to show */
   }
   
   .card-image {
