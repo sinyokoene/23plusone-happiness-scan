@@ -900,7 +900,7 @@ button:disabled {
 
 /* Mobile Improvements - Full Screen Optimized Design */
 @media (max-width: 480px) {
-  /* Mobile body optimizations - with fixed footer space */
+  /* Mobile body optimizations - natural flow */
   body {
     -webkit-text-size-adjust: 100%;
     -webkit-touch-callout: none;
@@ -909,10 +909,10 @@ button:disabled {
     min-height: 100vh; /* At least full height */
     overflow-x: hidden; /* Prevent horizontal scroll only */
     width: 100%;
-    padding-bottom: 45px; /* Space for fixed footer */
+    padding-bottom: 0; /* No padding needed for natural flow */
   }
 
-  /* Main layout optimization - ensure footer visibility */
+  /* Main layout optimization - natural flow like mockup */
   .main-content {
     padding: 8px; /* Small padding */
     display: flex;
@@ -920,8 +920,8 @@ button:disabled {
     justify-content: center;
     height: auto; /* Let content determine height */
     min-height: auto; /* No minimum height constraint */
-    max-height: calc(100vh - 60px); /* Ensure space for footer */
-    margin-bottom: 12px; /* More space above footer */
+    max-height: none; /* No height restriction */
+    margin-bottom: 0; /* No margin - natural flow */
   }
 
   /* Container sizing - compact for all sections with better padding */
@@ -1277,19 +1277,16 @@ button:disabled {
     touch-action: manipulation; /* Prevent zoom on double tap */
   }
 
-  /* Mobile footer adjustments - always visible */
+  /* Mobile footer adjustments - natural flow like mockup */
   .bottom-branding {
-    min-height: 45px; /* Taller for better visibility */
-    height: 45px; /* Fixed height */
-    max-height: 45px;
-    padding: 8px 12px; /* Better padding for readability */
+    min-height: 45px; /* Good height for visibility */
+    height: auto; /* Allow natural height */
+    max-height: none; /* No height restriction */
+    padding: 8px 12px; /* Good padding for readability */
     overflow: visible; /* Allow content to show */
-    position: fixed; /* Fix to bottom of screen */
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000; /* Ensure it's always on top */
-    background: var(--brand-dark); /* Ensure background is visible */
+    position: relative; /* Natural document flow */
+    background: var(--brand-dark); /* Keep background */
+    margin-top: 0; /* No extra margin */
   }
 
   .bottom-branding-logo {
