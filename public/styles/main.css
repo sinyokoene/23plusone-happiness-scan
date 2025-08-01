@@ -911,21 +911,22 @@ button:disabled {
     width: 100%;
   }
 
-  /* Main layout optimization - content-based */
+  /* Main layout optimization - compact with footer space */
   .main-content {
-    padding: 4px; /* Minimal padding to maximize space */
+    padding: 8px; /* Small padding */
     display: flex;
     align-items: center;
     justify-content: center;
     height: auto; /* Let content determine height */
-    min-height: calc(100vh - 35px); /* Minimum full height */
+    min-height: auto; /* No minimum height constraint */
     max-height: none; /* Allow content to determine max height */
+    margin-bottom: 8px; /* Space above footer */
   }
 
-  /* Container sizing - content-based height */
+  /* Container sizing - compact for all sections */
   #intro, #game, #results {
     height: auto; /* Let content determine height */
-    max-height: calc(100vh - 45px); /* Don't exceed viewport */
+    max-height: calc(100vh - 80px); /* Leave space for footer */
     min-height: 300px; /* Minimum reasonable height */
     padding: 8px; /* Minimal padding to maximize content space */
     border-radius: 6px;
@@ -933,11 +934,23 @@ button:disabled {
     overflow: hidden; /* Prevent container scroll */
   }
   
-  /* Specific intro height - much smaller */
+  /* Specific heights for each section */
   #intro {
-    height: 350px; /* Fixed smaller height */
+    height: 350px; /* Compact intro */
     max-height: 350px;
     min-height: 350px;
+  }
+  
+  #game {
+    height: 400px; /* Compact game section */
+    max-height: 400px;
+    min-height: 400px;
+  }
+  
+  #results {
+    height: 450px; /* Compact results section */
+    max-height: 450px;
+    min-height: 450px;
   }
 
   /* Game section optimization - full screen */
@@ -1130,12 +1143,12 @@ button:disabled {
     margin: 0 auto; /* Center the image */
   }
   
-  /* Results section mobile optimization - full screen */
+  /* Results section mobile optimization - compact */
   #results {
     max-width: 100%;
     padding: 8px; /* Minimal padding */
     overflow: hidden; /* Prevent main container scroll */
-    height: 100%; /* Use full container height */
+    height: 450px; /* Fixed compact height */
     display: flex;
     flex-direction: column;
   }
@@ -1144,8 +1157,8 @@ button:disabled {
     padding: 4px 0 35px 0; /* Minimal padding with space for navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(100vh - 80px); /* Dynamic height minus footer and navigation */
-    max-height: calc(100vh - 80px);
+    height: calc(450px - 40px); /* Height minus navigation space */
+    max-height: calc(450px - 40px);
     flex: 1; /* Take available space */
   }
   
@@ -1263,33 +1276,35 @@ button:disabled {
     touch-action: manipulation; /* Prevent zoom on double tap */
   }
 
-  /* Mobile footer adjustments - minimized */
+  /* Mobile footer adjustments - visible and compact */
   .bottom-branding {
-    min-height: 35px; /* Reduced from 50px */
-    height: 35px; /* Fixed height */
-    max-height: 35px;
-    padding: 4px 8px; /* Minimal padding */
-    overflow: hidden; /* Prevent footer expansion */
+    min-height: 40px; /* Slightly taller for visibility */
+    height: 40px; /* Fixed height */
+    max-height: 40px;
+    padding: 6px 12px; /* Better padding for readability */
+    overflow: visible; /* Allow content to show */
+    position: relative; /* Ensure proper positioning */
+    z-index: 100; /* Above other content */
   }
 
   .bottom-branding-logo {
-    width: 25px; /* Smaller logo */
-    height: 25px;
-    min-width: 25px;
-    min-height: 25px;
+    width: 28px; /* Slightly larger for visibility */
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
   }
 
   .bottom-brand-logo {
-    height: 12px; /* Smaller brand logo */
+    height: 14px; /* Slightly larger brand logo */
   }
 
   .bottom-branding-text {
-    font-size: 7px; /* Smaller text */
+    font-size: 8px; /* Slightly larger text for readability */
     line-height: 1.2;
   }
 
   .bottom-copyright {
-    font-size: 6px; /* Smaller copyright */
+    font-size: 7px; /* Slightly larger copyright */
     line-height: 1.2;
   }
   
