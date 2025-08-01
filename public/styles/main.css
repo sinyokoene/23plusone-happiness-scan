@@ -932,20 +932,26 @@ button:disabled {
     overflow: hidden !important;
   }
   
-  /* Only apply flex layout when sections are visible */
-  #intro:not([style*="display: none"]) {
+  /* Default: Hide all sections */
+  #intro, #game, #results {
+    display: none !important;
+  }
+  
+  /* Show intro by default (initial state) */
+  #intro {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
   }
   
-  #game:not([style*="display: none"]) {
+  /* Only show sections when JavaScript explicitly shows them */
+  #game[style*="display: flex"], #game[style*="display: block"] {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
   }
   
-  #results:not([style*="display: none"]) {
+  #results[style*="display: flex"], #results[style*="display: block"] {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
