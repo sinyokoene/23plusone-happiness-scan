@@ -1164,8 +1164,8 @@ button:disabled {
     padding: 8px 0 40px 0; /* Space for navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(520px - 80px); /* Updated height minus navigation and padding */
-    max-height: calc(520px - 80px);
+    height: calc(600px - 80px); /* Updated height to match new 600px container */
+    max-height: calc(600px - 80px);
     flex: 1; /* Take available space */
   }
   
