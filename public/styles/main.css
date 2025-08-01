@@ -927,12 +927,28 @@ button:disabled {
     height: 400px !important;
     max-height: 400px !important;
     min-height: 400px !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
     text-align: center !important;
     position: relative !important;
     overflow: hidden !important;
+  }
+  
+  /* Only apply flex layout when sections are visible */
+  #intro:not([style*="display: none"]) {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+  
+  #game:not([style*="display: none"]) {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+  
+  #results:not([style*="display: none"]) {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
   }
 
   /* Game section optimization - full screen */
