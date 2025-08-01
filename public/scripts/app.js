@@ -68,10 +68,7 @@
     
     console.log(`🖼️ Preloading ${totalImages} card images...`);
     
-    // Simple loading state without progress counter
-    startBtn.textContent = 'Loading images...';
-    startBtn.disabled = true;
-    
+    // Silent preloading - no UI changes needed
     cards.forEach((card, index) => {
       const img = new Image();
       
@@ -81,8 +78,6 @@
         // All images loaded
         if (loadedCount === totalImages) {
           console.log('✅ All card images preloaded!');
-          startBtn.textContent = 'Start Happiness Scan';
-          startBtn.disabled = false;
         }
       };
       
@@ -92,8 +87,6 @@
         
         if (loadedCount === totalImages) {
           console.log('✅ Image preloading complete (some failed)');
-          startBtn.textContent = 'Start Happiness Scan';
-          startBtn.disabled = false;
         }
       };
       
