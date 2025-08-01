@@ -1048,18 +1048,21 @@ button:disabled {
   /* Ensure Yes/No buttons have proper styling - compact */
   #yesBtn, #noBtn {
     font-size: 13px !important; /* Compact text */
-    padding: 8px 18px !important; /* Compact padding */
+    padding: 0 18px !important; /* Remove vertical padding, keep horizontal */
     border: none !important;
     border-radius: 6px !important; /* Slightly rounded */
     font-weight: 600 !important;
     min-width: 75px !important; /* Compact width */
     max-width: 85px !important; /* Limit width */
-    display: inline-block !important; /* Inline-block for flex behavior */
+    display: inline-flex !important; /* Use inline-flex for better alignment */
+    align-items: center !important; /* Center text vertically */
+    justify-content: center !important; /* Center text horizontally */
     flex: 0 0 auto; /* Don't grow or shrink */
     margin: 0 2px !important; /* Minimal horizontal margin */
     box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; /* Subtle shadow */
     transition: all 0.2s ease !important; /* Smooth transitions */
-    height: 32px !important; /* Fixed height */
+    height: 38px !important; /* Slightly taller for better touch target */
+    line-height: 1 !important; /* Reset line height for perfect centering */
   }
 
   /* Force button visibility in game mode - compact */
@@ -1067,10 +1070,10 @@ button:disabled {
     background: transparent; /* No background needed */
     border-radius: 6px; /* Match button border radius */
     padding: 4px; /* Minimal padding */
-    margin: 8px 4px 4px 4px; /* Minimal margins */
+    margin: 8px 4px 16px 4px; /* More bottom margin to move buttons up */
     width: calc(100% - 8px); /* Full width minus minimal margins */
     box-sizing: border-box; /* Include padding in width */
-    height: 40px; /* Fixed height */
+    height: 45px; /* Slightly taller to accommodate new button height */
   }
 
   /* Ensure buttons are visible when shown */
