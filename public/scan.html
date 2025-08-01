@@ -22,7 +22,7 @@
 <body>
   <div class="main-content">
   <div class="container">
-    <section id="intro" role="banner" aria-labelledby="intro-heading">
+    <section id="intro" role="banner" aria-labelledby="intro-heading" style="display: flex;">
       <div id="introContent">
         <div class="intro-left">
           <h1 id="intro-heading">Welcome to the happiness scan.</h1>
@@ -38,7 +38,7 @@
       <button id="startBtn" type="button" class="btn btn-primary" aria-describedby="intro-heading">Start Happiness Scan</button>
     </section>
 
-    <main id="game" role="main" aria-labelledby="game-heading" style="display: none;">
+    <main id="game" role="main" aria-labelledby="game-heading" style="display: none !important;">
       <h2 id="game-heading" class="sr-only">Happiness Scan Question</h2>
       
       <!-- Progress indicator -->
@@ -69,7 +69,7 @@
       </div>
     </main>
 
-    <section id="results" role="region" aria-labelledby="results-heading" style="display: none;">
+    <section id="results" role="region" aria-labelledby="results-heading" style="display: none !important;">
       <!-- Page 1: Your Score & Overview -->
       <div class="results-page" id="results-page-1">
       <header id="resultsHeader">

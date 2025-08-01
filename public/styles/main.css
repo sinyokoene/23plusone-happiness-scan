@@ -916,45 +916,22 @@ button:disabled {
     flex: none !important;
   }
 
-  /* Mobile containers - exactly like mockup */
+  /* Mobile containers - pure styling, no display control */
   #intro, #game, #results {
-    background: var(--card-bg) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
-    margin: 12px !important;
-    padding: 20px !important;
-    width: calc(100% - 24px) !important;
-    height: 400px !important;
-    max-height: 400px !important;
-    min-height: 400px !important;
-    text-align: center !important;
-    position: relative !important;
-    overflow: hidden !important;
-  }
-  
-  /* Default: Hide all sections */
-  #intro, #game, #results {
-    display: none !important;
-  }
-  
-  /* Show intro by default (initial state) */
-  #intro {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-  }
-  
-  /* Only show sections when JavaScript explicitly shows them */
-  #game[style*="display: flex"], #game[style*="display: block"] {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-  }
-  
-  #results[style*="display: flex"], #results[style*="display: block"] {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin: 12px;
+    padding: 20px;
+    width: calc(100% - 24px);
+    height: 400px;
+    max-height: 400px;
+    min-height: 400px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: space-between;
   }
 
   /* Game section optimization - full screen */
