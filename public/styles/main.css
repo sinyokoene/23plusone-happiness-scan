@@ -1512,14 +1512,24 @@ button:disabled {
 /* Footer */
 .bottom-branding {
   background: var(--brand-dark);
-  padding: 12px 24px;
+  padding: 12px 0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   color: var(--white);
   font-size: 14px;
   font-weight: 500;
   min-height: 50px;
+}
+
+/* Footer content wrapper - matches main content width */
+.bottom-branding-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1250px;
+  padding: 0 24px;
 }
 
 .bottom-branding-left {
@@ -1579,16 +1589,24 @@ button:disabled {
 @media (max-width: 480px) {
   .bottom-branding {
     background: var(--brand-dark) !important;
-    padding: 8px 12px !important;
+    padding: 8px 0 !important;
     min-height: 45px !important;
     height: auto !important;
     display: flex !important;
     align-items: center !important;
-    justify-content: space-between !important;
+    justify-content: center !important;
     color: var(--white) !important;
     position: relative !important; /* Natural flow, not fixed */
     margin-top: 0 !important;
+  }
+
+  .bottom-branding-content {
+    padding: 0 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
     width: 100% !important;
+    max-width: none !important;
     box-sizing: border-box !important;
   }
   .bottom-branding-left,
