@@ -538,6 +538,8 @@ button:disabled {
   min-height: 0; /* Allow flex child to shrink */
   overflow-y: auto; /* Allow scrolling if needed */
   padding: var(--spacing-sm) 0 80px 0; /* Add bottom padding for navigation */
+  max-width: 800px; /* Constrain content width for better readability */
+  margin: 0 auto; /* Center the narrower content */
 }
 
 /* Palette tagline styling */
