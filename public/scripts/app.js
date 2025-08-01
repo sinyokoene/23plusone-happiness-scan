@@ -48,14 +48,71 @@
     .then(r => r.json())
     .then(json => {
       cards = json;
-      // Cards loaded, ready for user to start
-      console.log('Cards loaded, ready to start');
+      // Cards loaded, now preload all images for instant display
+      console.log('Cards loaded, starting image preload...');
+      preloadCardImages();
     })
     .catch(err => {
       console.error('Error loading cards:', err);
       startBtn.textContent = 'Error loading - Please refresh';
       startBtn.disabled = true;
     });
+
+  // Preload all card images for instant loading during game
+  function preloadCardImages() {
+    let loadedCount = 0;
+    const totalImages = cards.length;
+    
+    console.log(`🖼️ Preloading ${totalImages} card images...`);
+    
+    // Update button to show loading progress
+    startBtn.textContent = `Loading images... (0/${totalImages})`;
+    startBtn.disabled = true;
+    
+    cards.forEach((card, index) => {
+      const img = new Image();
+      
+      img.onload = () => {
+        loadedCount++;
+        // Update progress on button
+        startBtn.textContent = `Loading images... (${loadedCount}/${totalImages})`;
+        
+        // All images loaded
+        if (loadedCount === totalImages) {
+          console.log('✅ All card images preloaded!');
+          startBtn.textContent = 'Start Happiness Scan';
+          startBtn.disabled = false;
+        }
+      };
+      
+      img.onerror = () => {
+        console.warn(`⚠️ Failed to preload image: ${card.images[0]}`);
+        loadedCount++; // Count it anyway to prevent hanging
+        startBtn.textContent = `Loading images... (${loadedCount}/${totalImages})`;
+        
+        if (loadedCount === totalImages) {
+          console.log('✅ Image preloading complete (some failed)');
+          startBtn.textContent = 'Start Happiness Scan';
+          startBtn.disabled = false;
+        }
+      };
+      
+      // Start loading the image
+      img.src = card.images[0];
+    });
+     }
+
+  // Preload next few cards while current card is being viewed
+  function preloadNextCards(currentIndex, count = 3) {
+    for(let i = 1; i <= count; i++) {
+      if(currentIndex + i < deck.length) {
+        const nextCard = deck[currentIndex + i];
+        const img = new Image();
+        img.src = nextCard.images[0];
+        // Silent preloading - no need for callbacks
+      }
+    }
+  }
   
   function initializeScan() {
     // Shuffle all cards once
@@ -77,6 +134,9 @@
     }
     
     const card = deck[currentCardIndex];
+    
+    // Preload next few cards for even smoother experience
+    preloadNextCards(currentCardIndex, 3);
     
     // Update progress (only if progress bar exists)
     if (progressBar) {
