@@ -900,38 +900,44 @@ button:disabled {
 
 /* Mobile Improvements - Full Screen Optimized Design */
 @media (max-width: 480px) {
-  /* Mobile body optimizations - strict no scroll */
+  /* Mobile body optimizations - allow natural height */
   body {
     -webkit-text-size-adjust: 100%;
     -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
-    height: 100vh;
-    max-height: 100vh; /* Strict height limit */
-    overflow: hidden; /* Prevent body scroll */
-    position: fixed; /* Prevent any scrolling */
+    height: auto; /* Let content determine height */
+    min-height: 100vh; /* At least full height */
+    overflow-x: hidden; /* Prevent horizontal scroll only */
     width: 100%;
   }
 
-  /* Main layout optimization - full viewport usage */
+  /* Main layout optimization - content-based */
   .main-content {
     padding: 4px; /* Minimal padding to maximize space */
     display: flex;
     align-items: center;
     justify-content: center;
-    height: calc(100vh - 35px); /* Account for minimized footer */
-    min-height: calc(100vh - 35px);
-    max-height: calc(100vh - 35px);
+    height: auto; /* Let content determine height */
+    min-height: calc(100vh - 35px); /* Minimum full height */
+    max-height: none; /* Allow content to determine max height */
   }
 
-  /* Container sizing - full viewport adaptive */
+  /* Container sizing - content-based height */
   #intro, #game, #results {
-    height: calc(100vh - 45px); /* Dynamic height based on viewport minus footer */
-    max-height: calc(100vh - 45px);
-    min-height: calc(100vh - 45px);
+    height: auto; /* Let content determine height */
+    max-height: calc(100vh - 45px); /* Don't exceed viewport */
+    min-height: 300px; /* Minimum reasonable height */
     padding: 8px; /* Minimal padding to maximize content space */
     border-radius: 6px;
     position: relative;
     overflow: hidden; /* Prevent container scroll */
+  }
+  
+  /* Specific intro height - much smaller */
+  #intro {
+    height: 350px; /* Fixed smaller height */
+    max-height: 350px;
+    min-height: 350px;
   }
 
   /* Game section optimization - full screen */
@@ -1108,14 +1114,14 @@ button:disabled {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 160px; /* Fixed height instead of flexible */
-    max-height: 160px; /* Ensure it doesn't exceed */
+    height: 140px; /* Smaller fixed height */
+    max-height: 140px; /* Ensure it doesn't exceed */
     overflow: hidden; /* Prevent any overflow */
   }
   
   .hero-image {
     max-width: calc(100% - 16px); /* Small margin */
-    max-height: 150px; /* Slightly larger for better visibility */
+    max-height: 130px; /* Smaller to fit in reduced container */
     width: auto !important;
     height: auto !important;
     border-radius: 4px;
