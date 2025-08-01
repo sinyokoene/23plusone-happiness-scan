@@ -58,15 +58,15 @@
       startBtn.disabled = true;
     });
 
-  // Preload all card images for instant loading during game
+    // Preload all card images for instant loading during game
   function preloadCardImages() {
     let loadedCount = 0;
     const totalImages = cards.length;
     
     console.log(`🖼️ Preloading ${totalImages} card images...`);
     
-    // Update button to show loading progress
-    startBtn.textContent = `Loading images... (0/${totalImages})`;
+    // Simple loading state without progress counter
+    startBtn.textContent = 'Loading images...';
     startBtn.disabled = true;
     
     cards.forEach((card, index) => {
@@ -74,8 +74,6 @@
       
       img.onload = () => {
         loadedCount++;
-        // Update progress on button
-        startBtn.textContent = `Loading images... (${loadedCount}/${totalImages})`;
         
         // All images loaded
         if (loadedCount === totalImages) {
@@ -88,7 +86,6 @@
       img.onerror = () => {
         console.warn(`⚠️ Failed to preload image: ${card.images[0]}`);
         loadedCount++; // Count it anyway to prevent hanging
-        startBtn.textContent = `Loading images... (${loadedCount}/${totalImages})`;
         
         if (loadedCount === totalImages) {
           console.log('✅ Image preloading complete (some failed)');
@@ -100,7 +97,7 @@
       // Start loading the image
       img.src = card.images[0];
     });
-     }
+  }
 
   // Preload next few cards while current card is being viewed
   function preloadNextCards(currentIndex, count = 3) {
