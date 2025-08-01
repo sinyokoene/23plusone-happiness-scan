@@ -279,35 +279,36 @@ body {
 
 @media (max-width: 480px) {
   #startBtn {
-    padding: 10px 20px; /* Better padding for touch */
-    font-size: 14px; /* Readable text */
-    margin: 12px auto 0 auto; /* Top margin for spacing */
-    max-width: 200px; /* Slightly wider */
-    border-radius: 6px; /* Smaller radius */
-    box-shadow: 0 2px 8px rgba(233, 30, 99, 0.2); /* Better shadow */
-    flex-shrink: 0; /* Don't let button shrink */
-    height: 40px; /* Better height for touch */
-    position: relative; /* Ensure proper positioning */
+    padding: 12px 24px !important; /* Better padding matching mockup */
+    font-size: 15px !important; /* Readable text like mockup */
+    margin: 8px auto 0 auto !important; /* Compact margin */
+    max-width: 220px !important; /* Good width for mobile */
+    border-radius: 8px !important; /* Rounded like mockup */
+    box-shadow: 0 3px 12px rgba(233, 30, 99, 0.3) !important; /* Nice shadow */
+    flex-shrink: 0 !important; /* Don't let button shrink */
+    height: 44px !important; /* Good touch target */
+    position: relative !important; /* Ensure proper positioning */
+    font-weight: 600 !important; /* Bold like mockup */
 }
 
   #introContent h1 {
-    font-size: 16px; /* Smaller heading */
-    margin-bottom: 1px; /* Minimal margin */
-    line-height: 1.1; /* Tighter line height */
-    font-weight: 700; /* Keep bold for impact */
+    font-size: 18px !important; /* Good readable size like mockup */
+    margin-bottom: 4px !important; /* Small margin */
+    line-height: 1.2 !important; /* Good readability */
+    font-weight: 700 !important; /* Bold for impact */
   }
 
   #introContent p {
-    font-size: 11px; /* Smaller text */
-    margin-bottom: 1px; /* Minimal margin */
-    line-height: 1.2; /* Tighter line height */
+    font-size: 13px !important; /* Readable text like mockup */
+    margin-bottom: 3px !important; /* Small margin */
+    line-height: 1.3 !important; /* Good readability */
 }
 
   #introContent p.lets-go {
-    font-size: 12px; /* Smaller text */
-    margin-top: 1px; /* Minimal margin */
-    margin-bottom: 3px; /* Small margin before GIF */
-    font-weight: 700; /* Make it stand out despite smaller size */
+    font-size: 14px !important; /* Slightly larger for emphasis */
+    margin-top: 2px !important; /* Small margin */
+    margin-bottom: 4px !important; /* Margin before GIF */
+    font-weight: 700 !important; /* Bold like mockup */
   }
 }
 
@@ -900,58 +901,61 @@ button:disabled {
 
 /* Mobile Improvements - Full Screen Optimized Design */
 @media (max-width: 480px) {
-  /* Mobile body optimizations - natural flow */
+  /* Mobile body optimizations - mockup-matching flow */
   body {
-    -webkit-text-size-adjust: 100%;
-    -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent;
-    height: auto; /* Let content determine height */
-    min-height: 100vh; /* At least full height */
-    overflow-x: hidden; /* Prevent horizontal scroll only */
-    width: 100%;
-    padding-bottom: 0; /* No padding needed for natural flow */
+    -webkit-text-size-adjust: 100% !important;
+    -webkit-touch-callout: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    height: auto !important; /* Natural content height */
+    min-height: 100vh !important; /* At least full height */
+    overflow-x: hidden !important; /* Prevent horizontal scroll */
+    overflow-y: auto !important; /* Allow natural vertical scroll */
+    width: 100% !important;
+    padding-bottom: 0 !important; /* No padding - natural flow */
+    margin: 0 !important; /* No body margins */
   }
 
-  /* Main layout optimization - natural flow like mockup */
+  /* Main layout optimization - mockup-matching natural flow */
   .main-content {
-    padding: 8px; /* Small padding */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: auto; /* Let content determine height */
-    min-height: auto; /* No minimum height constraint */
-    max-height: none; /* No height restriction */
-    margin-bottom: 0; /* No margin - natural flow */
+    padding: 0 !important; /* No padding - let containers handle spacing */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: auto !important; /* Natural height */
+    min-height: auto !important; /* No constraints */
+    max-height: none !important; /* No restrictions */
+    margin-bottom: 0 !important; /* Natural flow to footer */
   }
 
-  /* Container sizing - compact for all sections with better padding */
+  /* Container sizing - mockup-matching compact design */
   #intro, #game, #results {
-    height: auto; /* Let content determine height */
-    max-height: calc(100vh - 80px); /* Leave space for footer */
-    min-height: 300px; /* Minimum reasonable height */
-    padding: 12px 16px; /* Better padding - more left/right space */
-    border-radius: 6px;
-    position: relative;
-    overflow: hidden; /* Prevent container scroll */
+    height: auto !important; /* Content-driven height */
+    max-height: none !important; /* No height restrictions */
+    min-height: auto !important; /* No minimum height */
+    padding: 16px 20px !important; /* Better padding matching mockup */
+    border-radius: 8px !important; /* Slightly more rounded like mockup */
+    position: relative !important;
+    overflow: visible !important; /* Allow natural content flow */
+    margin: 8px !important; /* Small margin around containers */
   }
   
-  /* Consistent heights for all sections - same white block size */
+  /* Mockup-matching heights - compact and content-driven */
   #intro {
-    height: 350px; /* Consistent height */
-    max-height: 350px;
-    min-height: 350px;
+    height: 320px !important; /* Compact height matching mockup */
+    max-height: 320px !important;
+    min-height: 320px !important;
   }
   
   #game {
-    height: 350px; /* Same height as intro */
-    max-height: 350px;
-    min-height: 350px;
+    height: 320px !important; /* Same compact height */
+    max-height: 320px !important;
+    min-height: 320px !important;
   }
   
   #results {
-    height: 350px; /* Same height as intro */
-    max-height: 350px;
-    min-height: 350px;
+    height: 320px !important; /* Same compact height */
+    max-height: 320px !important;
+    min-height: 320px !important;
   }
 
   /* Game section optimization - full screen */
@@ -1017,17 +1021,17 @@ button:disabled {
     object-fit: contain; /* Ensure full image is visible */
   }
 
-  /* Button improvements - space optimized */
+  /* Button improvements - mockup-matching */
   .buttons {
-    margin: 8px 4px 4px 4px; /* Minimal margins */
-    gap: 12px; /* Reduced gap */
-    flex-shrink: 0; /* Prevent buttons from shrinking */
+    margin: 12px 8px 8px 8px !important; /* Better margins like mockup */
+    gap: 16px !important; /* Good gap between buttons */
+    flex-shrink: 0 !important; /* Prevent buttons from shrinking */
     display: flex !important; /* Force display */
     justify-content: center !important;
-    order: 3; /* Ensure buttons come last */
-    position: relative; /* Ensure proper positioning within container */
-    z-index: 10; /* Ensure buttons are above other elements */
-    height: 40px; /* Fixed height to prevent expansion */
+    order: 3 !important; /* Ensure buttons come last */
+    position: relative !important; /* Proper positioning */
+    z-index: 10 !important; /* Above other elements */
+    height: 44px !important; /* Good height matching buttons */
   }
 
   button {
@@ -1097,70 +1101,70 @@ button:disabled {
     order: 2; /* Between card and buttons */
   }
   
-  /* Intro section mobile optimization - eliminate white space */
+  /* Intro section - mockup-matching layout */
   #intro {
-    justify-content: flex-start; /* Pack content from top */
-    padding: 8px; /* Minimal padding */
-    display: flex;
-    flex-direction: column;
-    gap: 0; /* No gap between elements */
+    justify-content: space-between !important; /* Distribute content like mockup */
+    padding: 16px 20px !important; /* Match container padding */
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important; /* Controlled gap matching mockup */
   }
   
   #introContent {
-    flex-direction: column;
-    gap: 8px; /* Small controlled gap */
-    text-align: center;
-    padding: 0;
-    flex: 1; /* Use available space */
-    justify-content: center; /* Center content vertically */
-    height: 100%; /* Full height usage */
-    max-height: 100%; /* Prevent overflow */
+    flex-direction: column !important;
+    gap: 12px !important; /* Consistent gap */
+    text-align: center !important;
+    padding: 0 !important;
+    flex: 1 !important; /* Use available space */
+    justify-content: space-between !important; /* Distribute like mockup */
+    height: auto !important; /* Natural height */
+    max-height: none !important; /* No restrictions */
   }
   
   .intro-left {
-    text-align: center;
-    margin-bottom: 0; /* No margin */
-    flex-shrink: 0; /* Don't shrink text container */
+    text-align: center !important;
+    margin-bottom: 0 !important; /* No extra margin */
+    flex-shrink: 0 !important; /* Don't shrink text */
   }
   
   .intro-right {
-    flex: 0 0 auto; /* Don't grow, fixed size */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 140px; /* Smaller fixed height */
-    max-height: 140px; /* Ensure it doesn't exceed */
-    overflow: hidden; /* Prevent any overflow */
+    flex: 0 0 auto !important; /* Fixed size */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    height: 120px !important; /* Compact height matching mockup */
+    max-height: 120px !important;
+    overflow: visible !important; /* Allow natural flow */
   }
   
   .hero-image {
-    max-width: calc(100% - 16px); /* Small margin */
-    max-height: 130px; /* Smaller to fit in reduced container */
+    max-width: calc(100% - 8px) !important; /* Minimal margin */
+    max-height: 110px !important; /* Compact size matching mockup */
     width: auto !important;
     height: auto !important;
-    border-radius: 4px;
-    object-fit: contain; /* Show full GIF without cropping */
+    border-radius: 6px !important; /* Slightly rounded like mockup */
+    object-fit: contain !important; /* Show full GIF without cropping */
     display: block !important;
-    margin: 0 auto; /* Center the image */
+    margin: 0 auto !important; /* Center the image */
   }
   
-  /* Results section mobile optimization - consistent height */
+  /* Results section - mockup-matching layout */
   #results {
-    max-width: 100%;
-    padding: 12px 16px; /* Better padding for readability */
-    overflow: hidden; /* Prevent main container scroll */
-    height: 350px; /* Same height as other sections */
-    display: flex;
-    flex-direction: column;
+    max-width: 100% !important;
+    padding: 16px 20px !important; /* Match other sections */
+    overflow: visible !important; /* Allow natural flow */
+    height: 320px !important; /* Match other sections */
+    display: flex !important;
+    flex-direction: column !important;
   }
 
   .results-page {
-    padding: 8px 0 35px 0; /* Better padding with space for navigation */
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(350px - 50px); /* Height minus navigation space */
-    max-height: calc(350px - 50px);
-    flex: 1; /* Take available space */
+    padding: 8px 0 40px 0 !important; /* Space for navigation */
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important; /* Smooth scrolling on iOS */
+    height: calc(320px - 45px) !important; /* Height minus navigation */
+    max-height: calc(320px - 45px) !important;
+    flex: 1 !important; /* Take available space */
   }
   
   /* Results content scaling - ultra compact */
@@ -1543,38 +1547,50 @@ button:disabled {
   margin-left: 6px;
 }
 
-/* Mobile footer */
+/* Mobile footer - clean implementation matching mockup */
 @media (max-width: 480px) {
   .bottom-branding {
-    padding: 8px 12px;
-    min-height: 40px;
-    align-items: center;
-    text-align: center;
+    background: var(--brand-dark) !important;
+    padding: 8px 12px !important;
+    min-height: 45px !important;
+    height: auto !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    color: var(--white) !important;
+    position: relative !important; /* Natural flow, not fixed */
+    margin-top: 0 !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
   }
   .bottom-branding-left,
   .bottom-branding-right {
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-    gap: 8px;
+    display: flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    gap: 8px !important;
   }
   .bottom-branding-text {
-    font-size: 9px;
+    font-size: 8px !important;
+    color: var(--white) !important;
+    line-height: 1.2 !important;
   }
   .bottom-branding-logo {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    align-self: center;
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    min-height: 28px !important;
+    flex-shrink: 0 !important;
   }
   .bottom-brand-logo {
-    height: 18px;
-    margin-left: 4px;
+    height: 14px !important;
+    filter: brightness(0) invert(1) !important;
+    margin-left: 4px !important;
   }
   .bottom-copyright {
-    font-size: 8px;
-    text-align: center;
-    margin-left: 2px;
+    font-size: 7px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-align: right !important;
+    margin-left: 2px !important;
   }
 }
