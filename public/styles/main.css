@@ -955,36 +955,37 @@ button:disabled {
     -webkit-touch-callout: none !important;
   }
 
-  /* Main content - let containers handle all spacing */
+  /* Main content - efficient top-aligned layout */
   .main-content {
     display: flex !important;
-    align-items: center !important;
+    align-items: flex-start !important; /* Align to top instead of center */
     justify-content: center !important;
-    padding: 0 !important;
-    padding-bottom: env(safe-area-inset-bottom, 0) !important; /* Safe area for notched devices */
+    padding: 20px 0 !important; /* Add top padding, remove bottom */
     margin: 0 !important;
     height: 100vh !important;
     min-height: 100vh !important;
     flex: none !important;
     overflow: hidden !important; /* Prevent scrolling */
+    box-sizing: border-box !important;
   }
 
-  /* Mobile containers - pure styling, no display control */
+  /* Mobile containers - efficient height usage with fixed footer */
   #intro, #game, #results {
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin: 12px;
+    margin: 0 12px 0 12px; /* No bottom margin since footer is fixed */
     padding: 20px;
     width: calc(100% - 24px);
-    height: 550px !important; 
-    max-height: 550px !important;
-    min-height: 550px !important;
+    height: calc(100vh - 120px) !important; /* Account for top padding and fixed footer */
+    max-height: calc(100vh - 120px) !important;
+    min-height: calc(100vh - 120px) !important;
     text-align: center;
     position: relative;
     overflow: hidden !important; /* Prevent scrolling */
     flex-direction: column;
     justify-content: space-between;
+    box-sizing: border-box !important;
   }
   
   /* Ensure game section allows card animations */
@@ -1646,20 +1647,23 @@ button:disabled {
   margin-left: 6px;
 }
 
-/* Mobile footer - clean implementation matching mockup */
+/* Mobile footer - fixed at bottom for better visibility */
 @media (max-width: 480px) {
   .bottom-branding {
     background: var(--brand-dark) !important;
-    padding: 12px 0 !important;
-    min-height: 60px !important;
-    height: auto !important;
+    padding: 8px 0 !important;
+    min-height: 50px !important;
+    height: 50px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     color: var(--white) !important;
-    position: relative !important; /* Natural flow, not fixed */
-    margin-top: 12px !important;
+    position: fixed !important; /* Fixed at bottom */
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
     z-index: 1000 !important;
+    margin: 0 !important;
   }
 
   .bottom-branding-content {
@@ -1735,11 +1739,11 @@ button:disabled {
     font-size: 7px !important;
   }
   
-  /* Ensure containers stay same size on small screens */
+  /* Ensure containers stay same size on small screens with fixed footer */
   #intro, #game, #results {
-    height: 520px !important;
-    max-height: 520px !important;
-    min-height: 520px !important;
+    height: calc(100vh - 140px) !important; /* Account for fixed footer on smaller screens */
+    max-height: calc(100vh - 140px) !important;
+    min-height: calc(100vh - 140px) !important;
   }
 }
 
