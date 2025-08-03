@@ -977,9 +977,9 @@ button:disabled {
     margin: 0 12px 12px 12px; /* Added bottom margin for spacing from fixed footer */
     padding: 12px; /* Further reduced padding */
     width: calc(100% - 24px);
-    height: calc(100vh - 200px) !important; /* Reduced height to show start button */
-    max-height: calc(100vh - 200px) !important;
-    min-height: calc(100vh - 200px) !important;
+    height: calc(100vh - 250px) !important; /* Reduced height by 50px */
+    max-height: calc(100vh - 250px) !important;
+    min-height: calc(100vh - 250px) !important;
     text-align: center;
     position: relative;
     overflow: hidden !important; /* Prevent scrolling */
@@ -994,14 +994,14 @@ button:disabled {
   }
 
   /* Game section optimization - match reduced container size */
-    /* Game section optimization - properly sized */
+  /* Game section optimization - properly sized */
   #game {
     justify-content: space-between; /* Distribute elements evenly */
     gap: 3px; /* Minimal gap to maximize space */
     padding: 12px; /* Reduced padding */
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 200px) !important; /* Match container height */
+    height: calc(100vh - 250px) !important; /* Match container height */
   }
 
   /* Card container optimization - space efficient */
@@ -1156,7 +1156,9 @@ button:disabled {
 
   /* Intro section - compact layout to fit everything */
   #introContent {
-    gap: 8px !important; /* Much smaller gap */
+    gap: 4px !important; /* Much smaller gap to reduce white space above heading */
+    justify-content: flex-start !important; /* Start from top instead of center */
+    padding-top: 4px !important; /* Minimal top padding */
   }
   
   .intro-left {
@@ -1235,9 +1237,10 @@ button:disabled {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    margin: 0 auto !important;
+    margin: 8px auto 0 auto !important; /* Reduced top margin, add auto bottom */
     box-shadow: 0 2px 6px rgba(233, 30, 99, 0.25) !important; /* Smaller shadow */
     flex-shrink: 0 !important;
+    align-self: flex-end !important; /* Position at bottom of container */
   }
   
   /* Results section - properly sized */
@@ -1245,15 +1248,15 @@ button:disabled {
     max-width: 100%;
     padding: 10px; /* Further reduced padding to match other sections */
     overflow: hidden !important; /* Prevent scrolling */
-    height: calc(100vh - 200px) !important; /* Match container height */
+    height: calc(100vh - 250px) !important; /* Match container height */
   }
 
   .results-page {
     padding: 6px 0 30px 0; /* Reduced space for navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(100vh - 260px) !important; /* Adjusted for container height */
-    max-height: calc(100vh - 260px) !important;
+    height: calc(100vh - 310px) !important; /* Adjusted for container height */
+    max-height: calc(100vh - 310px) !important;
     flex: 1; /* Take available space */
   }
   
@@ -1743,9 +1746,9 @@ button:disabled {
   
   /* Ensure containers are properly sized for small screens */
   #intro, #game, #results {
-    height: calc(100vh - 220px) !important; /* Slightly more space for smaller screens */
-    max-height: calc(100vh - 220px) !important;
-    min-height: calc(100vh - 220px) !important;
+    height: calc(100vh - 270px) !important; /* Slightly more space for smaller screens */
+    max-height: calc(100vh - 270px) !important;
+    min-height: calc(100vh - 270px) !important;
   }
 }
 
