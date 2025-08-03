@@ -955,31 +955,31 @@ button:disabled {
     -webkit-touch-callout: none !important;
   }
 
-  /* Main content - better space reservation for footer */
+  /* Main content - account for fixed footer space */
   .main-content {
     display: flex !important;
     align-items: flex-start !important; /* Align to top */
     justify-content: center !important;
-    padding: 16px 0 0 0 !important; /* Reduced top padding */
+    padding: 8px 0 0 0 !important; /* Reduced top padding */
     margin: 0 !important;
     height: auto !important; /* Let content determine height */
-    min-height: calc(100vh - 120px) !important; /* More space for footer */
+    min-height: calc(100vh - 60px) !important; /* Account for fixed footer height */
     flex: none !important;
-    overflow: visible !important; /* Allow footer to show */
+    overflow: visible !important; /* Allow content to show */
     box-sizing: border-box !important;
   }
 
-  /* Mobile containers - reduced height for better footer visibility */
+  /* Mobile containers - account for fixed footer */
   #intro, #game, #results {
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin: 0 12px 8px 12px; /* Reduced bottom margin */
-    padding: 16px; /* Reduced padding */
+    margin: 0 12px 12px 12px; /* Added bottom margin for spacing from fixed footer */
+    padding: 14px; /* Reduced padding */
     width: calc(100% - 24px);
-    height: calc(100vh - 260px) !important; /* Reduced by 30px for footer */
-    max-height: calc(100vh - 260px) !important;
-    min-height: calc(100vh - 260px) !important;
+    height: calc(100vh - 140px) !important; /* Account for fixed footer space */
+    max-height: calc(100vh - 140px) !important;
+    min-height: calc(100vh - 140px) !important;
     text-align: center;
     position: relative;
     overflow: hidden !important; /* Prevent scrolling */
@@ -994,13 +994,14 @@ button:disabled {
   }
 
   /* Game section optimization - match reduced container size */
+    /* Game section optimization - account for fixed footer */
   #game {
     justify-content: space-between; /* Distribute elements evenly */
     gap: 3px; /* Minimal gap to maximize space */
     padding: 12px; /* Reduced padding */
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 260px) !important; /* Match reduced container height */
+    height: calc(100vh - 140px) !important; /* Account for fixed footer space */
   }
 
   /* Card container optimization - space efficient */
@@ -1142,7 +1143,7 @@ button:disabled {
   /* Intro header mobile styles */
   .intro-header {
     text-align: center !important;
-    margin-bottom: 16px !important;
+    margin-bottom: 8px !important; /* Reduced from 16px for less top padding */
   }
 
   .intro-title {
@@ -1239,20 +1240,20 @@ button:disabled {
     flex-shrink: 0 !important;
   }
   
-  /* Results section - match reduced container height */
+  /* Results section - account for fixed footer */
   #results {
     max-width: 100%;
-    padding: 12px; /* Reduced padding to match other sections */
+    padding: 10px; /* Further reduced padding to match other sections */
     overflow: hidden !important; /* Prevent scrolling */
-    height: calc(100vh - 260px) !important; /* Match reduced container height */
+    height: calc(100vh - 140px) !important; /* Account for fixed footer space */
   }
 
   .results-page {
     padding: 6px 0 30px 0; /* Reduced space for navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(100vh - 320px) !important; /* Adjusted for new container height */
-    max-height: calc(100vh - 320px) !important;
+    height: calc(100vh - 200px) !important; /* Adjusted for fixed footer and navigation */
+    max-height: calc(100vh - 200px) !important;
     flex: 1; /* Take available space */
   }
   
@@ -1647,21 +1648,25 @@ button:disabled {
   margin-left: 6px;
 }
 
-/* Mobile footer - improved visibility and positioning */
+/* Mobile footer - fixed bottom bar for always visible branding */
 @media (max-width: 480px) {
   .bottom-branding {
     background: var(--brand-dark) !important;
-    padding: 12px 0 !important; /* Consistent padding */
-    min-height: 60px !important; /* Adequate height for visibility */
-    height: auto !important;
+    padding: 12px 0 !important; /* Compact padding for fixed bar */
+    min-height: 60px !important; /* Compact height for fixed bar */
+    height: 60px !important; /* Fixed height */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     color: var(--white) !important;
-    position: relative !important; /* Natural flow, not fixed */
-    margin: 8px 0 0 0 !important; /* Reduced top margin */
-    z-index: 1000 !important;
-    flex-shrink: 0 !important; /* Don't shrink footer */
+    position: fixed !important; /* Fixed to bottom of screen */
+    bottom: 0 !important; /* Stick to bottom */
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important; /* Above all other content */
+    border-top: 1px solid rgba(255, 255, 255, 0.1) !important; /* Subtle separator */
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1) !important; /* Shadow above */
   }
 
   .bottom-branding-content {
@@ -1737,11 +1742,11 @@ button:disabled {
     font-size: 7px !important;
   }
   
-  /* Ensure containers stay compact on small screens */
+  /* Ensure containers work with fixed footer on small screens */
   #intro, #game, #results {
-    height: calc(100vh - 280px) !important; /* Slightly more space on smaller screens */
-    max-height: calc(100vh - 280px) !important;
-    min-height: calc(100vh - 280px) !important;
+    height: calc(100vh - 160px) !important; /* Account for fixed footer on smaller screens */
+    max-height: calc(100vh - 160px) !important;
+    min-height: calc(100vh - 160px) !important;
   }
 }
 
