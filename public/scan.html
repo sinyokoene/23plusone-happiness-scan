@@ -23,19 +23,25 @@
   <div class="main-content">
   <div class="container">
     <section id="intro" role="banner" aria-labelledby="intro-heading" style="display: flex;">
+      <div class="intro-header">
+        <h2 class="scan-title">The Happiness Scan</h2>
+      </div>
       <div id="introContent">
-        <div class="intro-left">
-          <h1 id="intro-heading">Welcome to the happiness scan.</h1>
-          <p>You'll see 24 cards—each showing something we humans love and live for.</p>
-          <p class="lets-go">Pick the ones you find important in your life!</p>
-        </div>
-        
-        <div class="intro-right">
-          <img src="23plusone_humanvaluesvisualized.gif" alt="Animated visualization showing diverse human values and emotions represented as colorful, flowing elements" class="hero-image" loading="lazy">
+        <div class="intro-center">
+          <h1 id="intro-heading">Let's find out how <span class="highlight-happy">happy</span> you are.</h1>
+          
+          <div class="intro-image-container">
+            <img src="23plusone_humanvaluesvisualized.gif" alt="Animated visualization showing diverse human values and emotions represented as colorful, flowing elements" class="hero-image" loading="lazy">
+          </div>
+          
+          <div class="intro-text">
+            <p>You'll see 24 cards. Each shows something we humans love and live for.</p>
+            <p class="important-text">Pick the cards you find important in your life...</p>
+          </div>
+          
+          <button id="startBtn" type="button" class="btn btn-primary" aria-describedby="intro-heading">Start</button>
         </div>
       </div>
-      
-      <button id="startBtn" type="button" class="btn btn-primary" aria-describedby="intro-heading">Start Happiness Scan</button>
     </section>
 
     <main id="game" role="main" aria-labelledby="game-heading" style="display: none !important;">

@@ -216,7 +216,7 @@ body {
 
 /* Consistent container styling for all states - DESKTOP ONLY */
 @media (min-width: 481px) {
-  #game, #intro, #results {
+  #game, #results {
     background: var(--card-bg);
     border-radius: var(--radius);
     padding: var(--spacing-xxl) var(--spacing-xl);
@@ -229,10 +229,118 @@ body {
     justify-content: space-between;
     overflow: visible;
   }
+
+  /* New intro layout - matches Figma design */
+  #intro {
+    background: var(--card-bg);
+    border-radius: 14px;
+    padding: 30px 100px;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    overflow: visible;
+    min-height: 600px;
+  }
 }
 
 #intro {
   animation: fadeInUp 0.8s ease forwards;
+}
+
+/* New intro header - "The Happiness Scan" title */
+.intro-header {
+  width: 100%;
+  text-align: center;
+}
+
+.scan-title {
+  color: white;
+  font-size: 20px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  margin: 0;
+}
+
+/* New intro content layout */
+.intro-center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 60px;
+  text-align: center;
+}
+
+/* Updated main heading */
+#intro-heading {
+  color: var(--text-primary);
+  font-size: 32px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  line-height: 32px;
+  margin: 0;
+  text-align: center;
+}
+
+.highlight-happy {
+  color: #DA006B;
+}
+
+/* Image container */
+.intro-image-container {
+  width: 356px;
+  display: flex;
+  justify-content: center;
+}
+
+.hero-image {
+  width: 100%;
+  height: 235px;
+  object-fit: cover;
+  box-shadow: 2px 2px 8px 1px rgba(41, 29, 27, 0.20);
+  border-radius: 10px;
+}
+
+/* Text content */
+.intro-text {
+  width: 356px;
+  text-align: left;
+}
+
+.intro-text p {
+  color: var(--text-primary);
+  font-size: 20px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 400;
+  margin: 0 0 20px 0;
+  line-height: 1.4;
+}
+
+.important-text {
+  font-weight: 600 !important;
+  margin: 0 !important;
+}
+
+/* Updated start button */
+#startBtn {
+  padding: 7px 23px;
+  background: #DA006B;
+  border-radius: 8px;
+  color: white;
+  font-size: 20px;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#startBtn:hover {
+  background: #c00060;
+  transform: translateY(-1px);
 }
 
 #introContent {
@@ -1113,73 +1221,96 @@ button:disabled {
     order: 2; /* Between card and buttons */
   }
   
-  /* Intro section - exactly matching mockup layout */
+  /* New mobile intro layout - matches desktop design */
+  .intro-header {
+    width: 100% !important;
+    text-align: center !important;
+    margin-bottom: 16px !important;
+  }
+
+  .scan-title {
+    color: white !important;
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+  }
+
   #introContent {
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
+    justify-content: center !important;
     height: 100% !important;
     gap: 16px !important;
   }
   
-  .intro-left {
-    flex: 0 0 auto !important;
+  .intro-center {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 30px !important;
     text-align: center !important;
   }
   
-  .intro-left h1 {
+  #intro-heading {
     font-size: 24px !important;
-    font-weight: 700 !important;
-    color: var(--text-primary) !important;
-    margin-bottom: 12px !important;
-    line-height: 1.2 !important;
-  }
-  
-  .intro-left p {
-    font-size: 16px !important;
-    color: var(--text-secondary) !important;
-    line-height: 1.4 !important;
-    margin-bottom: 8px !important;
-  }
-  
-  .intro-left p.lets-go {
-    font-size: 18px !important;
-    color: var(--brand-pink) !important;
     font-weight: 600 !important;
-    margin-bottom: 0 !important;
+    color: var(--text-primary) !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+    text-align: center !important;
   }
-  
-  .intro-right {
-    flex: 1 !important;
+
+  .highlight-happy {
+    color: #DA006B !important;
+  }
+
+  .intro-image-container {
+    width: 100% !important;
+    max-width: 280px !important;
     display: flex !important;
     justify-content: center !important;
-    align-items: center !important;
-    margin: 16px 0 !important;
+  }
+
+  .intro-text {
+    width: 100% !important;
+    max-width: 300px !important;
+    text-align: center !important;
+  }
+
+  .intro-text p {
+    font-size: 16px !important;
+    color: var(--text-primary) !important;
+    line-height: 1.4 !important;
+    margin: 0 0 16px 0 !important;
+  }
+
+  .important-text {
+    font-weight: 600 !important;
+    margin: 0 !important;
   }
   
   .hero-image {
-    max-width: 100% !important;
-    max-height: 160px !important;
-    width: auto !important;
-    height: auto !important;
-    border-radius: 8px !important;
-    object-fit: contain !important;
+    width: 100% !important;
+    height: 180px !important;
+    object-fit: cover !important;
+    box-shadow: 2px 2px 8px 1px rgba(41, 29, 27, 0.20) !important;
+    border-radius: 10px !important;
     display: block !important;
     margin: 0 auto !important;
   }
   
-  /* Start button - exactly like mockup */
+  /* Start button - matches new design */
   #startBtn {
-    background: var(--brand-pink) !important;
-    color: var(--white) !important;
-    padding: 16px 32px !important;
+    padding: 7px 23px !important;
+    background: #DA006B !important;
+    border-radius: 8px !important;
+    color: white !important;
     font-size: 18px !important;
     font-weight: 600 !important;
     border: none !important;
-    border-radius: 8px !important;
     cursor: pointer !important;
-    width: 100% !important;
-    max-width: 280px !important;
+    margin: 0 !important;
     height: 50px !important;
     display: flex !important;
     align-items: center !important;
