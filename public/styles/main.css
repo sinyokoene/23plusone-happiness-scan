@@ -955,31 +955,31 @@ button:disabled {
     -webkit-touch-callout: none !important;
   }
 
-  /* Main content - top-aligned with proper space for footer */
+  /* Main content - better space reservation for footer */
   .main-content {
     display: flex !important;
     align-items: flex-start !important; /* Align to top */
     justify-content: center !important;
-    padding: 20px 0 0 0 !important; /* Only top padding */
+    padding: 16px 0 0 0 !important; /* Reduced top padding */
     margin: 0 !important;
     height: auto !important; /* Let content determine height */
-    min-height: calc(100vh - 100px) !important; /* Reserve more space for footer */
+    min-height: calc(100vh - 120px) !important; /* More space for footer */
     flex: none !important;
     overflow: visible !important; /* Allow footer to show */
     box-sizing: border-box !important;
   }
 
-  /* Mobile containers - increased height by 50px from reduced */
+  /* Mobile containers - reduced height for better footer visibility */
   #intro, #game, #results {
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin: 0 12px 12px 12px; /* Add bottom margin for footer */
-    padding: 20px;
+    margin: 0 12px 8px 12px; /* Reduced bottom margin */
+    padding: 16px; /* Reduced padding */
     width: calc(100% - 24px);
-    height: calc(100vh - 230px) !important; /* Increased by 50px from 280px */
-    max-height: calc(100vh - 230px) !important;
-    min-height: calc(100vh - 230px) !important;
+    height: calc(100vh - 260px) !important; /* Reduced by 30px for footer */
+    max-height: calc(100vh - 260px) !important;
+    min-height: calc(100vh - 260px) !important;
     text-align: center;
     position: relative;
     overflow: hidden !important; /* Prevent scrolling */
@@ -993,14 +993,14 @@ button:disabled {
     overflow: visible !important; /* Critical for swipe animations */
   }
 
-  /* Game section optimization - match increased container size */
+  /* Game section optimization - match reduced container size */
   #game {
     justify-content: space-between; /* Distribute elements evenly */
-    gap: 4px; /* Minimal gap to maximize space */
-    padding: 16px; /* Slightly more padding for better fit */
+    gap: 3px; /* Minimal gap to maximize space */
+    padding: 12px; /* Reduced padding */
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 230px) !important; /* Match increased container height */
+    height: calc(100vh - 260px) !important; /* Match reduced container height */
   }
 
   /* Card container optimization - space efficient */
@@ -1163,11 +1163,11 @@ button:disabled {
   }
   
   .intro-left h1 {
-    font-size: 24px !important;
+    font-size: 18px !important; /* Reduced from 24px */
     font-weight: 700 !important;
     color: var(--text-primary) !important;
-    margin-bottom: 12px !important;
-    line-height: 1.2 !important;
+    margin-bottom: 8px !important; /* Reduced margin */
+    line-height: 1.1 !important; /* Tighter line height */
   }
   
   .intro-left p {
@@ -1194,14 +1194,14 @@ button:disabled {
   }
   
   .intro-text p {
-    font-size: 14px !important;
+    font-size: 12px !important; /* Reduced from 14px */
     color: var(--text-secondary) !important;
-    line-height: 1.4 !important;
-    margin-bottom: 6px !important;
+    line-height: 1.3 !important; /* Tighter line height */
+    margin-bottom: 4px !important; /* Reduced margin */
   }
   
   .intro-text p.lets-go {
-    font-size: 16px !important;
+    font-size: 14px !important; /* Reduced from 16px */
     color: var(--brand-pink) !important;
     font-weight: 600 !important;
     margin-bottom: 0 !important;
@@ -1218,41 +1218,41 @@ button:disabled {
     margin: 0 auto !important;
   }
   
-  /* Start button - exactly like mockup */
+  /* Start button - more compact for mobile */
   #startBtn {
     background: var(--brand-pink) !important;
     color: var(--white) !important;
-    padding: 16px 32px !important;
-    font-size: 18px !important;
+    padding: 12px 24px !important; /* Reduced padding */
+    font-size: 16px !important; /* Reduced from 18px */
     font-weight: 600 !important;
     border: none !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important; /* Slightly smaller radius */
     cursor: pointer !important;
     width: 100% !important;
-    max-width: 280px !important;
-    height: 50px !important;
+    max-width: 240px !important; /* Reduced from 280px */
+    height: 42px !important; /* Reduced from 50px */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     margin: 0 auto !important;
-    box-shadow: 0 4px 12px rgba(233, 30, 99, 0.3) !important;
+    box-shadow: 0 3px 8px rgba(233, 30, 99, 0.25) !important; /* Lighter shadow */
     flex-shrink: 0 !important;
   }
   
-  /* Results section - match increased container height */
+  /* Results section - match reduced container height */
   #results {
     max-width: 100%;
-    padding: 16px; /* Match other sections */
+    padding: 12px; /* Reduced padding to match other sections */
     overflow: hidden !important; /* Prevent scrolling */
-    height: calc(100vh - 230px) !important; /* Match increased container height */
+    height: calc(100vh - 260px) !important; /* Match reduced container height */
   }
 
   .results-page {
-    padding: 8px 0 35px 0; /* Reduced space for navigation */
+    padding: 6px 0 30px 0; /* Reduced space for navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(100vh - 300px) !important; /* Container height minus navigation and padding */
-    max-height: calc(100vh - 300px) !important;
+    height: calc(100vh - 320px) !important; /* Adjusted for new container height */
+    max-height: calc(100vh - 320px) !important;
     flex: 1; /* Take available space */
   }
   
@@ -1647,20 +1647,21 @@ button:disabled {
   margin-left: 6px;
 }
 
-/* Mobile footer - natural flow with better visibility */
+/* Mobile footer - improved visibility and positioning */
 @media (max-width: 480px) {
   .bottom-branding {
     background: var(--brand-dark) !important;
-    padding: 16px 0 !important; /* Increased padding */
-    min-height: 70px !important; /* Increased height for better visibility */
+    padding: 12px 0 !important; /* Consistent padding */
+    min-height: 60px !important; /* Adequate height for visibility */
     height: auto !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     color: var(--white) !important;
     position: relative !important; /* Natural flow, not fixed */
-    margin: 20px 0 0 0 !important; /* Increased top margin */
+    margin: 8px 0 0 0 !important; /* Reduced top margin */
     z-index: 1000 !important;
+    flex-shrink: 0 !important; /* Don't shrink footer */
   }
 
   .bottom-branding-content {
@@ -1736,11 +1737,11 @@ button:disabled {
     font-size: 7px !important;
   }
   
-  /* Ensure containers stay same size on small screens with increased height */
+  /* Ensure containers stay compact on small screens */
   #intro, #game, #results {
-    height: calc(100vh - 250px) !important; /* Increased by 50px from 300px for smaller screens */
-    max-height: calc(100vh - 250px) !important;
-    min-height: calc(100vh - 250px) !important;
+    height: calc(100vh - 280px) !important; /* Slightly more space on smaller screens */
+    max-height: calc(100vh - 280px) !important;
+    min-height: calc(100vh - 280px) !important;
   }
 }
 
