@@ -1207,12 +1207,13 @@ button:disabled {
     margin-bottom: 0 !important;
   }
   
-  /* Hero image - full width and height with proportions */
+  /* Hero image - width matches text, height maintains aspect ratio */
   .hero-image {
-    width: 100% !important; /* Full width */
-    height: 160px !important; /* Fixed height */
+    width: 100% !important; /* Full width to match text */
+    max-width: 400px !important; /* Match text content width */
+    height: auto !important; /* Auto height to maintain aspect ratio */
     border-radius: 8px !important;
-    object-fit: cover !important; /* Cover to fill dimensions while maintaining aspect ratio */
+    object-fit: contain !important; /* Contain to show full image without cropping */
     display: block !important;
     margin: 0 auto !important;
   }
