@@ -969,7 +969,7 @@ button:disabled {
     box-sizing: border-box !important;
   }
 
-  /* Mobile containers - reduced height to allow footer space */
+  /* Mobile containers - reduced height by 100px more */
   #intro, #game, #results {
     background: var(--card-bg);
     border-radius: 12px;
@@ -977,9 +977,9 @@ button:disabled {
     margin: 0 12px 12px 12px; /* Add bottom margin for footer */
     padding: 20px;
     width: calc(100% - 24px);
-    height: calc(100vh - 180px) !important; /* Reduced height to allow footer space */
-    max-height: calc(100vh - 180px) !important;
-    min-height: calc(100vh - 180px) !important;
+    height: calc(100vh - 280px) !important; /* Reduced by additional 100px */
+    max-height: calc(100vh - 280px) !important;
+    min-height: calc(100vh - 280px) !important;
     text-align: center;
     position: relative;
     overflow: hidden !important; /* Prevent scrolling */
@@ -993,14 +993,14 @@ button:disabled {
     overflow: visible !important; /* Critical for swipe animations */
   }
 
-  /* Game section optimization - match new container size */
+  /* Game section optimization - match reduced container size */
   #game {
     justify-content: space-between; /* Distribute elements evenly */
     gap: 4px; /* Minimal gap to maximize space */
     padding: 16px; /* Slightly more padding for better fit */
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 180px) !important; /* Match new container height */
+    height: calc(100vh - 280px) !important; /* Match reduced container height */
   }
 
   /* Card container optimization - space efficient */
@@ -1239,20 +1239,20 @@ button:disabled {
     flex-shrink: 0 !important;
   }
   
-  /* Results section - match new container height */
+  /* Results section - match reduced container height */
   #results {
     max-width: 100%;
     padding: 16px; /* Match other sections */
     overflow: hidden !important; /* Prevent scrolling */
-    height: calc(100vh - 180px) !important; /* Match new container height */
+    height: calc(100vh - 280px) !important; /* Match reduced container height */
   }
 
   .results-page {
     padding: 8px 0 35px 0; /* Reduced space for navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(100vh - 250px) !important; /* Container height minus navigation and padding */
-    max-height: calc(100vh - 250px) !important;
+    height: calc(100vh - 350px) !important; /* Container height minus navigation and padding */
+    max-height: calc(100vh - 350px) !important;
     flex: 1; /* Take available space */
   }
   
@@ -1736,11 +1736,11 @@ button:disabled {
     font-size: 7px !important;
   }
   
-  /* Ensure containers stay same size on small screens with natural footer */
+  /* Ensure containers stay same size on small screens with reduced height */
   #intro, #game, #results {
-    height: calc(100vh - 200px) !important; /* More conservative height for smaller screens */
-    max-height: calc(100vh - 200px) !important;
-    min-height: calc(100vh - 200px) !important;
+    height: calc(100vh - 300px) !important; /* Reduced by additional 100px for smaller screens */
+    max-height: calc(100vh - 300px) !important;
+    min-height: calc(100vh - 300px) !important;
   }
 }
 
