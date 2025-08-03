@@ -252,20 +252,22 @@ body {
 #introContent {
   flex: 1;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 40px;
+  gap: 30px;
   padding: 20px 0;
+  text-align: center;
 }
 
 .intro-left {
-  flex: 1;
-  text-align: left;
+  flex: 0 0 auto;
+  text-align: center;
+  max-width: 600px;
 }
 
 .intro-right {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1142,19 +1144,13 @@ button:disabled {
     text-align: center !important;
   }
 
-  /* Intro section - exactly matching mockup layout */
+  /* Intro section - centered and stacked for all screen sizes */
   #introContent {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    align-items: center !important;
-    height: 100% !important;
     gap: 16px !important;
   }
   
   .intro-left {
-    flex: 0 0 auto !important;
-    text-align: center !important;
+    max-width: 100% !important;
   }
   
   .intro-left h1 {
@@ -1180,10 +1176,6 @@ button:disabled {
   }
   
   .intro-right {
-    flex: 1 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
     margin: 16px 0 !important;
   }
   
