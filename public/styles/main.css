@@ -955,12 +955,12 @@ button:disabled {
     -webkit-touch-callout: none !important;
   }
 
-  /* Main content - account for fixed footer space */
+  /* Main content - minimal padding for maximum space */
   .main-content {
     display: flex !important;
     align-items: flex-start !important; /* Align to top */
     justify-content: center !important;
-    padding: 8px 0 0 0 !important; /* Reduced top padding */
+    padding: 4px 0 0 0 !important; /* Minimal top padding */
     margin: 0 !important;
     height: auto !important; /* Let content determine height */
     min-height: calc(100vh - 60px) !important; /* Account for fixed footer height */
@@ -969,17 +969,17 @@ button:disabled {
     box-sizing: border-box !important;
   }
 
-  /* Mobile containers - account for fixed footer */
+  /* Mobile containers - properly sized for content visibility */
   #intro, #game, #results {
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     margin: 0 12px 12px 12px; /* Added bottom margin for spacing from fixed footer */
-    padding: 14px; /* Reduced padding */
+    padding: 12px; /* Further reduced padding */
     width: calc(100% - 24px);
-    height: calc(100vh - 140px) !important; /* Account for fixed footer space */
-    max-height: calc(100vh - 140px) !important;
-    min-height: calc(100vh - 140px) !important;
+    height: calc(100vh - 200px) !important; /* Reduced height to show start button */
+    max-height: calc(100vh - 200px) !important;
+    min-height: calc(100vh - 200px) !important;
     text-align: center;
     position: relative;
     overflow: hidden !important; /* Prevent scrolling */
@@ -994,14 +994,14 @@ button:disabled {
   }
 
   /* Game section optimization - match reduced container size */
-    /* Game section optimization - account for fixed footer */
+    /* Game section optimization - properly sized */
   #game {
     justify-content: space-between; /* Distribute elements evenly */
     gap: 3px; /* Minimal gap to maximize space */
     padding: 12px; /* Reduced padding */
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 140px) !important; /* Account for fixed footer space */
+    height: calc(100vh - 200px) !important; /* Match container height */
   }
 
   /* Card container optimization - space efficient */
@@ -1140,23 +1140,23 @@ button:disabled {
     order: 2; /* Between card and buttons */
   }
   
-  /* Intro header mobile styles */
+  /* Intro header mobile styles - minimal padding */
   .intro-header {
     text-align: center !important;
-    margin-bottom: 8px !important; /* Reduced from 16px for less top padding */
+    margin-bottom: 4px !important; /* Further reduced for tighter layout */
   }
 
   .intro-title {
     color: var(--white) !important;
-    font-size: 18px !important;
+    font-size: 16px !important; /* Reduced font size */
     font-weight: 700 !important;
     margin: 0 !important;
     text-align: center !important;
   }
 
-  /* Intro section - centered and stacked for all screen sizes */
+  /* Intro section - compact layout to fit everything */
   #introContent {
-    gap: 16px !important;
+    gap: 8px !important; /* Much smaller gap */
   }
   
   .intro-left {
@@ -1164,29 +1164,29 @@ button:disabled {
   }
   
   .intro-left h1 {
-    font-size: 18px !important; /* Reduced from 24px */
+    font-size: 16px !important; /* Further reduced */
     font-weight: 700 !important;
     color: var(--text-primary) !important;
-    margin-bottom: 8px !important; /* Reduced margin */
+    margin-bottom: 6px !important; /* Reduced margin */
     line-height: 1.1 !important; /* Tighter line height */
   }
   
   .intro-left p {
-    font-size: 16px !important;
+    font-size: 14px !important; /* Reduced */
     color: var(--text-secondary) !important;
-    line-height: 1.4 !important;
-    margin-bottom: 8px !important;
+    line-height: 1.3 !important;
+    margin-bottom: 6px !important; /* Reduced margin */
   }
   
   .intro-left p.lets-go {
-    font-size: 18px !important;
+    font-size: 16px !important; /* Reduced */
     color: var(--brand-pink) !important;
     font-weight: 600 !important;
     margin-bottom: 0 !important;
   }
   
   .intro-right {
-    margin: 16px 0 !important;
+    margin: 8px 0 !important; /* Much smaller margin */
   }
   
   .intro-text {
@@ -1208,52 +1208,52 @@ button:disabled {
     margin-bottom: 0 !important;
   }
   
-  /* Hero image - width matches text, height maintains aspect ratio */
+  /* Hero image - more compact */
   .hero-image {
     width: 100% !important; /* Full width to match text */
-    max-width: 400px !important; /* Match text content width */
+    max-width: 280px !important; /* Reduced max width */
     height: auto !important; /* Auto height to maintain aspect ratio */
-    border-radius: 8px !important;
+    border-radius: 6px !important; /* Smaller radius */
     object-fit: contain !important; /* Contain to show full image without cropping */
     display: block !important;
     margin: 0 auto !important;
   }
   
-  /* Start button - more compact for mobile */
+  /* Start button - compact and visible */
   #startBtn {
     background: var(--brand-pink) !important;
     color: var(--white) !important;
-    padding: 12px 24px !important; /* Reduced padding */
-    font-size: 16px !important; /* Reduced from 18px */
+    padding: 10px 20px !important; /* More compact padding */
+    font-size: 14px !important; /* Smaller font */
     font-weight: 600 !important;
     border: none !important;
     border-radius: 6px !important; /* Slightly smaller radius */
     cursor: pointer !important;
     width: 100% !important;
-    max-width: 240px !important; /* Reduced from 280px */
-    height: 42px !important; /* Reduced from 50px */
+    max-width: 200px !important; /* Smaller max width */
+    height: 36px !important; /* Smaller height */
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     margin: 0 auto !important;
-    box-shadow: 0 3px 8px rgba(233, 30, 99, 0.25) !important; /* Lighter shadow */
+    box-shadow: 0 2px 6px rgba(233, 30, 99, 0.25) !important; /* Smaller shadow */
     flex-shrink: 0 !important;
   }
   
-  /* Results section - account for fixed footer */
+  /* Results section - properly sized */
   #results {
     max-width: 100%;
     padding: 10px; /* Further reduced padding to match other sections */
     overflow: hidden !important; /* Prevent scrolling */
-    height: calc(100vh - 140px) !important; /* Account for fixed footer space */
+    height: calc(100vh - 200px) !important; /* Match container height */
   }
 
   .results-page {
     padding: 6px 0 30px 0; /* Reduced space for navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(100vh - 200px) !important; /* Adjusted for fixed footer and navigation */
-    max-height: calc(100vh - 200px) !important;
+    height: calc(100vh - 260px) !important; /* Adjusted for container height */
+    max-height: calc(100vh - 260px) !important;
     flex: 1; /* Take available space */
   }
   
@@ -1742,11 +1742,11 @@ button:disabled {
     font-size: 7px !important;
   }
   
-  /* Ensure containers work with fixed footer on small screens */
+  /* Ensure containers are properly sized for small screens */
   #intro, #game, #results {
-    height: calc(100vh - 160px) !important; /* Account for fixed footer on smaller screens */
-    max-height: calc(100vh - 160px) !important;
-    min-height: calc(100vh - 160px) !important;
+    height: calc(100vh - 220px) !important; /* Slightly more space for smaller screens */
+    max-height: calc(100vh - 220px) !important;
+    min-height: calc(100vh - 220px) !important;
   }
 }
 
