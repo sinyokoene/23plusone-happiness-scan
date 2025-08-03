@@ -928,10 +928,10 @@ button:disabled {
     color: var(--text-primary) !important;
     margin: 0 !important;
     padding: 0 !important;
-    height: auto !important;
+    height: 100vh !important;
     min-height: 100vh !important;
     overflow-x: hidden !important;
-    overflow-y: auto !important;
+    overflow-y: hidden !important; /* Prevent page scrolling */
     -webkit-text-size-adjust: 100% !important;
     -webkit-touch-callout: none !important;
     -webkit-tap-highlight-color: transparent !important;
@@ -963,9 +963,10 @@ button:disabled {
     padding: 0 !important;
     padding-bottom: env(safe-area-inset-bottom, 0) !important; /* Safe area for notched devices */
     margin: 0 !important;
-    height: auto !important;
-    min-height: auto !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
     flex: none !important;
+    overflow: hidden !important; /* Prevent scrolling */
   }
 
   /* Mobile containers - pure styling, no display control */
@@ -976,12 +977,12 @@ button:disabled {
     margin: 12px;
     padding: 20px;
     width: calc(100% - 24px);
-    height: auto; 
-    max-height: none;
-    min-height: 500px;
+    height: 550px !important; 
+    max-height: 550px !important;
+    min-height: 550px !important;
     text-align: center;
     position: relative;
-    overflow: visible; /* Allow card animations to show outside container */
+    overflow: hidden !important; /* Prevent scrolling */
     flex-direction: column;
     justify-content: space-between;
   }
@@ -995,10 +996,10 @@ button:disabled {
   #game {
     justify-content: space-between; /* Distribute elements evenly */
     gap: 4px; /* Minimal gap to maximize space */
-    padding: 8px; /* Minimal padding */
+    padding: 16px; /* Slightly more padding for better fit */
     display: flex;
     flex-direction: column;
-    height: 100%; /* Use full container height */
+    height: 550px !important; /* Match container height */
   }
 
   /* Card container optimization - space efficient */
@@ -1145,7 +1146,7 @@ button:disabled {
 
   .intro-title {
     color: var(--white) !important;
-    font-size: 24px !important;
+    font-size: 18px !important;
     font-weight: 700 !important;
     margin: 0 !important;
     text-align: center !important;
@@ -1240,16 +1241,17 @@ button:disabled {
   /* Results section - updated for new height */
   #results {
     max-width: 100%;
-    padding: 20px; /* Match other sections */
-    overflow: hidden; /* Match other sections */
+    padding: 16px; /* Match other sections */
+    overflow: hidden !important; /* Prevent scrolling */
+    height: 550px !important; /* Fixed height */
   }
 
   .results-page {
-    padding: 8px 0 40px 0; /* Space for navigation */
+    padding: 8px 0 35px 0; /* Reduced space for navigation */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(600px - 80px); /* Updated height to match new 600px container */
-    max-height: calc(600px - 80px);
+    height: calc(550px - 70px) !important; /* Fixed height minus navigation */
+    max-height: calc(550px - 70px) !important;
     flex: 1; /* Take available space */
   }
   
@@ -1342,9 +1344,9 @@ button:disabled {
   
   /* Mobile navigation improvements - ultra compact */
   .results-navigation {
-    padding: 4px 8px; /* Minimal padding */
+    padding: 3px 8px; /* Minimal padding */
     border-top: 1px solid #f0f0f0; /* Subtle separator */
-    height: 35px; /* Compact height */
+    height: 30px; /* More compact height */
     position: absolute;
     bottom: 0;
     left: 0;
@@ -1354,16 +1356,16 @@ button:disabled {
   }
   
   .nav-arrow {
-    width: 32px; /* More compact */
-    height: 24px; /* More compact */
-    font-size: 11px; /* Smaller text */
+    width: 28px; /* More compact */
+    height: 20px; /* More compact */
+    font-size: 10px; /* Smaller text */
     border-radius: 3px;
     touch-action: manipulation; /* Prevent zoom on double tap */
   }
   
   .page-dot {
-    width: 6px; /* More compact */
-    height: 6px; /* More compact */
+    width: 5px; /* More compact */
+    height: 5px; /* More compact */
     touch-action: manipulation; /* Prevent zoom on double tap */
   }
 
@@ -1705,7 +1707,7 @@ button:disabled {
 /* Intermediate Mobile Breakpoint (Small phones like iPhone SE) */
 @media (max-width: 375px) {
   .intro-title {
-    font-size: 20px !important;
+    font-size: 16px !important;
   }
   
   .intro-left h1 {
@@ -1731,6 +1733,13 @@ button:disabled {
   
   .bottom-copyright {
     font-size: 7px !important;
+  }
+  
+  /* Ensure containers stay same size on small screens */
+  #intro, #game, #results {
+    height: 520px !important;
+    max-height: 520px !important;
+    min-height: 520px !important;
   }
 }
 
