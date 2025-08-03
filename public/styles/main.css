@@ -239,7 +239,7 @@ body {
 
 .intro-title {
   color: var(--white);
-  font-size: 32px;
+  font-size: 20px;
   font-weight: 700;
   margin: 0;
   text-align: center;
@@ -273,15 +273,21 @@ body {
   align-items: center;
 }
 
+.intro-text {
+  flex: 0 0 auto;
+  text-align: center;
+  max-width: 600px;
+}
+
 #introContent h1 {
   font-size: 32px;
   font-weight: 700;
   color: var(--text-primary);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 0;
   animation: fadeInUp var(--transition-slow) ease 0.2s both;
 }
 
-#introContent p {
+.intro-text p {
   font-size: 18px;
   line-height: 1.6;
   color: var(--text-secondary);
@@ -289,7 +295,7 @@ body {
   animation: fadeInUp var(--transition-slow) ease 0.4s both;
 }
 
-#introContent p.lets-go {
+.intro-text p.lets-go {
   font-size: 20px;
   font-weight: 600;
   color: var(--brand-pink);
