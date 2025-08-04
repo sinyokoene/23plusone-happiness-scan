@@ -216,6 +216,7 @@ button:disabled {
   width: 100%;
   max-width: 1250px;
   padding: 0 24px;
+  position: relative;
 }
 
 .bottom-branding-left {

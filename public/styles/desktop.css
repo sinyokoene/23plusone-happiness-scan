@@ -31,10 +31,21 @@
     overflow: visible;
   }
 
-  /* Desktop Footer - Match White Block Content Alignment */
+  /* Desktop Footer - Align Logos with White Block Edges */
   .bottom-branding-content {
     max-width: 1250px; /* Match main content width */
     padding: 0 var(--spacing-xl); /* Match white block internal padding */
+    justify-content: flex-start; /* Reset to use absolute positioning */
+  }
+  
+  .bottom-branding-left {
+    position: absolute;
+    left: var(--spacing-xl); /* Align with left edge of white content */
+  }
+  
+  .bottom-branding-right {
+    position: absolute;
+    right: var(--spacing-xl); /* Align with right edge of white content */
   }
 
   /* Desktop Screen Containers - Dynamic Viewport Height */
@@ -67,9 +78,20 @@
     justify-content: center;
   }
 
-  /* Tablet Footer - Match White Block Content Alignment */
+  /* Tablet Footer - Align Logos with White Block Edges */
   .bottom-branding-content {
     padding: 0 var(--spacing-xl); /* Match white block internal padding */
+    justify-content: flex-start; /* Reset to use absolute positioning */
+  }
+  
+  .bottom-branding-left {
+    position: absolute;
+    left: var(--spacing-xl); /* Align with left edge of white content */
+  }
+  
+  .bottom-branding-right {
+    position: absolute;
+    right: var(--spacing-xl); /* Align with right edge of white content */
   }
 
   /* Tablet Screen Containers */
@@ -168,10 +190,21 @@
     padding: var(--spacing-lg);
   }
 
-  /* Large Desktop Footer - Match White Block Content Alignment */
+  /* Large Desktop Footer - Align Logos with White Block Edges */
   .bottom-branding-content {
     max-width: 1400px; /* Match large desktop main content width */
     padding: 0 var(--spacing-xl); /* Match white block internal padding */
+    justify-content: flex-start; /* Reset to use absolute positioning */
+  }
+  
+  .bottom-branding-left {
+    position: absolute;
+    left: var(--spacing-xl); /* Align with left edge of white content */
+  }
+  
+  .bottom-branding-right {
+    position: absolute;
+    right: var(--spacing-xl); /* Align with right edge of white content */
   }
 
   #game, #intro, #results {
