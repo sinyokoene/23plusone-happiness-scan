@@ -49,27 +49,7 @@
   box-sizing: border-box;
 }
 
-/* Desktop body styles */
-@media (min-width: 481px) {
-  body {
-    font-family: var(--font-family);
-    background: var(--brand-dark);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    color: var(--text-primary);
-    overflow-x: hidden;
-  }
-
-  .main-content {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: var(--spacing-md);
-  }
-}
+/* Note: Desktop body styles moved to desktop.css */
 
 /* Base mobile-first styles */
 body {
@@ -92,26 +72,7 @@ body {
   overflow: visible;
 }
 
-/* Consistent container styling for all states - DESKTOP ONLY */
-@media (min-width: 481px) {
-  #game, #intro, #results {
-    background: var(--card-bg);
-    border-radius: var(--radius);
-    padding: var(--spacing-xxl) var(--spacing-xl);
-    box-shadow: var(--shadow-xl);
-    text-align: center;
-    width: 100%;
-    /* Use dynamic viewport height for consistency */
-    height: 100vh; /* Fallback */
-    height: calc(var(--vh, 1vh) * 100 - 150px); /* Dynamic viewport */
-    min-height: 600px; /* Minimum usable space for desktop */
-    max-height: 900px; /* Prevent excessive height */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    overflow: visible;
-  }
-}
+/* Note: Desktop container styles moved to desktop.css */
 
 /* Intro header above white block */
 .intro-header {
@@ -627,64 +588,7 @@ body {
 
 /* Note: Mobile styles moved to mobile.css for better organization */
 
-/* Tablet and medium screen improvements */
-@media (max-width: 768px) and (min-width: 481px) {
-  .main-content {
-    padding: var(--spacing-md);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  #intro, #game, #results {
-    /* Use dynamic viewport height for tablet consistency */
-    height: 100vh; /* Fallback */
-    height: calc(var(--vh, 1vh) * 100 - 200px); /* Dynamic viewport for tablet */
-    min-height: 500px; /* Minimum for tablet */
-    max-height: 800px; /* Maximum for tablet */
-  }
-  
-  #timerContainer {
-    margin: 0 0 20px 0;
-  }
-
-  #cardImages {
-    min-height: 320px;
-    margin: 25px 0; /* Balanced margin for tablet */
-  }
-  
-  .card-image {
-    max-height: 320px;
-  }
-  
-  #timerBar {
-    max-width: 320px; /* Match tablet card size */
-    margin: 8px auto; /* Ensure centering on tablet */
-  }
-  
-  #introContent {
-    flex-direction: column;
-    gap: 30px;
-    text-align: center;
-  }
-  
-  .intro-left {
-    text-align: center;
-  }
-  
-  #domainBars {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-  }
-  
-  .results-page {
-    padding: var(--spacing-sm) 0 65px 0; /* Medium bottom padding for tablet */
-  }
-  
-  .results-navigation {
-    padding: var(--spacing-md) var(--spacing-xl);
-  }
-}
+/* Note: Tablet and desktop styles moved to desktop.css */
 
 /* Benchmark Section Styles */
 #benchmarkSection {
@@ -927,28 +831,5 @@ body {
     height: calc(var(--vh, 1vh) * 100 - 270px);
     min-height: 400px; /* Slightly smaller minimum for very small screens */
     max-height: 700px; /* Prevent excessive height */
-  }
-}
-
-/* Tablet Portrait Improvements */
-@media (min-width: 481px) and (max-width: 768px) {
-  .intro-title {
-    font-size: 28px;
-  }
-  
-  #introContent h1 {
-    font-size: 28px;
-  }
-  
-  .intro-text p {
-    font-size: 16px;
-  }
-  
-  .intro-text p.lets-go {
-    font-size: 18px;
-  }
-  
-  .hero-image {
-    max-height: 200px;
   }
 }

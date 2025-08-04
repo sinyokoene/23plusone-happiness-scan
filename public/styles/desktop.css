@@ -1,0 +1,167 @@
+/* 23plusone Happiness Scan - Desktop Styles */
+/* Desktop and tablet-specific responsive design */
+
+/* DESKTOP LAYOUT - 481px and above */
+@media (min-width: 481px) {
+  /* Desktop Body Styles */
+  body {
+    font-family: var(--font-family);
+    background: var(--brand-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  /* Desktop Main Content Layout */
+  .main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1250px;
+    overflow: visible;
+  }
+
+  /* Desktop Screen Containers - Dynamic Viewport Height */
+  #game, #intro, #results {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: var(--spacing-xxl) var(--spacing-xl);
+    box-shadow: var(--shadow-xl);
+    text-align: center;
+    width: 100%;
+    /* Use dynamic viewport height for consistency */
+    height: 100vh; /* Fallback */
+    height: calc(var(--vh, 1vh) * 100 - 150px); /* Dynamic viewport */
+    min-height: 600px; /* Minimum usable space for desktop */
+    max-height: 900px; /* Prevent excessive height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: visible;
+  }
+}
+
+/* TABLET LAYOUT - 481px to 768px */
+@media (max-width: 768px) and (min-width: 481px) {
+  /* Tablet Main Content */
+  .main-content {
+    padding: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Tablet Screen Containers */
+  #intro, #game, #results {
+    /* Use dynamic viewport height for tablet consistency */
+    height: 100vh; /* Fallback */
+    height: calc(var(--vh, 1vh) * 100 - 200px); /* Dynamic viewport for tablet */
+    min-height: 500px; /* Minimum for tablet */
+    max-height: 800px; /* Maximum for tablet */
+  }
+  
+  /* Tablet Timer Styles */
+  #timerContainer {
+    margin: 0 0 20px 0;
+  }
+
+  #timerBar {
+    max-width: 320px; /* Match tablet card size */
+    margin: 8px auto; /* Ensure centering on tablet */
+  }
+
+  /* Tablet Card Styles */
+  #cardImages {
+    min-height: 320px;
+    margin: 25px 0; /* Balanced margin for tablet */
+  }
+  
+  .card-image {
+    max-height: 320px;
+  }
+
+  /* Tablet Intro Layout */
+  #introContent {
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .intro-left {
+    text-align: center;
+  }
+
+  /* Tablet Results Layout */
+  #domainBars {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .results-page {
+    padding: var(--spacing-sm) 0 65px 0; /* Medium bottom padding for tablet */
+  }
+
+  /* Tablet Navigation */
+  .results-navigation {
+    padding: var(--spacing-md) var(--spacing-xl);
+  }
+  
+  .nav-arrow {
+    width: 32px;
+    height: 24px;
+    font-size: 12px;
+    border-radius: 4px;
+  }
+  
+  .page-dot {
+    width: 6px;
+    height: 6px;
+  }
+
+  /* Tablet Typography Improvements */
+  .intro-title {
+    font-size: 28px;
+  }
+  
+  #introContent h1 {
+    font-size: 28px;
+  }
+  
+  .intro-text p {
+    font-size: 16px;
+  }
+  
+  .intro-text p.lets-go {
+    font-size: 18px;
+  }
+  
+  .hero-image {
+    max-height: 200px;
+  }
+}
+
+/* LARGE DESKTOP - 1200px and above */
+@media (min-width: 1200px) {
+  .main-content {
+    max-width: 1400px;
+    padding: var(--spacing-lg);
+  }
+
+  #game, #intro, #results {
+    padding: var(--spacing-xxl);
+    max-height: 1000px;
+  }
+
+  /* Large Desktop Results Layout */
+  #domainBars {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+}
