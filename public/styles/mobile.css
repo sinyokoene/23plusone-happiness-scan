@@ -67,13 +67,13 @@
   /* Main Content - Responsive Height with Dynamic Viewport */
   .main-content {
     display: flex;
-    align-items: flex-start;
+    align-items: center; /* Center vertically in available space */
     justify-content: center;
-    padding: 4px 0 0 0;
+    padding: 4px 0 60px 0; /* Add bottom padding for fixed footer */
     margin: 0;
     height: auto;
     min-height: 100vh;
-    min-height: calc(var(--vh, 1vh) * 100 - 60px);
+    min-height: calc(var(--vh, 1vh) * 100); /* Use full viewport height */
     flex: none;
     overflow: visible;
     box-sizing: border-box;
@@ -101,7 +101,7 @@
   
   /* Intro Section - Taller to fit all content */
   #intro {
-    height: calc(var(--vh, 1vh) * 100 - 180px); /* More height for intro */
+    height: calc(var(--vh, 1vh) * 100 - 240px); /* Account for footer + margins */
     min-height: 520px; /* Increased minimum to fit all content */
     justify-content: flex-start; /* Start from top, don't center */
   }
