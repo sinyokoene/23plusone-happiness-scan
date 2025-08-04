@@ -31,21 +31,10 @@
     overflow: visible;
   }
 
-  /* Desktop Footer - Align Logos with White Block Edges */
+  /* Desktop Footer - Match White Block Edges */
   .bottom-branding-content {
     max-width: 1250px; /* Match main content width */
-    padding: 0 var(--spacing-xl); /* Match white block internal padding */
-    justify-content: flex-start; /* Reset to use absolute positioning */
-  }
-  
-  .bottom-branding-left {
-    position: absolute;
-    left: var(--spacing-xl); /* Align with left edge of white content */
-  }
-  
-  .bottom-branding-right {
-    position: absolute;
-    right: var(--spacing-xl); /* Align with right edge of white content */
+    padding: 0 var(--spacing-xl); /* Use same padding as white blocks for edge alignment */
   }
 
   /* Desktop Screen Containers - Dynamic Viewport Height */
@@ -78,20 +67,9 @@
     justify-content: center;
   }
 
-  /* Tablet Footer - Align Logos with White Block Edges */
+  /* Tablet Footer - Match White Block Edges */
   .bottom-branding-content {
-    padding: 0 var(--spacing-xl); /* Match white block internal padding */
-    justify-content: flex-start; /* Reset to use absolute positioning */
-  }
-  
-  .bottom-branding-left {
-    position: absolute;
-    left: var(--spacing-xl); /* Align with left edge of white content */
-  }
-  
-  .bottom-branding-right {
-    position: absolute;
-    right: var(--spacing-xl); /* Align with right edge of white content */
+    padding: 0 var(--spacing-xl); /* Use same padding as white blocks for edge alignment */
   }
 
   /* Tablet Screen Containers */
@@ -190,21 +168,10 @@
     padding: var(--spacing-lg);
   }
 
-  /* Large Desktop Footer - Align Logos with White Block Edges */
+  /* Large Desktop Footer - Match White Block Edges */
   .bottom-branding-content {
     max-width: 1400px; /* Match large desktop main content width */
-    padding: 0 var(--spacing-xl); /* Match white block internal padding */
-    justify-content: flex-start; /* Reset to use absolute positioning */
-  }
-  
-  .bottom-branding-left {
-    position: absolute;
-    left: var(--spacing-xl); /* Align with left edge of white content */
-  }
-  
-  .bottom-branding-right {
-    position: absolute;
-    right: var(--spacing-xl); /* Align with right edge of white content */
+    padding: 0 var(--spacing-xl); /* Use same padding as white blocks for edge alignment */
   }
 
   #game, #intro, #results {

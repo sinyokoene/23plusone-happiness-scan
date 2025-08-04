@@ -216,7 +216,20 @@ button:disabled {
   width: 100%;
   max-width: 1250px;
   padding: 0 24px;
-  position: relative;
+}
+
+.bottom-branding-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.bottom-branding-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 }
 
 .bottom-branding-left {
