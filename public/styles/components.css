@@ -214,8 +214,8 @@ button:disabled {
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  max-width: 1250px;
-  padding: 0 24px;
+  max-width: 1250px; /* Base width, overridden in responsive styles */
+  padding: 0 var(--spacing-md); /* Base padding, overridden in responsive styles */
 }
 
 .bottom-branding-left {

@@ -32,6 +32,11 @@
   }
 
   /* Desktop Footer - Match Main Content Width */
+  .bottom-branding {
+    width: 100%;
+    max-width: 1250px; /* Match main content max-width */
+  }
+  
   .bottom-branding-content {
     max-width: 1250px; /* Match main content width */
     padding: 0 var(--spacing-md); /* Match main content padding for full width alignment */
@@ -68,6 +73,11 @@
   }
 
   /* Tablet Footer - Match Main Content Width */
+  .bottom-branding {
+    width: 100%;
+    max-width: 1250px; /* Match main content max-width */
+  }
+  
   .bottom-branding-content {
     padding: 0 var(--spacing-md); /* Match main content padding for full width alignment */
   }
@@ -169,6 +179,11 @@
   }
 
   /* Large Desktop Footer - Match Main Content Width */
+  .bottom-branding {
+    width: 100%;
+    max-width: 1400px; /* Match large desktop main content max-width */
+  }
+  
   .bottom-branding-content {
     max-width: 1400px; /* Match large desktop main content width */
     padding: 0 var(--spacing-lg); /* Match main content padding for full width alignment */
