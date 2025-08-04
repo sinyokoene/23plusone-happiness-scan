@@ -253,100 +253,9 @@ body {
   }
 }
 
-#timerContainer {
-  margin: 0 0 20px 0;
-  display: flex;
-  justify-content: center;
-}
 
-#timerBar {
-  height: 8px;
-  background: var(--progress-bg);
-  border-radius: 4px;
-  overflow: hidden;
-  margin: 10px auto;
-  width: 100%;
-  max-width: 350px; /* Match card container width */
-}
 
-#timerProgress {
-  height: 100%;
-  background: var(--success);
-  width: 100%;
-  transition: width 4s linear, background-color 0.3s ease;
-  border-radius: 4px;
-}
 
-#timerProgress.warning {
-  background: var(--domain-growth) !important;
-}
-
-#timerProgress.danger {
-  background: var(--danger) !important;
-  animation: pulse 0.5s infinite alternate;
-}
-
-@keyframes pulse {
-  from { opacity: 0.7; }
-  to { opacity: 1.0; }
-}
-
-.buttons {
-  display: flex;
-  gap: 15px;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-button {
-  font-family: var(--font-family);
-  font-size: 18px;
-  min-width: 100px;
-  user-select: none;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-}
-
-#yesBtn {
-  background: var(--btn-yes);
-  color: var(--white);
-  transition: all var(--transition-fast);
-}
-
-#yesBtn:hover {
-  background: var(--btn-yes-hover);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
-}
-
-#yesBtn:active {
-  transform: scale(0.95);
-  background: var(--btn-yes-active);
-}
-
-#noBtn {
-  background: var(--btn-no);
-  color: var(--white);
-  transition: all var(--transition-fast);
-}
-
-#noBtn:hover {
-  background: var(--btn-no-hover);
-  transform: translateY(-2px);
-  box-shadow: none;
-}
-
-#noBtn:active {
-  transform: scale(0.95);
-  background: var(--btn-no-active);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none !important;
-}
 
 /* Results specific styling */
 #results {
@@ -689,66 +598,7 @@ button:disabled {
   transform: translateY(-2px);
 }
 
-/* Share Buttons Styling */
-.share-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 15px 0;
-}
 
-.share-button {
-  font-family: var(--font-family);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  padding: 10px 18px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-}
-
-.share-button:hover {
-  transform: translateY(-2px);
-  box-shadow: none;
-}
-
-.share-button.native {
-  background: var(--share-native);
-  color: white;
-}
-
-.share-button.native:hover {
-  background: var(--share-native-hover);
-}
-
-.share-button.copy {
-  background: var(--bg-light);
-  color: #333;
-  border: 2px solid var(--border-medium);
-}
-
-.share-button.copy:hover {
-  background: var(--border-medium);
-  border-color: var(--border-dark);
-}
-
-.share-button.copy.copied {
-  background: var(--share-success);
-  border-color: var(--share-success-border);
-  color: var(--share-success-text);
-  animation: successPulse 0.6s ease;
-}
-
-@keyframes successPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
 
 /* Hero Image Styling */
 .hero-image {
