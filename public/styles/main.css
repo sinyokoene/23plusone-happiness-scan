@@ -431,37 +431,37 @@ button {
 }
 
 #yesBtn {
-  background: var(--success);
+  background: #3AB4A0;
   color: var(--white);
   transition: all var(--transition-fast);
 }
 
 #yesBtn:hover {
-  background: var(--success-hover);
+  background: #2A9B89;
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 #yesBtn:active {
   transform: scale(0.95);
-  background: var(--success-active);
+  background: #4AC4B0;
 }
 
 #noBtn {
-  background: var(--danger);
+  background: #DA4900;
   color: var(--white);
   transition: all var(--transition-fast);
 }
 
 #noBtn:hover {
-  background: var(--danger-hover);
+  background: #C13E00;
   transform: translateY(-2px);
   box-shadow: none;
 }
 
 #noBtn:active {
   transform: scale(0.95);
-  background: var(--danger-active);
+  background: #E85A10;
 }
 
 button:disabled {
