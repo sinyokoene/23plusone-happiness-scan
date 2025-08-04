@@ -31,31 +31,6 @@
     overflow: visible;
   }
 
-  /* Desktop Footer - Full Width Background */
-  .bottom-branding {
-    background: var(--brand-dark);
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--white);
-    font-size: 14px;
-    font-weight: 500;
-    min-height: 50px;
-    width: 100%;
-  }
-
-  /* Desktop Footer Content - Left and Right Alignment */
-  .bottom-branding-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; /* Left and right alignment */
-    width: 100%;
-    max-width: 1250px; /* Match main content width */
-    padding: 0 var(--spacing-md); /* Horizontal padding */
-    box-sizing: border-box;
-  }
-
   /* Desktop Screen Containers - Dynamic Viewport Height */
   #game, #intro, #results {
     background: var(--card-bg);
@@ -84,13 +59,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  /* Tablet Footer Content - Left and Right Alignment */
-  .bottom-branding-content {
-    max-width: 1250px; /* Match main content width */
-    padding: 0 var(--spacing-md); /* Match tablet padding */
-    justify-content: space-between; /* Left and right alignment */
   }
 
   /* Tablet Screen Containers */
@@ -187,13 +155,6 @@
   .main-content {
     max-width: 1400px;
     padding: var(--spacing-lg);
-  }
-
-  /* Large Desktop Footer Content - Left and Right Alignment */
-  .bottom-branding-content {
-    max-width: 1400px; /* Match large desktop main content width */
-    padding: 0 var(--spacing-lg); /* Match large desktop padding */
-    justify-content: space-between; /* Left and right alignment */
   }
 
   #game, #intro, #results {
