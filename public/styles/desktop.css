@@ -51,7 +51,7 @@
     justify-content: space-between;
     width: 100%;
     max-width: 1250px; /* Match main-content max-width */
-    padding: 0 var(--spacing-md); /* Match main-content padding */
+    padding: 0 var(--spacing-xl); /* Match white section horizontal padding */
     box-sizing: border-box;
   }
 
@@ -88,7 +88,7 @@
   /* Tablet Footer - Match White Section Width */
   .bottom-branding-content {
     max-width: 1250px; /* Match main content width */
-    padding: 0 var(--spacing-md); /* Match main-content padding */
+    padding: 0 var(--spacing-xl); /* Match white section horizontal padding */
   }
 
   /* Tablet Screen Containers */
@@ -190,7 +190,7 @@
   /* Large Desktop Footer - Match Larger Content Width */
   .bottom-branding-content {
     max-width: 1400px; /* Match large desktop main-content width */
-    padding: 0 var(--spacing-lg); /* Match large desktop main-content padding */
+    padding: 0 var(--spacing-xl); /* Match white section horizontal padding */
   }
 
   #game, #intro, #results {
