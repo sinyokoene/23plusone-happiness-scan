@@ -181,12 +181,12 @@
   /* Large Desktop Footer - Match Main Content Width */
   .bottom-branding {
     width: 100%;
-    max-width: 1400px; /* Match large desktop main content max-width */
+    max-width: 1250px; /* Keep at 1250px to match white section max-width */
   }
   
   .bottom-branding-content {
-    max-width: 1400px; /* Match large desktop main content width */
-    padding: 0 var(--spacing-lg); /* Match main content padding for full width alignment */
+    max-width: 1250px; /* Keep at 1250px to match white section max-width */
+    padding: 0 var(--spacing-md); /* Use consistent padding */
   }
 
   #game, #intro, #results {
