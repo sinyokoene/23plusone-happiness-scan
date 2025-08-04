@@ -155,7 +155,11 @@ body {
     box-shadow: var(--shadow-xl);
     text-align: center;
     width: 100%;
-    height: 700px; /* Fixed height for perfect consistency */
+    /* Use dynamic viewport height like mobile for consistency */
+    height: 100vh; /* Fallback */
+    height: calc(var(--vh, 1vh) * 100 - 150px); /* Dynamic viewport - less padding than mobile */
+    min-height: 600px; /* Minimum usable space for desktop */
+    max-height: 900px; /* Prevent excessive height on large screens */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
