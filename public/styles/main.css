@@ -621,31 +621,7 @@ body {
   font-style: italic;
 }
 
-@media (max-width: 768px) and (pointer: coarse) {
-  .swipe-hint {
-    display: block;
-    font-size: 13px;
-    color: #666;
-    margin-top: var(--spacing-sm);
-  }
-  
-  .buttons {
-    margin-top: var(--spacing-md);
-  }
-  
-  .card-image {
-    cursor: grab;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    touch-action: pan-y; /* Allow vertical scrolling but prevent horizontal */
-  }
-  
-  .card-image:active {
-    cursor: grabbing;
-  }
-}
+
 
 /* MOBILE DESIGN - MOCKUP MATCHING */
 @media (max-width: 480px) {
