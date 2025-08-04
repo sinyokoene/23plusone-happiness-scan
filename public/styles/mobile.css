@@ -3,14 +3,11 @@
 
 @media (max-width: 480px) {
   body {
-    background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 25%, #a5d6a7 50%, #81c784 75%, #66bb6a 100%);
-    min-height: calc(var(--vh, 1vh) * 100);
+    font-family: var(--font-family);
+    background: var(--brand-dark);
+    color: var(--text-primary);
     margin: 0;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: center;
+    padding: 0;
   }
 
   .main-content {
@@ -25,7 +22,7 @@
     overflow: visible;
   }
 
-  /* Mobile containers - responsive with dynamic viewport */
+  /* Mobile containers - simple viewport approach */
   #intro, #game, #results {
     background: var(--card-bg);
     border-radius: 12px;
@@ -33,10 +30,9 @@
     margin: 0 12px 12px 12px;
     padding: 12px;
     width: calc(100% - 24px);
-    /* Dynamic viewport height with fallbacks */
-    height: 100vh; /* Fallback for older browsers */
-    height: calc(var(--vh, 1vh) * 100 - 250px); /* Dynamic viewport */
+    /* Simplified height calculation */
     min-height: 450px; /* Minimum usable space */
+    height: 80vh; /* Use standard viewport height */
     max-height: 800px; /* Prevent excessive height on large screens */
     text-align: center;
     position: relative;

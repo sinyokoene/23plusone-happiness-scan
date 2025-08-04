@@ -3,12 +3,14 @@
 
 @media (min-width: 481px) {
   body {
-    background: linear-gradient(135deg, #c8e6c9 0%, #81c784 25%, #66bb6a 50%, #4caf50 75%, #43a047 100%);
-    min-height: calc(var(--vh, 1vh) * 100);
+    font-family: var(--font-family);
+    background: var(--brand-dark);
+    min-height: 100vh;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--text-primary);
+    overflow-x: hidden;
   }
 
   .main-content {
@@ -20,21 +22,9 @@
   }
 
   .container {
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
     width: 100%;
-    max-width: 800px;
-    min-height: 600px;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    position: relative;
+    max-width: 1250px;
+    overflow: visible;
   }
 
   /* Desktop container styling for sections */
