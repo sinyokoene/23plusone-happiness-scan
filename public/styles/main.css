@@ -18,6 +18,9 @@
 
 /* CSS Custom Properties (Variables) */
 :root {
+  /* Dynamic Viewport Height - Updated by JavaScript */
+  --vh: 1vh;
+  
   /* Brand Colors */
   --brand-pink: #e91e63;
   --brand-dark: #291D1B;
@@ -39,10 +42,32 @@
   
   /* Background Colors */
   --bg-light: #f8f9fa;
+  --bg-lighter: #fafafa;
   --border-light: #f0f0f0;
   --border-medium: #e9ecef;
   --border-dark: #dee2e6;
   --progress-bg: #e0e0e0;
+  
+  /* Button Colors */
+  --btn-yes: #3AB4A0;
+  --btn-yes-hover: #2A9B89;
+  --btn-yes-active: #4AC4B0;
+  --btn-no: #DA4900;
+  --btn-no-hover: #C13E00;
+  --btn-no-active: #E85A10;
+  
+  /* Grays */
+  --gray-light: #f5f5f5;
+  --gray-medium: #ccc;
+  --gray-dark: #666;
+  --gray-darker: #333;
+  
+  /* Share Button Colors */
+  --share-native: #007AFF;
+  --share-native-hover: #0056CC;
+  --share-success: #d4edda;
+  --share-success-border: #4CAF50;
+  --share-success-text: #155724;
   
   /* Domain Colors */
   --domain-basics: #4CAF50;
@@ -383,7 +408,7 @@ body {
 
 #timerBar {
   height: 8px;
-  background: #e0e0e0;
+  background: var(--progress-bg);
   border-radius: 4px;
   overflow: hidden;
   margin: 10px auto;
@@ -393,18 +418,18 @@ body {
 
 #timerProgress {
   height: 100%;
-  background: #4CAF50;
+  background: var(--success);
   width: 100%;
   transition: width 4s linear, background-color 0.3s ease;
   border-radius: 4px;
 }
 
 #timerProgress.warning {
-  background: #FF9800 !important;
+  background: var(--domain-growth) !important;
 }
 
 #timerProgress.danger {
-  background: #F44336 !important;
+  background: var(--danger) !important;
   animation: pulse 0.5s infinite alternate;
 }
 
@@ -431,37 +456,37 @@ button {
 }
 
 #yesBtn {
-  background: #3AB4A0;
+  background: var(--btn-yes);
   color: var(--white);
   transition: all var(--transition-fast);
 }
 
 #yesBtn:hover {
-  background: #2A9B89;
+  background: var(--btn-yes-hover);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
 
 #yesBtn:active {
   transform: scale(0.95);
-  background: #4AC4B0;
+  background: var(--btn-yes-active);
 }
 
 #noBtn {
-  background: #DA4900;
+  background: var(--btn-no);
   color: var(--white);
   transition: all var(--transition-fast);
 }
 
 #noBtn:hover {
-  background: #C13E00;
+  background: var(--btn-no-hover);
   transform: translateY(-2px);
   box-shadow: none;
 }
 
 #noBtn:active {
   transform: scale(0.95);
-  background: #E85A10;
+  background: var(--btn-no-active);
 }
 
 button:disabled {
@@ -515,9 +540,9 @@ button:disabled {
 }
 
 .nav-arrow:disabled {
-  background: #f5f5f5;
-  color: #ccc;
-  border-color: #ddd;
+  background: var(--gray-light);
+  color: var(--gray-medium);
+  border-color: var(--border-dark);
   cursor: not-allowed;
   transform: none;
 }
@@ -532,13 +557,13 @@ button:disabled {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background: #ddd;
+  background: var(--border-dark);
   transition: all var(--transition);
   cursor: pointer;
 }
 
 .page-dot:hover {
-  background: #bbb;
+  background: var(--gray-medium);
   transform: scale(1.1);
 }
 
@@ -599,7 +624,7 @@ button:disabled {
 }
 
 #topDomains {
-  color: #e91e63;
+  color: var(--brand-pink);
   font-weight: 700;
 }
 
@@ -613,15 +638,15 @@ button:disabled {
 #scoreSection {
   margin: 20px 0;
   padding: 20px;
-  background: #f8f9fa;
+  background: var(--bg-light);
   border-radius: 8px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--border-medium);
 }
 
 #totalScore {
   font-size: 42px;
   font-weight: 800;
-  color: #e91e63;
+  color: var(--brand-pink);
   margin: 10px 0;
   letter-spacing: -1px;
 }
@@ -655,9 +680,9 @@ button:disabled {
 .domain-bar {
   margin: 6px 0;
   padding: 8px;
-  background: #fafafa;
+  background: var(--bg-lighter);
   border-radius: 6px;
-  border: 1px solid #f0f0f0;
+  border: 1px solid var(--border-light);
 }
 
 .bar-header {
@@ -677,14 +702,14 @@ button:disabled {
 
 .bar-count {
   font-weight: 800;
-  color: #e91e63;
+  color: var(--brand-pink);
   font-size: 16px;
   min-width: 25px;
   text-align: right;
 }
 
 .bar-container {
-  background: #e0e0e0;
+  background: var(--progress-bg);
   height: 14px;
   border-radius: 4px;
   overflow: hidden;
@@ -707,10 +732,10 @@ button:disabled {
 #personalInsights {
   margin: 15px 0;
   padding: 15px;
-  background: #f8f9fa;
+  background: var(--bg-light);
   border-radius: 6px;
   text-align: left;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--border-medium);
 }
 
 /* Title above grey block - matches palette heading style */
@@ -753,7 +778,7 @@ button:disabled {
 #recommendationsList li {
   padding: 8px 0;
   color: #555;
-  border-left: 3px solid #e91e63;
+  border-left: 3px solid var(--brand-pink);
   padding-left: 12px;
   margin: 8px 0;
   font-size: 14px;
@@ -765,7 +790,7 @@ button:disabled {
 #shareSection {
   margin-top: 15px;
   padding-top: 12px;
-  border-top: 2px solid #f0f0f0;
+  border-top: 2px solid var(--border-light);
 }
 
 #shareSection h3 {
@@ -790,7 +815,7 @@ button:disabled {
 }
 
 #shareBtn {
-  background: #e91e63;
+  background: var(--brand-pink);
   color: white;
 }
 
@@ -800,13 +825,13 @@ button:disabled {
 }
 
 #retakeBtn {
-  background: #f8f9fa;
+  background: var(--bg-light);
   color: #333;
-  border: 2px solid #e91e63;
+  border: 2px solid var(--brand-pink);
 }
 
 #retakeBtn:hover {
-  background: #e91e63;
+  background: var(--brand-pink);
   color: white;
   transform: translateY(-2px);
 }
@@ -841,29 +866,29 @@ button:disabled {
 }
 
 .share-button.native {
-  background: #007AFF;
+  background: var(--share-native);
   color: white;
 }
 
 .share-button.native:hover {
-  background: #0056CC;
+  background: var(--share-native-hover);
 }
 
 .share-button.copy {
-  background: #f8f9fa;
+  background: var(--bg-light);
   color: #333;
-  border: 2px solid #e9ecef;
+  border: 2px solid var(--border-medium);
 }
 
 .share-button.copy:hover {
-  background: #e9ecef;
-  border-color: #dee2e6;
+  background: var(--border-medium);
+  border-color: var(--border-dark);
 }
 
 .share-button.copy.copied {
-  background: #d4edda;
-  border-color: #4CAF50;
-  color: #155724;
+  background: var(--share-success);
+  border-color: var(--share-success-border);
+  color: var(--share-success-text);
   animation: successPulse 0.6s ease;
 }
 
@@ -923,66 +948,70 @@ button:disabled {
 @media (max-width: 480px) {
   /* Mobile body - natural flow with reduced container */
   body {
-    font-family: var(--font-family) !important;
-    background: var(--brand-dark) !important;
-    color: var(--text-primary) !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    height: auto !important;
-    min-height: 100vh !important;
-    overflow-x: hidden !important;
-    overflow-y: auto !important; /* Allow natural scrolling */
-    -webkit-text-size-adjust: 100% !important;
-    -webkit-touch-callout: none !important;
-    -webkit-tap-highlight-color: transparent !important;
+    font-family: var(--font-family);
+    background: var(--brand-dark);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 0;
+    height: auto;
+    min-height: calc(var(--vh, 1vh) * 100);
+    overflow-x: hidden;
+    overflow-y: auto; /* Allow natural scrolling */
+    -webkit-text-size-adjust: 100%;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
   }
   
   /* Option F: Conditional scroll prevention */
   body.no-scroll {
-    overflow: hidden !important;
-    position: fixed !important;
-    width: 100% !important;
-    height: 100% !important;
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
   }
 
   /* Prevent double-tap zoom on interactive elements */
   .buttons button, 
   #cardImages .card-image,
   #startBtn {
-    touch-action: manipulation !important;
-    user-select: none !important;
-    -webkit-user-select: none !important;
-    -webkit-touch-callout: none !important;
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
   }
 
-  /* Main content - minimal padding for maximum space */
+  /* Main content - responsive height */
   .main-content {
-    display: flex !important;
-    align-items: flex-start !important; /* Align to top */
-    justify-content: center !important;
-    padding: 4px 0 0 0 !important; /* Minimal top padding */
-    margin: 0 !important;
-    height: auto !important; /* Let content determine height */
-    min-height: calc(100vh - 60px) !important; /* Account for fixed footer height */
-    flex: none !important;
-    overflow: visible !important; /* Allow content to show */
-    box-sizing: border-box !important;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 4px 0 0 0;
+    margin: 0;
+    height: auto;
+    /* Dynamic viewport height with fallback */
+    min-height: 100vh; /* Fallback */
+    min-height: calc(var(--vh, 1vh) * 100 - 60px); /* Dynamic - account for footer */
+    flex: none;
+    overflow: visible;
+    box-sizing: border-box;
   }
 
-  /* Mobile containers - properly sized for content visibility */
+  /* Mobile containers - responsive with dynamic viewport */
   #intro, #game, #results {
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin: 0 12px 12px 12px; /* Added bottom margin for spacing from fixed footer */
-    padding: 12px; /* Further reduced padding */
+    margin: 0 12px 12px 12px;
+    padding: 12px;
     width: calc(100% - 24px);
-    height: calc(100vh - 250px) !important; /* Reduced height by 50px */
-    max-height: calc(100vh - 250px) !important;
-    min-height: calc(100vh - 250px) !important;
+    /* Dynamic viewport height with fallbacks */
+    height: 100vh; /* Fallback for older browsers */
+    height: calc(var(--vh, 1vh) * 100 - 250px); /* Dynamic viewport */
+    min-height: 450px; /* Minimum usable space */
+    max-height: 800px; /* Prevent excessive height on large screens */
     text-align: center;
     position: relative;
-    overflow: hidden !important; /* Prevent scrolling */
+    overflow: hidden !important;
     flex-direction: column;
     justify-content: space-between;
     box-sizing: border-box !important;
@@ -994,14 +1023,18 @@ button:disabled {
   }
 
   /* Game section optimization - match reduced container size */
-  /* Game section optimization - properly sized */
+  /* Game section optimization - responsive sizing */
   #game {
-    justify-content: space-between; /* Distribute elements evenly */
-    gap: 3px; /* Minimal gap to maximize space */
-    padding: 12px; /* Reduced padding */
+    justify-content: space-between;
+    gap: 3px;
+    padding: 12px;
     display: flex;
     flex-direction: column;
-    height: calc(100vh - 250px) !important; /* Match container height */
+    /* Use same dynamic height as container */
+    height: 100vh; /* Fallback */
+    height: calc(var(--vh, 1vh) * 100 - 250px); /* Dynamic */
+    min-height: 450px; /* Minimum usable space */
+    max-height: 800px; /* Maximum height constraint */
   }
 
   /* Card container optimization - space efficient */
@@ -1252,12 +1285,14 @@ button:disabled {
   }
 
   .results-page {
-    padding: 6px 0 30px 0; /* Reduced space for navigation */
+    padding: 6px 0 30px 0;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-    height: calc(100vh - 310px) !important; /* Adjusted for container height */
-    max-height: calc(100vh - 310px) !important;
-    flex: 1; /* Take available space */
+    -webkit-overflow-scrolling: touch;
+    /* Dynamic height calculation */
+    height: calc(var(--vh, 1vh) * 100 - 310px);
+    max-height: calc(var(--vh, 1vh) * 100 - 310px);
+    min-height: 300px; /* Minimum usable space */
+    flex: 1;
   }
   
   /* Results content scaling - ultra compact */
@@ -1350,7 +1385,7 @@ button:disabled {
   /* Mobile navigation improvements - ultra compact */
   .results-navigation {
     padding: 3px 8px; /* Minimal padding */
-    border-top: 1px solid #f0f0f0; /* Subtle separator */
+    border-top: 1px solid var(--border-light); /* Subtle separator */
     height: 30px; /* More compact height */
     position: absolute;
     bottom: 0;
@@ -1517,9 +1552,9 @@ button:disabled {
 #benchmarkSection {
   margin: 15px 0;
   padding: 15px;
-  background: #f8f9fa;
+  background: var(--bg-light);
   border-radius: 6px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--border-medium);
   text-align: center;
 }
 
@@ -1532,14 +1567,14 @@ button:disabled {
 
 #benchmarkMessage {
   font-size: 16px;
-  color: #e91e63;
+  color: var(--brand-pink);
   margin-bottom: 15px;
   line-height: 1.3;
   font-weight: 600;
   padding: 12px;
   background: white;
   border-radius: 6px;
-  border: 2px solid #e91e63;
+  border: 2px solid var(--brand-pink);
 }
 
 #benchmarkStats {
@@ -1554,7 +1589,7 @@ button:disabled {
   background: white;
   padding: 8px 12px;
   border-radius: 4px;
-  border: 1px solid #e9ecef;
+  border: 1px solid var(--border-medium);
   min-width: 80px;
 }
 
@@ -1750,9 +1785,10 @@ button:disabled {
   
   /* Ensure containers are properly sized for small screens */
   #intro, #game, #results {
-    height: calc(100vh - 270px) !important; /* Slightly more space for smaller screens */
-    max-height: calc(100vh - 270px) !important;
-    min-height: calc(100vh - 270px) !important;
+    /* Dynamic viewport with constraints for small screens */
+    height: calc(var(--vh, 1vh) * 100 - 270px);
+    min-height: 400px; /* Slightly smaller minimum for very small screens */
+    max-height: 700px; /* Prevent excessive height */
   }
 }
 
