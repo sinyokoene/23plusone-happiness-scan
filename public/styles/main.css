@@ -1,0 +1,1816 @@
+/* 23plusone Happiness Scan - Main Styles */
+
+/* Performance Optimizations */
+
+/* GPU acceleration for smooth animations */
+.card-image,
+.hero-image,
+.bar-fill,
+#timerProgress {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Optimize scrolling performance */
+* {
+  scroll-behavior: smooth;
+}
+
+/* CSS Custom Properties (Variables) */
+:root {
+  /* Dynamic Viewport Height - Updated by JavaScript */
+  --vh: 1vh;
+  
+  /* Brand Colors */
+  --brand-pink: #e91e63;
+  --brand-dark: #291D1B;
+  
+  /* UI Colors */
+  --white: #ffffff;
+  --card-bg: #ffffff;
+  --text-primary: #333333;
+  --text-secondary: #555555;
+  --text-muted: #666666;
+  
+  /* Status Colors */
+  --success: #4CAF50;
+  --success-hover: #45a049;
+  --success-active: #66bb6a;
+  --danger: #f44336;
+  --danger-hover: #da190b;
+  --danger-active: #ef5350;
+  
+  /* Background Colors */
+  --bg-light: #f8f9fa;
+  --bg-lighter: #fafafa;
+  --border-light: #f0f0f0;
+  --border-medium: #e9ecef;
+  --border-dark: #dee2e6;
+  --progress-bg: #e0e0e0;
+  
+  /* Button Colors */
+  --btn-yes: #3AB4A0;
+  --btn-yes-hover: #2A9B89;
+  --btn-yes-active: #4AC4B0;
+  --btn-no: #DA4900;
+  --btn-no-hover: #C13E00;
+  --btn-no-active: #E85A10;
+  
+  /* Grays */
+  --gray-light: #f5f5f5;
+  --gray-medium: #ccc;
+  --gray-dark: #666;
+  --gray-darker: #333;
+  
+  /* Share Button Colors */
+  --share-native: #007AFF;
+  --share-native-hover: #0056CC;
+  --share-success: #d4edda;
+  --share-success-border: #4CAF50;
+  --share-success-text: #155724;
+  
+  /* Domain Colors */
+  --domain-basics: #4CAF50;
+  --domain-growth: #FF9800;
+  --domain-ambition: #9C27B0;
+  --domain-vitality: #2196F3;
+  --domain-beauty: #E91E63;
+  
+  /* Spacing */
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 20px;
+  --spacing-xl: 30px;
+  --spacing-xxl: 40px;
+  
+  /* Border Radius */
+  --radius-sm: 3px;
+  --radius: 8px;
+  
+  /* Shadows */
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+  --shadow-xl: 0 20px 40px rgba(0,0,0,0.1);
+  
+  /* Typography */
+  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition: 0.3s ease;
+  --transition-slow: 0.6s ease;
+}
+
+/* Button utilities */
+.btn {
+  font-family: var(--font-family);
+  padding: 15px var(--spacing-xl);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-primary {
+  background: var(--brand-pink);
+  color: var(--white);
+}
+
+.btn-success {
+  background: var(--success);
+  color: var(--white);
+}
+
+.btn-danger {
+  background: var(--danger);
+  color: var(--white);
+}
+
+/* Accessibility Utilities */
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Enhanced Keyboard Navigation */
+*:focus-visible {
+  outline: 2px solid var(--brand-pink);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--brand-pink);
+  outline-offset: 2px;
+  transform: translateY(-1px);
+}
+
+.card-image:focus {
+  outline: 2px solid var(--brand-pink);
+  outline-offset: 2px;
+  transform: scale(1.02);
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --shadow-md: none;
+    --shadow-xl: 0 0 0 1px var(--text-primary);
+  }
+  
+  #intro, #game, #results {
+    border: 2px solid var(--text-primary);
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  .card-image:hover,
+  .hero-image {
+    transform: none !important;
+  }
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Desktop body styles */
+@media (min-width: 481px) {
+  body {
+    font-family: var(--font-family);
+    background: var(--brand-dark);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: var(--text-primary);
+    overflow-x: hidden;
+  }
+
+  .main-content {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--spacing-md);
+  }
+}
+
+/* Base mobile-first styles */
+body {
+  font-family: var(--font-family);
+  background: var(--brand-dark);
+  color: var(--text-primary);
+  margin: 0;
+  padding: 0;
+}
+
+.main-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  max-width: 1250px;
+  overflow: visible;
+}
+
+/* Consistent container styling for all states - DESKTOP ONLY */
+@media (min-width: 481px) {
+  #game, #intro, #results {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: var(--spacing-xxl) var(--spacing-xl);
+    box-shadow: var(--shadow-xl);
+    text-align: center;
+    width: 100%;
+    height: 700px; /* Fixed height for perfect consistency */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: visible;
+  }
+}
+
+/* Intro header above white block */
+.intro-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.intro-title {
+  color: var(--white);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+}
+
+#intro {
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+#introContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.intro-left {
+  flex: 0 0 auto;
+  text-align: center;
+  max-width: 600px;
+}
+
+.intro-right {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.intro-text {
+  flex: 0 0 auto;
+  text-align: center;
+  max-width: 600px;
+}
+
+#introContent h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 0;
+  animation: fadeInUp var(--transition-slow) ease 0.2s both;
+}
+
+.intro-text p {
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+  animation: fadeInUp var(--transition-slow) ease 0.4s both;
+}
+
+.intro-text p.lets-go {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--brand-pink);
+  margin-top: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+  animation: fadeInUp var(--transition-slow) ease 0.6s both;
+}
+
+#startBtn {
+  background: var(--brand-pink);
+  color: var(--white);
+  padding: 18px var(--spacing-xxl);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  margin: var(--spacing-lg) auto 0 auto;
+  max-width: 280px;
+  width: 100%;
+  animation: fadeInUp var(--transition-slow) ease 0.8s both;
+}
+
+
+
+#startBtn:hover {
+  transform: translateY(-3px);
+  box-shadow: none;
+}
+
+#cardContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+#card {
+  margin: 20px 0;
+}
+
+#cardImages {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 30px 0;
+  min-height: 350px; /* Increased from 250px */
+  overflow: visible;
+  position: relative;
+}
+
+.card-image {
+  max-width: 100%;
+  max-height: 350px; /* Increased from 250px */
+  width: auto;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  opacity: 1;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.card-image:hover {
+  transform: scale(1.02);
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#timerContainer {
+  margin: 0 0 20px 0;
+  display: flex;
+  justify-content: center;
+}
+
+#timerBar {
+  height: 8px;
+  background: var(--progress-bg);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 10px auto;
+  width: 100%;
+  max-width: 350px; /* Match card container width */
+}
+
+#timerProgress {
+  height: 100%;
+  background: var(--success);
+  width: 100%;
+  transition: width 4s linear, background-color 0.3s ease;
+  border-radius: 4px;
+}
+
+#timerProgress.warning {
+  background: var(--domain-growth) !important;
+}
+
+#timerProgress.danger {
+  background: var(--danger) !important;
+  animation: pulse 0.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from { opacity: 0.7; }
+  to { opacity: 1.0; }
+}
+
+.buttons {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+button {
+  font-family: var(--font-family);
+  font-size: 18px;
+  min-width: 100px;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+#yesBtn {
+  background: var(--btn-yes);
+  color: var(--white);
+  transition: all var(--transition-fast);
+}
+
+#yesBtn:hover {
+  background: var(--btn-yes-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+#yesBtn:active {
+  transform: scale(0.95);
+  background: var(--btn-yes-active);
+}
+
+#noBtn {
+  background: var(--btn-no);
+  color: var(--white);
+  transition: all var(--transition-fast);
+}
+
+#noBtn:hover {
+  background: var(--btn-no-hover);
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+#noBtn:active {
+  transform: scale(0.95);
+  background: var(--btn-no-active);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Results specific styling */
+#results {
+  justify-content: space-between; /* Space content and navigation */
+  overflow: hidden; /* Prevent scrolling in paginated view */
+  position: relative;
+}
+
+/* Results Navigation */
+.results-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-xl);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: var(--card-bg);
+}
+
+.nav-arrow {
+  background: var(--bg-light);
+  color: var(--brand-pink);
+  border: 2px solid var(--brand-pink);
+  border-radius: var(--radius);
+  width: 50px;
+  height: 35px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-family);
+}
+
+.nav-arrow:hover:not(:disabled) {
+  background: var(--brand-pink);
+  color: var(--white);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.nav-arrow:disabled {
+  background: var(--gray-light);
+  color: var(--gray-medium);
+  border-color: var(--border-dark);
+  cursor: not-allowed;
+  transform: none;
+}
+
+.page-indicator {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.page-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--border-dark);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.page-dot:hover {
+  background: var(--gray-medium);
+  transform: scale(1.1);
+}
+
+.page-dot.active {
+  background: var(--brand-pink);
+  transform: scale(1.2);
+}
+
+.page-dot.active:hover {
+  background: var(--brand-pink);
+  transform: scale(1.2);
+}
+
+/* Results Pages */
+.results-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Allow content to flow from top */
+  min-height: 0; /* Allow flex child to shrink */
+  overflow-y: auto; /* Allow scrolling if needed */
+  padding: var(--spacing-sm) 0 80px 0; /* Add bottom padding for navigation */
+  max-width: 800px; /* Constrain content width for better readability */
+  margin: 0 auto; /* Center the narrower content */
+}
+
+/* Palette tagline styling */
+.palette-tagline {
+  font-size: 14px;
+  color: #666;
+  margin-top: 15px;
+  font-style: italic;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.results-page:not([style*="display: none"]) {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+#resultsHeader {
+  margin-bottom: 20px;
+}
+
+#resultsHeader h2 {
+  color: #333;
+  margin-bottom: 12px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+#dominantDomainsText {
+  font-size: 16px;
+  color: #555;
+  margin-bottom: 8px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+#topDomains {
+  color: var(--brand-pink);
+  font-weight: 700;
+}
+
+#personalityInsight {
+  font-size: 14px;
+  color: #777;
+  margin-bottom: 0;
+  font-style: italic;
+}
+
+#scoreSection {
+  margin: 20px 0;
+  padding: 20px;
+  background: var(--bg-light);
+  border-radius: 8px;
+  border: 1px solid var(--border-medium);
+}
+
+#totalScore {
+  font-size: 42px;
+  font-weight: 800;
+  color: var(--brand-pink);
+  margin: 10px 0;
+  letter-spacing: -1px;
+}
+
+#ihsLabel {
+  font-size: 12px;
+  color: #777;
+  text-transform: uppercase;
+  letter-spacing: 1.2px;
+  font-weight: 600;
+}
+
+#colorVisualization {
+  margin: 15px 0;
+}
+
+#colorVisualization h3 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+#domainBars {
+  margin: 15px 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.domain-bar {
+  margin: 6px 0;
+  padding: 8px;
+  background: var(--bg-lighter);
+  border-radius: 6px;
+  border: 1px solid var(--border-light);
+}
+
+.bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.bar-name {
+  flex: 1;
+  text-align: left;
+  font-weight: 700;
+  color: #333;
+  font-size: 14px;
+}
+
+.bar-count {
+  font-weight: 800;
+  color: var(--brand-pink);
+  font-size: 16px;
+  min-width: 25px;
+  text-align: right;
+}
+
+.bar-container {
+  background: var(--progress-bg);
+  height: 14px;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 1.5s ease-out;
+  position: relative;
+}
+
+.bar-basics { background: var(--domain-basics); }
+.bar-self-dev { background: var(--domain-growth); }
+.bar-ambition { background: var(--domain-ambition); }
+.bar-vitality { background: var(--domain-vitality); }
+.bar-attraction { background: var(--domain-beauty); }
+
+#personalInsights {
+  margin: 15px 0;
+  padding: 15px;
+  background: var(--bg-light);
+  border-radius: 6px;
+  text-align: left;
+  border: 1px solid var(--border-medium);
+}
+
+/* Title above grey block - matches palette heading style */
+.results-page #insights-heading {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+#personalInsights h3 {
+  color: #333;
+  margin-bottom: 12px;
+  font-size: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+
+#insightText {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 15px;
+  text-align: center;
+  padding: 0 8px;
+}
+
+#recommendations h4 {
+  color: #333;
+  margin-bottom: 10px;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#recommendationsList {
+  list-style: none;
+  padding: 0;
+}
+
+#recommendationsList li {
+  padding: 8px 0;
+  color: #555;
+  border-left: 3px solid var(--brand-pink);
+  padding-left: 12px;
+  margin: 8px 0;
+  font-size: 14px;
+  line-height: 1.4;
+  background: rgba(233, 30, 99, 0.02);
+  border-radius: 0 3px 3px 0;
+}
+
+#shareSection {
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 2px solid var(--border-light);
+}
+
+#shareSection h3 {
+  color: #333;
+  margin-bottom: 15px;
+  font-size: 18px;
+  text-align: center;
+  font-weight: 700;
+}
+
+
+
+#shareBtn, #retakeBtn {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 4px;
+}
+
+#shareBtn {
+  background: var(--brand-pink);
+  color: white;
+}
+
+#shareBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+#retakeBtn {
+  background: var(--bg-light);
+  color: #333;
+  border: 2px solid var(--brand-pink);
+}
+
+#retakeBtn:hover {
+  background: var(--brand-pink);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* Share Buttons Styling */
+.share-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 15px 0;
+}
+
+.share-button {
+  font-family: var(--font-family);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.share-button:hover {
+  transform: translateY(-2px);
+  box-shadow: none;
+}
+
+.share-button.native {
+  background: var(--share-native);
+  color: white;
+}
+
+.share-button.native:hover {
+  background: var(--share-native-hover);
+}
+
+.share-button.copy {
+  background: var(--bg-light);
+  color: #333;
+  border: 2px solid var(--border-medium);
+}
+
+.share-button.copy:hover {
+  background: var(--border-medium);
+  border-color: var(--border-dark);
+}
+
+.share-button.copy.copied {
+  background: var(--share-success);
+  border-color: var(--share-success-border);
+  color: var(--share-success-text);
+  animation: successPulse 0.6s ease;
+}
+
+@keyframes successPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* Hero Image Styling */
+.hero-image {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  display: block;
+  border-radius: 8px;
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+  animation: fadeInUp 0.8s ease 0.3s both;
+}
+
+/* Swipe instructions for mobile */
+.swipe-hint {
+  display: none;
+  font-size: 14px;
+  color: #888;
+  text-align: center;
+  margin-top: 10px;
+  font-style: italic;
+}
+
+@media (max-width: 768px) and (pointer: coarse) {
+  .swipe-hint {
+    display: block;
+    font-size: 13px;
+    color: #666;
+    margin-top: var(--spacing-sm);
+  }
+  
+  .buttons {
+    margin-top: var(--spacing-md);
+  }
+  
+  .card-image {
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    touch-action: pan-y; /* Allow vertical scrolling but prevent horizontal */
+  }
+  
+  .card-image:active {
+    cursor: grabbing;
+  }
+}
+
+/* MOBILE DESIGN - MOCKUP MATCHING */
+@media (max-width: 480px) {
+  /* Mobile body - natural flow with reduced container */
+  body {
+    font-family: var(--font-family);
+    background: var(--brand-dark);
+    color: var(--text-primary);
+    margin: 0;
+    padding: 0;
+    height: auto;
+    min-height: calc(var(--vh, 1vh) * 100);
+    overflow-x: hidden;
+    overflow-y: auto; /* Allow natural scrolling */
+    -webkit-text-size-adjust: 100%;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Option F: Conditional scroll prevention */
+  body.no-scroll {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Prevent double-tap zoom on interactive elements */
+  .buttons button, 
+  #cardImages .card-image,
+  #startBtn {
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Main content - responsive height */
+  .main-content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 4px 0 0 0;
+    margin: 0;
+    height: auto;
+    /* Dynamic viewport height with fallback */
+    min-height: 100vh; /* Fallback */
+    min-height: calc(var(--vh, 1vh) * 100 - 60px); /* Dynamic - account for footer */
+    flex: none;
+    overflow: visible;
+    box-sizing: border-box;
+  }
+
+  /* Mobile containers - responsive with dynamic viewport */
+  #intro, #game, #results {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin: 0 12px 12px 12px;
+    padding: 12px;
+    width: calc(100% - 24px);
+    /* Dynamic viewport height with fallbacks */
+    height: 100vh; /* Fallback for older browsers */
+    height: calc(var(--vh, 1vh) * 100 - 250px); /* Dynamic viewport */
+    min-height: 450px; /* Minimum usable space */
+    max-height: 800px; /* Prevent excessive height on large screens */
+    text-align: center;
+    position: relative;
+    overflow: hidden !important;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box !important;
+  }
+  
+  /* Ensure game section allows card animations */
+  #game {
+    overflow: visible !important; /* Critical for swipe animations */
+  }
+
+  /* Game section optimization - match reduced container size */
+  /* Game section optimization - responsive sizing */
+  #game {
+    justify-content: space-between;
+    gap: 3px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    /* Use same dynamic height as container */
+    height: 100vh; /* Fallback */
+    height: calc(var(--vh, 1vh) * 100 - 250px); /* Dynamic */
+    min-height: 450px; /* Minimum usable space */
+    max-height: 800px; /* Maximum height constraint */
+  }
+
+  /* Card container optimization - space efficient */
+  #cardContainer {
+    flex: 1; /* Take most available space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center the card content */
+    position: relative;
+    min-height: 0; /* Allow shrinking */
+    max-height: calc(100% - 80px); /* Reserve space for timer and buttons */
+  }
+
+  /* Timer improvements for mobile - compact */
+  #timerContainer {
+    margin: 0 0 4px 0; /* Minimal margin */
+    order: 1; /* Timer comes first */
+    flex-shrink: 0; /* Don't shrink timer */
+  }
+
+  #timerBar {
+    max-width: calc(100% - 8px); /* Minimal margin */
+    height: 4px; /* Thinner for space efficiency */
+    margin: 4px auto;
+  }
+
+  /* Card display optimization - allow animations */
+  #cardImages {
+    min-height: 160px; /* Reduced but adequate for visibility */
+    max-height: 180px; /* Limit maximum height */
+    margin: 4px 0; /* Minimal margin */
+    flex: 1; /* Take available space */
+    display: flex !important; /* Force display */
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative;
+    overflow: visible; /* Allow swipe animations to show */
+  }
+  
+  .card-image {
+    max-height: 170px; /* Optimized for mobile viewport */
+    max-width: calc(100% - 8px); /* Minimal margin */
+    width: auto !important; /* Maintain aspect ratio */
+    height: auto !important; /* Maintain aspect ratio */
+    border-radius: 4px; /* Smaller radius */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1); /* Lighter shadow */
+    transform: translateZ(0); /* Hardware acceleration */
+    backface-visibility: hidden; /* Prevent flicker */
+    -webkit-backface-visibility: hidden;
+    image-rendering: -webkit-optimize-contrast; /* Improve image quality */
+    display: block !important; /* Force visibility */
+    opacity: 1 !important; /* Force opacity */
+    object-fit: contain; /* Ensure full image is visible */
+  }
+
+  /* Button improvements - mockup-matching */
+  .buttons {
+    margin: 12px 8px 8px 8px !important; /* Better margins like mockup */
+    gap: 16px !important; /* Good gap between buttons */
+    flex-shrink: 0 !important; /* Prevent buttons from shrinking */
+    display: flex !important; /* Force display */
+    justify-content: center !important;
+    order: 3 !important; /* Ensure buttons come last */
+    position: relative !important; /* Proper positioning */
+    z-index: 10 !important; /* Above other elements */
+    height: 44px !important; /* Good height matching buttons */
+  }
+
+  button {
+    font-size: 13px; /* Compact text */
+    padding: 8px 16px; /* Compact padding */
+    border-radius: 4px; /* Smaller radius */
+    min-width: 70px; /* Compact width */
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    height: 32px; /* Fixed height */
+  }
+
+  /* Ensure Yes/No buttons have proper styling - compact */
+  #yesBtn, #noBtn {
+    font-size: 13px !important; /* Compact text */
+    padding: 0 18px !important; /* Remove vertical padding, keep horizontal */
+    border: none !important;
+    border-radius: 6px !important; /* Slightly rounded */
+    font-weight: 600 !important;
+    min-width: 75px !important; /* Compact width */
+    max-width: 85px !important; /* Limit width */
+    display: inline-flex !important; /* Use inline-flex for better alignment */
+    align-items: center !important; /* Center text vertically */
+    justify-content: center !important; /* Center text horizontally */
+    flex: 0 0 auto; /* Don't grow or shrink */
+    margin: 0 2px !important; /* Minimal horizontal margin */
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1) !important; /* Subtle shadow */
+    transition: all 0.2s ease !important; /* Smooth transitions */
+    height: 38px !important; /* Slightly taller for better touch target */
+    line-height: 1 !important; /* Reset line height for perfect centering */
+  }
+
+  /* Force button visibility in game mode - compact */
+  #game .buttons {
+    background: transparent; /* No background needed */
+    border-radius: 6px; /* Match button border radius */
+    padding: 4px; /* Minimal padding */
+    margin: 8px 4px 16px 4px; /* More bottom margin to move buttons up */
+    width: calc(100% - 8px); /* Full width minus minimal margins */
+    box-sizing: border-box; /* Include padding in width */
+    height: 45px; /* Slightly taller to accommodate new button height */
+  }
+
+  /* Ensure buttons are visible when shown */
+  #game .buttons[style*="flex"], #game .buttons:not([style*="none"]) {
+    display: flex !important;
+    justify-content: center !important;
+  }
+
+  /* Card element mobile optimization */
+  #card {
+    margin: 8px 0; /* Reduced margin for mobile */
+    flex: 1; /* Take available space */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Center card content */
+    align-items: center; /* Center horizontally */
+    order: 2; /* Card comes after timer */
+    min-height: 0; /* Allow shrinking */
+  }
+
+  /* Swipe hint styling */
+  .swipe-hint {
+    font-size: 12px; /* Readable text */
+    color: #666;
+    margin-top: 4px; /* Small margin */
+    font-weight: 500;
+    order: 2; /* Between card and buttons */
+  }
+  
+  /* Intro header mobile styles - minimal padding */
+  .intro-header {
+    text-align: center !important;
+    margin-bottom: 4px !important; /* Further reduced for tighter layout */
+  }
+
+  .intro-title {
+    color: var(--white) !important;
+    font-size: 16px !important; /* Reduced font size */
+    font-weight: 700 !important;
+    margin: 0 !important;
+    text-align: center !important;
+  }
+
+  /* Intro section - compact layout to fit everything */
+  #introContent {
+    gap: 4px !important; /* Much smaller gap to reduce white space above heading */
+    justify-content: flex-start !important; /* Start from top instead of center */
+    padding-top: 4px !important; /* Minimal top padding */
+  }
+  
+  .intro-left {
+    max-width: 280px !important; /* Match hero image max-width */
+  }
+  
+  .intro-left h1 {
+    font-size: 20px !important; /* Increased for better visibility */
+    font-weight: 600 !important; /* Poppins semibold */
+    color: var(--text-primary) !important;
+    margin-bottom: 6px !important; /* Reduced margin */
+    line-height: 1.1 !important; /* Tighter line height */
+  }
+  
+  .intro-left p {
+    font-size: 14px !important; /* Reduced */
+    color: var(--text-secondary) !important;
+    line-height: 1.3 !important;
+    margin-bottom: 6px !important; /* Reduced margin */
+  }
+  
+  .intro-left p.lets-go {
+    font-size: 16px !important; /* Reduced */
+    color: var(--brand-pink) !important;
+    font-weight: 600 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  .intro-right {
+    margin: 8px 0 !important; /* Much smaller margin */
+  }
+  
+  .intro-text {
+    max-width: 280px !important; /* Match hero image max-width */
+    text-align: center !important;
+  }
+  
+  .intro-text p {
+    font-size: 14px !important; /* Increased from 12px */
+    color: var(--text-secondary) !important;
+    line-height: 1.3 !important; /* Tighter line height */
+    margin-bottom: 4px !important; /* Reduced margin */
+  }
+  
+  .intro-text p.lets-go {
+    font-size: 16px !important; /* Increased from 14px */
+    color: var(--brand-pink) !important;
+    font-weight: 600 !important;
+    margin-bottom: 0 !important;
+  }
+  
+  /* Hero image - more compact */
+  .hero-image {
+    width: 100% !important; /* Full width to match text */
+    max-width: 280px !important; /* Reduced max width */
+    height: auto !important; /* Auto height to maintain aspect ratio */
+    border-radius: 6px !important; /* Smaller radius */
+    object-fit: contain !important; /* Contain to show full image without cropping */
+    display: block !important;
+    margin: 0 auto !important;
+  }
+  
+  /* Start button - compact and visible */
+  #startBtn {
+    background: var(--brand-pink) !important;
+    color: var(--white) !important;
+    padding: 10px 20px !important; /* More compact padding */
+    font-size: 14px !important; /* Smaller font */
+    font-weight: 600 !important;
+    border: none !important;
+    border-radius: 6px !important; /* Slightly smaller radius */
+    cursor: pointer !important;
+    width: 100% !important;
+    max-width: 200px !important; /* Smaller max width */
+    height: 36px !important; /* Smaller height */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 20px auto !important; /* No top margin, significant bottom margin */
+    box-shadow: 0 2px 6px rgba(233, 30, 99, 0.25) !important; /* Smaller shadow */
+    flex-shrink: 0 !important;
+    align-self: flex-end !important; /* Position at bottom of container */
+  }
+  
+  /* Results section - properly sized */
+  #results {
+    max-width: 100%;
+    padding: 10px; /* Further reduced padding to match other sections */
+    overflow: hidden !important; /* Prevent scrolling */
+    height: calc(100vh - 250px) !important; /* Match container height */
+  }
+
+  .results-page {
+    padding: 6px 0 30px 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Dynamic height calculation */
+    height: calc(var(--vh, 1vh) * 100 - 310px);
+    max-height: calc(var(--vh, 1vh) * 100 - 310px);
+    min-height: 300px; /* Minimum usable space */
+    flex: 1;
+  }
+  
+  /* Results content scaling - ultra compact */
+  #resultsHeader h2 {
+    font-size: 16px; /* Compact */
+    margin-bottom: 2px; /* Minimal margin */
+    line-height: 1.1;
+  }
+  
+  #dominantDomainsText {
+    font-size: 11px; /* Compact */
+    line-height: 1.2;
+    margin-bottom: 2px;
+  }
+  
+  #totalScore {
+    font-size: 28px; /* More compact */
+    margin: 4px 0; /* Minimal margin */
+    line-height: 1;
+  }
+
+  /* Domain visualization - compact */
+  #domainBars {
+    grid-template-columns: 1fr;
+    gap: 2px; /* Minimal gap */
+    margin: 4px 0; /* Minimal margin */
+  }
+  
+  .domain-bar {
+    padding: 3px; /* Minimal padding */
+    margin: 1px 0; /* Minimal margin */
+    border-radius: 3px;
+  }
+  
+  .bar-name {
+    font-size: 10px; /* Ultra compact */
+    line-height: 1.2;
+  }
+
+  .bar-count {
+    font-size: 12px; /* Compact */
+    line-height: 1.2;
+  }
+
+  /* Insights section - ultra compact */
+  #personalInsights {
+    padding: 4px; /* Ultra minimal padding */
+    margin: 4px 0; /* Ultra minimal margin */
+    border-radius: 4px;
+  }
+  
+  #personalInsights h3 {
+    font-size: 14px; /* Compact heading */
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  
+  #insightText {
+    font-size: 10px; /* Ultra compact */
+    line-height: 1.3;
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+
+  /* Share section optimization - ultra compact */
+  .share-buttons {
+    gap: 2px; /* Ultra minimal gap */
+    margin: 4px 0; /* Ultra minimal margin */
+  }
+  
+  .share-button {
+    padding: 4px 8px; /* Ultra compact padding */
+    font-size: 10px; /* Ultra compact text */
+    border-radius: 3px;
+    font-weight: 600;
+    height: 24px; /* Fixed compact height */
+  }
+  
+  #shareBtn, #retakeBtn {
+    padding: 4px 8px; /* Ultra compact padding */
+    font-size: 10px; /* Ultra compact text */
+    display: block;
+    width: 100%;
+    margin: 2px 0; /* Ultra minimal margin */
+    border-radius: 3px;
+    font-weight: 600;
+    height: 24px; /* Fixed compact height */
+  }
+  
+  /* Mobile navigation improvements - ultra compact */
+  .results-navigation {
+    padding: 3px 8px; /* Minimal padding */
+    border-top: 1px solid var(--border-light); /* Subtle separator */
+    height: 30px; /* More compact height */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--card-bg);
+    flex-shrink: 0; /* Don't shrink navigation */
+  }
+  
+  .nav-arrow {
+    width: 28px; /* More compact */
+    height: 20px; /* More compact */
+    font-size: 10px; /* Smaller text */
+    border-radius: 3px;
+    touch-action: manipulation; /* Prevent zoom on double tap */
+  }
+  
+  .page-dot {
+    width: 5px; /* More compact */
+    height: 5px; /* More compact */
+    touch-action: manipulation; /* Prevent zoom on double tap */
+  }
+
+  /* Mobile footer adjustments - natural flow like mockup */
+  .bottom-branding {
+    min-height: 60px !important; /* Increased for better visibility */
+    height: auto !important; /* Allow natural height */
+    max-height: none !important; /* No height restriction */
+    padding: 12px !important; /* Increased padding for readability */
+    overflow: visible !important; /* Allow content to show */
+    position: relative !important; /* Natural document flow */
+    background: var(--brand-dark) !important; /* Keep background */
+    margin-top: 12px !important; /* Small margin for separation */
+    z-index: 1000 !important; /* Ensure it's above other content */
+  }
+
+  .bottom-branding-logo {
+    width: 32px !important; /* Larger for visibility */
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+  }
+
+  .bottom-brand-logo {
+    height: 16px !important; /* Larger brand logo */
+  }
+
+  .bottom-branding-text {
+    font-size: 10px !important; /* Larger text for readability */
+    line-height: 1.3 !important;
+  }
+
+  .bottom-copyright {
+    font-size: 8px !important; /* Larger copyright */
+    line-height: 1.3 !important;
+  }
+  
+  .palette-tagline {
+    font-size: 9px; /* Ultra compact */
+    margin-top: 6px; /* Minimal margin */
+    line-height: 1.2;
+  }
+  
+  /* Additional compact styling for results elements */
+  #scoreSection {
+    margin: 8px 0; /* Reduced margin */
+    padding: 8px; /* Reduced padding */
+    border-radius: 4px;
+  }
+  
+  #ihsLabel {
+    font-size: 9px; /* Ultra compact */
+    margin-bottom: 2px;
+  }
+  
+  #colorVisualization h3 {
+    font-size: 14px; /* Compact */
+    margin-bottom: 6px;
+    line-height: 1.2;
+  }
+  
+  #personalityInsight {
+    font-size: 10px; /* Ultra compact */
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+  
+  #recommendations h4 {
+    font-size: 12px; /* Compact */
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  
+  #recommendationsList li {
+    font-size: 10px; /* Ultra compact */
+    line-height: 1.3;
+    padding: 4px 0 4px 8px;
+    margin: 4px 0;
+  }
+  
+  #shareSection h3 {
+    font-size: 14px; /* Compact */
+    margin-bottom: 8px;
+    line-height: 1.2;
+  }
+}
+
+/* Tablet and medium screen improvements */
+@media (max-width: 768px) and (min-width: 481px) {
+  .main-content {
+    padding: var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #intro, #game, #results {
+    height: 550px; /* Balanced height for tablet viewport */
+  }
+  
+  #timerContainer {
+    margin: 0 0 20px 0;
+  }
+
+  #cardImages {
+    min-height: 320px;
+    margin: 25px 0; /* Balanced margin for tablet */
+  }
+  
+  .card-image {
+    max-height: 320px;
+  }
+  
+  #timerBar {
+    max-width: 320px; /* Match tablet card size */
+    margin: 8px auto; /* Ensure centering on tablet */
+  }
+  
+  #introContent {
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+  }
+  
+  .intro-left {
+    text-align: center;
+  }
+  
+  #domainBars {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  
+  .results-page {
+    padding: var(--spacing-sm) 0 65px 0; /* Medium bottom padding for tablet */
+  }
+  
+  .results-navigation {
+    padding: var(--spacing-md) var(--spacing-xl);
+  }
+}
+
+/* Benchmark Section Styles */
+#benchmarkSection {
+  margin: 15px 0;
+  padding: 15px;
+  background: var(--bg-light);
+  border-radius: 6px;
+  border: 1px solid var(--border-medium);
+  text-align: center;
+}
+
+#benchmarkSection h3 {
+  color: #333;
+  margin-bottom: 12px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+#benchmarkMessage {
+  font-size: 16px;
+  color: var(--brand-pink);
+  margin-bottom: 15px;
+  line-height: 1.3;
+  font-weight: 600;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  border: 2px solid var(--brand-pink);
+}
+
+#benchmarkStats {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.benchmark-item {
+  background: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--border-medium);
+  min-width: 80px;
+}
+
+.benchmark-label {
+  display: block;
+  font-size: 10px;
+  color: #666;
+  font-weight: 600;
+  margin-bottom: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.benchmark-value {
+  display: block;
+  font-size: 14px;
+  color: #333;
+  font-weight: 700;
+}
+
+/* Footer */
+.bottom-branding {
+  background: var(--brand-dark);
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: 14px;
+  font-weight: 500;
+  min-height: 50px;
+}
+
+/* Footer content wrapper - matches main content width */
+.bottom-branding-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1250px;
+  padding: 0 24px;
+}
+
+.bottom-branding-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.bottom-branding-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.bottom-branding-logo {
+  width: 80px;
+  height: 80px;
+  min-width: 80px;
+  min-height: 80px;
+  flex-shrink: 0;
+  display: block;
+  align-self: center;
+}
+
+.bottom-branding-logo .cls-1 {
+  fill: white !important;
+}
+
+.bottom-branding-logo .cls-2 {
+  fill: white !important;
+}
+
+.bottom-branding-text {
+  font-size: 10px;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.bottom-brand-logo {
+  height: 28px;
+  width: auto;
+  opacity: 0.9;
+  filter: brightness(0) invert(1);
+  margin-left: 8px;
+}
+
+.bottom-copyright {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.7);
+  text-align: right;
+  margin-left: 6px;
+}
+
+/* Mobile footer - fixed bottom bar for always visible branding */
+@media (max-width: 480px) {
+  .bottom-branding {
+    background: var(--brand-dark) !important;
+    padding: 12px 0 !important; /* Compact padding for fixed bar */
+    min-height: 60px !important; /* Compact height for fixed bar */
+    height: 60px !important; /* Fixed height */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    color: var(--white) !important;
+    position: fixed !important; /* Fixed to bottom of screen */
+    bottom: 0 !important; /* Stick to bottom */
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important; /* Above all other content */
+  }
+
+  .bottom-branding-content {
+    padding: 0 16px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    max-width: none !important;
+    box-sizing: border-box !important;
+  }
+  
+  .bottom-branding-left,
+  .bottom-branding-right {
+    display: flex !important;
+    align-items: center !important;
+    flex-direction: row !important;
+    gap: 10px !important;
+  }
+  
+  .bottom-branding-text {
+    font-size: 10px !important;
+    color: var(--white) !important;
+    line-height: 1.3 !important;
+  }
+  
+  .bottom-branding-logo {
+    width: 32px !important;
+    height: 32px !important;
+    min-width: 32px !important;
+    min-height: 32px !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .bottom-brand-logo {
+    height: 16px !important;
+    filter: brightness(0) invert(1) !important;
+    margin-left: 6px !important;
+  }
+  
+  .bottom-copyright {
+    font-size: 8px !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-align: right !important;
+    margin-left: 4px !important;
+    line-height: 1.3 !important;
+  }
+}
+
+/* Intermediate Mobile Breakpoint (Small phones like iPhone SE) */
+@media (max-width: 375px) {
+  .intro-title {
+    font-size: 16px !important;
+  }
+  
+  .intro-left h1 {
+    font-size: 20px !important;
+  }
+  
+  .intro-text p {
+    font-size: 13px !important;
+  }
+  
+  .intro-text p.lets-go {
+    font-size: 15px !important;
+  }
+  
+  #startBtn {
+    font-size: 14px !important;
+    padding: 12px 24px !important;
+  }
+  
+  .bottom-branding-text {
+    font-size: 9px !important;
+  }
+  
+  .bottom-copyright {
+    font-size: 7px !important;
+  }
+  
+  /* Ensure containers are properly sized for small screens */
+  #intro, #game, #results {
+    /* Dynamic viewport with constraints for small screens */
+    height: calc(var(--vh, 1vh) * 100 - 270px);
+    min-height: 400px; /* Slightly smaller minimum for very small screens */
+    max-height: 700px; /* Prevent excessive height */
+  }
+}
+
+/* Tablet Portrait Improvements */
+@media (min-width: 481px) and (max-width: 768px) {
+  .intro-title {
+    font-size: 28px;
+  }
+  
+  #introContent h1 {
+    font-size: 28px;
+  }
+  
+  .intro-text p {
+    font-size: 16px;
+  }
+  
+  .intro-text p.lets-go {
+    font-size: 18px;
+  }
+  
+  .hero-image {
+    max-height: 200px;
+  }
+}
