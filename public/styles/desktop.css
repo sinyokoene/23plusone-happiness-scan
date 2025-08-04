@@ -31,10 +31,10 @@
     overflow: visible;
   }
 
-  /* Desktop Footer - Match White Block Edges */
+  /* Desktop Footer - Match Main Content Width */
   .bottom-branding-content {
     max-width: 1250px; /* Match main content width */
-    padding: 0 var(--spacing-xl); /* Use same padding as white blocks for edge alignment */
+    padding: 0 var(--spacing-md); /* Match main content padding for full width alignment */
   }
 
   /* Desktop Screen Containers - Dynamic Viewport Height */
@@ -67,9 +67,9 @@
     justify-content: center;
   }
 
-  /* Tablet Footer - Match White Block Edges */
+  /* Tablet Footer - Match Main Content Width */
   .bottom-branding-content {
-    padding: 0 var(--spacing-xl); /* Use same padding as white blocks for edge alignment */
+    padding: 0 var(--spacing-md); /* Match main content padding for full width alignment */
   }
 
   /* Tablet Screen Containers */
@@ -168,10 +168,10 @@
     padding: var(--spacing-lg);
   }
 
-  /* Large Desktop Footer - Match White Block Edges */
+  /* Large Desktop Footer - Match Main Content Width */
   .bottom-branding-content {
     max-width: 1400px; /* Match large desktop main content width */
-    padding: 0 var(--spacing-xl); /* Use same padding as white blocks for edge alignment */
+    padding: 0 var(--spacing-lg); /* Match main content padding for full width alignment */
   }
 
   #game, #intro, #results {
