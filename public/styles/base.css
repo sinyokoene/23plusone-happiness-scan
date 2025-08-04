@@ -201,3 +201,83 @@ body {
   max-width: 1250px;
   overflow: visible;
 }
+
+/* Critical section layouts */
+#intro, #game, #results {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  padding: var(--spacing-xl);
+  box-shadow: var(--shadow-xl);
+  text-align: center;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: visible;
+}
+
+/* Intro section specific styles */
+.intro-header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.intro-title {
+  color: var(--white);
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+  text-align: center;
+}
+
+#intro {
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+#introContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  padding: 20px 0;
+  text-align: center;
+}
+
+.intro-left {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+.intro-right {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.intro-text {
+  flex: 0 0 auto;
+  margin-top: 20px;
+  text-align: center;
+}
+
+#introContent h1 {
+  font-size: 28px;
+  line-height: 1.2;
+  margin-bottom: 20px;
+  color: var(--text-primary);
+}
+
+.intro-text p {
+  font-size: 16px;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.intro-text p.lets-go {
+  font-weight: 600;
+  color: var(--brand-pink);
+  margin-top: 12px;
+}
