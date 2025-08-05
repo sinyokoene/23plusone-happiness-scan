@@ -2,6 +2,19 @@
 /* This file loads LAST and overrides ALL other CSS with maximum specificity */
 
 @media screen and (max-width: 480px) {
+  
+  /* NUCLEAR OPTION: Hide all sections by default */
+  body #intro:not(.active-section),
+  body #countdown:not(.active-section),
+  body #game:not(.active-section),
+  body #processing:not(.active-section),
+  body #results:not(.active-section) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    z-index: -1 !important;
+  }
+  
   /* NUCLEAR OPTION: Force intro section to display and work */
   body #intro.active-section {
     display: flex !important;
@@ -91,5 +104,64 @@
     padding: 0 !important;
     flex: 1 !important;
     height: 100% !important;
+  }
+  
+  /* NUCLEAR OPTION: Force countdown section to display and work */
+  body #countdown.active-section {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background: var(--card-bg) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+    margin: 0 8px 8px 8px !important;
+    padding: 20px !important;
+    width: calc(100% - 16px) !important;
+    height: auto !important;
+    min-height: calc(var(--vh, 1vh) * 85) !important;
+    max-height: calc(var(--vh, 1vh) * 95) !important;
+    text-align: center !important;
+    position: relative !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
+  }
+  
+  /* NUCLEAR OPTION: Force countdown content */
+  body #countdownContent {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 20px !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  /* NUCLEAR OPTION: Force countdown text */
+  body #countdownText {
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    margin: 0 !important;
+  }
+  
+  /* NUCLEAR OPTION: Force countdown progress bar */
+  body .progress-container {
+    width: 100% !important;
+    max-width: 300px !important;
+    height: 8px !important;
+    background: rgba(0,0,0,0.1) !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+  }
+  
+  body #countdownProgress {
+    height: 100% !important;
+    background: var(--brand-pink) !important;
+    border-radius: 4px !important;
+    width: 0% !important;
+    transition: width 0.3s ease !important;
   }
 }
