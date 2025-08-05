@@ -146,7 +146,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between; /* Changed from space-evenly to fit more */
-    gap: 8px; /* Reduced gap to save space */
+    gap: 4px; /* Reduced from 8px to minimize white space */
     padding: 0;
     flex: 1;
     height: 100%;
@@ -383,7 +383,7 @@
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
     margin: 0 8px 8px 8px !important;
-    padding: 12px 8px !important;
+    padding: 8px 8px !important; /* Reduced from 12px to minimize white space */
     width: calc(100% - 16px) !important;
     height: auto !important; /* Override desktop fixed height */
     min-height: calc(var(--vh, 1vh) * 85) !important;
@@ -421,7 +421,7 @@
   
   /* FORCE mobile start button */
   #startBtn {
-    margin: 10px auto 0 auto !important;
+    margin: 5px auto 0 auto !important; /* Further reduced margin */
     max-width: 200px !important;
     width: 85% !important;
     height: 44px !important;
@@ -437,6 +437,8 @@
     border: none !important;
     border-radius: var(--radius) !important;
     cursor: pointer !important;
+    pointer-events: auto !important; /* Ensure button is clickable */
+    touch-action: manipulation !important; /* Optimize for touch */
   }
   
   /* FORCE mobile hero image */
@@ -447,5 +449,6 @@
     height: auto !important;
     margin: 0 auto !important;
     object-fit: contain !important;
+    display: block !important;
   }
 }

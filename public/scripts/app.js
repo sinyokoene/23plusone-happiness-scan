@@ -25,6 +25,11 @@
   const processingText = document.getElementById('processingText');
   const processingProgress = document.getElementById('processingProgress');
 
+  // Debug logging to check DOM elements
+  console.log('DOM elements check:', {
+    introDiv, countdownDiv, gameDiv, startBtn, countdownText, countdownProgress
+  });
+
   const timerContainer = document.getElementById('timerContainer');
   const timerProgress = document.getElementById('timerProgress');
   const buttonsDiv = document.querySelector('.buttons');
@@ -47,7 +52,12 @@
   // Start button event listener
   startBtn.addEventListener('click', startScan);
   
+  // Debug logging to ensure event listener is attached
+  console.log('Start button event listener attached:', startBtn);
+  
   function startScan() {
+    console.log('startScan function called'); // Debug log
+    
     // Hide intro, show countdown
     showSection(countdownDiv);
     
