@@ -96,7 +96,7 @@
     max-height: 800px;
     text-align: center;
     position: relative;
-    overflow: hidden !important;
+    overflow: visible !important; /* Allow content to be visible */
     box-sizing: border-box !important;
   }
   
@@ -140,13 +140,17 @@
   #intro {
     height: calc(var(--vh, 1vh) * 100 - 240px); /* Account for footer + margins */
     min-height: 520px; /* Increased minimum to fit all content */
+    overflow: visible !important; /* Allow content to be visible */
   }
   
   /* Intro Content Layout - Mobile Optimization */
   #introContent {
+    display: flex;
+    flex-direction: column;
     justify-content: flex-start; /* Start from top instead of centering */
     gap: 12px; /* Smaller gap for mobile */
     padding: 8px 0; /* Reduced padding */
+    flex: 1; /* Take available space */
   }
   
   /* Hero Image - Mobile Optimized Size */
@@ -157,10 +161,13 @@
   
   /* Start Button - Mobile Optimized */
   #startBtn {
-    margin: 12px auto 16px auto; /* Proper margins for visibility */
+    margin: 16px auto 0 auto; /* Top margin for separation, auto sides for center */
     max-width: 200px; /* Slightly smaller */
+    width: 100%;
     height: 42px; /* Good touch target size */
     font-size: 15px; /* Appropriate font size */
+    position: relative; /* Ensure it's in the normal flow */
+    z-index: 10; /* Above other content */
   }
   
   /* Game Section - Allow Card Animations */
