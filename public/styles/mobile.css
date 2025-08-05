@@ -81,19 +81,22 @@
 
   /* Mobile Screen Containers - Optimized Space Usage */
   #intro, #game, #results {
-    background: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin: 0 8px 8px 8px;
-    padding: 12px 8px;
-    width: calc(100% - 16px);
-    height: auto;
-    min-height: calc(var(--vh, 1vh) * 80);
-    max-height: calc(var(--vh, 1vh) * 88);
-    text-align: center;
-    position: relative;
+    background: var(--card-bg) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+    margin: 0 8px 8px 8px !important;
+    padding: 12px 8px !important;
+    width: calc(100% - 16px) !important;
+    height: auto !important;
+    min-height: calc(var(--vh, 1vh) * 80) !important;
+    max-height: calc(var(--vh, 1vh) * 88) !important;
+    text-align: center !important;
+    position: relative !important;
     overflow: visible !important;
     box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
   }
   
   /* Countdown matches other sections */
@@ -132,9 +135,10 @@
   
   /* Intro Section - Optimized for better space usage */
   #intro {
-    min-height: calc(var(--vh, 1vh) * 85); /* Increased to fit button */
-    max-height: calc(var(--vh, 1vh) * 95); /* Increased max height for button */
+    min-height: calc(var(--vh, 1vh) * 85) !important; /* Increased to fit button */
+    max-height: calc(var(--vh, 1vh) * 95) !important; /* Increased max height for button */
     overflow: visible !important;
+    height: auto !important; /* Override any fixed height from base.css */
   }
   
   /* Intro Content Layout - Mobile Optimization */
@@ -365,6 +369,83 @@
 }
 
 /* ===========================================
-   ALL MOBILE STYLES HAVE BEEN CONSOLIDATED
-   Into the single comprehensive media query above
+   CRITICAL MOBILE OVERRIDES - MAXIMUM PRIORITY
+   These styles will override ALL previous definitions including base.css
    =========================================== */
+
+/* Force mobile styles on all small screens */
+@media screen and (max-width: 480px), 
+       screen and (max-device-width: 480px) {
+  
+  /* FORCE mobile intro section styles */
+  #intro {
+    background: var(--card-bg) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+    margin: 0 8px 8px 8px !important;
+    padding: 12px 8px !important;
+    width: calc(100% - 16px) !important;
+    height: auto !important; /* Override desktop fixed height */
+    min-height: calc(var(--vh, 1vh) * 85) !important;
+    max-height: calc(var(--vh, 1vh) * 95) !important;
+    text-align: center !important;
+    position: relative !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+  
+  /* FORCE mobile typography */
+  #introContent h1 {
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  .intro-text p {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    margin: 0 0 8px 0 !important;
+    color: var(--text-secondary) !important;
+  }
+
+  .intro-text p.lets-go {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: var(--brand-pink) !important;
+    margin: 8px 0 0 0 !important;
+  }
+  
+  /* FORCE mobile start button */
+  #startBtn {
+    margin: 10px auto 0 auto !important;
+    max-width: 200px !important;
+    width: 85% !important;
+    height: 44px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    position: relative !important;
+    z-index: 1000 !important;
+    padding: 12px 16px !important;
+    display: block !important;
+    flex-shrink: 0 !important;
+    background: var(--brand-pink) !important;
+    color: var(--white) !important;
+    border: none !important;
+    border-radius: var(--radius) !important;
+    cursor: pointer !important;
+  }
+  
+  /* FORCE mobile hero image */
+  .hero-image {
+    max-width: 180px !important;
+    max-height: 120px !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+  }
+}
