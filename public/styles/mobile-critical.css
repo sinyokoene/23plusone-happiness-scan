@@ -27,8 +27,8 @@
     padding: 8px !important;
     width: calc(100% - 16px) !important;
     height: auto !important;
-    min-height: calc(var(--vh, 1vh) * 85) !important;
-    max-height: calc(var(--vh, 1vh) * 95) !important;
+    min-height: calc(var(--vh, 1vh) * 75) !important;
+    max-height: calc(var(--vh, 1vh) * 80) !important;
     text-align: center !important;
     position: relative !important;
     overflow: visible !important;
@@ -119,8 +119,8 @@
     padding: 20px !important;
     width: calc(100% - 16px) !important;
     height: auto !important;
-    min-height: calc(var(--vh, 1vh) * 85) !important;
-    max-height: calc(var(--vh, 1vh) * 95) !important;
+    min-height: calc(var(--vh, 1vh) * 75) !important;
+    max-height: calc(var(--vh, 1vh) * 80) !important;
     text-align: center !important;
     position: relative !important;
     overflow: visible !important;
@@ -149,19 +149,67 @@
   
   /* NUCLEAR OPTION: Force countdown progress bar */
   body .progress-container {
+    display: block !important;
     width: 100% !important;
     max-width: 300px !important;
     height: 8px !important;
     background: rgba(0,0,0,0.1) !important;
     border-radius: 4px !important;
     overflow: hidden !important;
+    position: relative !important;
   }
   
   body #countdownProgress {
+    display: block !important;
     height: 100% !important;
     background: var(--brand-pink) !important;
     border-radius: 4px !important;
     width: 0% !important;
-    transition: width 0.3s ease !important;
+    transition: width 2.4s linear !important;
+    position: relative !important;
+    z-index: 1 !important;
+  }
+  
+  /* NUCLEAR OPTION: Force game section to display and work */
+  body #game.active-section {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    background: var(--card-bg) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+    margin: 0 8px 8px 8px !important;
+    padding: 12px !important;
+    width: calc(100% - 16px) !important;
+    height: auto !important;
+    min-height: calc(var(--vh, 1vh) * 75) !important;
+    max-height: calc(var(--vh, 1vh) * 80) !important;
+    text-align: center !important;
+    position: relative !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
+  }
+  
+  /* NUCLEAR OPTION: Force processing section to display and work */
+  body #processing.active-section {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    background: var(--card-bg) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+    margin: 0 8px 8px 8px !important;
+    padding: 20px !important;
+    width: calc(100% - 16px) !important;
+    height: auto !important;
+    min-height: calc(var(--vh, 1vh) * 75) !important;
+    max-height: calc(var(--vh, 1vh) * 80) !important;
+    text-align: center !important;
+    position: relative !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    z-index: 10 !important;
   }
 }
