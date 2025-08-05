@@ -132,8 +132,8 @@
   
   /* Intro Section - Optimized for better space usage */
   #intro {
-    min-height: calc(var(--vh, 1vh) * 80);
-    max-height: calc(var(--vh, 1vh) * 88);
+    min-height: calc(var(--vh, 1vh) * 85); /* Increased to fit button */
+    max-height: calc(var(--vh, 1vh) * 95); /* Increased max height for button */
     overflow: visible !important;
   }
   
@@ -141,8 +141,8 @@
   #introContent {
     display: flex;
     flex-direction: column;
-    justify-content: space-evenly;
-    gap: 12px;
+    justify-content: space-between; /* Changed from space-evenly to fit more */
+    gap: 8px; /* Reduced gap to save space */
     padding: 0;
     flex: 1;
     height: 100%;
@@ -172,8 +172,8 @@
   
   /* Hero Image - Mobile Optimized Size */
   .hero-image {
-    max-width: 220px;
-    max-height: 150px;
+    max-width: 180px; /* Reduced from 220px to save space */
+    max-height: 120px; /* Reduced from 150px to save space */
     width: 100%;
     height: auto;
     margin: 0 auto;
@@ -182,7 +182,7 @@
   
   /* Start Button - FINAL MOBILE OPTIMIZED */
   #startBtn {
-    margin: 0 auto !important;
+    margin: 10px auto 0 auto !important; /* Reduced top margin */
     max-width: 200px !important;
     width: 85% !important;
     height: 44px !important;
@@ -191,6 +191,8 @@
     position: relative !important;
     z-index: 10 !important;
     padding: 12px 16px !important;
+    display: block !important; /* Ensure button is visible */
+    flex-shrink: 0 !important; /* Prevent button from shrinking */
   }
   
   /* Game Section - Allow Card Animations */
