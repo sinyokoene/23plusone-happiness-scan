@@ -1,0 +1,95 @@
+/* CRITICAL MOBILE OVERRIDES - FINAL AUTHORITY */
+/* This file loads LAST and overrides ALL other CSS with maximum specificity */
+
+@media screen and (max-width: 480px) {
+  /* NUCLEAR OPTION: Force intro section to display and work */
+  body #intro.active-section {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    background: var(--card-bg) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+    margin: 0 8px 8px 8px !important;
+    padding: 8px !important;
+    width: calc(100% - 16px) !important;
+    height: auto !important;
+    min-height: calc(var(--vh, 1vh) * 85) !important;
+    max-height: calc(var(--vh, 1vh) * 95) !important;
+    text-align: center !important;
+    position: relative !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+  }
+  
+  /* NUCLEAR OPTION: Force start button to work */
+  body #startBtn {
+    display: block !important;
+    margin: 5px auto 0 auto !important;
+    max-width: 200px !important;
+    width: 85% !important;
+    height: 44px !important;
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    position: relative !important;
+    z-index: 9999 !important;
+    padding: 12px 16px !important;
+    flex-shrink: 0 !important;
+    background: var(--brand-pink) !important;
+    color: var(--white) !important;
+    border: none !important;
+    border-radius: 8px !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  /* NUCLEAR OPTION: Force typography */
+  body #introContent h1 {
+    font-size: 22px !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  body .intro-text p {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+    margin: 0 0 4px 0 !important;
+    color: var(--text-secondary) !important;
+  }
+
+  body .intro-text p.lets-go {
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    color: var(--brand-pink) !important;
+    margin: 4px 0 0 0 !important;
+  }
+  
+  /* NUCLEAR OPTION: Force hero image size */
+  body .hero-image {
+    max-width: 180px !important;
+    max-height: 120px !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+  
+  /* NUCLEAR OPTION: Force intro content layout */
+  body #introContent {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 2px !important;
+    padding: 0 !important;
+    flex: 1 !important;
+    height: 100% !important;
+  }
+}
