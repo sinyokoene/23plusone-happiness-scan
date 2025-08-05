@@ -60,6 +60,24 @@
     justify-content: space-between;
     overflow: visible;
   }
+  
+  /* Countdown matches other sections for desktop */
+  #countdown {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: var(--spacing-xxl) var(--spacing-xl);
+    box-shadow: var(--shadow-xl);
+    text-align: center;
+    width: 100%;
+    height: 100vh; /* Fallback */
+    height: calc(var(--vh, 1vh) * 100 - 150px); /* Dynamic viewport */
+    min-height: 600px; /* Minimum usable space for desktop */
+    max-height: 900px; /* Prevent excessive height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: visible;
+  }
 }
 
 /* TABLET LAYOUT - 481px to 768px */
@@ -85,6 +103,14 @@
   /* Tablet Screen Containers */
   #intro, #game, #results {
     /* Use dynamic viewport height for tablet consistency */
+    height: 100vh; /* Fallback */
+    height: calc(var(--vh, 1vh) * 100 - 200px); /* Dynamic viewport for tablet */
+    min-height: 500px; /* Minimum for tablet */
+    max-height: 800px; /* Maximum for tablet */
+  }
+  
+  /* Countdown matches other sections */
+  #countdown {
     height: 100vh; /* Fallback */
     height: calc(var(--vh, 1vh) * 100 - 200px); /* Dynamic viewport for tablet */
     min-height: 500px; /* Minimum for tablet */

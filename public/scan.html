@@ -60,6 +60,17 @@
       <button id="startBtn" type="button" class="btn btn-primary" aria-describedby="intro-heading">Start</button>
     </section>
 
+    <!-- Countdown Section -->
+    <section id="countdown" role="region" aria-labelledby="countdown-heading" style="display: none;">
+      <div id="countdownContent">
+        <h2 id="countdown-heading" class="sr-only">Countdown to start</h2>
+        <div id="countdownText" aria-live="assertive">Ready?</div>
+        <div class="progress-container">
+          <div id="countdownProgress" role="progressbar" aria-label="Countdown progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+      </div>
+    </section>
+
     <main id="game" role="main" aria-labelledby="game-heading" style="display: none !important;">
       <h2 id="game-heading" class="sr-only">Happiness Scan Question</h2>
       

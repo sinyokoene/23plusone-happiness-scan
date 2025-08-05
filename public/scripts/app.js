@@ -13,11 +13,14 @@
   
   // DOM elements
   const introDiv = document.getElementById('intro');
+  const countdownDiv = document.getElementById('countdown');
   const gameDiv = document.getElementById('game');
   const resultsDiv = document.getElementById('results');
   const startBtn = document.getElementById('startBtn');
   const cardDiv = document.getElementById('card');
   const progressBar = document.getElementById('progressBar');
+  const countdownText = document.getElementById('countdownText');
+  const countdownProgress = document.getElementById('countdownProgress');
 
   const timerContainer = document.getElementById('timerContainer');
   const timerProgress = document.getElementById('timerProgress');
@@ -29,15 +32,58 @@
   startBtn.addEventListener('click', startScan);
   
   function startScan() {
-    // Hide intro, show game
+    // Hide intro, show countdown
     introDiv.style.display = 'none';
-    gameDiv.style.display = 'flex';
+    countdownDiv.style.display = 'flex';
     
     // Remove results layout
     document.body.classList.remove('showing-results');
     
-    // Initialize the scan
-    initializeScan();
+    // Start countdown sequence
+    startCountdown();
+  }
+  
+  function startCountdown() {
+    // Reset countdown elements
+    countdownText.textContent = 'Ready?';
+    countdownProgress.style.width = '0%';
+    countdownProgress.style.background = '#DA006B'; // Pink for "Ready?"
+    
+    let progress = 0;
+    const totalDuration = 2400; // 1000 + 800 + 600 = 2400ms total
+    const updateInterval = 10; // Update every 10ms for smooth progress
+    
+    // Animate progress bar
+    const progressInterval = setInterval(() => {
+      progress += (100 / (totalDuration / updateInterval));
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(progressInterval);
+      }
+      countdownProgress.style.width = progress + '%';
+    }, updateInterval);
+    
+    // Ready? (1 second) - Pink
+    setTimeout(() => {
+      countdownText.textContent = 'Set...';
+      countdownProgress.style.background = '#FF9800'; // Orange for "Set..."
+    }, 1000);
+    
+    // Set... (0.8 seconds) - Orange  
+    setTimeout(() => {
+      countdownText.textContent = 'Go!';
+      countdownProgress.style.background = '#4CAF50'; // Green for "Go!"
+    }, 1800); // 1000 + 800
+    
+    // Go! (0.6 seconds) then start game
+    setTimeout(() => {
+      // Hide countdown, show game
+      countdownDiv.style.display = 'none';
+      gameDiv.style.display = 'flex';
+      
+      // Initialize the scan
+      initializeScan();
+    }, 2400); // 1000 + 800 + 600
   }
   
   // Initialize page state
