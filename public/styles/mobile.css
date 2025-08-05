@@ -46,10 +46,6 @@
     -webkit-tap-highlight-color: transparent;
   }
   
-  #intro {
-    display: flex !important;
-  }
-
   /* Conditional scroll prevention for game mode */
   body.no-scroll {
     overflow: hidden;
@@ -83,6 +79,12 @@
     box-sizing: border-box;
   }
 
+  /* This class is added by JS to the currently visible section to apply flex layout */
+  .active-section {
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
   /* Mobile Screen Containers - Dynamic Viewport Height */
   #intro, #game, #results {
     background: var(--card-bg);
@@ -98,8 +100,6 @@
     text-align: center;
     position: relative;
     overflow: hidden !important;
-    flex-direction: column;
-    justify-content: space-between;
     box-sizing: border-box !important;
   }
   
@@ -118,8 +118,6 @@
     text-align: center;
     position: relative;
     overflow: hidden !important;
-    flex-direction: column;
-    justify-content: space-between;
     box-sizing: border-box !important;
   }
   
@@ -138,8 +136,6 @@
     text-align: center;
     position: relative;
     overflow: hidden !important;
-    flex-direction: column;
-    justify-content: space-between;
     box-sizing: border-box !important;
   }
   
@@ -147,7 +143,6 @@
   #intro {
     height: calc(var(--vh, 1vh) * 100 - 240px); /* Account for footer + margins */
     min-height: 520px; /* Increased minimum to fit all content */
-    justify-content: flex-start; /* Start from top, don't center */
   }
   
   /* Intro Content Layout - Mobile Optimization */
@@ -174,11 +169,8 @@
   /* Game Section - Allow Card Animations */
   #game {
     overflow: visible !important;
-    justify-content: space-between;
     gap: 3px;
     padding: 12px;
-    display: flex;
-    flex-direction: column;
     height: 100vh;
     height: calc(var(--vh, 1vh) * 100 - 250px);
     min-height: 450px;

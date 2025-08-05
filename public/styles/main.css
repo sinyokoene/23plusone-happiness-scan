@@ -1,6 +1,20 @@
 /* 23plusone Happiness Scan - Main Styles */
 /* Base variables are now in base.css - removed from here to avoid duplicates */
 
+/* Initial Section Visibility */
+#intro,
+#countdown,
+#game,
+#processing,
+#results {
+  display: none; /* Hide all sections by default */
+}
+
+/* This class is toggled by JS to control which section is visible */
+.active-section {
+  display: flex !important;
+}
+
 *:focus:not(:focus-visible) {
   outline: none;
 }

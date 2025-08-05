@@ -31,13 +31,25 @@
   const yesBtn = document.getElementById('yesBtn');
   const noBtn = document.getElementById('noBtn');
   
+  // Helper function to control which section is visible
+  function showSection(sectionToShow) {
+    // Hide all main sections first
+    [introDiv, countdownDiv, gameDiv, processingDiv, resultsDiv].forEach(div => {
+      if (div) div.classList.remove('active-section');
+    });
+  
+    // Then show the requested section
+    if (sectionToShow) {
+      sectionToShow.classList.add('active-section');
+    }
+  }
+  
   // Start button event listener
   startBtn.addEventListener('click', startScan);
   
   function startScan() {
     // Hide intro, show countdown
-    introDiv.style.display = 'none';
-    countdownDiv.style.display = 'flex';
+    showSection(countdownDiv);
     
     // Remove results layout
     document.body.classList.remove('showing-results');
@@ -74,8 +86,7 @@
     // Go! (0.6 seconds) then start game
     setTimeout(() => {
       // Hide countdown, show game
-      countdownDiv.style.display = 'none';
-      gameDiv.style.display = 'flex';
+      showSection(gameDiv);
       
       // Initialize the scan
       initializeScan();
@@ -113,8 +124,7 @@
     // Wrapping up... (1.0 seconds) then show results
     setTimeout(() => {
       // Hide processing, show results
-      processingDiv.style.display = 'none';
-      resultsDiv.style.display = 'block';
+      showSection(resultsDiv);
       
       // Change body layout for results
       document.body.classList.add('showing-results');
@@ -135,6 +145,7 @@
   
   // Initialize page state
   document.body.classList.remove('showing-results');
+  showSection(introDiv); // Show the intro section by default
   
   // Prevent scrolling on mobile
   document.body.classList.add('no-scroll');
@@ -488,8 +499,7 @@
     }
     
     // Hide game, show processing
-    gameDiv.style.display = 'none';
-    processingDiv.style.display = 'flex';
+    showSection(processingDiv);
     
     // Start processing sequence
     startProcessing(results);
