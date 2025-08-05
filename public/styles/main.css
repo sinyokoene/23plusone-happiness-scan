@@ -7,12 +7,12 @@
 #game,
 #processing,
 #results {
-  display: none !important; /* Hide all sections by default */
+  display: none; /* Hide all sections by default */
 }
 
 /* This class is toggled by JS to control which section is visible */
 .active-section {
-  display: flex !important;
+  display: flex;
 }
 
 *:focus:not(:focus-visible) {

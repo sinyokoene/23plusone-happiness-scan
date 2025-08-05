@@ -55,7 +55,6 @@
     height: calc(var(--vh, 1vh) * 100 - 150px); /* Dynamic viewport */
     min-height: 600px; /* Minimum usable space for desktop */
     max-height: 900px; /* Prevent excessive height */
-    display: flex;
     flex-direction: column;
     justify-content: space-between;
     overflow: visible;
@@ -73,7 +72,6 @@
     height: calc(var(--vh, 1vh) * 100 - 150px); /* Dynamic viewport */
     min-height: 600px; /* Minimum usable space for desktop */
     max-height: 900px; /* Prevent excessive height */
-    display: flex;
     flex-direction: column;
     justify-content: space-between;
     overflow: visible;
@@ -91,7 +89,6 @@
     height: calc(var(--vh, 1vh) * 100 - 150px); /* Dynamic viewport */
     min-height: 600px; /* Minimum usable space for desktop */
     max-height: 900px; /* Prevent excessive height */
-    display: flex;
     flex-direction: column;
     justify-content: space-between;
     overflow: visible;
