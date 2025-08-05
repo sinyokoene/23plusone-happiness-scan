@@ -64,12 +64,12 @@
     -webkit-touch-callout: none;
   }
 
-  /* Main Content - Responsive Height with Dynamic Viewport */
+  /* Main Content - Optimized for maximum space usage */
   .main-content {
     display: flex;
     align-items: center; /* Center vertically in available space */
     justify-content: center;
-    padding: 4px 0 60px 0; /* Add bottom padding for fixed footer */
+    padding: 8px 0 70px 0; /* Reduced top padding, account for footer */
     margin: 0;
     height: auto;
     min-height: 100vh;
@@ -82,18 +82,17 @@
   /* This class is added by JS to the currently visible section to apply flex layout */
   /* Removed - now handled globally in main.css */
 
-  /* Mobile Screen Containers - Dynamic Viewport Height */
+  /* Mobile Screen Containers - Optimized Space Usage */
   #intro, #game, #results {
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin: 0 12px 12px 12px;
-    padding: 12px;
-    width: calc(100% - 24px);
-    height: 100vh;
-    height: calc(var(--vh, 1vh) * 100 - 250px);
-    min-height: 450px;
-    max-height: 800px;
+    margin: 0 8px 8px 8px; /* Reduced margins */
+    padding: 16px 12px; /* More vertical padding, less horizontal */
+    width: calc(100% - 16px); /* Account for smaller margins */
+    height: auto; /* Let content determine height */
+    min-height: calc(var(--vh, 1vh) * 85); /* Use more of viewport */
+    max-height: calc(var(--vh, 1vh) * 95); /* Almost full height */
     text-align: center;
     position: relative;
     overflow: visible !important; /* Allow content to be visible */
@@ -105,13 +104,12 @@
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin: 0 12px 12px 12px;
-    padding: 12px;
-    width: calc(100% - 24px);
-    height: 100vh;
-    height: calc(var(--vh, 1vh) * 100 - 250px);
-    min-height: 450px;
-    max-height: 800px;
+    margin: 0 8px 8px 8px; /* Reduced margins */
+    padding: 16px 12px; /* More vertical padding */
+    width: calc(100% - 16px); /* Account for smaller margins */
+    height: auto; /* Let content determine height */
+    min-height: calc(var(--vh, 1vh) * 85); /* Use more of viewport */
+    max-height: calc(var(--vh, 1vh) * 95); /* Almost full height */
     text-align: center;
     position: relative;
     overflow: hidden !important;
@@ -123,23 +121,22 @@
     background: var(--card-bg);
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin: 0 12px 12px 12px;
-    padding: 12px;
-    width: calc(100% - 24px);
-    height: 100vh;
-    height: calc(var(--vh, 1vh) * 100 - 250px);
-    min-height: 450px;
-    max-height: 800px;
+    margin: 0 8px 8px 8px; /* Reduced margins */
+    padding: 16px 12px; /* More vertical padding */
+    width: calc(100% - 16px); /* Account for smaller margins */
+    height: auto; /* Let content determine height */
+    min-height: calc(var(--vh, 1vh) * 85); /* Use more of viewport */
+    max-height: calc(var(--vh, 1vh) * 95); /* Almost full height */
     text-align: center;
     position: relative;
     overflow: hidden !important;
     box-sizing: border-box !important;
   }
   
-  /* Intro Section - Taller to fit all content */
+  /* Intro Section - Optimized for better space usage */
   #intro {
-    height: calc(var(--vh, 1vh) * 100 - 240px); /* Account for footer + margins */
-    min-height: 520px; /* Increased minimum to fit all content */
+    min-height: calc(var(--vh, 1vh) * 85); /* Use more of viewport */
+    max-height: calc(var(--vh, 1vh) * 95); /* Almost full height */
     overflow: visible !important; /* Allow content to be visible */
   }
   
@@ -147,25 +144,31 @@
   #introContent {
     display: flex;
     flex-direction: column;
-    justify-content: flex-start; /* Start from top instead of centering */
-    gap: 12px; /* Smaller gap for mobile */
-    padding: 8px 0; /* Reduced padding */
+    justify-content: space-evenly; /* Distribute space evenly */
+    gap: 16px; /* Slightly larger gap for better separation */
+    padding: 0; /* Remove padding to use more space */
     flex: 1; /* Take available space */
+    height: 100%; /* Use full height */
   }
   
   /* Hero Image - Mobile Optimized Size */
   .hero-image {
-    max-width: 240px; /* Smaller to save space */
-    margin: 0 auto 8px auto; /* Reduced bottom margin */
+    max-width: 280px; /* Larger to use more space */
+    max-height: 200px; /* Set max height */
+    width: 100%; /* Responsive */
+    height: auto; /* Maintain aspect ratio */
+    margin: 0 auto; /* Center horizontally */
+    object-fit: contain; /* Ensure it fits well */
   }
   
   /* Start Button - Mobile Optimized */
   #startBtn {
-    margin: 16px auto 0 auto; /* Top margin for separation, auto sides for center */
-    max-width: 200px; /* Slightly smaller */
-    width: 100%;
-    height: 42px; /* Good touch target size */
-    font-size: 15px; /* Appropriate font size */
+    margin: 0 auto; /* Center horizontally, remove top margin */
+    max-width: 250px; /* Larger button */
+    width: 90%; /* Use more width */
+    height: 48px; /* Larger touch target */
+    font-size: 16px; /* Slightly larger font */
+    font-weight: 600; /* Bold for better visibility */
     position: relative; /* Ensure it's in the normal flow */
     z-index: 10; /* Above other content */
   }
@@ -185,34 +188,44 @@
 /* EXTRA SMALL MOBILE - iPhone SE and smaller */
 @media (max-width: 375px) {
   #intro, #game, #results {
-    margin: 0 8px 8px 8px;
-    padding: 8px;
-    height: calc(var(--vh, 1vh) * 100 - 200px);
-    min-height: 400px;
+    margin: 0 4px 4px 4px; /* Even smaller margins */
+    padding: 12px 8px; /* Compact padding */
+    width: calc(100% - 8px); /* Account for smaller margins */
+    min-height: calc(var(--vh, 1vh) * 88); /* Use even more viewport */
   }
   
   #countdown {
-    margin: 0 8px 8px 8px;
-    padding: 8px;
-    height: calc(var(--vh, 1vh) * 100 - 200px);
-    min-height: 400px;
+    margin: 0 4px 4px 4px; /* Even smaller margins */
+    padding: 12px 8px; /* Compact padding */
+    width: calc(100% - 8px); /* Account for smaller margins */
+    min-height: calc(var(--vh, 1vh) * 88); /* Use even more viewport */
   }
   
   #processing {
-    margin: 0 8px 8px 8px;
-    padding: 8px;
-    height: calc(var(--vh, 1vh) * 100 - 200px);
-    min-height: 400px;
+    margin: 0 4px 4px 4px; /* Even smaller margins */
+    padding: 12px 8px; /* Compact padding */
+    width: calc(100% - 8px); /* Account for smaller margins */
+    min-height: calc(var(--vh, 1vh) * 88); /* Use even more viewport */
   }
 
   .card-image {
-    max-height: 280px;
+    max-height: 300px; /* Larger cards for better visibility */
   }
 
   button {
     font-size: 14px;
     min-width: 70px;
-    padding: 10px 14px;
+    padding: 12px 16px; /* Larger touch targets */
+  }
+
+  .hero-image {
+    max-width: 260px; /* Adjust for smaller screens */
+    max-height: 180px;
+  }
+
+  #startBtn {
+    height: 44px; /* Slightly smaller but still good touch target */
+    font-size: 15px;
   }
 }
 
