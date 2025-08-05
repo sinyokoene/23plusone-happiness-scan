@@ -179,7 +179,7 @@
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
     margin: 0 8px 8px 8px !important;
-    padding: 12px 12px 8px 12px !important;
+    padding: 8px !important;
     width: calc(100% - 16px) !important;
     height: auto !important;
     min-height: calc(var(--vh, 1vh) * 70) !important;
@@ -197,9 +197,22 @@
     box-sizing: border-box !important;
   }
   
-  body #game .progress-container {
-    margin: 0 0 8px 0 !important;
+  /* NUCLEAR OPTION: Override any base.css interference */
+  body #game img,
+  body #game .card-grid,
+  body #game .card-image {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-height: none !important;
     width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
+  }
+  
+  body #game .progress-container {
+    margin: 0 0 4px 0 !important;
+    width: 100% !important;
+    height: 6px !important;
   }
   
   body #game #card {
@@ -207,7 +220,8 @@
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    margin: 0 0 4px 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
     min-height: 0 !important;
   }
   
@@ -237,8 +251,8 @@
   body #game .buttons {
     display: flex !important;
     justify-content: center !important;
-    gap: 12px !important;
-    margin: 4px 0 0 0 !important;
+    gap: 8px !important;
+    margin: 2px 0 0 0 !important;
     padding: 0 !important;
     width: 100% !important;
     flex-shrink: 0 !important;
@@ -250,12 +264,12 @@
   body #game #yesBtn,
   body #game #noBtn {
     display: block !important;
-    width: 90px !important;
-    height: 32px !important;
-    font-size: 12px !important;
+    width: 80px !important;
+    height: 28px !important;
+    font-size: 11px !important;
     font-weight: 600 !important;
     border: none !important;
-    border-radius: 6px !important;
+    border-radius: 4px !important;
     cursor: pointer !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
@@ -263,7 +277,7 @@
     position: relative !important;
     flex-shrink: 0 !important;
     text-align: center !important;
-    line-height: 32px !important;
+    line-height: 28px !important;
     box-sizing: border-box !important;
   }
   
