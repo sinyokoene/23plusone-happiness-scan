@@ -189,6 +189,27 @@
     overflow: hidden !important;
     box-sizing: border-box !important;
     z-index: 10 !important;
+    
+    /* NUCLEAR: Override base.css massive padding */
+    padding: 6px !important;
+  }
+  
+  /* NUCLEAR: Override any cardContainer spacing */
+  body #game #cardContainer {
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+  }
+  
+  /* NUCLEAR: Hide timer container that might be taking space */
+  body #game #timerContainer {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
   
   /* NUCLEAR OPTION: Force all game content to stay inside */
