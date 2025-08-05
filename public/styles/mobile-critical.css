@@ -148,7 +148,7 @@
   }
   
   /* NUCLEAR OPTION: Force countdown progress bar */
-  body .progress-container {
+  body #countdown .progress-container {
     display: block !important;
     width: 100% !important;
     max-width: 300px !important;
@@ -159,7 +159,7 @@
     position: relative !important;
   }
   
-  body #countdownProgress {
+  body #countdown #countdownProgress {
     display: block !important;
     height: 100% !important;
     border-radius: 4px !important;
@@ -172,6 +172,7 @@
     /* Nuclear override for any base.css interference */
     max-width: none !important;
     min-width: 0 !important;
+    transition: none !important; /* Let JS control this */
   }
   
   /* NUCLEAR OPTION: Force game section to display and work */
@@ -295,6 +296,51 @@
     overflow: visible !important;
     box-sizing: border-box !important;
     z-index: 10 !important;
+  }
+  
+  /* NUCLEAR OPTION: Force processing content layout */
+  body #processingContent {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 20px !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  /* NUCLEAR OPTION: Force processing text */
+  body #processingText {
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    color: var(--text-primary) !important;
+    margin: 0 !important;
+  }
+  
+  /* NUCLEAR OPTION: Force processing progress bar container - FIXED WIDTH */
+  body #processing .progress-container {
+    display: block !important;
+    width: 280px !important;
+    max-width: 280px !important;
+    min-width: 280px !important;
+    height: 8px !important;
+    background: rgba(0,0,0,0.08) !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+  }
+  
+  body #processingProgress {
+    display: block !important;
+    height: 100% !important;
+    border-radius: 4px !important;
+    width: 0% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 1 !important;
+    /* Let JavaScript control background and transitions completely */
   }
   
   /* NUCLEAR OPTION: Force results section to display and work */
