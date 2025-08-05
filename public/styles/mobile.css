@@ -46,6 +46,10 @@
     -webkit-tap-highlight-color: transparent;
   }
   
+  #intro {
+    display: flex !important;
+  }
+
   /* Conditional scroll prevention for game mode */
   body.no-scroll {
     overflow: hidden;
