@@ -184,19 +184,32 @@
     object-fit: contain;
   }
   
-  /* Start Button - FINAL MOBILE OPTIMIZED */
+  /* Start Button - CONSOLIDATED MOBILE OPTIMIZED */
   #startBtn {
-    margin: 10px auto 0 auto !important; /* Reduced top margin */
+    margin: 5px auto 0 auto !important;
     max-width: 200px !important;
     width: 85% !important;
     height: 44px !important;
     font-size: 15px !important;
     font-weight: 600 !important;
     position: relative !important;
-    z-index: 10 !important;
+    z-index: 1000 !important;
     padding: 12px 16px !important;
-    display: block !important; /* Ensure button is visible */
-    flex-shrink: 0 !important; /* Prevent button from shrinking */
+    display: block !important;
+    flex-shrink: 0 !important;
+    background: var(--brand-pink) !important;
+    color: var(--white) !important;
+    border: none !important;
+    border-radius: var(--radius) !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    /* Remove any conflicting styles */
+    transform: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    animation: none !important; /* Disable fadeInUp animation that might block clicks */
+    transition: none !important; /* Remove transitions that might interfere */
   }
   
   /* Game Section - Allow Card Animations */
@@ -392,9 +405,14 @@
     position: relative !important;
     overflow: visible !important;
     box-sizing: border-box !important;
-    display: flex !important;
+    /* Don't override display - let active-section class control visibility */
     flex-direction: column !important;
     justify-content: space-between !important;
+  }
+  
+  /* Ensure active intro section displays correctly */
+  #intro.active-section {
+    display: flex !important;
   }
   
   /* FORCE mobile typography */
@@ -419,27 +437,7 @@
     margin: 8px 0 0 0 !important;
   }
   
-  /* FORCE mobile start button */
-  #startBtn {
-    margin: 5px auto 0 auto !important; /* Further reduced margin */
-    max-width: 200px !important;
-    width: 85% !important;
-    height: 44px !important;
-    font-size: 15px !important;
-    font-weight: 600 !important;
-    position: relative !important;
-    z-index: 1000 !important;
-    padding: 12px 16px !important;
-    display: block !important;
-    flex-shrink: 0 !important;
-    background: var(--brand-pink) !important;
-    color: var(--white) !important;
-    border: none !important;
-    border-radius: var(--radius) !important;
-    cursor: pointer !important;
-    pointer-events: auto !important; /* Ensure button is clickable */
-    touch-action: manipulation !important; /* Optimize for touch */
-  }
+  /* Mobile start button styles consolidated above - no duplicate needed */
   
   /* FORCE mobile hero image */
   .hero-image {
