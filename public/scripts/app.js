@@ -108,6 +108,9 @@
     console.log('Calling startCountdown');
     startCountdown();
   }
+
+  // Make startScan globally accessible for inline onclick
+  window.startScan = startScan;
   
   function startCountdown() {
     // Reset countdown elements
