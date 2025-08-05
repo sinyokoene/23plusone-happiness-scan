@@ -119,6 +119,26 @@
     box-sizing: border-box !important;
   }
   
+  /* Processing matches other sections */
+  #processing {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    margin: 0 12px 12px 12px;
+    padding: 12px;
+    width: calc(100% - 24px);
+    height: 100vh;
+    height: calc(var(--vh, 1vh) * 100 - 250px);
+    min-height: 450px;
+    max-height: 800px;
+    text-align: center;
+    position: relative;
+    overflow: hidden !important;
+    flex-direction: column;
+    justify-content: space-between;
+    box-sizing: border-box !important;
+  }
+  
   /* Intro Section - Taller to fit all content */
   #intro {
     height: calc(var(--vh, 1vh) * 100 - 240px); /* Account for footer + margins */
@@ -177,6 +197,13 @@
     height: calc(var(--vh, 1vh) * 100 - 200px);
     min-height: 400px;
   }
+  
+  #processing {
+    margin: 0 8px 8px 8px;
+    padding: 8px;
+    height: calc(var(--vh, 1vh) * 100 - 200px);
+    min-height: 400px;
+  }
 
   .card-image {
     max-height: 280px;
@@ -200,6 +227,14 @@
   }
   
   #countdown {
+    margin: 0 20px 20px 20px;
+    padding: 20px;
+    max-width: 600px;
+    height: auto;
+    min-height: 500px;
+  }
+  
+  #processing {
     margin: 0 20px 20px 20px;
     padding: 20px;
     max-width: 600px;

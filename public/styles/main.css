@@ -24,7 +24,7 @@
     --shadow-xl: 0 0 0 1px var(--text-primary);
   }
   
-  #intro, #countdown, #game, #results {
+  #intro, #countdown, #processing, #game, #results {
     border: 2px solid var(--text-primary);
   }
 }
@@ -83,7 +83,7 @@ body {
 .intro-title {
   color: var(--white);
   font-size: 20px;
-  font-weight: 700;
+  font-weight: 600;
   margin: 0;
   text-align: center;
 }
@@ -134,7 +134,41 @@ body {
   height: 100%;
   background: #DA006B; /* Pink for "Ready?" */
   width: 0%;
-  transition: width 0.1s ease-out;
+  border-radius: var(--radius-sm);
+}
+
+/* Processing Section */
+#processing {
+  display: none; /* Initially hidden */
+  animation: fadeInUp 0.8s ease forwards;
+}
+
+#processingContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  text-align: center;
+  flex: 1; /* Take full height for centering */
+}
+
+#processingText {
+  font-size: 32px;
+  font-weight: 600;
+  font-family: 'Poppins', var(--font-family);
+  color: #492D27;
+  margin: 0 0 10px 0;
+  min-height: 5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#processingProgress {
+  height: 100%;
+  background: #DA006B; /* Pink for "Reviewing..." */
+  width: 0%;
   border-radius: var(--radius-sm);
 }
 
@@ -739,6 +773,16 @@ body {
   
   /* Countdown matches other sections for small screens */
   #countdown {
+    height: calc(var(--vh, 1vh) * 100 - 270px);
+    min-height: 400px; /* Slightly smaller minimum for very small screens */
+    max-height: 700px; /* Prevent excessive height */
+    background-color: var(--bg-primary);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-xl);
+  }
+  
+  /* Processing matches other sections for small screens */
+  #processing {
     height: calc(var(--vh, 1vh) * 100 - 270px);
     min-height: 400px; /* Slightly smaller minimum for very small screens */
     max-height: 700px; /* Prevent excessive height */

@@ -14,6 +14,7 @@
   // DOM elements
   const introDiv = document.getElementById('intro');
   const countdownDiv = document.getElementById('countdown');
+  const processingDiv = document.getElementById('processing');
   const gameDiv = document.getElementById('game');
   const resultsDiv = document.getElementById('results');
   const startBtn = document.getElementById('startBtn');
@@ -21,6 +22,8 @@
   const progressBar = document.getElementById('progressBar');
   const countdownText = document.getElementById('countdownText');
   const countdownProgress = document.getElementById('countdownProgress');
+  const processingText = document.getElementById('processingText');
+  const processingProgress = document.getElementById('processingProgress');
 
   const timerContainer = document.getElementById('timerContainer');
   const timerProgress = document.getElementById('timerProgress');
@@ -48,20 +51,13 @@
     countdownText.textContent = 'Ready?';
     countdownProgress.style.width = '0%';
     countdownProgress.style.background = '#DA006B'; // Pink for "Ready?"
+    countdownProgress.style.transition = 'none'; // Remove transition temporarily
     
-    let progress = 0;
-    const totalDuration = 2400; // 1000 + 800 + 600 = 2400ms total
-    const updateInterval = 10; // Update every 10ms for smooth progress
-    
-    // Animate progress bar
-    const progressInterval = setInterval(() => {
-      progress += (100 / (totalDuration / updateInterval));
-      if (progress >= 100) {
-        progress = 100;
-        clearInterval(progressInterval);
-      }
-      countdownProgress.style.width = progress + '%';
-    }, updateInterval);
+    // Start smooth animation using CSS transition
+    setTimeout(() => {
+      countdownProgress.style.transition = 'width 2.4s linear'; // Total duration
+      countdownProgress.style.width = '100%';
+    }, 100); // Small delay to ensure transition is removed first
     
     // Ready? (1 second) - Pink
     setTimeout(() => {
@@ -84,6 +80,57 @@
       // Initialize the scan
       initializeScan();
     }, 2400); // 1000 + 800 + 600
+  }
+  
+  function startProcessing(results) {
+    // Reset processing elements
+    processingText.textContent = 'Reviewing...';
+    processingProgress.style.width = '0%';
+    processingProgress.style.background = '#DA006B'; // Pink for "Reviewing..."
+    processingProgress.style.transition = 'none'; // Remove transition temporarily
+    
+    // Start smooth animation using CSS transition
+    setTimeout(() => {
+      processingProgress.style.transition = 'width 3s linear'; // Total duration
+      processingProgress.style.width = '100%';
+    }, 100); // Small delay to ensure transition is removed first
+    
+    // Reviewing... (1.2 seconds) - Pink
+    // Load benchmark data during this phase
+    getBenchmarkData(results);
+    
+    setTimeout(() => {
+      processingText.textContent = 'Processing...';
+      processingProgress.style.background = '#FF9800'; // Orange for "Processing..."
+    }, 1200);
+    
+    // Processing... (0.8 seconds) - Orange  
+    setTimeout(() => {
+      processingText.textContent = 'Wrapping up...';
+      processingProgress.style.background = '#4CAF50'; // Green for "Wrapping up..."
+    }, 2000); // 1200 + 800
+    
+    // Wrapping up... (1.0 seconds) then show results
+    setTimeout(() => {
+      // Hide processing, show results
+      processingDiv.style.display = 'none';
+      resultsDiv.style.display = 'block';
+      
+      // Change body layout for results
+      document.body.classList.add('showing-results');
+      
+      // Initialize pagination
+      initializeResultsPagination();
+      
+      // Display enhanced results
+      displayEnhancedResults(results);
+      
+      // Submit to backend
+      submitResults(results);
+      
+      // Setup sharing
+      setupSharing(results);
+    }, 3000); // 1200 + 800 + 1000
   }
   
   // Initialize page state
@@ -440,27 +487,12 @@
       return;
     }
     
-    // Hide game, show results
+    // Hide game, show processing
     gameDiv.style.display = 'none';
-    resultsDiv.style.display = 'block';
+    processingDiv.style.display = 'flex';
     
-    // Change body layout for results
-    document.body.classList.add('showing-results');
-    
-    // Initialize pagination
-    initializeResultsPagination();
-    
-    // Display enhanced results
-    displayEnhancedResults(results);
-    
-    // Get benchmarking data and display
-    getBenchmarkData(results);
-    
-    // Submit to backend
-    submitResults(results);
-    
-    // Setup sharing
-    setupSharing(results);
+    // Start processing sequence
+    startProcessing(results);
   }
 
   // Results Pagination System
