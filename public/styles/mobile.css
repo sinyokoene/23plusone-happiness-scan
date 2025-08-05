@@ -1,191 +1,57 @@
-/* 23plusone Happiness Scan - Mobile Styles */
-/* Mobile-specific responsive design and touch interactions */
+/* Consolidated Mobile Styles - Single File Solution */
 
-/* Touch Interactions - Tablets and Touch Devices */
-@media (max-width: 768px) and (pointer: coarse) {
-  .swipe-hint {
-    display: block;
-    font-size: 13px;
-    color: #666;
-    margin-top: var(--spacing-sm);
+@media screen and (max-width: 480px) {
+  
+  /* Hide all sections by default - use !important for reliability */
+  body #intro:not(.active-section),
+  body #countdown:not(.active-section),
+  body #game:not(.active-section),
+  body #processing:not(.active-section),
+  body #results:not(.active-section) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    z-index: -1 !important;
   }
   
-  .buttons {
-    margin-top: var(--spacing-md);
-  }
-  
-  .card-image {
-    cursor: grab;
-    user-select: none;
-    -webkit-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    touch-action: pan-y;
-  }
-  
-  .card-image:active {
-    cursor: grabbing;
-  }
-}
-
-/* MOBILE DESIGN - ALL 480px STYLES CONSOLIDATED */
-@media (max-width: 480px) {
-  /* Mobile Body - Dynamic Viewport Height Support */
-  body {
-    font-family: var(--font-family);
-    background: var(--brand-dark);
-    color: var(--text-primary);
-    margin: 0;
-    padding: 0;
-    height: auto;
-    min-height: calc(var(--vh, 1vh) * 100);
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-text-size-adjust: 100%;
-    -webkit-touch-callout: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  
-  /* Conditional scroll prevention for game mode */
-  body.no-scroll {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-  }
-
-  /* Touch Interaction Optimization */
-  .buttons button, 
-  #cardImages .card-image,
-  #startBtn {
-    touch-action: manipulation;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-  }
-
-  /* Main Content - Optimized for maximum space usage */
-  .main-content {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 8px 0 70px 0;
-    margin: 0;
-    height: auto;
-    min-height: 100vh;
-    min-height: calc(var(--vh, 1vh) * 100);
-    flex: none;
-    overflow: visible;
-    box-sizing: border-box;
-  }
-
-  /* Mobile Screen Containers - Optimized Space Usage */
-  #intro, #game, #results {
+  /* --- Universal Section Styling --- */
+  body #intro.active-section,
+  body #countdown.active-section,
+  body #game.active-section,
+  body #processing.active-section,
+  body #results.active-section {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
     background: var(--card-bg) !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
     margin: 0 8px 8px 8px !important;
-    padding: 12px 8px !important;
+    padding: 8px !important;
     width: calc(100% - 16px) !important;
     height: auto !important;
-    min-height: calc(var(--vh, 1vh) * 80) !important;
-    max-height: calc(var(--vh, 1vh) * 88) !important;
+    min-height: calc(var(--vh, 1vh) * 70) !important;
+    max-height: calc(var(--vh, 1vh) * 75) !important;
     text-align: center !important;
     position: relative !important;
     overflow: visible !important;
     box-sizing: border-box !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-  }
-  
-  /* Countdown matches other sections */
-  #countdown {
-    background: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin: 0 8px 8px 8px;
-    padding: 16px 12px;
-    width: calc(100% - 16px);
-    height: auto;
-    min-height: calc(var(--vh, 1vh) * 85);
-    max-height: calc(var(--vh, 1vh) * 95);
-    text-align: center;
-    position: relative;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-  }
-  
-  /* Processing matches other sections */
-  #processing {
-    background: var(--card-bg);
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-    margin: 0 8px 8px 8px;
-    padding: 16px 12px;
-    width: calc(100% - 16px);
-    height: auto;
-    min-height: calc(var(--vh, 1vh) * 85);
-    max-height: calc(var(--vh, 1vh) * 95);
-    text-align: center;
-    position: relative;
-    overflow: hidden !important;
-    box-sizing: border-box !important;
-  }
-  
-  /* Intro Section - Optimized for better space usage */
-  #intro {
-    min-height: calc(var(--vh, 1vh) * 85) !important; /* Increased to fit button */
-    max-height: calc(var(--vh, 1vh) * 95) !important; /* Increased max height for button */
-    overflow: visible !important;
-    height: auto !important; /* Override any fixed height from base.css */
-  }
-  
-  /* Intro Content Layout - Mobile Optimization */
-  #introContent {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between; /* Changed from space-evenly to fit more */
-    gap: 4px; /* Reduced from 8px to minimize white space */
-    padding: 0;
-    flex: 1;
-    height: 100%;
+    z-index: 10 !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
-  /* Mobile Typography - FINAL OVERRIDES */
-  #introContent h1 {
-    font-size: 22px !important;
-    font-weight: 600 !important;
-    margin: 0 !important;
-    line-height: 1.2 !important;
-  }
-
-  .intro-text p {
-    font-size: 14px !important;
-    line-height: 1.4 !important;
-    margin: 0 0 8px 0 !important;
-    color: var(--text-secondary) !important;
-  }
-
-  .intro-text p.lets-go {
-    font-size: 15px !important;
-    font-weight: 600 !important;
-    color: var(--brand-pink) !important;
-    margin: 8px 0 0 0 !important;
+  body #countdown.active-section,
+  body #processing.active-section,
+  body #results.active-section {
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 20px !important;
   }
   
-  /* Hero Image - Mobile Optimized Size */
-  .hero-image {
-    max-width: 180px; /* Reduced from 220px to save space */
-    max-height: 120px; /* Reduced from 150px to save space */
-    width: 100%;
-    height: auto;
-    margin: 0 auto;
-    object-fit: contain;
-  }
-  
-  /* Start Button - CONSOLIDATED MOBILE OPTIMIZED */
-  #startBtn {
+  /* --- Intro Section --- */
+  body #startBtn {
+    display: block !important;
     margin: 5px auto 0 auto !important;
     max-width: 200px !important;
     width: 85% !important;
@@ -193,260 +59,279 @@
     font-size: 15px !important;
     font-weight: 600 !important;
     position: relative !important;
-    z-index: 1000 !important;
+    z-index: 9999 !important;
     padding: 12px 16px !important;
-    display: block !important;
     flex-shrink: 0 !important;
     background: var(--brand-pink) !important;
     color: var(--white) !important;
     border: none !important;
-    border-radius: var(--radius) !important;
+    border-radius: 8px !important;
     cursor: pointer !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
-    /* Remove any conflicting styles */
     transform: none !important;
     opacity: 1 !important;
     visibility: visible !important;
-    animation: none !important; /* Disable fadeInUp animation that might block clicks */
-    transition: none !important; /* Remove transitions that might interfere */
-  }
-  
-  /* Game Section - Allow Card Animations */
-  #game {
-    overflow: visible !important;
-    gap: 3px;
-    padding: 12px;
-    height: 100vh;
-    height: calc(var(--vh, 1vh) * 100 - 250px);
-    min-height: 450px;
-    max-height: 800px;
   }
 
-  /* FOOTER STYLES - Consolidated */
-  .bottom-branding {
-    background: var(--brand-dark) !important;
-    padding: 12px 0 !important;
-    min-height: 60px !important;
-    height: 60px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    color: var(--white) !important;
-    position: fixed !important;
-    bottom: 0 !important;
-    left: 0 !important;
-    right: 0 !important;
-    width: 100% !important;
-    z-index: 1000 !important;
-  }
-
-  .bottom-branding-content {
-    padding: 0 16px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    width: 100% !important;
-    max-width: none !important;
-    box-sizing: border-box !important;
-  }
-  
-  .bottom-branding-left,
-  .bottom-branding-right {
-    display: flex !important;
-    align-items: center !important;
-    flex-direction: row !important;
-    gap: 10px !important;
-  }
-  
-  .bottom-branding-text {
-    font-size: 10px !important;
-    color: var(--white) !important;
-    line-height: 1.3 !important;
-  }
-  
-  .bottom-branding-logo {
-    width: 32px !important;
-    height: 32px !important;
-    min-width: 32px !important;
-    min-height: 32px !important;
-    flex-shrink: 0 !important;
-  }
-  
-  .bottom-brand-logo {
-    height: 16px !important;
-    filter: brightness(0) invert(1) !important;
-    margin-left: 6px !important;
-  }
-  
-  .bottom-copyright {
-    font-size: 8px !important;
-    color: rgba(255, 255, 255, 0.7) !important;
-    text-align: right !important;
-    margin-left: 4px !important;
-    line-height: 1.3 !important;
-  }
-}
-
-/* EXTRA SMALL MOBILE - iPhone SE and smaller */
-@media (max-width: 375px) {
-  #intro, #game, #results {
-    margin: 0 4px 4px 4px; /* Even smaller margins */
-    padding: 12px 8px; /* Compact padding */
-    width: calc(100% - 8px); /* Account for smaller margins */
-    min-height: calc(var(--vh, 1vh) * 88); /* Use even more viewport */
-  }
-  
-  #countdown {
-    margin: 0 4px 4px 4px; /* Even smaller margins */
-    padding: 12px 8px; /* Compact padding */
-    width: calc(100% - 8px); /* Account for smaller margins */
-    min-height: calc(var(--vh, 1vh) * 88); /* Use even more viewport */
-  }
-  
-  #processing {
-    margin: 0 4px 4px 4px; /* Even smaller margins */
-    padding: 12px 8px; /* Compact padding */
-    width: calc(100% - 8px); /* Account for smaller margins */
-    min-height: calc(var(--vh, 1vh) * 88); /* Use even more viewport */
-  }
-
-  .card-image {
-    max-height: 300px; /* Larger cards for better visibility */
-  }
-
-  button {
-    font-size: 14px;
-    min-width: 70px;
-    padding: 12px 16px; /* Larger touch targets */
-  }
-
-  .hero-image {
-    max-width: 200px; /* Even smaller for extra small screens */
-    max-height: 130px;
-  }
-
-  /* Start Button - Mobile Optimized - Removed duplicate, handled in final overrides */
-
-  /* Even smaller fonts - Removed duplicates, handled in final overrides */
-}
-
-/* TABLET - Medium Mobile Devices */
-@media (min-width: 481px) and (max-width: 768px) {
-  #intro, #game, #results {
-    margin: 0 20px 20px 20px;
-    padding: 20px;
-    max-width: 600px;
-    height: auto;
-    min-height: 500px;
-  }
-  
-  #countdown {
-    margin: 0 20px 20px 20px;
-    padding: 20px;
-    max-width: 600px;
-    height: auto;
-    min-height: 500px;
-  }
-  
-  #processing {
-    margin: 0 20px 20px 20px;
-    padding: 20px;
-    max-width: 600px;
-    height: auto;
-    min-height: 500px;
-  }
-
-  .card-image {
-    max-height: 400px;
-  }
-
-  button {
-    font-size: 18px;
-    padding: 14px 20px;
-  }
-}
-
-/* ===== MOBILE FOOTER STYLES ===== */
-/* Mobile footer styles have been consolidated into the main 480px media query above */
-
-/* Intermediate Mobile Breakpoint (Small phones like iPhone SE) */
-@media (max-width: 375px) {
-  .bottom-branding-text {
-    font-size: 9px !important;
-  }
-  
-  .bottom-copyright {
-    font-size: 7px !important;
-  }
-}
-
-/* ===========================================
-   CRITICAL MOBILE OVERRIDES - MAXIMUM PRIORITY
-   These styles will override ALL previous definitions including base.css
-   =========================================== */
-
-/* Force mobile styles on all small screens */
-@media screen and (max-width: 480px), 
-       screen and (max-device-width: 480px) {
-  
-  /* FORCE mobile intro section styles */
-  #intro {
-    background: var(--card-bg) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
-    margin: 0 8px 8px 8px !important;
-    padding: 8px 8px !important; /* Reduced from 12px to minimize white space */
-    width: calc(100% - 16px) !important;
-    height: auto !important; /* Override desktop fixed height */
-    min-height: calc(var(--vh, 1vh) * 85) !important;
-    max-height: calc(var(--vh, 1vh) * 95) !important;
-    text-align: center !important;
-    position: relative !important;
-    overflow: visible !important;
-    box-sizing: border-box !important;
-    /* Don't override display - let active-section class control visibility */
-    flex-direction: column !important;
-    justify-content: space-between !important;
-  }
-  
-  /* Ensure active intro section displays correctly */
-  #intro.active-section {
-    display: flex !important;
-  }
-  
-  /* FORCE mobile typography */
-  #introContent h1 {
+  /* Typography - Force proper sizing */
+  body #introContent h1 {
     font-size: 22px !important;
     font-weight: 600 !important;
     margin: 0 !important;
     line-height: 1.2 !important;
   }
 
-  .intro-text p {
+  body .intro-text p {
     font-size: 14px !important;
     line-height: 1.4 !important;
-    margin: 0 0 8px 0 !important;
+    margin: 0 0 4px 0 !important;
     color: var(--text-secondary) !important;
   }
 
-  .intro-text p.lets-go {
+  body .intro-text p.lets-go {
     font-size: 15px !important;
     font-weight: 600 !important;
     color: var(--brand-pink) !important;
-    margin: 8px 0 0 0 !important;
+    margin: 4px 0 0 0 !important;
   }
   
-  /* Mobile start button styles consolidated above - no duplicate needed */
-  
-  /* FORCE mobile hero image */
-  .hero-image {
+  /* Hero image sizing */
+  body .hero-image {
     max-width: 180px !important;
     max-height: 120px !important;
     width: 100% !important;
     height: auto !important;
     margin: 0 auto !important;
     object-fit: contain !important;
+    display: block !important;
+  }
+  
+  /* Intro content layout */
+  body #introContent {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+    align-items: center !important;
+    text-align: center !important;
+    padding: 0 !important;
+  }
+
+  body .intro-text {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    margin: 8px 0 !important;
+  }
+  
+  /* --- Countdown & Processing Sections --- */
+  body #countdownContent,
+  body #processingContent {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    height: 100% !important;
+    gap: 20px !important;
+  }
+
+  body #countdownText,
+  body #processingText {
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+  }
+  
+  /* --- CRITICAL: Progress Bars - Allow JavaScript Control --- */
+  /* Progress bar containers - can use !important for layout */
+  body #countdown .progress-container,
+  body #processing .progress-container {
+    display: block !important;
+    height: 8px !important;
+    background: rgba(0,0,0,0.08) !important;
+    border-radius: 4px !important;
+    overflow: hidden !important;
+    position: relative !important;
+    margin: 10px 0 !important;
+  }
+
+  body #countdown .progress-container {
+    width: 100% !important;
+    max-width: 300px !important;
+  }
+
+  body #processing .progress-container {
+    width: 280px !important;
+  }
+  
+  /* Progress bar elements - NO !important on JS-controlled properties */
+  body #countdownProgress,
+  body #processingProgress {
+    height: 100%;
+    border-radius: 4px;
+    width: 0%; /* JavaScript will control this */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    /* CRITICAL: Let JavaScript control these properties completely */
+    /* No !important declarations here - JS needs full control */
+    background: #DA006B; /* Initial color, JS can override */
+    transition: none; /* JS will set proper transition */
+  }
+  
+  /* --- Game Section --- */
+  body #game.active-section {
+    padding: 6px !important;
+    overflow: hidden !important;
+  }
+
+  body #gameContent {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    height: 100% !important;
+    position: relative !important;
+  }
+
+  body #cardStack {
+    flex: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    max-height: calc(100% - 60px) !important;
+    overflow: visible !important;
+  }
+
+  body .card {
+    width: calc(100% - 16px) !important;
+    max-width: 280px !important;
+    height: auto !important;
+    max-height: 400px !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+    position: absolute !important;
+    background: white !important;
+    display: flex !important;
+    flex-direction: column !important;
+    overflow: hidden !important;
+  }
+
+  body .card img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: 280px !important;
+    object-fit: cover !important;
+    border-radius: 12px 12px 0 0 !important;
+  }
+
+  body .card-content {
+    padding: 12px !important;
+    text-align: center !important;
+    background: white !important;
+    border-radius: 0 0 12px 12px !important;
+  }
+
+  body .card h3 {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    margin: 0 0 4px 0 !important;
+    color: var(--text-primary) !important;
+  }
+
+  body .card p {
+    font-size: 13px !important;
+    margin: 0 !important;
+    color: var(--text-secondary) !important;
+    line-height: 1.3 !important;
+  }
+
+  body #gameControls {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    padding: 8px 0 0 0 !important;
+    flex-shrink: 0 !important;
+  }
+
+  body #game button {
+    width: 80px !important;
+    height: 32px !important;
+    font-size: 12px !important;
+    font-weight: 600 !important;
+    border: none !important;
+    border-radius: 6px !important;
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    touch-action: manipulation !important;
+    z-index: 100 !important;
+    position: relative !important;
+    flex-shrink: 0 !important;
+    text-align: center !important;
+    box-sizing: border-box !important;
+  }
+  
+  body #game #yesBtn {
+    background: var(--btn-yes) !important;
+    color: white !important;
+  }
+  
+  body #game #noBtn {
+    background: var(--btn-no) !important;
+    color: white !important;
+  }
+  
+  /* Hide swipe instructions when buttons are visible */
+  body .swipe-instructions {
+    display: none !important;
+  }
+
+  /* --- Results Section --- */
+  body #results.active-section {
+    padding: 16px !important;
+    overflow-y: auto !important;
+    justify-content: flex-start !important;
+  }
+
+  body #resultsContent {
+    width: 100% !important;
+    text-align: center !important;
+  }
+
+  body #resultsContent h2 {
+    font-size: 20px !important;
+    margin: 0 0 16px 0 !important;
+    font-weight: 600 !important;
+  }
+
+  body #valuesList {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  body #valuesList li {
+    background: rgba(0,0,0,0.05) !important;
+    margin: 8px 0 !important;
+    padding: 12px !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    text-align: left !important;
+  }
+
+  body #newGameBtn {
+    margin: 20px auto 0 auto !important;
+    padding: 12px 24px !important;
+    background: var(--brand-pink) !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
     display: block !important;
   }
 }

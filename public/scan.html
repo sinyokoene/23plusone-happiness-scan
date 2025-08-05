@@ -18,18 +18,18 @@
   <link rel="preload" href="styles/main.css" as="style">
   <link rel="preload" href="styles/desktop.css" as="style">
   <link rel="preload" href="styles/mobile.css" as="style">
-  <link rel="preload" href="scripts/app.js" as="script">
-  <link rel="preload" href="scripts/viewport.js" as="script">
   
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Modular CSS files for better organization and performance -->
+  <!-- Stylesheets -->
   <link rel="stylesheet" href="styles/base.css">
   <link rel="stylesheet" href="styles/components.css">
   <link rel="stylesheet" href="styles/main.css">
-  <link rel="stylesheet" href="styles/desktop.css">
-  <link rel="stylesheet" href="styles/mobile.css"> <!-- Mobile styles load LAST to override desktop -->
-  <link rel="stylesheet" href="styles/mobile-critical.css"> <!-- CRITICAL MOBILE OVERRIDES - FINAL AUTHORITY -->
+  <link rel="stylesheet" href="styles/desktop.css" media="screen and (min-width: 481px)">
+  <link rel="stylesheet" href="styles/mobile.css" media="screen and (max-width: 480px)">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   
   <!-- Dynamic viewport height script - early execution for mobile browser support -->
   <script src="scripts/viewport.js"></script>
