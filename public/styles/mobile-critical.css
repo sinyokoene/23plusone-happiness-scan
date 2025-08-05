@@ -165,9 +165,9 @@
     background: var(--brand-pink) !important;
     border-radius: 4px !important;
     width: 0% !important;
-    transition: none !important;
     position: relative !important;
     z-index: 1 !important;
+    /* Allow JavaScript to control transitions and background colors */
   }
   
   /* NUCLEAR OPTION: Force game section to display and work */
@@ -202,14 +202,41 @@
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
+    gap: 4px !important;
   }
   
-  /* NUCLEAR: Hide timer container that might be taking space */
+  /* NUCLEAR: Show timer container but control its layout */
   body #game #timerContainer {
-    display: none !important;
-    height: 0 !important;
+    display: block !important;
+    height: auto !important;
+    margin: 0 0 4px 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    flex-shrink: 0 !important;
+  }
+  
+  /* NUCLEAR: Force timer bar to be visible and properly sized */
+  body #game #timerBar {
+    display: block !important;
+    width: 100% !important;
+    height: 6px !important;
+    background: rgba(0,0,0,0.1) !important;
+    border-radius: 3px !important;
+    overflow: hidden !important;
+    position: relative !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+  
+  body #game #timerProgress {
+    display: block !important;
+    height: 100% !important;
+    background: var(--brand-pink) !important;
+    border-radius: 3px !important;
+    width: 100% !important;
+    transition: width 0.1s linear !important;
+    position: relative !important;
+    z-index: 1 !important;
   }
   
   /* NUCLEAR OPTION: Force all game content to stay inside */
@@ -284,13 +311,15 @@
   
   body #game #yesBtn,
   body #game #noBtn {
-    display: block !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     width: 80px !important;
-    height: 28px !important;
-    font-size: 11px !important;
+    height: 32px !important;
+    font-size: 12px !important;
     font-weight: 600 !important;
     border: none !important;
-    border-radius: 4px !important;
+    border-radius: 6px !important;
     cursor: pointer !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
@@ -298,18 +327,17 @@
     position: relative !important;
     flex-shrink: 0 !important;
     text-align: center !important;
-    line-height: 28px !important;
     box-sizing: border-box !important;
   }
   
   body #game #yesBtn {
     background: var(--brand-pink) !important;
-    color: var(--white) !important;
+    color: white !important;
   }
   
   body #game #noBtn {
-    background: rgba(0,0,0,0.15) !important;
-    color: var(--text-primary) !important;
+    background: #d1d5db !important;
+    color: #374151 !important;
   }
   
   /* NUCLEAR OPTION: Hide swipe instructions when buttons are visible */
