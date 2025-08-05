@@ -80,10 +80,7 @@
   }
 
   /* This class is added by JS to the currently visible section to apply flex layout */
-  .active-section {
-    flex-direction: column;
-    justify-content: space-between;
-  }
+  /* Removed - now handled globally in main.css */
 
   /* Mobile Screen Containers - Dynamic Viewport Height */
   #intro, #game, #results {

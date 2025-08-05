@@ -12,7 +12,9 @@
 
 /* This class is toggled by JS to control which section is visible */
 .active-section {
-  display: flex;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 *:focus:not(:focus-visible) {
