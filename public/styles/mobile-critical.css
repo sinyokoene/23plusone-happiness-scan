@@ -179,7 +179,7 @@
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
     margin: 0 8px 8px 8px !important;
-    padding: 12px !important;
+    padding: 12px 12px 8px 12px !important;
     width: calc(100% - 16px) !important;
     height: auto !important;
     min-height: calc(var(--vh, 1vh) * 75) !important;
@@ -189,6 +189,26 @@
     overflow: visible !important;
     box-sizing: border-box !important;
     z-index: 10 !important;
+  }
+  
+  /* NUCLEAR OPTION: Force game content layout */
+  body #game .progress-container {
+    order: 1 !important;
+    margin: 0 0 8px 0 !important;
+  }
+  
+  body #game #card {
+    order: 2 !important;
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    margin: 0 !important;
+  }
+  
+  body #game .buttons {
+    order: 3 !important;
+    margin: 8px 0 0 0 !important;
   }
   
   /* NUCLEAR OPTION: Force processing section to display and work */
@@ -218,27 +238,31 @@
     display: flex !important;
     justify-content: center !important;
     gap: 12px !important;
-    margin: 8px 0 0 0 !important;
+    margin: 12px 0 8px 0 !important;
     padding: 0 !important;
     width: 100% !important;
     flex-shrink: 0 !important;
+    position: relative !important;
+    z-index: 9999 !important;
   }
   
   body #yesBtn,
   body #noBtn {
     display: block !important;
-    width: 120px !important;
-    height: 40px !important;
-    font-size: 14px !important;
+    width: 100px !important;
+    height: 36px !important;
+    font-size: 13px !important;
     font-weight: 600 !important;
     border: none !important;
-    border-radius: 8px !important;
+    border-radius: 6px !important;
     cursor: pointer !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
     z-index: 9999 !important;
     position: relative !important;
     flex-shrink: 0 !important;
+    text-align: center !important;
+    line-height: 36px !important;
   }
   
   body #yesBtn {
@@ -247,7 +271,12 @@
   }
   
   body #noBtn {
-    background: rgba(0,0,0,0.1) !important;
+    background: rgba(0,0,0,0.15) !important;
     color: var(--text-primary) !important;
+  }
+  
+  /* NUCLEAR OPTION: Hide swipe instructions when buttons are visible */
+  body .swipe-instructions {
+    display: none !important;
   }
 }
