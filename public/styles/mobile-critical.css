@@ -147,7 +147,9 @@
     margin: 0 !important;
   }
   
-  /* NUCLEAR OPTION: Force countdown progress bar */
+  /* NUCLEAR OPTION: Force countdown progress bar - MAXIMUM SPECIFICITY */
+  body.main-content #countdown.active-section .progress-container,
+  body #countdown.active-section .progress-container,
   body #countdown .progress-container {
     display: block !important;
     width: 100% !important;
@@ -159,6 +161,8 @@
     position: relative !important;
   }
   
+  body.main-content #countdown.active-section #countdownProgress,
+  body #countdown.active-section #countdownProgress,
   body #countdown #countdownProgress {
     display: block !important;
     height: 100% !important;
@@ -173,6 +177,7 @@
     max-width: none !important;
     min-width: 0 !important;
     transition: none !important; /* Let JS control this */
+    background: transparent !important; /* Let JS override this */
   }
   
   /* NUCLEAR OPTION: Force game section to display and work */
@@ -317,7 +322,9 @@
     margin: 0 !important;
   }
   
-  /* NUCLEAR OPTION: Force processing progress bar container - FIXED WIDTH */
+  /* NUCLEAR OPTION: Force processing progress bar container - FIXED WIDTH - MAXIMUM SPECIFICITY */
+  body.main-content #processing.active-section .progress-container,
+  body #processing.active-section .progress-container,
   body #processing .progress-container {
     display: block !important;
     width: 280px !important;
@@ -331,7 +338,9 @@
     flex-shrink: 0 !important;
   }
   
-  body #processingProgress {
+  body.main-content #processing.active-section #processingProgress,
+  body #processing.active-section #processingProgress,
+  body #processing #processingProgress {
     display: block !important;
     height: 100% !important;
     border-radius: 4px !important;
@@ -341,6 +350,10 @@
     left: 0 !important;
     z-index: 1 !important;
     /* Let JavaScript control background and transitions completely */
+    max-width: none !important;
+    min-width: 0 !important;
+    transition: none !important; /* Let JS control this */
+    background: transparent !important; /* Let JS override this */
   }
   
   /* NUCLEAR OPTION: Force results section to display and work */
