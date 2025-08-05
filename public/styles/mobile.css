@@ -50,6 +50,9 @@
   }
   
   /* --- Intro Section --- */
+  /* MAXIMUM SPECIFICITY: Force start button to work on mobile */
+  body.main-content #startBtn,
+  body #intro.active-section #startBtn,
   body #startBtn {
     display: block !important;
     margin: 5px auto 0 auto !important;
@@ -59,7 +62,7 @@
     font-size: 15px !important;
     font-weight: 600 !important;
     position: relative !important;
-    z-index: 9999 !important;
+    z-index: 99999 !important; /* Even higher z-index */
     padding: 12px 16px !important;
     flex-shrink: 0 !important;
     background: var(--brand-pink) !important;
@@ -72,6 +75,12 @@
     transform: none !important;
     opacity: 1 !important;
     visibility: visible !important;
+    /* CRITICAL: Force event handling */
+    user-select: none !important;
+    -webkit-user-select: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    /* Ensure no overlays can block this */
+    isolation: isolate !important;
   }
 
   /* Typography - Force proper sizing */
@@ -107,7 +116,7 @@
     display: block !important;
   }
   
-  /* Intro content layout */
+  /* Intro content layout - ensure button stays clickable */
   body #introContent {
     display: flex !important;
     flex-direction: column !important;
@@ -116,6 +125,13 @@
     align-items: center !important;
     text-align: center !important;
     padding: 0 !important;
+    /* CRITICAL: Don't let this container block button clicks */
+    pointer-events: none !important;
+  }
+
+  /* Re-enable pointer events for all child elements */
+  body #introContent * {
+    pointer-events: auto !important;
   }
 
   body .intro-text {
@@ -124,6 +140,8 @@
     flex-direction: column !important;
     justify-content: center !important;
     margin: 8px 0 !important;
+    /* Ensure this doesn't block the button */
+    pointer-events: auto !important;
   }
   
   /* --- Countdown & Processing Sections --- */
