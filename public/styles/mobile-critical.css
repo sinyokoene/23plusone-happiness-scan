@@ -207,8 +207,22 @@
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    margin: 0 0 8px 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
     min-height: 0 !important;
+  }
+  
+  /* NUCLEAR OPTION: Remove margins from card images */
+  body #game #card img,
+  body #game #card .card-image,
+  body #game .card-grid,
+  body #game .card-content {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+    height: auto !important;
+    object-fit: contain !important;
   }
   
   /* NUCLEAR OPTION: Force processing section to display and work */
