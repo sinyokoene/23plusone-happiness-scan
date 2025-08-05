@@ -7,7 +7,7 @@
 #game,
 #processing,
 #results {
-  display: none; /* Hide all sections by default */
+  display: none !important; /* Hide all sections by default */
 }
 
 /* This class is toggled by JS to control which section is visible */
