@@ -165,7 +165,7 @@
     background: var(--brand-pink) !important;
     border-radius: 4px !important;
     width: 0% !important;
-    transition: width 2.4s linear !important;
+    transition: none !important;
     position: relative !important;
     z-index: 1 !important;
   }
@@ -179,36 +179,36 @@
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
     margin: 0 8px 8px 8px !important;
-    padding: 12px 12px 8px 12px !important;
+    padding: 12px !important;
     width: calc(100% - 16px) !important;
     height: auto !important;
     min-height: calc(var(--vh, 1vh) * 75) !important;
     max-height: calc(var(--vh, 1vh) * 80) !important;
     text-align: center !important;
     position: relative !important;
-    overflow: visible !important;
+    overflow: hidden !important;
     box-sizing: border-box !important;
     z-index: 10 !important;
   }
   
-  /* NUCLEAR OPTION: Force game content layout */
+  /* NUCLEAR OPTION: Force all game content to stay inside */
+  body #game * {
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+  
   body #game .progress-container {
-    order: 1 !important;
     margin: 0 0 8px 0 !important;
+    width: 100% !important;
   }
   
   body #game #card {
-    order: 2 !important;
     flex: 1 !important;
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    margin: 0 !important;
-  }
-  
-  body #game .buttons {
-    order: 3 !important;
-    margin: 8px 0 0 0 !important;
+    margin: 0 0 8px 0 !important;
+    min-height: 0 !important;
   }
   
   /* NUCLEAR OPTION: Force processing section to display and work */
@@ -233,44 +233,46 @@
     z-index: 10 !important;
   }
   
-  /* NUCLEAR OPTION: Force game buttons to stay visible */
-  body .buttons {
+  /* NUCLEAR OPTION: Force game buttons to stay visible AND contained */
+  body #game .buttons {
     display: flex !important;
     justify-content: center !important;
     gap: 12px !important;
-    margin: 12px 0 8px 0 !important;
+    margin: 8px 0 0 0 !important;
     padding: 0 !important;
     width: 100% !important;
     flex-shrink: 0 !important;
     position: relative !important;
-    z-index: 9999 !important;
+    z-index: 100 !important;
+    box-sizing: border-box !important;
   }
   
-  body #yesBtn,
-  body #noBtn {
+  body #game #yesBtn,
+  body #game #noBtn {
     display: block !important;
-    width: 100px !important;
-    height: 36px !important;
-    font-size: 13px !important;
+    width: 90px !important;
+    height: 32px !important;
+    font-size: 12px !important;
     font-weight: 600 !important;
     border: none !important;
     border-radius: 6px !important;
     cursor: pointer !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
-    z-index: 9999 !important;
+    z-index: 100 !important;
     position: relative !important;
     flex-shrink: 0 !important;
     text-align: center !important;
-    line-height: 36px !important;
+    line-height: 32px !important;
+    box-sizing: border-box !important;
   }
   
-  body #yesBtn {
+  body #game #yesBtn {
     background: var(--brand-pink) !important;
     color: var(--white) !important;
   }
   
-  body #noBtn {
+  body #game #noBtn {
     background: rgba(0,0,0,0.15) !important;
     color: var(--text-primary) !important;
   }
