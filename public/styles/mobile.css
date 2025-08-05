@@ -175,15 +175,9 @@
     overflow: hidden !important;
     position: relative !important;
     margin: 10px 0 !important;
-  }
-
-  body #countdown .progress-container {
+    /* CONSISTENT WIDTH: Both progress bars same size to prevent jumping */
     width: 100% !important;
     max-width: 300px !important;
-  }
-
-  body #processing .progress-container {
-    width: 280px !important;
   }
   
   /* Progress bar elements - NO !important on JS-controlled properties */
@@ -200,6 +194,35 @@
     /* No !important declarations here - JS needs full control */
     background: #DA006B; /* Initial color, JS can override */
     transition: none; /* JS will set proper transition */
+    /* ENSURE CONSISTENT BEHAVIOR: Force same properties */
+    transform: none;
+    animation: none;
+    max-width: none;
+    min-width: 0;
+  }
+
+  /* SPECIFIC FIX: Ensure countdown progress behaves like processing */
+  body #countdown #countdownProgress {
+    /* OVERRIDE main.css completely - force exact same properties as processing */
+    display: block !important;
+    height: 100% !important;
+    border-radius: 4px !important; /* Override main.css border-radius */
+    width: 0% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    z-index: 1 !important;
+    background: #DA006B !important; /* Override main.css background */
+    transition: none !important; /* Override any main.css transition */
+    /* Prevent any interference from main.css */
+    transform: none !important;
+    animation: none !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    /* Remove any conflicting properties */
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
   }
   
   /* --- Game Section --- */
@@ -208,7 +231,8 @@
     overflow: hidden !important;
   }
 
-  body #gameContent {
+  /* Fix: Use actual HTML structure - cardContainer not gameContent */
+  body #cardContainer {
     display: flex !important;
     flex-direction: column !important;
     justify-content: space-between !important;
@@ -216,7 +240,8 @@
     position: relative !important;
   }
 
-  body #cardStack {
+  /* Fix: Use actual HTML structure - card not cardStack */
+  body #card {
     flex: 1 !important;
     display: flex !important;
     align-items: center !important;
@@ -269,7 +294,8 @@
     line-height: 1.3 !important;
   }
 
-  body #gameControls {
+  /* Fix: Use actual HTML structure - .buttons not #gameControls */
+  body .buttons {
     display: flex !important;
     justify-content: center !important;
     gap: 20px !important;
@@ -277,6 +303,8 @@
     flex-shrink: 0 !important;
   }
 
+  /* Fix: Target buttons within .buttons container */
+  body .buttons button,
   body #game button {
     width: 80px !important;
     height: 32px !important;
@@ -292,14 +320,22 @@
     flex-shrink: 0 !important;
     text-align: center !important;
     box-sizing: border-box !important;
+    /* FIXED: Better text centering */
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    padding: 0 !important; /* Remove padding for perfect centering */
   }
   
-  body #game #yesBtn {
+  body #game #yesBtn,
+  body .buttons #yesBtn {
     background: var(--btn-yes) !important;
     color: white !important;
   }
   
-  body #game #noBtn {
+  body #game #noBtn,
+  body .buttons #noBtn {
     background: var(--btn-no) !important;
     color: white !important;
   }
