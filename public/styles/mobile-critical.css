@@ -162,12 +162,11 @@
   body #countdownProgress {
     display: block !important;
     height: 100% !important;
-    background: var(--brand-pink) !important;
     border-radius: 4px !important;
     width: 0% !important;
     position: relative !important;
     z-index: 1 !important;
-    /* Allow JavaScript to control transitions and background colors */
+    /* Let JavaScript control background and transitions completely */
   }
   
   /* NUCLEAR OPTION: Force game section to display and work */
@@ -231,12 +230,10 @@
   body #game #timerProgress {
     display: block !important;
     height: 100% !important;
-    background: var(--brand-pink) !important;
     border-radius: 3px !important;
-    width: 100% !important;
-    transition: width 0.1s linear !important;
     position: relative !important;
     z-index: 1 !important;
+    /* Let JavaScript control width, background, and transitions completely */
   }
   
   /* NUCLEAR OPTION: Force all game content to stay inside */
