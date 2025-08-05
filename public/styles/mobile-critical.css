@@ -27,8 +27,8 @@
     padding: 8px !important;
     width: calc(100% - 16px) !important;
     height: auto !important;
-    min-height: calc(var(--vh, 1vh) * 75) !important;
-    max-height: calc(var(--vh, 1vh) * 80) !important;
+    min-height: calc(var(--vh, 1vh) * 70) !important;
+    max-height: calc(var(--vh, 1vh) * 75) !important;
     text-align: center !important;
     position: relative !important;
     overflow: visible !important;
@@ -119,8 +119,8 @@
     padding: 20px !important;
     width: calc(100% - 16px) !important;
     height: auto !important;
-    min-height: calc(var(--vh, 1vh) * 75) !important;
-    max-height: calc(var(--vh, 1vh) * 80) !important;
+    min-height: calc(var(--vh, 1vh) * 70) !important;
+    max-height: calc(var(--vh, 1vh) * 75) !important;
     text-align: center !important;
     position: relative !important;
     overflow: visible !important;
@@ -179,11 +179,11 @@
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
     margin: 0 8px 8px 8px !important;
-    padding: 12px !important;
+    padding: 12px 12px 8px 12px !important;
     width: calc(100% - 16px) !important;
     height: auto !important;
-    min-height: calc(var(--vh, 1vh) * 75) !important;
-    max-height: calc(var(--vh, 1vh) * 80) !important;
+    min-height: calc(var(--vh, 1vh) * 70) !important;
+    max-height: calc(var(--vh, 1vh) * 75) !important;
     text-align: center !important;
     position: relative !important;
     overflow: hidden !important;
@@ -207,7 +207,7 @@
     display: flex !important;
     flex-direction: column !important;
     justify-content: center !important;
-    margin: 0 0 8px 0 !important;
+    margin: 0 0 4px 0 !important;
     min-height: 0 !important;
   }
   
@@ -224,8 +224,8 @@
     padding: 20px !important;
     width: calc(100% - 16px) !important;
     height: auto !important;
-    min-height: calc(var(--vh, 1vh) * 75) !important;
-    max-height: calc(var(--vh, 1vh) * 80) !important;
+    min-height: calc(var(--vh, 1vh) * 70) !important;
+    max-height: calc(var(--vh, 1vh) * 75) !important;
     text-align: center !important;
     position: relative !important;
     overflow: visible !important;
@@ -238,7 +238,7 @@
     display: flex !important;
     justify-content: center !important;
     gap: 12px !important;
-    margin: 8px 0 0 0 !important;
+    margin: 4px 0 0 0 !important;
     padding: 0 !important;
     width: 100% !important;
     flex-shrink: 0 !important;
