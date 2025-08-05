@@ -88,11 +88,11 @@
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     margin: 0 8px 8px 8px; /* Reduced margins */
-    padding: 16px 12px; /* More vertical padding, less horizontal */
+    padding: 12px 8px; /* Reduced padding to fit more content */
     width: calc(100% - 16px); /* Account for smaller margins */
     height: auto; /* Let content determine height */
-    min-height: calc(var(--vh, 1vh) * 85); /* Use more of viewport */
-    max-height: calc(var(--vh, 1vh) * 95); /* Almost full height */
+    min-height: calc(var(--vh, 1vh) * 80); /* Slightly smaller to ensure button fits */
+    max-height: calc(var(--vh, 1vh) * 88); /* Reduced max height */
     text-align: center;
     position: relative;
     overflow: visible !important; /* Allow content to be visible */
@@ -135,8 +135,8 @@
   
   /* Intro Section - Optimized for better space usage */
   #intro {
-    min-height: calc(var(--vh, 1vh) * 85); /* Use more of viewport */
-    max-height: calc(var(--vh, 1vh) * 95); /* Almost full height */
+    min-height: calc(var(--vh, 1vh) * 80); /* Smaller to ensure button fits */
+    max-height: calc(var(--vh, 1vh) * 88); /* Reduced max height */
     overflow: visible !important; /* Allow content to be visible */
   }
   
@@ -145,16 +145,38 @@
     display: flex;
     flex-direction: column;
     justify-content: space-evenly; /* Distribute space evenly */
-    gap: 16px; /* Slightly larger gap for better separation */
+    gap: 12px; /* Smaller gap to fit more content */
     padding: 0; /* Remove padding to use more space */
     flex: 1; /* Take available space */
     height: 100%; /* Use full height */
   }
+
+  /* Mobile Typography - Smaller fonts to fit content */
+  #introContent h1 {
+    font-size: 22px !important; /* Much smaller heading */
+    font-weight: 600 !important;
+    margin: 0 !important;
+    line-height: 1.2 !important;
+  }
+
+  .intro-text p {
+    font-size: 14px !important; /* Smaller body text */
+    line-height: 1.4 !important;
+    margin: 0 0 8px 0 !important;
+    color: var(--text-secondary) !important;
+  }
+
+  .intro-text p.lets-go {
+    font-size: 15px !important; /* Smaller call-to-action text */
+    font-weight: 600 !important;
+    color: var(--brand-pink) !important;
+    margin: 8px 0 0 0 !important;
+  }
   
   /* Hero Image - Mobile Optimized Size */
   .hero-image {
-    max-width: 280px; /* Larger to use more space */
-    max-height: 200px; /* Set max height */
+    max-width: 220px; /* Smaller to save space */
+    max-height: 150px; /* Reduced max height */
     width: 100%; /* Responsive */
     height: auto; /* Maintain aspect ratio */
     margin: 0 auto; /* Center horizontally */
@@ -164,13 +186,14 @@
   /* Start Button - Mobile Optimized */
   #startBtn {
     margin: 0 auto; /* Center horizontally, remove top margin */
-    max-width: 250px; /* Larger button */
-    width: 90%; /* Use more width */
-    height: 48px; /* Larger touch target */
-    font-size: 16px; /* Slightly larger font */
+    max-width: 200px; /* Smaller button to fit */
+    width: 85%; /* Use less width */
+    height: 44px; /* Smaller touch target to fit */
+    font-size: 15px !important; /* Smaller font */
     font-weight: 600; /* Bold for better visibility */
     position: relative; /* Ensure it's in the normal flow */
     z-index: 10; /* Above other content */
+    padding: 12px 16px !important; /* Smaller padding */
   }
   
   /* Game Section - Allow Card Animations */
@@ -219,13 +242,27 @@
   }
 
   .hero-image {
-    max-width: 260px; /* Adjust for smaller screens */
-    max-height: 180px;
+    max-width: 200px; /* Even smaller for extra small screens */
+    max-height: 130px;
   }
 
   #startBtn {
-    height: 44px; /* Slightly smaller but still good touch target */
-    font-size: 15px;
+    height: 40px; /* Smaller but still good touch target */
+    font-size: 14px !important;
+    padding: 10px 14px !important;
+  }
+
+  /* Even smaller fonts for tiny screens */
+  #introContent h1 {
+    font-size: 20px !important;
+  }
+
+  .intro-text p {
+    font-size: 13px !important;
+  }
+
+  .intro-text p.lets-go {
+    font-size: 14px !important;
   }
 }
 
