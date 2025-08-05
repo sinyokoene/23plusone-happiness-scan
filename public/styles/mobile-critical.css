@@ -353,12 +353,12 @@
   }
   
   body #game #yesBtn {
-    background: #20B2AA !important;
+    background: var(--btn-yes) !important;
     color: white !important;
   }
   
   body #game #noBtn {
-    background: #FF9800 !important;
+    background: var(--btn-no) !important;
     color: white !important;
   }
   
