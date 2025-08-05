@@ -38,33 +38,74 @@
   
   // Helper function to control which section is visible
   function showSection(sectionToShow) {
+    console.log('🔄 showSection called with:', sectionToShow);
+    
     // Hide all main sections first
     [introDiv, countdownDiv, gameDiv, processingDiv, resultsDiv].forEach(div => {
-      if (div) div.classList.remove('active-section');
+      if (div) {
+        div.classList.remove('active-section');
+        console.log('Removed active-section from:', div.id);
+      }
     });
   
     // Then show the requested section
     if (sectionToShow) {
       sectionToShow.classList.add('active-section');
+      console.log('✅ Added active-section to:', sectionToShow.id);
     }
   }
   
-  // Start button event listener
-  startBtn.addEventListener('click', startScan);
-  
-  // Debug logging to ensure event listener is attached
-  console.log('Start button event listener attached:', startBtn);
+  // Start button event listener with comprehensive debugging
+  if (startBtn) {
+    console.log('Start button found:', startBtn);
+    
+    // Add multiple event listeners to ensure one works
+    startBtn.addEventListener('click', function(e) {
+      console.log('Button clicked - addEventListener method');
+      e.preventDefault();
+      e.stopPropagation();
+      startScan();
+    });
+    
+    startBtn.onclick = function(e) {
+      console.log('Button clicked - onclick method');
+      e.preventDefault();
+      e.stopPropagation();
+      startScan();
+    };
+    
+    // Test if button is clickable
+    startBtn.addEventListener('touchstart', function() {
+      console.log('Button touch detected');
+    });
+    
+    console.log('All event listeners attached to start button');
+  } else {
+    console.error('Start button not found!');
+  }
   
   function startScan() {
-    console.log('startScan function called'); // Debug log
+    console.log('🎯 startScan function called'); // Debug log
+    console.log('Available sections:', {
+      introDiv: introDiv,
+      countdownDiv: countdownDiv,
+      gameDiv: gameDiv
+    });
+    
+    if (!countdownDiv) {
+      console.error('Countdown div not found!');
+      return;
+    }
     
     // Hide intro, show countdown
+    console.log('Calling showSection with countdownDiv');
     showSection(countdownDiv);
     
     // Remove results layout
     document.body.classList.remove('showing-results');
     
     // Start countdown sequence
+    console.log('Calling startCountdown');
     startCountdown();
   }
   
