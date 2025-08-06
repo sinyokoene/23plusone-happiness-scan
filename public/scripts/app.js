@@ -659,14 +659,12 @@
   
   function showResultsPage(pageNumber) {
     // Hide all pages
-    for (let i = 1; i <= totalResultsPages; i++) {
-      const page = document.getElementById(`results-page-${i}`);
-      if (page) page.style.display = 'none';
-    }
+    const allPages = document.querySelectorAll('.results-page');
+    allPages.forEach(page => page.classList.remove('active'));
     
     // Show selected page
     const selectedPage = document.getElementById(`results-page-${pageNumber}`);
-    if (selectedPage) selectedPage.style.display = 'flex';
+    if (selectedPage) selectedPage.classList.add('active');
     
     // Update current page
     currentResultsPage = pageNumber;

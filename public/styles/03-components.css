@@ -279,3 +279,16 @@
 .swipe-instructions {
   display: none; /* Hidden on mobile */
 }
+
+/* Swipe Hint */
+.swipe-hint {
+  position: absolute;
+  bottom: -30px; /* Position below the card */
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--text-muted);
+  font-size: var(--font-size-sm);
+  font-style: italic;
+  text-align: center;
+  width: 100%;
+}

@@ -120,7 +120,6 @@ body {
   align-items: center;
   justify-content: center;
   position: relative;
-  max-height: 200px; /* Mobile: compact card area */
   overflow: visible;
 }
 
