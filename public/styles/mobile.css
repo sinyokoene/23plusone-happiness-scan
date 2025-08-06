@@ -2,6 +2,46 @@
 
 @media screen and (max-width: 480px) {
   
+  /* NUCLEAR OPTION: Override main.css .active-section and other desktop rules */
+  /* main.css .active-section has justify-content: space-between with no media query! */
+  html body .active-section,
+  html body section.active-section,
+  html body main.active-section,
+  html body div.active-section,
+  html body #game.active-section, 
+  html body #intro.active-section, 
+  html body #results.active-section,
+  html body #countdown.active-section,
+  html body #processing.active-section,
+  html body #game, 
+  html body #intro, 
+  html body #results,
+  html body #countdown,
+  html body #processing {
+    /* CRITICAL: Override main.css .active-section justify-content: space-between */
+    /* AND Override main.css #results justify-content: space-between */
+    justify-content: flex-start !important;
+    /* Force override any desktop height rules */
+    height: calc(var(--vh, 1vh) * 55) !important;
+    min-height: calc(var(--vh, 1vh) * 55) !important;
+    max-height: calc(var(--vh, 1vh) * 55) !important;
+    /* Override desktop padding */
+    padding: 10px !important;
+    margin: 10px !important;
+    width: calc(100% - 20px) !important;
+    /* Ensure mobile layout */
+    background: var(--card-bg) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    text-align: center !important;
+    position: relative !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    box-sizing: border-box !important;
+  }
+  
   /* CRITICAL: Override base.css desktop rules completely for mobile */
   body {
     min-height: 100vh !important;
