@@ -61,53 +61,30 @@
   }
   
   /* Desktop Cards */
-  .card-area {
-    max-width: 320px; /* Desktop: larger cards */
-    max-height: 400px; /* Desktop: taller cards */
-  }
-  
-  .card-area img {
-    max-height: 250px; /* Desktop: larger images */
+  #cardImages img {
+    max-width: 500px; /* New larger size */
+    max-height: 500px;
   }
   
   .card-content {
     padding: var(--spacing-lg);
   }
   
-  .card-area h3 {
-    font-size: var(--font-size-lg);
-    margin: 0 0 var(--spacing-sm) 0;
-  }
-  
-  .card-area p {
-    font-size: var(--font-size-base);
-  }
-
   .hero-image {
-    max-width: 320px;
-    max-height: 250px;
+    max-width: 500px; /* Match new card size */
+    max-height: 500px;
   }
 
   /* Desktop Game Layout */
   #timerContainer {
-    max-width: 320px; /* Match desktop card max-width */
+    max-width: 500px; /* Match new desktop card size */
   }
 
   #card {
     max-height: 450px; /* Desktop: larger card area */
   }
   
-  #cardImages {
-    max-height: 400px; /* Desktop: larger card images area */
-    margin: var(--spacing-md) 0;
-  }
-  
-  #cardImages .card-area,
-  #cardImages .card-area img,
-  #cardImages img {
-    max-width: 320px; /* Standardized width */
-    max-height: 250px; /* Standardized height */
-  }
+
   
   /* Desktop Buttons */
   .btn-start {

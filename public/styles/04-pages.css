@@ -88,10 +88,7 @@
   align-items: center;
   justify-content: center;
   position: relative;
-  max-height: 200px; /* Mobile: compact card area */
-  overflow: hidden; /* Hide overflowing content to clip image corners */
   margin: var(--spacing-xs) 0;
-  border-radius: 10px; /* Rounded corners */
 }
 
 #cardImages {
@@ -107,13 +104,13 @@
   width: 100%;
 }
 
-/* Ensure card images are properly sized */
-#cardImages .card,
-#cardImages .card img,
 #cardImages img {
-  max-height: 180px;
+  max-width: 280px; /* New larger size */
+  width: 100%;
+  height: auto;
   object-fit: contain;
-  border-radius: 10px; /* Ensure image corners are rounded */
+  border-radius: 10px;
+  box-shadow: var(--shadow-lg);
 }
 
 /* Game Buttons */
@@ -129,7 +126,7 @@
 /* Timer Bar */
 #timerContainer {
   width: 100%; /* Make timer container responsive */
-  max-width: 240px; /* Mobile first */
+  max-width: 280px; /* Match new card size */
   margin: 0 auto var(--spacing-sm);
   order: -1; /* Position timer above cards */
 }
