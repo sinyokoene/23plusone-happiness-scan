@@ -150,7 +150,7 @@ body {
 .bottom-branding {
   background: var(--brand-dark);
   color: var(--white);
-  padding: var(--spacing-md);
+  padding: 0;
   text-align: center;
   font-size: var(--font-size-sm);
   flex-shrink: 0;
