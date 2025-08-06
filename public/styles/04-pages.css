@@ -73,17 +73,17 @@
 #cardContainer {
   display: flex;
   flex-direction: column;
-  justify-content: space-around; /* Evenly space timer, card, and buttons */
+  justify-content: center; /* Center content vertically */
   align-items: center; /* Center card horizontally */
   height: 100%;
   position: relative;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-md); /* Use gap for predictable spacing */
   flex: 1;
   overflow: visible;
 }
 
 #card {
-  flex: 1;
+  /* This container no longer needs to be a flex-grow item */
   display: flex;
   align-items: center;
   justify-content: center;
