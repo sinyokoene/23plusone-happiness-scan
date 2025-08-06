@@ -207,3 +207,14 @@ body {
   color: rgba(255, 255, 255, 0.7);
   margin-left: var(--spacing-xs);
 }
+
+@media screen and (max-width: 480px) {
+  .full-width-mobile {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .full-width-mobile > * {
+    border-radius: 0 !important;
+  }
+}

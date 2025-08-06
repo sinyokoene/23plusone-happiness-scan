@@ -47,7 +47,7 @@
   color: var(--white);
   width: 90px;
   height: 40px;
-  border-radius: var(--radius); /* Restore original radius */
+
   font-size: var(--font-size-base);
 }
 
@@ -65,7 +65,7 @@
   color: var(--white);
   width: 90px;
   height: 40px;
-  border-radius: var(--radius); /* Restore original radius */
+
   font-size: var(--font-size-base);
 }
 
@@ -142,7 +142,6 @@
   width: 100%;
   height: auto;
   object-fit: cover;
-  border-radius: 0;
 }
 
 .card-content {
@@ -168,13 +167,11 @@
 
 /* Hero Image */
 .hero-image {
-  max-width: 100%; /* Match timer bar width */
   max-height: 280px; /* Allow for more height */
   width: 100%;
   height: auto;
   margin: 0 auto;
   object-fit: contain;
-  border-radius: 0; /* Rounded corners */
 }
 
 /* Progress Text */
