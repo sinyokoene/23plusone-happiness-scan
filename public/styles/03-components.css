@@ -47,7 +47,7 @@
   color: var(--white);
   width: 90px;
   height: 40px;
-  border-radius: var(--radius); /* Restore original radius */
+
   font-size: var(--font-size-base);
 }
 
@@ -65,7 +65,7 @@
   color: var(--white);
   width: 90px;
   height: 40px;
-  border-radius: var(--radius); /* Restore original radius */
+
   font-size: var(--font-size-base);
 }
 
