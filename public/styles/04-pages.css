@@ -66,14 +66,13 @@
 
 /* Game Page */
 #game {
-  justify-content: space-between; /* Push card area up and buttons down */
   overflow: visible; /* Allow card animations */
 }
 
 #cardContainer {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center; /* Center card vertically */
   height: 100%;
   position: relative;
   gap: var(--spacing-xs);
@@ -152,7 +151,7 @@
 }
 
 #timerProgress.danger {
-  background-color: var(--danger);
+  background-color: var(--brand-pink); /* Pink */
 }
 
 /* Force buttons to be visible */
