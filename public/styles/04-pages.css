@@ -5,11 +5,11 @@
 #introContent {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  height: 100%;
+  justify-content: center; /* Match game container */
   align-items: center;
   text-align: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-md); /* Match game container */
+  /* REMOVED height: 100% to stop stretching */
 }
 
 .intro-left {
@@ -24,7 +24,7 @@
 }
 
 .intro-text {
-  flex: 1;
+  /* This no longer needs to be a flex-grow item */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -75,11 +75,9 @@
   flex-direction: column;
   justify-content: center; /* Center content vertically */
   align-items: center; /* Center card horizontally */
-  height: 100%;
   position: relative;
   gap: var(--spacing-md); /* Use gap for predictable spacing */
-  flex: 1;
-  overflow: visible;
+  /* REMOVED flex: 1 and height: 100% to stop stretching */
 }
 
 #card {
