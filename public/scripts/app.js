@@ -355,8 +355,7 @@
     // Reset timer immediately
     timerProgress.style.transition = 'none';
     timerProgress.style.width = '100%';
-    timerProgress.className = ''; // Remove any existing classes
-    timerProgress.style.background = '#4CAF50'; // Start with green
+    timerProgress.className = ''; // Remove any existing classes, defaults to green via CSS
     
     // Start countdown after a tiny delay
     const timeout1 = setTimeout(() => {

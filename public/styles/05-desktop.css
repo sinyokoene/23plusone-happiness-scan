@@ -57,7 +57,7 @@
   /* Desktop Progress Bars */
   .progress-container {
     max-width: 400px; /* Desktop: wider progress bars */
-    height: 8px; /* Desktop: thicker bars */
+    height: 12px; /* New height */
   }
   
   /* Desktop Cards */

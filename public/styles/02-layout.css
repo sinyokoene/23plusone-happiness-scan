@@ -76,7 +76,7 @@ body {
 .progress-container {
   width: 100%;
   max-width: 280px; /* Fixed width to prevent jumping */
-  height: 6px;
+  height: 12px; /* New height */
   background: var(--progress-bg);
   border-radius: var(--radius-sm);
   overflow: hidden;
