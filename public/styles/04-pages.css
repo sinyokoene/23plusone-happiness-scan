@@ -66,7 +66,7 @@
 
 /* Game Page */
 #game {
-  /* Layout handled by 02-layout.css */
+  justify-content: space-between; /* Push card area up and buttons down */
   overflow: visible; /* Allow card animations */
 }
 
@@ -317,6 +317,12 @@
 .bar-attraction { background: var(--domain-beauty); }
 
 /* Results - Page 3 (Insights & Sharing) */
+#colorVisualization,
+#personalInsights {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 #personalInsights {
   margin: 15px 0;
   padding: 15px;

@@ -283,7 +283,8 @@
 /* Swipe Hint */
 .swipe-hint {
   position: absolute;
-  bottom: -30px; /* Position below the card */
+  top: 100%; /* Position below the card */
+  margin-top: 10px; /* Add some space */
   left: 50%;
   transform: translateX(-50%);
   color: var(--text-muted);
