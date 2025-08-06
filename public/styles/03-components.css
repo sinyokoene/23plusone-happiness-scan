@@ -79,7 +79,7 @@
 
 /* Start Button - Special styling */
 .btn-start {
-  max-width: 220px;
+  max-width: 110px; /* Half the previous width */
   width: 90%;
   height: 50px;
   font-size: 20px;

@@ -5,7 +5,7 @@
   /* Desktop Variables */
   :root {
     --container-padding: var(--spacing-xl);
-    --section-padding: var(--spacing-xxl) var(--spacing-xl);
+    --section-padding: var(--spacing-xl); /* Make padding symmetric */
     --section-margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
     --section-height: calc(var(--vh, 1vh) * 100 - 150px); /* Desktop: larger sections */
     --font-size-xl: 28px;
@@ -19,18 +19,18 @@
   
   .main-content {
     align-items: center; /* Desktop: center content */
-    padding: var(--container-padding);
+    padding: 0; /* Remove padding to ensure perfect centering */
   }
   
   .container {
     max-width: 1200px; /* Desktop: max width */
-    padding: 0 var(--spacing-xl);
+    padding: 0; /* Remove padding to ensure perfect centering */
   }
   
   /* Desktop Sections */
   .section.active-section {
     justify-content: space-between; /* Desktop: space content */
-    margin: var(--section-margin);
+    margin: var(--spacing-xl) auto; /* Center with equal margins */
     padding: var(--section-padding);
     width: 100%;
     height: var(--section-height);
@@ -88,7 +88,7 @@
   
   /* Desktop Buttons */
   .btn-start {
-    max-width: 300px;
+    max-width: 150px; /* Half the previous width */
     height: 60px;
     font-size: 20px;
     border-radius: 8px;
