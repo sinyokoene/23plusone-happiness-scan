@@ -83,7 +83,7 @@
   --container-padding: var(--spacing-md);
   --section-padding: var(--spacing-md);
   --section-margin: var(--spacing-md);
-  --section-height: calc(var(--vh, 1vh) * 60); /* Mobile: 60vh leaves room for footer */
+  --section-height: calc(60vh + 50px); /* Mobile: 60vh + 50px, leaves room for footer */
 }
 
 /* CSS Reset */

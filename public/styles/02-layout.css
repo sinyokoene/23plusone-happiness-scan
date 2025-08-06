@@ -187,6 +187,11 @@ body {
   flex-shrink: 0;
 }
 
+.bottom-branding-logo .cls-1,
+.bottom-branding-logo .cls-2 {
+  fill: white !important;
+}
+
 .bottom-brand-logo {
   height: 16px;
   filter: brightness(0) invert(1);
