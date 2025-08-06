@@ -282,14 +282,10 @@
 
 /* Swipe Hint */
 .swipe-hint {
-  position: absolute;
-  top: 100%; /* Position below the card */
-  margin-top: 30px; /* Add more space */
-  left: 50%;
-  transform: translateX(-50%);
+  position: relative; /* Change to relative to flow with content */
+  margin-top: -10px; /* Pull up slightly */
   color: var(--text-muted);
   font-size: var(--font-size-sm);
   font-style: italic;
   text-align: center;
-  width: 100%;
 }

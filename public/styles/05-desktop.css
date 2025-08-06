@@ -84,6 +84,9 @@
   }
   
   /* Desktop Game Layout */
+#timerContainer {
+  max-width: 320px; /* Match desktop card width */
+}
   #card {
     max-height: 450px; /* Desktop: larger card area */
   }
