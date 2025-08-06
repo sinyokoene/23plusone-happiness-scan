@@ -56,11 +56,11 @@
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
     margin: 10px !important; /* Override base.css margins */
-    padding: 15px !important; /* Reduced from 20px - Override base.css var(--spacing-xxl) var(--spacing-xl) */
+    padding: 10px !important; /* Reduced from 15px - Tighter padding for more content space */
     width: calc(100% - 20px) !important; /* Match margin */
     height: auto !important; /* Override base.css fixed height */
-    min-height: calc(var(--vh, 1vh) * 85) !important; /* Increased to use more screen space */
-    max-height: calc(var(--vh, 1vh) * 85) !important; /* Same min and max */
+    min-height: calc(var(--vh, 1vh) * 75) !important; /* Reduced from 85% - Leave room for bottom branding */
+    max-height: calc(var(--vh, 1vh) * 75) !important; /* Reduced from 85% - Leave room for bottom branding */
     text-align: center !important;
     position: relative !important;
     overflow-y: auto !important; /* Allow scrolling if needed */
@@ -209,7 +209,7 @@
     border-radius: 3px !important;
     overflow: hidden !important;
     position: relative !important;
-    margin: 5px 0 8px 0 !important; /* Reduced margins */
+    margin: 2px 0 4px 0 !important; /* Reduced from 5px 0 8px 0 - Tighter spacing */
     /* CONSISTENT WIDTH: Both progress bars same size to prevent jumping */
     width: 100% !important;
     max-width: 300px !important;
@@ -288,7 +288,7 @@
     justify-content: space-between !important; /* Override main.css justify-content: center */
     height: 100% !important;
     position: relative !important;
-    gap: 8px !important; /* Reduced gap between elements */
+    gap: 4px !important; /* Reduced from 8px - Tighter spacing between elements */
     flex: 1 !important; /* Override main.css flex: 1 */
     overflow: visible !important; /* Override main.css */
   }
@@ -303,9 +303,9 @@
     align-items: center !important;
     justify-content: center !important;
     position: relative !important;
-    max-height: calc(100% - 80px) !important; /* More space for buttons */
+    max-height: calc(100% - 60px) !important; /* Reduced from 80px - More space for buttons */
     overflow: visible !important;
-    margin: 5px 0 !important; /* Override main.css margin: 20px 0 */
+    margin: 2px 0 !important; /* Reduced from 5px - Tighter vertical spacing */
   }
 
   /* CRITICAL: Override main.css #cardImages spacing - THIS WAS THE MISSING PIECE */
@@ -315,9 +315,9 @@
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    margin: 8px 0 !important; /* Override main.css margin: 30px 0 - MASSIVE SPACE SAVER */
+    margin: 4px 0 !important; /* Reduced from 8px - Tighter spacing around card images */
     min-height: auto !important; /* Override main.css min-height: 350px - HUGE SPACE SAVER */
-    max-height: 300px !important; /* Limit height for mobile */
+    max-height: 280px !important; /* Reduced from 300px - Smaller card area */
     overflow: visible !important;
     position: relative !important;
     flex: 1 !important;
@@ -333,9 +333,9 @@
 
   body .card {
     width: calc(100% - 16px) !important;
-    max-width: 280px !important;
+    max-width: 260px !important; /* Reduced from 280px - Smaller cards */
     height: auto !important;
-    max-height: 320px !important; /* Reduced max height for more space */
+    max-height: 280px !important; /* Reduced from 320px - More compact cards */
     border-radius: 12px !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
     position: absolute !important;
@@ -348,7 +348,7 @@
   body .card img {
     width: 100% !important;
     height: auto !important;
-    max-height: 220px !important; /* Reduced image height */
+    max-height: 180px !important; /* Reduced from 220px - Smaller images */
     object-fit: cover !important;
     border-radius: 12px 12px 0 0 !important;
   }
@@ -382,7 +382,7 @@
     display: flex !important;
     justify-content: center !important;
     gap: 20px !important;
-    padding: 5px 0 10px 0 !important; /* Reduced top padding */
+    padding: 2px 0 5px 0 !important; /* Reduced from 5px 0 10px 0 - Tighter spacing */
     flex-shrink: 0 !important;
     /* OVERRIDE inline style="display: none;" */
     visibility: visible !important;
@@ -440,7 +440,7 @@
     display: flex !important;
     justify-content: center !important;
     gap: 20px !important;
-    padding: 5px 0 10px 0 !important; /* Reduced top padding */
+    padding: 2px 0 5px 0 !important; /* Reduced from 5px 0 10px 0 - Tighter spacing */
     flex-shrink: 0 !important;
     /* OVERRIDE inline style="display: none;" */
     visibility: visible !important;
