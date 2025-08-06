@@ -279,16 +279,24 @@
   }
 
   /* Fix: Use actual HTML structure - cardContainer not gameContent */
+  /* CRITICAL: Override main.css with higher specificity */
+  body #game.active-section #cardContainer,
+  body #game #cardContainer,
   body #cardContainer {
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important;
+    justify-content: space-between !important; /* Override main.css justify-content: center */
     height: 100% !important;
     position: relative !important;
     gap: 8px !important; /* Reduced gap between elements */
+    flex: 1 !important; /* Override main.css flex: 1 */
+    overflow: visible !important; /* Override main.css */
   }
 
   /* Fix: Use actual HTML structure - card not cardStack */
+  /* CRITICAL: Override main.css with higher specificity */
+  body #game.active-section #card,
+  body #game #card,
   body #card {
     flex: 1 !important;
     display: flex !important;
@@ -297,7 +305,7 @@
     position: relative !important;
     max-height: calc(100% - 80px) !important; /* More space for buttons */
     overflow: visible !important;
-    margin: 5px 0 !important; /* Reduced margin */
+    margin: 5px 0 !important; /* Override main.css margin: 20px 0 */
   }
 
   body .card {
@@ -368,10 +376,14 @@
 
   /* Fix: Target buttons within .buttons container */
   /* FORCE VISIBILITY: Override any JavaScript display: none */
+  /* CRITICAL: Use maximum CSS specificity to beat main.css */
+  body.main-content #game.active-section .buttons button,
   body #game.active-section .buttons button,
   body #game .buttons button,
   body .buttons button,
-  body #game button {
+  body #game button,
+  body #yesBtn,
+  body #noBtn {
     display: flex !important; /* Force visibility */
     width: 90px !important; /* Larger buttons for better touch */
     height: 40px !important; /* Better touch target */
@@ -397,16 +409,47 @@
     opacity: 1 !important;
   }
   
-  body #game #yesBtn,
-  body .buttons #yesBtn {
-    background: var(--btn-yes) !important;
-    color: white !important;
+  /* CRITICAL: Force buttons container to always be visible when game is active */
+  body.main-content #game.active-section .buttons,
+  body #game.active-section .buttons,
+  body #game .buttons,
+  body .buttons {
+    display: flex !important;
+    justify-content: center !important;
+    gap: 20px !important;
+    padding: 5px 0 10px 0 !important; /* Reduced top padding */
+    flex-shrink: 0 !important;
+    /* OVERRIDE inline style="display: none;" */
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1000 !important;
+    margin-top: auto !important; /* Push to bottom */
   }
   
+  /* CRITICAL: Force button colors and visibility with maximum specificity */
+  body.main-content #game.active-section #yesBtn,
+  body #game.active-section #yesBtn,
+  body #game #yesBtn,
+  body .buttons #yesBtn,
+  body #yesBtn {
+    background: var(--btn-yes) !important;
+    color: white !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+  
+  body.main-content #game.active-section #noBtn,
+  body #game.active-section #noBtn,
   body #game #noBtn,
-  body .buttons #noBtn {
+  body .buttons #noBtn,
+  body #noBtn {
     background: var(--btn-no) !important;
     color: white !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
   
   /* Hide swipe instructions when buttons are visible */
