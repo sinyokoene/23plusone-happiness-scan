@@ -117,105 +117,93 @@
     </section>
 
     <section id="results" class="section" role="region" aria-labelledby="results-heading">
-      <!-- Page 1: Your Score & Overview -->
-      <div class="results-page" id="results-page-1">
-      <div id="resultsContent" class="results-content">
-      <header id="resultsHeader">
-        <h2 id="results-heading">Done! Here's your happiness mix:</h2>
-        <p id="dominantDomainsText" aria-live="polite">You're fueled by <span id="topDomains">--</span> — nice combo!</p>
-        <p id="personalityInsight" class="subtitle">Your score shows how rich your emotional landscape is today.</p>
-      </header>
+            <!-- Consolidated Results Page -->
+      <div class="results-page active" id="results-page-1">
+        <div id="resultsContent" class="results-content">
+          <!-- Page 1 Content: Score & Overview -->
+          <header id="resultsHeader">
+            <h2 id="results-heading">Done! Here's your happiness mix:</h2>
+            <p id="dominantDomainsText" aria-live="polite">You're fueled by <span id="topDomains">--</span> — nice combo!</p>
+            <p id="personalityInsight" class="subtitle">Your score shows how rich your emotional landscape is today.</p>
+          </header>
+          <section id="scoreSection" aria-labelledby="score-heading">
+            <h3 id="score-heading" class="sr-only">Your Happiness Score</h3>
+            <div id="totalScore" role="img" aria-label="Individual Happiness Score">--</div>
+            <div id="ihsLabel">Individual Happiness Score (IHS)</div>
+          </section>
+          <section id="benchmarkSection" aria-labelledby="benchmark-heading">
+            <h3 id="benchmark-heading">How You Compare</h3>
+            <div id="benchmarkMessage" role="status" aria-live="polite">Calculating your ranking...</div>
+            <div id="benchmarkStats" role="list" aria-label="Comparison statistics">
+              <div class="benchmark-item" role="listitem">
+                <span class="benchmark-label">Your Score:</span>
+                <span class="benchmark-value" id="benchmarkYourScore" aria-label="Your happiness score">--</span>
+              </div>
+              <div class="benchmark-item" role="listitem">
+                <span class="benchmark-label">Average Score:</span>
+                <span class="benchmark-value" id="benchmarkAverage" aria-label="Average participant score">--</span>
+              </div>
+              <div class="benchmark-item" role="listitem">
+                <span class="benchmark-label">Participants:</span>
+                <span class="benchmark-value" id="benchmarkTotal" aria-label="Total number of participants">--</span>
+              </div>
+            </div>
+          </section>
 
-      <section id="scoreSection" aria-labelledby="score-heading">
-        <h3 id="score-heading" class="sr-only">Your Happiness Score</h3>
-        <div id="totalScore" role="img" aria-label="Individual Happiness Score">--</div>
-        <div id="ihsLabel">Individual Happiness Score (IHS)</div>
-      </section>
-
-        <section id="benchmarkSection" aria-labelledby="benchmark-heading">
-          <h3 id="benchmark-heading">How You Compare</h3>
-          <div id="benchmarkMessage" role="status" aria-live="polite">Calculating your ranking...</div>
-          <div id="benchmarkStats" role="list" aria-label="Comparison statistics">
-            <div class="benchmark-item" role="listitem">
-              <span class="benchmark-label">Your Score:</span>
-              <span class="benchmark-value" id="benchmarkYourScore" aria-label="Your happiness score">--</span>
-            </div>
-            <div class="benchmark-item" role="listitem">
-              <span class="benchmark-label">Average Score:</span>
-              <span class="benchmark-value" id="benchmarkAverage" aria-label="Average participant score">--</span>
-            </div>
-            <div class="benchmark-item" role="listitem">
-              <span class="benchmark-label">Participants:</span>
-              <span class="benchmark-value" id="benchmarkTotal" aria-label="Total number of participants">--</span>
-            </div>
-          </div>
-        </section>
-      </div>
-
-      <!-- Page 2: Your Happiness Palette -->
-      <div class="results-page" id="results-page-2">
-        <section id="colorVisualization" class="results-content" aria-labelledby="palette-heading">
-          <h3 id="palette-heading">Your Happiness Palette</h3>
-          
-          <div id="domainBars" role="list" aria-label="Happiness domains breakdown">
-            <div class="domain-bar" role="listitem" data-domain="Basics" aria-labelledby="basics-label">
-              <div class="bar-header">
-                <span id="basics-label" class="bar-name">Basics</span>
-                <span class="bar-count" aria-label="0 selections">0</span>
+          <!-- Page 2 Content: Your Happiness Palette -->
+          <section id="colorVisualization" aria-labelledby="palette-heading">
+            <h3 id="palette-heading">Your Happiness Palette</h3>
+            <div id="domainBars" role="list" aria-label="Happiness domains breakdown">
+              <div class="domain-bar" role="listitem" data-domain="Basics" aria-labelledby="basics-label">
+                <div class="bar-header">
+                  <span id="basics-label" class="bar-name">Basics</span>
+                  <span class="bar-count" aria-label="0 selections">0</span>
+                </div>
+                <div class="bar-container" role="progressbar" aria-labelledby="basics-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6">
+                  <div class="bar-fill bar-basics" style="width: 0%"></div>
+                </div>
               </div>
-              <div class="bar-container" role="progressbar" aria-labelledby="basics-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6">
-                <div class="bar-fill bar-basics" style="width: 0%"></div>
+              <div class="domain-bar" role="listitem" data-domain="Self-development" aria-labelledby="growth-label">
+                <div class="bar-header">
+                  <span id="growth-label" class="bar-name">Growth</span>
+                  <span class="bar-count" aria-label="0 selections">0</span>
+                </div>
+                <div class="bar-container" role="progressbar" aria-labelledby="growth-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6">
+                  <div class="bar-fill bar-self-dev" style="width: 0%"></div>
+                </div>
               </div>
-            </div>
-            
-            <div class="domain-bar" role="listitem" data-domain="Self-development" aria-labelledby="growth-label">
-              <div class="bar-header">
-                <span id="growth-label" class="bar-name">Growth</span>
-                <span class="bar-count" aria-label="0 selections">0</span>
+              <div class="domain-bar" role="listitem" data-domain="Ambition" aria-labelledby="ambition-label">
+                <div class="bar-header">
+                  <span id="ambition-label" class="bar-name">Ambition</span>
+                  <span class="bar-count" aria-label="0 selections">0</span>
+                </div>
+                <div class="bar-container" role="progressbar" aria-labelledby="ambition-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
+                  <div class="bar-fill bar-ambition" style="width: 0%"></div>
+                </div>
               </div>
-              <div class="bar-container" role="progressbar" aria-labelledby="growth-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6">
-                <div class="bar-fill bar-self-dev" style="width: 0%"></div>
+              <div class="domain-bar" role="listitem" data-domain="Vitality" aria-labelledby="vitality-label">
+                <div class="bar-header">
+                  <span id="vitality-label" class="bar-name">Vitality</span>
+                  <span class="bar-count" aria-label="0 selections">0</span>
+                </div>
+                <div class="bar-container" role="progressbar" aria-labelledby="vitality-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2">
+                  <div class="bar-fill bar-vitality" style="width: 0%"></div>
+                </div>
               </div>
-            </div>
-            
-            <div class="domain-bar" role="listitem" data-domain="Ambition" aria-labelledby="ambition-label">
-              <div class="bar-header">
-                <span id="ambition-label" class="bar-name">Ambition</span>
-                <span class="bar-count" aria-label="0 selections">0</span>
-              </div>
-              <div class="bar-container" role="progressbar" aria-labelledby="ambition-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
-                <div class="bar-fill bar-ambition" style="width: 0%"></div>
+              <div class="domain-bar" role="listitem" data-domain="Attraction" aria-labelledby="beauty-label">
+                <div class="bar-header">
+                  <span id="beauty-label" class="bar-name">Beauty</span>
+                  <span class="bar-count" aria-label="0 selections">0</span>
+                </div>
+                <div class="bar-container" role="progressbar" aria-labelledby="beauty-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2">
+                  <div class="bar-fill bar-attraction" style="width: 0%"></div>
+                </div>
               </div>
             </div>
-            
-            <div class="domain-bar" role="listitem" data-domain="Vitality" aria-labelledby="vitality-label">
-              <div class="bar-header">
-                <span id="vitality-label" class="bar-name">Vitality</span>
-                <span class="bar-count" aria-label="0 selections">0</span>
-              </div>
-              <div class="bar-container" role="progressbar" aria-labelledby="vitality-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2">
-                <div class="bar-fill bar-vitality" style="width: 0%"></div>
-              </div>
-            </div>
-            
-            <div class="domain-bar" role="listitem" data-domain="Attraction" aria-labelledby="beauty-label">
-              <div class="bar-header">
-                <span id="beauty-label" class="bar-name">Beauty</span>
-                <span class="bar-count" aria-label="0 selections">0</span>
-              </div>
-              <div class="bar-container" role="progressbar" aria-labelledby="beauty-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2">
-                <div class="bar-fill bar-attraction" style="width: 0%"></div>
-              </div>
-            </div>
-          </div>
-            
             <p class="palette-tagline">More color = more joy. Want to try again and mix it up?</p>
-        </section>
-      </div>
+          </section>
 
-      <!-- Page 3: Insights & Actions -->
-      <div class="results-page" id="results-page-3">
-        <div class="results-content">
+          <!-- Page 3 Content: Insights & Actions -->
           <h3 id="insights-heading">Your Happiness Profile</h3>
           <section id="personalInsights" aria-labelledby="insights-heading">
             <p id="insightText" role="region" aria-live="polite">Analyzing your unique happiness mix...</p>
@@ -224,10 +212,8 @@
               <ul id="recommendationsList" aria-label="Personalized recommendations"></ul>
             </div>
           </section>
-
           <section id="shareSection" aria-labelledby="share-heading">
-              <h3 id="share-heading">Share & Explore More</h3>
-            
+            <h3 id="share-heading">Share & Explore More</h3>
             <div class="share-buttons" role="group" aria-label="Sharing options">
               <button id="nativeShareBtn" type="button" class="share-button native" aria-label="Share results using device's native sharing">
                 <span>Share Results</span>
@@ -236,22 +222,12 @@
                 <span>Copy Link</span>
               </button>
             </div>
-            
             <button id="retakeBtn" type="button" class="btn" aria-label="Start a new happiness scan" onclick="location.reload()">Take Again</button>
           </section>
         </div>
       </div>
 
-      <!-- Navigation Footer -->
-      <div class="results-navigation">
-        <button id="prevBtn" class="nav-arrow nav-prev" aria-label="Previous page" disabled>Prev</button>
-        <div class="page-indicator">
-          <div class="page-dot active" data-page="1" aria-label="Page 1" tabindex="0" role="button"></div>
-          <div class="page-dot" data-page="2" aria-label="Page 2" tabindex="0" role="button"></div>
-          <div class="page-dot" data-page="3" aria-label="Page 3" tabindex="0" role="button"></div>
-        </div>
-        <button id="nextBtn" class="nav-arrow nav-next" aria-label="Next page">Next</button>
-      </div>
+      <!-- Navigation Footer Removed -->
     </section>
     </div>
   </div>

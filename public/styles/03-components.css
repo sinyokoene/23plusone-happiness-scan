@@ -280,12 +280,3 @@
   display: none; /* Hidden on mobile */
 }
 
-/* Swipe Hint */
-.swipe-hint {
-  position: relative; /* Change to relative to flow with content */
-  margin-top: -10px; /* Pull up slightly */
-  color: var(--text-muted);
-  font-size: var(--font-size-sm);
-  font-style: italic;
-  text-align: center;
-}

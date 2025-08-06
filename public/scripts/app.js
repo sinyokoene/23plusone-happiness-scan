@@ -183,9 +183,6 @@
       // Change body layout for results
       document.body.classList.add('showing-results');
       
-      // Initialize pagination
-      initializeResultsPagination();
-      
       // Display enhanced results
       displayEnhancedResults(results);
       
@@ -306,10 +303,9 @@
     cardDiv.innerHTML = `
       <div id="cardImages">
         <img src="${card.images[0]}" alt="Happiness card" class="card-image" 
-             tabindex="0" role="img" aria-describedby="swipe-hint"
+             tabindex="0" role="img"
              onerror="this.style.display='none'" style="opacity: 1 !important;">
       </div>
-      <div id="swipe-hint" class="swipe-hint">Swipe right for Yes, left for No</div>
     `;
     
     // Show timer and buttons
@@ -559,133 +555,7 @@
     startProcessing(results);
   }
 
-  // Results Pagination System
-  let currentResultsPage = 1;
-  const totalResultsPages = 3;
 
-  function initializeResultsPagination() {
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    
-    prevBtn.addEventListener('click', () => navigateResultsPage(-1));
-    nextBtn.addEventListener('click', () => navigateResultsPage(1));
-    
-    // Add click listeners to dots
-    const allDots = document.querySelectorAll('.page-dot');
-    allDots.forEach((dot, index) => {
-      dot.addEventListener('click', () => showResultsPage(index + 1));
-      
-      // Add keyboard support for dots
-      dot.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          showResultsPage(index + 1);
-        }
-      });
-    });
-    
-    // Add swipe navigation for results pages on mobile
-    setupResultsSwipeNavigation();
-    
-    // Show first page initially
-    showResultsPage(1);
-  }
-
-  // Swipe navigation for results pages
-  function setupResultsSwipeNavigation() {
-    const resultsContainer = document.getElementById('results');
-    if (!resultsContainer) return;
-
-    let startX = null;
-    let startY = null;
-    let isSwipeActive = false;
-
-    resultsContainer.addEventListener('touchstart', (e) => {
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
-      isSwipeActive = true;
-    }, { passive: true });
-
-    resultsContainer.addEventListener('touchmove', (e) => {
-      if (!isSwipeActive || !startX || !startY) return;
-      
-      const currentX = e.touches[0].clientX;
-      const currentY = e.touches[0].clientY;
-      const deltaX = Math.abs(currentX - startX);
-      const deltaY = Math.abs(currentY - startY);
-      
-      // If vertical swipe is more significant, don't interfere with scrolling
-      if (deltaY > deltaX) {
-        isSwipeActive = false;
-        return;
-      }
-      
-      // Prevent horizontal scrolling for page navigation
-      if (deltaX > 30) {
-        e.preventDefault();
-      }
-    }, { passive: false });
-
-    resultsContainer.addEventListener('touchend', (e) => {
-      if (!isSwipeActive || !startX) return;
-      
-      const endX = e.changedTouches[0].clientX;
-      const deltaX = endX - startX;
-      const deltaY = Math.abs(e.changedTouches[0].clientY - startY);
-      
-      // Only trigger if horizontal swipe is more significant than vertical
-      if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > deltaY) {
-        if (deltaX > 0) {
-          // Swipe right - go to previous page
-          navigateResultsPage(-1);
-        } else {
-          // Swipe left - go to next page
-          navigateResultsPage(1);
-        }
-      }
-      
-      startX = null;
-      startY = null;
-      isSwipeActive = false;
-    }, { passive: true });
-  }
-  
-  function navigateResultsPage(direction) {
-    const newPage = currentResultsPage + direction;
-    if (newPage >= 1 && newPage <= totalResultsPages) {
-      showResultsPage(newPage);
-    }
-  }
-  
-  function showResultsPage(pageNumber) {
-    // Hide all pages
-    const allPages = document.querySelectorAll('.results-page');
-    allPages.forEach(page => page.classList.remove('active'));
-    
-    // Show selected page
-    const selectedPage = document.getElementById(`results-page-${pageNumber}`);
-    if (selectedPage) selectedPage.classList.add('active');
-    
-    // Update current page
-    currentResultsPage = pageNumber;
-    
-    // Update dots indicator
-    const allDots = document.querySelectorAll('.page-dot');
-    allDots.forEach((dot, index) => {
-      if (index + 1 === pageNumber) {
-        dot.classList.add('active');
-      } else {
-        dot.classList.remove('active');
-      }
-    });
-    
-    // Update navigation buttons
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    
-    prevBtn.disabled = (pageNumber === 1);
-    nextBtn.disabled = (pageNumber === totalResultsPages);
-  }
   
   function displayEnhancedResults(results) {
     // Update main score
