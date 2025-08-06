@@ -59,8 +59,8 @@
     padding: 10px !important; /* Reduced from 15px - Tighter padding for more content space */
     width: calc(100% - 20px) !important; /* Match margin */
     height: auto !important; /* Override base.css fixed height */
-    min-height: calc(var(--vh, 1vh) * 75) !important; /* Reduced from 85% - Leave room for bottom branding */
-    max-height: calc(var(--vh, 1vh) * 75) !important; /* Reduced from 85% - Leave room for bottom branding */
+    min-height: calc(var(--vh, 1vh) * 65) !important; /* Further reduced to 65% - More room for bottom branding */
+    max-height: calc(var(--vh, 1vh) * 65) !important; /* Further reduced to 65% - More room for bottom branding */
     text-align: center !important;
     position: relative !important;
     overflow-y: auto !important; /* Allow scrolling if needed */
@@ -288,7 +288,7 @@
     justify-content: space-between !important; /* Override main.css justify-content: center */
     height: 100% !important;
     position: relative !important;
-    gap: 4px !important; /* Reduced from 8px - Tighter spacing between elements */
+    gap: 2px !important; /* Further reduced from 4px - Even tighter spacing for smaller container */
     flex: 1 !important; /* Override main.css flex: 1 */
     overflow: visible !important; /* Override main.css */
   }
@@ -304,9 +304,9 @@
     justify-content: center !important;
     position: relative !important;
     /* max-height: calc(100% - 60px) !important; Reduced from 80px - More space for buttons */
-    max-height: 150px !important; /* Reduced from 300px - Smaller card area */
+    max-height: 120px !important; /* Further reduced from 150px - Even smaller card area for compact layout */
     overflow: visible !important;
-    margin: 2px 0 !important; /* Reduced from 5px - Tighter vertical spacing */
+    margin: 1px 0 !important; /* Further reduced from 2px - Minimal vertical spacing */
   }
 
   /* CRITICAL: Override main.css #cardImages spacing - THIS WAS THE MISSING PIECE */
@@ -316,9 +316,9 @@
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    margin: 4px 0 !important; /* Reduced from 8px - Tighter spacing around card images */
+    margin: 2px 0 !important; /* Further reduced from 4px - Minimal spacing around card images */
     min-height: auto !important; /* Override main.css min-height: 350px - HUGE SPACE SAVER */
-    max-height: 280px !important; /* Reduced from 300px - Smaller card area */
+    max-height: 200px !important; /* Further reduced from 280px - Much smaller card area for compact layout */
     overflow: visible !important;
     position: relative !important;
     flex: 1 !important;
@@ -328,15 +328,15 @@
   body #cardImages .card,
   body #cardImages .card img,
   body #cardImages img {
-    max-height: 280px !important; /* Ensure images don't exceed container */
+    max-height: 200px !important; /* Ensure images don't exceed smaller container */
     object-fit: contain !important; /* Maintain aspect ratio */
   }
 
   body .card {
     width: calc(100% - 16px) !important;
-    max-width: 260px !important; /* Reduced from 280px - Smaller cards */
+    max-width: 240px !important; /* Further reduced from 260px - Even smaller cards for compact layout */
     height: auto !important;
-    max-height: 280px !important; /* Reduced from 320px - More compact cards */
+    max-height: 200px !important; /* Further reduced from 280px - Much more compact cards */
     border-radius: 12px !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
     position: absolute !important;
@@ -349,28 +349,28 @@
   body .card img {
     width: 100% !important;
     height: auto !important;
-    max-height: 180px !important; /* Reduced from 220px - Smaller images */
+    max-height: 140px !important; /* Further reduced from 180px - Much smaller images for compact layout */
     object-fit: cover !important;
     border-radius: 12px 12px 0 0 !important;
   }
 
   body .card-content {
-    padding: 8px !important; /* Reduced padding */
+    padding: 6px !important; /* Further reduced padding for compact layout */
     text-align: center !important;
     background: white !important;
     border-radius: 0 0 12px 12px !important;
   }
 
   body .card h3 {
-    font-size: 18px !important; /* Larger card titles */
+    font-size: 16px !important; /* Slightly smaller card titles for compact layout */
     font-weight: 600 !important;
-    margin: 0 0 8px 0 !important; /* Better spacing */
+    margin: 0 0 4px 0 !important; /* Tighter spacing for compact layout */
     color: var(--text-primary) !important;
     line-height: 1.2 !important;
   }
 
   body .card p {
-    font-size: 15px !important; /* Larger card descriptions */
+    font-size: 14px !important; /* Slightly smaller card descriptions for compact layout */
     margin: 0 !important;
     color: var(--text-secondary) !important;
     line-height: 1.4 !important;
@@ -383,7 +383,7 @@
     display: flex !important;
     justify-content: center !important;
     gap: 20px !important;
-    padding: 2px 0 5px 0 !important; /* Reduced from 5px 0 10px 0 - Tighter spacing */
+    padding: 1px 0 3px 0 !important; /* Further reduced for compact layout - Minimal button spacing */
     flex-shrink: 0 !important;
     /* OVERRIDE inline style="display: none;" */
     visibility: visible !important;
@@ -441,7 +441,7 @@
     display: flex !important;
     justify-content: center !important;
     gap: 20px !important;
-    padding: 2px 0 5px 0 !important; /* Reduced from 5px 0 10px 0 - Tighter spacing */
+    padding: 1px 0 3px 0 !important; /* Further reduced for compact layout - Minimal button spacing */
     flex-shrink: 0 !important;
     /* OVERRIDE inline style="display: none;" */
     visibility: visible !important;
