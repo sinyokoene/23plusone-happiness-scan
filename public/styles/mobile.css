@@ -308,6 +308,29 @@
     margin: 5px 0 !important; /* Override main.css margin: 20px 0 */
   }
 
+  /* CRITICAL: Override main.css #cardImages spacing - THIS WAS THE MISSING PIECE */
+  body #game.active-section #cardImages,
+  body #game #cardImages,
+  body #cardImages {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 8px 0 !important; /* Override main.css margin: 30px 0 - MASSIVE SPACE SAVER */
+    min-height: auto !important; /* Override main.css min-height: 350px - HUGE SPACE SAVER */
+    max-height: 300px !important; /* Limit height for mobile */
+    overflow: visible !important;
+    position: relative !important;
+    flex: 1 !important;
+  }
+
+  /* CRITICAL: Ensure card images within cardImages container are properly sized */
+  body #cardImages .card,
+  body #cardImages .card img,
+  body #cardImages img {
+    max-height: 280px !important; /* Ensure images don't exceed container */
+    object-fit: contain !important; /* Maintain aspect ratio */
+  }
+
   body .card {
     width: calc(100% - 16px) !important;
     max-width: 280px !important;
