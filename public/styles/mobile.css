@@ -2,6 +2,34 @@
 
 @media screen and (max-width: 480px) {
   
+  /* CRITICAL: Override base.css desktop rules completely for mobile */
+  body {
+    min-height: 100vh !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: flex-start !important; /* Override base.css space-between */
+    overflow-x: hidden !important;
+    padding: 0 !important; /* Override any base.css padding */
+    margin: 0 !important;
+  }
+
+  .main-content {
+    flex: 1 !important;
+    display: flex !important;
+    align-items: stretch !important; /* Override base.css center */
+    justify-content: center !important;
+    padding: 0 !important; /* Override base.css var(--spacing-md) */
+    margin: 0 !important;
+  }
+
+  .container {
+    width: 100% !important;
+    max-width: none !important; /* Override base.css 1250px */
+    overflow: visible !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  
   /* Hide all sections by default - use !important for reliability */
   body #intro:not(.active-section),
   body #countdown:not(.active-section),
@@ -15,6 +43,7 @@
   }
   
   /* --- Universal Section Styling --- */
+  /* CRITICAL: Override base.css desktop padding completely */
   body #intro.active-section,
   body #countdown.active-section,
   body #game.active-section,
@@ -22,16 +51,16 @@
   body #results.active-section {
     display: flex !important;
     flex-direction: column !important;
-    justify-content: flex-start !important; /* Changed from space-between */
+    justify-content: flex-start !important; /* Override base.css space-between */
     background: var(--card-bg) !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
-    margin: 10px !important; /* Better margin */
-    padding: 20px !important; /* Better padding */
+    margin: 10px !important; /* Override base.css margins */
+    padding: 15px !important; /* Reduced from 20px - Override base.css var(--spacing-xxl) var(--spacing-xl) */
     width: calc(100% - 20px) !important; /* Match margin */
-    height: auto !important;
-    min-height: calc(var(--vh, 1vh) * 80) !important; /* Consistent larger height */
-    max-height: calc(var(--vh, 1vh) * 80) !important; /* Same min and max */
+    height: auto !important; /* Override base.css fixed height */
+    min-height: calc(var(--vh, 1vh) * 85) !important; /* Increased to use more screen space */
+    max-height: calc(var(--vh, 1vh) * 85) !important; /* Same min and max */
     text-align: center !important;
     position: relative !important;
     overflow-y: auto !important; /* Allow scrolling if needed */
@@ -175,12 +204,12 @@
   body #countdown .progress-container,
   body #processing .progress-container {
     display: block !important;
-    height: 8px !important;
+    height: 6px !important; /* Slightly thinner progress bar */
     background: rgba(0,0,0,0.08) !important;
-    border-radius: 4px !important;
+    border-radius: 3px !important;
     overflow: hidden !important;
     position: relative !important;
-    margin: 10px 0 !important;
+    margin: 5px 0 8px 0 !important; /* Reduced margins */
     /* CONSISTENT WIDTH: Both progress bars same size to prevent jumping */
     width: 100% !important;
     max-width: 300px !important;
@@ -190,7 +219,7 @@
   body #countdownProgress,
   body #processingProgress {
     height: 100%;
-    border-radius: 4px;
+    border-radius: 3px; /* Match container radius */
     width: 0%; /* JavaScript will control this */
     position: absolute;
     top: 0;
@@ -212,7 +241,7 @@
     /* OVERRIDE main.css completely - force exact same properties as processing */
     display: block !important;
     height: 100% !important;
-    border-radius: 4px !important; /* Override main.css border-radius */
+    border-radius: 3px !important; /* Match new thinner bar */
     width: 0% !important;
     position: absolute !important;
     top: 0 !important;
@@ -256,6 +285,7 @@
     justify-content: space-between !important;
     height: 100% !important;
     position: relative !important;
+    gap: 8px !important; /* Reduced gap between elements */
   }
 
   /* Fix: Use actual HTML structure - card not cardStack */
@@ -265,15 +295,16 @@
     align-items: center !important;
     justify-content: center !important;
     position: relative !important;
-    max-height: calc(100% - 60px) !important;
+    max-height: calc(100% - 80px) !important; /* More space for buttons */
     overflow: visible !important;
+    margin: 5px 0 !important; /* Reduced margin */
   }
 
   body .card {
     width: calc(100% - 16px) !important;
     max-width: 280px !important;
     height: auto !important;
-    max-height: 400px !important;
+    max-height: 320px !important; /* Reduced max height for more space */
     border-radius: 12px !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
     position: absolute !important;
@@ -286,13 +317,13 @@
   body .card img {
     width: 100% !important;
     height: auto !important;
-    max-height: 280px !important;
+    max-height: 220px !important; /* Reduced image height */
     object-fit: cover !important;
     border-radius: 12px 12px 0 0 !important;
   }
 
   body .card-content {
-    padding: 12px !important;
+    padding: 8px !important; /* Reduced padding */
     text-align: center !important;
     background: white !important;
     border-radius: 0 0 12px 12px !important;
@@ -320,13 +351,14 @@
     display: flex !important;
     justify-content: center !important;
     gap: 20px !important;
-    padding: 8px 0 0 0 !important;
+    padding: 5px 0 10px 0 !important; /* Reduced top padding */
     flex-shrink: 0 !important;
     /* OVERRIDE inline style="display: none;" */
     visibility: visible !important;
     opacity: 1 !important;
     position: relative !important;
     z-index: 1000 !important;
+    margin-top: auto !important; /* Push to bottom */
   }
 
   /* Backup rule with maximum specificity */
