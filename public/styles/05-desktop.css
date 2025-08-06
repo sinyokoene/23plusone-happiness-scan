@@ -83,9 +83,14 @@
     font-size: var(--font-size-base);
   }
   
-  /* Desktop Game Layout */
-#timerContainer {
+  .hero-image {
   max-width: 320px; /* Match desktop card width */
+  max-height: 220px;
+}
+
+/* Desktop Game Layout */
+#timerContainer {
+  max-width: 320px; /* Match desktop card max-width */
 }
   #card {
     max-height: 450px; /* Desktop: larger card area */
