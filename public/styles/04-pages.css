@@ -108,6 +108,7 @@
   object-fit: contain;
   border-radius: 16px;
   box-shadow: var(--shadow-lg);
+  overflow: hidden;
 }
 
 /* Game Buttons */
