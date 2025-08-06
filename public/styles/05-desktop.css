@@ -82,16 +82,17 @@
   .card p {
     font-size: var(--font-size-base);
   }
-  
-  .hero-image {
-  max-width: 320px; /* Match desktop card width */
-  max-height: 220px;
-}
 
-/* Desktop Game Layout */
-#timerContainer {
-  max-width: 320px; /* Match desktop card max-width */
-}
+  .hero-image {
+    max-width: 320px;
+    max-height: 250px; /* Standardized height */
+  }
+
+  /* Desktop Game Layout */
+  #timerContainer {
+    max-width: 320px; /* Match desktop card max-width */
+  }
+
   #card {
     max-height: 450px; /* Desktop: larger card area */
   }
@@ -104,7 +105,7 @@
   #cardImages .card,
   #cardImages .card img,
   #cardImages img {
-    max-height: 400px; /* Desktop: larger images */
+    max-height: 250px; /* Standardized height */
   }
   
   /* Desktop Buttons */
@@ -139,11 +140,7 @@
     height: 8px;
   }
   
-  /* Desktop Hero Image */
-  .hero-image {
-    max-width: 300px;
-    max-height: 200px;
-  }
+
   
   /* Desktop Footer */
   .bottom-branding {

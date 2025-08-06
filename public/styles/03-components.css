@@ -137,7 +137,7 @@
 }
 
 /* Cards */
-.card {
+.card-area {
   background: var(--white);
   border-radius: 10px; /* Rounded corners */
   box-shadow: var(--shadow-md);
@@ -151,12 +151,11 @@
   flex-direction: column;
 }
 
-.card img {
+.card-area img {
   width: 100%;
   height: auto;
   max-height: 120px; /* Mobile: smaller images */
   object-fit: cover;
-  border-radius: 10px; /* Match parent radius */
 }
 
 .card-content {
