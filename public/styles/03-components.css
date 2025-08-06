@@ -79,10 +79,10 @@
 
 /* Start Button - Special styling */
 .btn-start {
-  max-width: 110px; /* Half the previous width */
-  width: 90%;
-  height: 50px;
-  font-size: 20px;
+  max-width: 100px; /* Half the previous width */
+  width: 80%;
+  height: 44px;
+  font-size: 18px;
   border-radius: 8px;
   margin: var(--spacing-sm) auto 0;
   display: block;
@@ -172,6 +172,7 @@
   height: auto;
   margin: 0 auto;
   object-fit: contain;
+  border-radius: 16px;
 }
 
 /* Progress Text */
