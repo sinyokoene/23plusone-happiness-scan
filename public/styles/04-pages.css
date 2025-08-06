@@ -431,12 +431,6 @@
   margin-bottom: 20px;
 }
 
-@media screen and (max-width: 480px) {
-  #cardImages img,
-  .hero-image {
-    max-width: 100%;
-    border-radius: 0;
-  }
-}
+
 
 
