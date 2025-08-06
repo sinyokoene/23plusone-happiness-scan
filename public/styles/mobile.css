@@ -1,35 +1,25 @@
-/* Consolidated Mobile Styles - Single File Solution */
+/* 23plusone Mobile Styles - Clean Architecture */
 
 @media screen and (max-width: 480px) {
   
-  /* NUCLEAR OPTION: Override main.css .active-section and other desktop rules */
-  /* main.css .active-section has justify-content: space-between with no media query! */
+  /* =============================================================================
+     CRITICAL OVERRIDES - Fix desktop-first CSS architecture issues
+     ============================================================================= */
+  
+  /* Override main.css .active-section justify-content: space-between (no media query) */
   html body .active-section,
-  html body section.active-section,
-  html body main.active-section,
-  html body div.active-section,
-  html body #game.active-section, 
-  html body #intro.active-section, 
-  html body #results.active-section,
-  html body #countdown.active-section,
-  html body #processing.active-section,
-  html body #game, 
-  html body #intro, 
-  html body #results,
+  html body #intro,
   html body #countdown,
-  html body #processing {
-    /* CRITICAL: Override main.css .active-section justify-content: space-between */
-    /* AND Override main.css #results justify-content: space-between */
+  html body #game,
+  html body #processing,
+  html body #results {
     justify-content: flex-start !important;
-    /* Force override any desktop height rules */
     height: calc(var(--vh, 1vh) * 55) !important;
     min-height: calc(var(--vh, 1vh) * 55) !important;
     max-height: calc(var(--vh, 1vh) * 55) !important;
-    /* Override desktop padding */
     padding: 10px !important;
     margin: 10px !important;
     width: calc(100% - 20px) !important;
-    /* Ensure mobile layout */
     background: var(--card-bg) !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
@@ -42,357 +32,200 @@
     box-sizing: border-box !important;
   }
   
-  /* CRITICAL: Override base.css desktop rules completely for mobile */
+  /* =============================================================================
+     LAYOUT - Mobile-first layout structure
+     ============================================================================= */
+  
   body {
     min-height: 100vh !important;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: flex-start !important; /* Override base.css space-between */
+    justify-content: flex-start !important;
     overflow-x: hidden !important;
-    padding: 0 !important; /* Override any base.css padding */
+    padding: 0 !important;
     margin: 0 !important;
   }
 
   .main-content {
     flex: 1 !important;
     display: flex !important;
-    align-items: stretch !important; /* Override base.css center */
+    align-items: stretch !important;
     justify-content: center !important;
-    padding: 0 !important; /* Override base.css var(--spacing-md) */
+    padding: 0 !important;
     margin: 0 !important;
   }
 
   .container {
     width: 100% !important;
-    max-width: none !important; /* Override base.css 1250px */
+    max-width: none !important;
     overflow: visible !important;
     padding: 0 !important;
     margin: 0 !important;
   }
   
-  /* Hide all sections by default - use !important for reliability */
-  body #intro:not(.active-section),
-  body #countdown:not(.active-section),
-  body #game:not(.active-section),
-  body #processing:not(.active-section),
-  body #results:not(.active-section) {
-    display: none !important;
-    visibility: hidden !important;
-    opacity: 0 !important;
-    z-index: -1 !important;
+  /* =============================================================================
+     TYPOGRAPHY - Mobile-optimized text sizes
+     ============================================================================= */
+  
+  /* TEST: Happiness Scan Title */
+  .intro-title {
+    padding-top: 10px !important;
+    background-color: red !important; /* Temporary test */
+    font-size: 24px !important;
+    font-weight: 600 !important;
+    color: var(--white) !important;
+    margin: 0 !important;
+    text-align: center !important;
   }
   
-  /* --- Universal Section Styling --- */
-  /* CRITICAL: Override main.css and base.css desktop rules completely */
-  body #intro.active-section,
-  body #countdown.active-section,
-  body #game.active-section,
-  body #processing.active-section,
-  body #results.active-section,
-  body #intro,
-  body #countdown,
-  body #game,
-  body #processing,
-  body #results {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: flex-start !important; /* Override base.css space-between */
-    background: var(--card-bg) !important;
-    border-radius: 12px !important;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.1) !important;
-    margin: 10px !important; /* Override base.css margins */
-    padding: 10px !important; /* Reduced from 15px - Tighter padding for more content space */
-    width: calc(100% - 20px) !important; /* Match margin */
-    height: auto !important; /* Override base.css fixed height */
-    height: calc(var(--vh, 1vh) * 55) !important; /* Much smaller - 55% to override main.css fixed height */
-    min-height: calc(var(--vh, 1vh) * 55) !important; /* Much smaller - 55% for bottom branding */
-    max-height: calc(var(--vh, 1vh) * 55) !important; /* Much smaller - 55% for bottom branding */
-    text-align: center !important;
-    position: relative !important;
-    overflow-y: auto !important; /* Allow scrolling if needed */
-    overflow-x: hidden !important;
-    box-sizing: border-box !important;
-    z-index: 10 !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    /* REMOVE ANIMATIONS: No weird transitions */
-    transition: none !important;
-    animation: none !important;
-    transform: none !important;
+  #introContent h1 {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    margin: 0 0 16px 0 !important;
+    line-height: 1.2 !important;
   }
 
-  /* Remove the different padding overrides - keep consistent */
-  body #countdown.active-section,
-  body #processing.active-section,
-  body #results.active-section {
-    justify-content: center !important;
-    align-items: center !important;
-    /* Removed: padding override - use consistent padding from above */
+  .intro-text p {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+    margin: 0 0 8px 0 !important;
+    color: var(--text-secondary) !important;
+  }
+
+  .intro-text p.lets-go {
+    font-size: 18px !important;
+    font-weight: 600 !important;
+    color: var(--brand-pink) !important;
+    margin: 12px 0 16px 0 !important;
   }
   
-  /* --- Intro Section --- */
-  /* MAXIMUM SPECIFICITY: Force start button to work on mobile */
-  body.main-content #startBtn,
-  body #intro.active-section #startBtn,
-  body #startBtn {
+  /* =============================================================================
+     BUTTONS - Mobile-optimized touch targets
+     ============================================================================= */
+  
+  #startBtn {
     display: block !important;
     margin: 5px auto 0 auto !important;
-    max-width: 220px !important; /* Larger button */
-    width: 90% !important; /* Better touch target */
-    height: 50px !important; /* Better touch target */
-    font-size: 18px !important; /* Larger button text */
+    max-width: 220px !important;
+    width: 90% !important;
+    height: 50px !important;
+    font-size: 18px !important;
     font-weight: 600 !important;
     position: relative !important;
-    z-index: 99999 !important; /* Even higher z-index */
-    padding: 15px 20px !important; /* Better padding */
+    z-index: 99999 !important;
+    padding: 15px 20px !important;
     flex-shrink: 0 !important;
     background: var(--brand-pink) !important;
     color: var(--white) !important;
     border: none !important;
-    border-radius: 25px !important; /* More rounded */
+    border-radius: 25px !important;
     cursor: pointer !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
     transform: none !important;
     opacity: 1 !important;
     visibility: visible !important;
-    /* CRITICAL: Force event handling */
     user-select: none !important;
     -webkit-user-select: none !important;
     -webkit-tap-highlight-color: transparent !important;
-    /* Ensure no overlays can block this */
     isolation: isolate !important;
   }
-
-  /* Typography - Better font sizes for mobile */
-  body #introContent h1 {
-    font-size: 26px !important; /* Larger heading */
-    font-weight: 600 !important;
-    margin: 0 0 16px 0 !important; /* Better spacing */
-    line-height: 1.2 !important;
-  }
-
-  body .intro-text p {
-    font-size: 16px !important; /* Larger readable text */
-    line-height: 1.5 !important; /* Better line height */
-    margin: 0 0 8px 0 !important; /* Better spacing */
-    color: var(--text-secondary) !important;
-  }
-
-  body .intro-text p.lets-go {
-    font-size: 18px !important; /* Larger call-to-action */
-    font-weight: 600 !important;
-    color: var(--brand-pink) !important;
-    margin: 12px 0 16px 0 !important; /* Better spacing */
-  }
   
-  /* Hero image sizing */
-  body .hero-image {
-    max-width: 180px !important;
-    max-height: 120px !important;
+  /* =============================================================================
+     PROGRESS BARS - Fixed width to prevent jumping
+     ============================================================================= */
+  
+  #countdownText,
+  #processingText {
+    font-size: 26px !important;
+    font-weight: 600 !important;
+    margin: 0 0 10px 0 !important;
+    text-align: center !important;
     width: 100% !important;
-    height: auto !important;
-    margin: 0 auto !important;
-    object-fit: contain !important;
+    min-width: 200px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    font-family: 'Poppins', var(--font-family) !important;
+    color: #492D27 !important;
+  }
+  
+  #countdown .progress-container,
+  #processing .progress-container {
     display: block !important;
-  }
-  
-  /* Intro content layout - ensure button stays clickable */
-  body #introContent {
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: space-between !important;
-    height: 100% !important;
-    align-items: center !important;
-    text-align: center !important;
-    padding: 0 !important;
-    /* REMOVED: pointer-events: none - this was blocking button clicks */
-  }
-
-  /* Ensure all elements are clickable */
-  body #introContent *,
-  body .intro-text,  
-  body #startBtn {
-    pointer-events: auto !important;
-  }
-
-  body .intro-text {
-    flex: 1 !important;
-    display: flex !important;
-    flex-direction: column !important;
-    justify-content: center !important;
-    margin: 8px 0 !important;
-    /* Ensure this doesn't block the button */
-    pointer-events: auto !important;
-  }
-  
-  /* --- Countdown & Processing Sections --- */
-  body #countdownContent,
-  body #processingContent {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    height: 100% !important;
-    gap: 20px !important;
-  }
-
-  body #countdownText,
-  body #processingText {
-    font-size: 26px !important; /* Larger countdown/processing text */
-    font-weight: 600 !important;
-    margin: 0 0 10px 0 !important; /* Better spacing */
-    text-align: center !important;
-    width: 100% !important; /* Fixed width to prevent container jumping */
-    min-width: 200px !important; /* Minimum width for longest text */
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    min-height: 40px !important; /* Override main.css 5rem - Fixed height to prevent jumping */
-    max-height: 40px !important; /* Ensure consistent height */
-    font-family: 'Poppins', var(--font-family) !important; /* Match main.css font */
-    color: #492D27 !important; /* Match main.css color */
-  }
-  
-  /* --- CRITICAL: Progress Bars - Allow JavaScript Control --- */
-  /* Progress bar containers - can use !important for layout */
-  body #countdown .progress-container,
-  body #processing .progress-container {
-    display: block !important;
-    height: 6px !important; /* Slightly thinner progress bar */
+    height: 6px !important;
     background: rgba(0,0,0,0.08) !important;
     border-radius: 3px !important;
     overflow: hidden !important;
     position: relative !important;
-    margin: 2px auto 4px auto !important; /* Center the progress bar */
-    /* FIXED WIDTH: Prevent jumping when text changes */
-    width: 280px !important; /* Fixed width instead of percentage */
+    margin: 2px auto 4px auto !important;
+    width: 280px !important;
     max-width: 280px !important;
-    min-width: 280px !important; /* Ensure consistent size */
+    min-width: 280px !important;
   }
   
-  /* Progress bar elements - NO !important on JS-controlled properties */
-  body #countdownProgress,
-  body #processingProgress {
+  #countdownProgress,
+  #processingProgress {
     height: 100%;
-    border-radius: 3px; /* Match container radius */
-    width: 0%; /* JavaScript will control this */
+    border-radius: 3px;
+    width: 0%;
     position: absolute;
     top: 0;
     left: 0;
     z-index: 1;
-    /* CRITICAL: Let JavaScript control these properties completely */
-    /* No !important declarations here - JS needs full control */
-    background: #DA006B; /* Initial color, JS can override */
-    transition: none; /* JS will set proper transition */
-    /* ENSURE CONSISTENT BEHAVIOR: Force same properties */
+    background: #DA006B;
+    transition: none;
     transform: none;
     animation: none;
     max-width: none;
     min-width: 0;
   }
-
-  /* SPECIFIC FIX: Ensure countdown progress behaves like processing */
-  body #countdown #countdownProgress {
-    /* OVERRIDE main.css completely - force exact same properties as processing */
-    display: block !important;
-    height: 100% !important;
-    border-radius: 3px !important; /* Match new thinner bar */
-    width: 0% !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    z-index: 1 !important;
-    background: #DA006B !important; /* Override main.css background */
-    transition: none !important; /* Override any main.css transition */
-    /* Prevent any interference from main.css */
-    transform: none !important;
-    animation: none !important;
-    opacity: 1 !important;
-    visibility: visible !important;
-    /* Remove any conflicting properties */
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-  }
   
-  /* --- Game Section --- */
-  body #game.active-section {
-    /* Removed: padding override - use consistent padding */
-    overflow: hidden !important;
-  }
-
-  /* CRITICAL: When game is active, FORCE buttons to show */
-  body #game.active-section .buttons[style*="display: none"] {
-    display: flex !important;
-  }
-
-  /* NUCLEAR OPTION: Force buttons visible when game section is active */
-  body #game.active-section .buttons {
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
-
-  /* Fix: Use actual HTML structure - cardContainer not gameContent */
-  /* CRITICAL: Override main.css with higher specificity */
-  body #game.active-section #cardContainer,
-  body #game #cardContainer,
-  body #cardContainer {
+  /* =============================================================================
+     GAME SECTION - Compact card layout
+     ============================================================================= */
+  
+  #cardContainer {
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-between !important; /* Override main.css justify-content: center */
+    justify-content: space-between !important;
     height: 100% !important;
     position: relative !important;
-    gap: 2px !important; /* Further reduced from 4px - Even tighter spacing for smaller container */
-    flex: 1 !important; /* Override main.css flex: 1 */
-    overflow: visible !important; /* Override main.css */
+    gap: 2px !important;
+    flex: 1 !important;
+    overflow: visible !important;
   }
 
-  /* Fix: Use actual HTML structure - card not cardStack */
-  /* CRITICAL: Override main.css with higher specificity */
-  body #game.active-section #card,
-  body #game #card,
-  body #card {
+  #card {
     flex: 1 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
     position: relative !important;
-    /* max-height: calc(100% - 60px) !important; Reduced from 80px - More space for buttons */
-    max-height: 100px !important; /* Ultra compact from 120px - Smallest card area for 55% container */
+    max-height: 100px !important;
     overflow: visible !important;
-    margin: 1px 0 !important; /* Further reduced from 2px - Minimal vertical spacing */
+    margin: 1px 0 !important;
   }
 
-  /* CRITICAL: Override main.css #cardImages spacing - THIS WAS THE MISSING PIECE */
-  body #game.active-section #cardImages,
-  body #game #cardImages,
-  body #cardImages {
+  #cardImages {
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    margin: 2px 0 !important; /* Further reduced from 4px - Minimal spacing around card images */
-    min-height: auto !important; /* Override main.css min-height: 350px - HUGE SPACE SAVER */
-    max-height: 160px !important; /* Even smaller from 200px - Ultra compact card area */
+    margin: 2px 0 !important;
+    min-height: auto !important;
+    max-height: 160px !important;
     overflow: visible !important;
     position: relative !important;
     flex: 1 !important;
   }
 
-  /* CRITICAL: Ensure card images within cardImages container are properly sized */
-  body #cardImages .card,
-  body #cardImages .card img,
-  body #cardImages img {
-    max-height: 160px !important; /* Ensure images don't exceed ultra compact container */
-    object-fit: contain !important; /* Maintain aspect ratio */
-  }
-
-  body .card {
+  .card {
     width: calc(100% - 16px) !important;
-    max-width: 240px !important; /* Further reduced from 260px - Even smaller cards for compact layout */
+    max-width: 240px !important;
     height: auto !important;
-    max-height: 160px !important; /* Even smaller from 200px - Ultra compact cards */
+    max-height: 160px !important;
     border-radius: 12px !important;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
     position: absolute !important;
@@ -402,75 +235,63 @@
     overflow: hidden !important;
   }
 
-  body .card img {
+  .card img {
     width: 100% !important;
     height: auto !important;
-    max-height: 110px !important; /* Even smaller from 140px - Ultra compact images */
+    max-height: 110px !important;
     object-fit: cover !important;
     border-radius: 12px 12px 0 0 !important;
   }
 
-  body .card-content {
-    padding: 6px !important; /* Further reduced padding for compact layout */
+  .card-content {
+    padding: 6px !important;
     text-align: center !important;
     background: white !important;
     border-radius: 0 0 12px 12px !important;
   }
 
-  body .card h3 {
-    font-size: 16px !important; /* Slightly smaller card titles for compact layout */
+  .card h3 {
+    font-size: 16px !important;
     font-weight: 600 !important;
-    margin: 0 0 4px 0 !important; /* Tighter spacing for compact layout */
+    margin: 0 0 4px 0 !important;
     color: var(--text-primary) !important;
     line-height: 1.2 !important;
   }
 
-  body .card p {
-    font-size: 14px !important; /* Slightly smaller card descriptions for compact layout */
+  .card p {
+    font-size: 14px !important;
     margin: 0 !important;
     color: var(--text-secondary) !important;
     line-height: 1.4 !important;
   }
-
-  /* Fix: Use actual HTML structure - .buttons not #gameControls */
-  /* CRITICAL: Force buttons to show when game is active */
-  body #game.active-section .buttons,
-  body #game .buttons {
+  
+  /* =============================================================================
+     GAME BUTTONS - Touch-optimized Yes/No buttons
+     ============================================================================= */
+  
+  .buttons {
     display: flex !important;
     justify-content: center !important;
     gap: 20px !important;
-    padding: 1px 0 3px 0 !important; /* Further reduced for compact layout - Minimal button spacing */
+    padding: 1px 0 3px 0 !important;
     flex-shrink: 0 !important;
-    /* OVERRIDE inline style="display: none;" */
     visibility: visible !important;
     opacity: 1 !important;
     position: relative !important;
     z-index: 1000 !important;
-    margin-top: auto !important; /* Push to bottom */
+    margin-top: auto !important;
   }
 
-  /* Backup rule with maximum specificity */
-  body .main-content #game.active-section .buttons {
+  .buttons button,
+  #yesBtn,
+  #noBtn {
     display: flex !important;
-  }
-
-  /* Fix: Target buttons within .buttons container */
-  /* FORCE VISIBILITY: Override any JavaScript display: none */
-  /* CRITICAL: Use maximum CSS specificity to beat main.css */
-  body.main-content #game.active-section .buttons button,
-  body #game.active-section .buttons button,
-  body #game .buttons button,
-  body .buttons button,
-  body #game button,
-  body #yesBtn,
-  body #noBtn {
-    display: flex !important; /* Force visibility */
-    width: 90px !important; /* Larger buttons for better touch */
-    height: 40px !important; /* Better touch target */
-    font-size: 16px !important; /* Larger font for readability */
+    width: 90px !important;
+    height: 40px !important;
+    font-size: 16px !important;
     font-weight: 600 !important;
     border: none !important;
-    border-radius: 20px !important; /* More rounded for mobile */
+    border-radius: 20px !important;
     cursor: pointer !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
@@ -479,89 +300,51 @@
     flex-shrink: 0 !important;
     text-align: center !important;
     box-sizing: border-box !important;
-    /* FIXED: Better text centering */
     align-items: center !important;
     justify-content: center !important;
     line-height: 1 !important;
-    padding: 0 !important; /* Remove padding for perfect centering */
-    /* FORCE VISIBILITY */
+    padding: 0 !important;
     visibility: visible !important;
     opacity: 1 !important;
   }
   
-  /* CRITICAL: Force buttons container to always be visible when game is active */
-  body.main-content #game.active-section .buttons,
-  body #game.active-section .buttons,
-  body #game .buttons,
-  body .buttons {
-    display: flex !important;
-    justify-content: center !important;
-    gap: 20px !important;
-    padding: 1px 0 3px 0 !important; /* Further reduced for compact layout - Minimal button spacing */
-    flex-shrink: 0 !important;
-    /* OVERRIDE inline style="display: none;" */
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: relative !important;
-    z-index: 1000 !important;
-    margin-top: auto !important; /* Push to bottom */
-  }
-  
-  /* CRITICAL: Force button colors and visibility with maximum specificity */
-  body.main-content #game.active-section #yesBtn,
-  body #game.active-section #yesBtn,
-  body #game #yesBtn,
-  body .buttons #yesBtn,
-  body #yesBtn {
+  #yesBtn {
     background: var(--btn-yes) !important;
     color: white !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
   }
   
-  body.main-content #game.active-section #noBtn,
-  body #game.active-section #noBtn,
-  body #game #noBtn,
-  body .buttons #noBtn,
-  body #noBtn {
+  #noBtn {
     background: var(--btn-no) !important;
     color: white !important;
-    display: flex !important;
-    visibility: visible !important;
-    opacity: 1 !important;
   }
   
-  /* Hide swipe instructions when buttons are visible */
-  body .swipe-instructions {
-    display: none !important;
-  }
-
-  /* --- Results Section --- */
-  body #results.active-section {
-    /* Removed: padding override - use consistent padding */
+  /* =============================================================================
+     RESULTS SECTION - Compact results layout
+     ============================================================================= */
+  
+  #results {
     overflow-y: auto !important;
     justify-content: flex-start !important;
   }
 
-  body #resultsContent {
+  #resultsContent {
     width: 100% !important;
     text-align: center !important;
   }
 
-  body #resultsContent h2 {
+  #resultsContent h2 {
     font-size: 20px !important;
     margin: 0 0 16px 0 !important;
     font-weight: 600 !important;
   }
 
-  body #valuesList {
+  #valuesList {
     list-style: none !important;
     padding: 0 !important;
     margin: 0 !important;
   }
 
-  body #valuesList li {
+  #valuesList li {
     background: rgba(0,0,0,0.05) !important;
     margin: 8px 0 !important;
     padding: 12px !important;
@@ -570,7 +353,7 @@
     text-align: left !important;
   }
 
-  body #newGameBtn {
+  #newGameBtn {
     margin: 20px auto 0 auto !important;
     padding: 12px 24px !important;
     background: var(--brand-pink) !important;
@@ -581,5 +364,35 @@
     font-weight: 600 !important;
     cursor: pointer !important;
     display: block !important;
+  }
+  
+  /* =============================================================================
+     UTILITY CLASSES
+     ============================================================================= */
+  
+  .swipe-instructions {
+    display: none !important;
+  }
+  
+  .hero-image {
+    max-width: 180px !important;
+    max-height: 120px !important;
+    width: 100% !important;
+    height: auto !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
+    display: block !important;
+  }
+  
+  /* Hide sections by default */
+  #intro:not(.active-section),
+  #countdown:not(.active-section),
+  #game:not(.active-section),
+  #processing:not(.active-section),
+  #results:not(.active-section) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    z-index: -1 !important;
   }
 }
