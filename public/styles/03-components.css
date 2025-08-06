@@ -82,10 +82,11 @@
   max-width: 220px;
   width: 90%;
   height: 50px;
-  font-size: var(--font-size-lg);
-  border-radius: 25px;
+  font-size: 20px;
+  border-radius: 8px;
   margin: var(--spacing-sm) auto 0;
   display: block;
+  padding: var(--spacing-md) var(--spacing-sm); /* Reduced left/right padding */
 }
 
 /* Navigation Arrows */

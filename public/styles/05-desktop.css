@@ -90,7 +90,9 @@
   .btn-start {
     max-width: 300px;
     height: 60px;
-    font-size: var(--font-size-xl);
+    font-size: 20px;
+    border-radius: 8px;
+    padding: var(--spacing-md) var(--spacing-sm); /* Reduced left/right padding */
   }
   
   .buttons {
