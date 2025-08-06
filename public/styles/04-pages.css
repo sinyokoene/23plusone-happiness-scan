@@ -60,7 +60,7 @@
   height: 100%;
   background: var(--brand-pink);
   width: 0%;
-  border-radius: 100px;
+  border-radius: 100px; /* Pill shape */
   /* Let JavaScript control width and transitions */
 }
 
@@ -197,7 +197,7 @@
   height: 100%;
   background: var(--brand-pink);
   width: 0%;
-  border-radius: 100px;
+  border-radius: 100px; /* Pill shape */
   /* Let JavaScript control width and transitions */
 }
 

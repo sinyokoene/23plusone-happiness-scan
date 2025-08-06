@@ -51,7 +51,7 @@ body {
 .intro-header {
   text-align: center;
   margin-bottom: var(--spacing-lg);
-  padding: 0;
+  padding: 10px 0 0 0; /* 10px top padding */
 }
 
 .intro-title {
@@ -78,7 +78,7 @@ body {
   max-width: 280px; /* Fixed width to prevent jumping */
   height: 12px; /* New height */
   background: var(--progress-bg);
-  border-radius: var(--radius-sm);
+  border-radius: 100px; /* Pill shape */
   overflow: hidden;
   margin: var(--spacing-sm) auto;
   position: relative;
@@ -87,7 +87,7 @@ body {
 .progress-bar {
   height: 100%;
   width: 0%;
-  border-radius: var(--radius-sm);
+  border-radius: 100px; /* Pill shape */
   position: absolute;
   top: 0;
   left: 0;
