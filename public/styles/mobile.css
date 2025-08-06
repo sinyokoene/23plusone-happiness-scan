@@ -303,7 +303,8 @@
     align-items: center !important;
     justify-content: center !important;
     position: relative !important;
-    max-height: calc(100% - 60px) !important; /* Reduced from 80px - More space for buttons */
+    /* max-height: calc(100% - 60px) !important; Reduced from 80px - More space for buttons */
+    max-height: 150px !important; /* Reduced from 300px - Smaller card area */
     overflow: visible !important;
     margin: 2px 0 !important; /* Reduced from 5px - Tighter vertical spacing */
   }
