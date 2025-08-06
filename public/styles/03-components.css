@@ -47,7 +47,7 @@
   color: var(--white);
   width: 90px;
   height: 40px;
-  border-radius: 20px; /* Restore original radius */
+  border-radius: var(--radius); /* Restore original radius */
   font-size: var(--font-size-base);
 }
 
@@ -65,7 +65,7 @@
   color: var(--white);
   width: 90px;
   height: 40px;
-  border-radius: 20px; /* Restore original radius */
+  border-radius: var(--radius); /* Restore original radius */
   font-size: var(--font-size-base);
 }
 
@@ -141,8 +141,8 @@
 .card-area img {
   width: 100%;
   height: auto;
-  max-height: 120px; /* Mobile: smaller images */
   object-fit: cover;
+  border-radius: 0;
 }
 
 .card-content {
@@ -168,13 +168,13 @@
 
 /* Hero Image */
 .hero-image {
-  max-width: 280px; /* Match timer bar width */
+  max-width: 100%; /* Match timer bar width */
   max-height: 280px; /* Allow for more height */
   width: 100%;
   height: auto;
   margin: 0 auto;
   object-fit: contain;
-  border-radius: 10px; /* Rounded corners */
+  border-radius: 0; /* Rounded corners */
 }
 
 /* Progress Text */
