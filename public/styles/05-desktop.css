@@ -19,7 +19,7 @@
   
   .main-content {
     align-items: center; /* Desktop: center content */
-    padding: 0; /* Remove padding to ensure perfect centering */
+    padding: 20px; /* Add padding to create space */
   }
   
   .container {
