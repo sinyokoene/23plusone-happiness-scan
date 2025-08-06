@@ -284,7 +284,7 @@
 .swipe-hint {
   position: absolute;
   top: 100%; /* Position below the card */
-  margin-top: 20px; /* Add more space */
+  margin-top: 30px; /* Add more space */
   left: 50%;
   transform: translateX(-50%);
   color: var(--text-muted);
