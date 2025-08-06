@@ -23,7 +23,7 @@
   }
   
   .container {
-    max-width: 1250px; /* Desktop: max width */
+    max-width: 1200px; /* Desktop: max width */
     padding: 0 var(--spacing-xl);
   }
   
@@ -35,21 +35,21 @@
     width: 100%;
     height: var(--section-height);
     min-height: 600px; /* Desktop minimum */
-    max-height: 900px; /* Desktop maximum */
+    max-height: 800px; /* Desktop maximum */
   }
   
   /* Desktop Typography */
   .intro-title {
-    font-size: 28px;
+    font-size: 20px;
   }
   
   #introContent h1 {
-    font-size: 28px;
+    font-size: 24px;
   }
   
   #countdownText,
   #processingText {
-    font-size: 32px;
+    font-size: 28px;
     min-height: 5rem; /* Desktop: taller text containers */
     max-height: 5rem;
   }
