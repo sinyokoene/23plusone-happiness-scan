@@ -214,7 +214,5 @@ body {
     padding-left: 0;
     padding-right: 0;
   }
-  .full-width-mobile > * {
-    border-radius: 0 !important;
-  }
+
 }
