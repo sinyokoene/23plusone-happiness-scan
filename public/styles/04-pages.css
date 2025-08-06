@@ -1,0 +1,249 @@
+/* 23plusone Pages - Page-specific styles (Mobile First) */
+
+/* Intro Page - Specific styles */
+
+#introContent {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  align-items: center;
+  text-align: center;
+  gap: var(--spacing-md);
+}
+
+.intro-left {
+  flex: 0 0 auto;
+  text-align: center;
+}
+
+.intro-right {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+}
+
+.intro-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: var(--spacing-sm) 0;
+}
+
+/* Countdown Page - Specific styles */
+
+#countdownContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--spacing-lg);
+}
+
+#countdownText {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+  min-height: 40px;
+  max-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+#countdownProgress {
+  height: 100%;
+  background: var(--brand-pink);
+  width: 0%;
+  border-radius: var(--radius-sm);
+  /* Let JavaScript control width and transitions */
+}
+
+/* Game Page */
+#game {
+  /* Layout handled by 02-layout.css */
+  overflow: visible; /* Allow card animations */
+}
+
+#cardContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  position: relative;
+  gap: var(--spacing-xs);
+  flex: 1;
+  overflow: visible;
+}
+
+#card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  max-height: 200px; /* Mobile: compact card area */
+  overflow: visible;
+  margin: var(--spacing-xs) 0;
+}
+
+#cardImages {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: var(--spacing-xs) 0;
+  min-height: auto;
+  max-height: 180px; /* Mobile: smaller card area */
+  overflow: visible;
+  position: relative;
+  flex: 1;
+  width: 100%;
+}
+
+/* Ensure card images are properly sized */
+#cardImages .card,
+#cardImages .card img,
+#cardImages img {
+  max-height: 180px;
+  object-fit: contain;
+}
+
+/* Game Buttons */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-xs) 0 var(--spacing-sm) 0;
+  flex-shrink: 0;
+  margin-top: auto;
+}
+
+/* Force buttons to be visible */
+#game .buttons {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+#game .buttons button {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* Processing Page - Specific styles */
+
+#processingContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: var(--spacing-lg);
+}
+
+#processingText {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  font-family: var(--font-family);
+  color: var(--text-primary);
+  margin: 0 0 var(--spacing-md) 0;
+  min-height: 40px;
+  max-height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+#processingProgress {
+  height: 100%;
+  background: var(--brand-pink);
+  width: 0%;
+  border-radius: var(--radius-sm);
+  /* Let JavaScript control width and transitions */
+}
+
+/* Results Page */
+#results {
+  overflow-y: auto;
+  justify-content: flex-start;
+}
+
+#resultsContent {
+  width: 100%;
+  text-align: center;
+}
+
+#resultsHeader {
+  margin-bottom: var(--spacing-lg);
+}
+
+#resultsHeader h2 {
+  font-size: var(--font-size-lg);
+  margin: 0 0 var(--spacing-md) 0;
+  font-weight: 600;
+}
+
+#dominantDomainsText {
+  font-size: var(--font-size-base);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+#valuesList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#valuesList li {
+  background: rgba(0,0,0,0.05);
+  margin: var(--spacing-sm) 0;
+  padding: var(--spacing-md);
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  text-align: left;
+}
+
+#newGameBtn {
+  margin: var(--spacing-lg) auto 0 auto;
+  padding: var(--spacing-md) var(--spacing-xl);
+  background: var(--brand-pink);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  display: block;
+}
+
+/* Results Navigation */
+.results-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md);
+  margin-top: auto;
+}
+
+/* Mobile-specific adjustments */
+@media screen and (max-width: 480px) {
+  /* Ensure mobile-specific overrides */
+  .nav-arrow {
+    width: 40px;
+    height: 28px;
+    font-size: var(--font-size-sm);
+  }
+  
+  .page-dot {
+    width: 6px;
+    height: 6px;
+  }
+}

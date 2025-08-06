@@ -1,0 +1,214 @@
+/* 23plusone Desktop - Desktop Overrides (481px+) */
+
+@media screen and (min-width: 481px) {
+  
+  /* Desktop Variables */
+  :root {
+    --container-padding: var(--spacing-xl);
+    --section-padding: var(--spacing-xxl) var(--spacing-xl);
+    --section-margin: 0 var(--spacing-xl) var(--spacing-xl) var(--spacing-xl);
+    --section-height: calc(var(--vh, 1vh) * 100 - 150px); /* Desktop: larger sections */
+    --font-size-xl: 28px;
+    --font-size-xxl: 36px;
+  }
+  
+  /* Desktop Layout */
+  body {
+    justify-content: space-between; /* Desktop: space between content and footer */
+  }
+  
+  .main-content {
+    align-items: center; /* Desktop: center content */
+    padding: var(--container-padding);
+  }
+  
+  .container {
+    max-width: 1250px; /* Desktop: max width */
+    padding: 0 var(--spacing-xl);
+  }
+  
+  /* Desktop Sections */
+  .section.active-section {
+    justify-content: space-between; /* Desktop: space content */
+    margin: var(--section-margin);
+    padding: var(--section-padding);
+    width: 100%;
+    height: var(--section-height);
+    min-height: 600px; /* Desktop minimum */
+    max-height: 900px; /* Desktop maximum */
+  }
+  
+  /* Desktop Typography */
+  .intro-title {
+    font-size: 28px;
+  }
+  
+  #introContent h1 {
+    font-size: 28px;
+  }
+  
+  #countdownText,
+  #processingText {
+    font-size: 32px;
+    min-height: 5rem; /* Desktop: taller text containers */
+    max-height: 5rem;
+  }
+  
+  /* Desktop Progress Bars */
+  .progress-container {
+    max-width: 400px; /* Desktop: wider progress bars */
+    height: 8px; /* Desktop: thicker bars */
+  }
+  
+  /* Desktop Cards */
+  .card {
+    max-width: 320px; /* Desktop: larger cards */
+    max-height: 400px; /* Desktop: taller cards */
+  }
+  
+  .card img {
+    max-height: 250px; /* Desktop: larger images */
+  }
+  
+  .card-content {
+    padding: var(--spacing-lg);
+  }
+  
+  .card h3 {
+    font-size: var(--font-size-lg);
+    margin: 0 0 var(--spacing-sm) 0;
+  }
+  
+  .card p {
+    font-size: var(--font-size-base);
+  }
+  
+  /* Desktop Game Layout */
+  #card {
+    max-height: 450px; /* Desktop: larger card area */
+  }
+  
+  #cardImages {
+    max-height: 400px; /* Desktop: larger card images area */
+    margin: var(--spacing-md) 0;
+  }
+  
+  #cardImages .card,
+  #cardImages .card img,
+  #cardImages img {
+    max-height: 400px; /* Desktop: larger images */
+  }
+  
+  /* Desktop Buttons */
+  .btn-start {
+    max-width: 300px;
+    height: 60px;
+    font-size: var(--font-size-xl);
+  }
+  
+  .buttons {
+    gap: var(--spacing-xl);
+    padding: var(--spacing-lg) 0;
+  }
+  
+  .btn-success,
+  .btn-danger {
+    width: 120px;
+    height: 50px;
+    font-size: var(--font-size-lg);
+    border-radius: var(--radius);
+  }
+  
+  /* Desktop Navigation */
+  .nav-arrow {
+    width: 50px;
+    height: 35px;
+    font-size: var(--font-size-lg);
+  }
+  
+  .page-dot {
+    width: 8px;
+    height: 8px;
+  }
+  
+  /* Desktop Hero Image */
+  .hero-image {
+    max-width: 300px;
+    max-height: 200px;
+  }
+  
+  /* Desktop Footer */
+  .bottom-branding {
+    position: relative; /* Desktop: not fixed */
+    justify-content: center;
+    padding: var(--spacing-lg) 0;
+    min-height: 80px;
+  }
+  
+  .bottom-branding-content {
+    max-width: 1250px;
+    padding: 0 var(--spacing-xl);
+  }
+  
+  .bottom-branding-left,
+  .bottom-branding-right {
+    gap: var(--spacing-md);
+  }
+  
+  .bottom-branding-logo {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .bottom-brand-logo {
+    height: 28px;
+    margin-left: var(--spacing-sm);
+  }
+  
+  .bottom-branding-text {
+    font-size: var(--font-size-sm);
+  }
+  
+  .bottom-copyright {
+    font-size: 9px;
+    margin-left: var(--spacing-sm);
+  }
+  
+  /* Desktop Results */
+  #resultsHeader h2 {
+    font-size: var(--font-size-xl);
+  }
+  
+  #valuesList li {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-lg);
+    margin: var(--spacing-md) 0;
+  }
+  
+  #newGameBtn {
+    font-size: var(--font-size-base);
+    padding: var(--spacing-lg) var(--spacing-xxl);
+  }
+  
+  /* Desktop-specific content layout */
+  #introContent {
+    gap: var(--spacing-xl);
+  }
+  
+  .intro-left {
+    max-width: 600px;
+  }
+  
+  /* Desktop countdown and processing */
+  #countdownContent,
+  #processingContent {
+    gap: var(--spacing-xl);
+  }
+  
+  /* High contrast mode adjustments for desktop */
+  @media (prefers-contrast: high) {
+    .section.active-section {
+      border: 2px solid var(--text-primary);
+    }
+  }
+}

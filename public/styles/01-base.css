@@ -1,0 +1,194 @@
+/* 23plusone Base Styles - Variables, Reset & Utilities Only */
+
+/* CSS Custom Properties (Variables) */
+:root {
+  /* Dynamic Viewport Height - Updated by JavaScript */
+  --vh: 1vh;
+  --vh-fallback: 100vh;
+  
+  /* Brand Colors */
+  --brand-pink: #e91e63;
+  --brand-dark: #291D1B;
+  
+  /* UI Colors */
+  --white: #ffffff;
+  --card-bg: #ffffff;
+  --text-primary: #333333;
+  --text-secondary: #555555;
+  --text-muted: #666666;
+  
+  /* Status Colors */
+  --success: #4CAF50;
+  --success-hover: #45a049;
+  --success-active: #66bb6a;
+  --danger: #f44336;
+  --danger-hover: #da190b;
+  --danger-active: #ef5350;
+  
+  /* Background Colors */
+  --bg-light: #f8f9fa;
+  --bg-lighter: #fafafa;
+  --border-light: #f0f0f0;
+  --border-medium: #e9ecef;
+  --border-dark: #dee2e6;
+  --progress-bg: #e0e0e0;
+  
+  /* Button Colors */
+  --btn-yes: #3AB4A0;
+  --btn-yes-hover: #2A9B89;
+  --btn-yes-active: #4AC4B0;
+  --btn-no: #DA4900;
+  --btn-no-hover: #C13E00;
+  --btn-no-active: #E85A10;
+  
+  /* Domain Colors */
+  --domain-basics: #4CAF50;
+  --domain-growth: #FF9800;
+  --domain-ambition: #9C27B0;
+  --domain-vitality: #2196F3;
+  --domain-beauty: #E91E63;
+  
+  /* Spacing - Mobile First */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 20px;
+  --spacing-xl: 30px;
+  --spacing-xxl: 40px;
+  
+  /* Border Radius */
+  --radius-sm: 3px;
+  --radius: 8px;
+  --radius-lg: 12px;
+  
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.1);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.15);
+  --shadow-lg: 0 8px 24px rgba(0,0,0,0.15);
+  
+  /* Typography */
+  --font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 24px;
+  --font-size-xxl: 32px;
+  
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  /* Layout - Mobile First */
+  --container-padding: var(--spacing-md);
+  --section-padding: var(--spacing-md);
+  --section-margin: var(--spacing-md);
+  --section-height: calc(var(--vh, 1vh) * 60); /* Mobile: 60vh leaves room for footer */
+}
+
+/* CSS Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--brand-dark);
+  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
+}
+
+/* Remove default button styles */
+button {
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Remove default list styles */
+ul, ol {
+  list-style: none;
+}
+
+/* Remove default link styles */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* Image defaults */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Focus styles */
+*:focus:not(:focus-visible) {
+  outline: none;
+}
+
+*:focus-visible {
+  outline: 2px solid var(--brand-pink);
+  outline-offset: 2px;
+}
+
+/* Screen reader only content */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Utility Classes */
+.text-center { text-align: center; }
+.text-left { text-align: left; }
+.text-right { text-align: right; }
+
+.hidden { display: none !important; }
+.visible { display: block !important; }
+
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --shadow-sm: none;
+    --shadow-md: 0 0 0 1px var(--text-primary);
+    --shadow-lg: 0 0 0 2px var(--text-primary);
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
