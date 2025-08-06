@@ -47,12 +47,6 @@ body {
   overflow-x: hidden;
 }
 
-.section.active-section.no-padding {
-  padding: 0;
-  width: 100%;
-}
-
-
 /* Intro Header - Outside white container */
 .intro-header {
   text-align: center;
