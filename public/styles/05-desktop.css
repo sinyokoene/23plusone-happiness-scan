@@ -61,12 +61,12 @@
   }
   
   /* Desktop Cards */
-  .card {
+  .card-area {
     max-width: 320px; /* Desktop: larger cards */
     max-height: 400px; /* Desktop: taller cards */
   }
   
-  .card img {
+  .card-area img {
     max-height: 250px; /* Desktop: larger images */
   }
   
@@ -74,18 +74,18 @@
     padding: var(--spacing-lg);
   }
   
-  .card h3 {
+  .card-area h3 {
     font-size: var(--font-size-lg);
     margin: 0 0 var(--spacing-sm) 0;
   }
   
-  .card p {
+  .card-area p {
     font-size: var(--font-size-base);
   }
 
   .hero-image {
     max-width: 320px;
-    max-height: 250px; /* Standardized height */
+    max-height: 250px;
   }
 
   /* Desktop Game Layout */
@@ -102,9 +102,10 @@
     margin: var(--spacing-md) 0;
   }
   
-  #cardImages .card,
-  #cardImages .card img,
+  #cardImages .card-area,
+  #cardImages .card-area img,
   #cardImages img {
+    max-width: 320px; /* Standardized width */
     max-height: 250px; /* Standardized height */
   }
   

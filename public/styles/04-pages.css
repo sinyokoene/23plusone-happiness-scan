@@ -74,6 +74,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-around; /* Evenly space timer, card, and buttons */
+  align-items: center; /* Center card horizontally */
   height: 100%;
   position: relative;
   gap: var(--spacing-xs);
@@ -88,7 +89,7 @@
   justify-content: center;
   position: relative;
   max-height: 200px; /* Mobile: compact card area */
-  overflow: visible;
+  overflow: hidden; /* Hide overflowing content to clip image corners */
   margin: var(--spacing-xs) 0;
   border-radius: 10px; /* Rounded corners */
 }
@@ -112,6 +113,7 @@
 #cardImages img {
   max-height: 180px;
   object-fit: contain;
+  border-radius: 10px; /* Ensure image corners are rounded */
 }
 
 /* Game Buttons */
