@@ -31,7 +31,7 @@ body {
 .section.active-section {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start; /* Mobile: content at top */
+  justify-content: center; /* Vertically center the content */
   background: var(--card-bg);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-md);
