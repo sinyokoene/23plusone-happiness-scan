@@ -206,7 +206,7 @@ button:disabled {
   color: var(--white);
   font-size: 14px;
   font-weight: 500;
-  min-height: 50px;
+  min-height: 0; /* Remove extra vertical padding on mobile */
 }
 
 .bottom-branding-content {
@@ -283,4 +283,17 @@ button:disabled {
   color: rgba(255, 255, 255, 0.7);
   text-align: right;
   margin-left: 6px;
+}
+
+/* Mobile-specific footer sizing: remove vertical padding effect */
+@media (max-width: 480px) {
+  .bottom-branding-logo {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+  }
+  .bottom-branding {
+    min-height: 0;
+  }
 }
