@@ -34,8 +34,8 @@
     padding: var(--section-padding);
     width: 100%;
     height: var(--section-height);
-    min-height: 600px; /* Desktop minimum */
-    max-height: 750px; /* Desktop maximum per request */
+    min-height: 550px; /* Desktop minimum */
+    max-height: 630px; /* Desktop maximum per request */
   }
   
   /* Desktop Typography */
