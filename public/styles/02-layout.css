@@ -76,7 +76,7 @@ body {
 .progress-container {
   width: 100%;
   max-width: 280px; /* Fixed width to prevent jumping */
-  height: 12px; /* New height */
+  height: 6px; /* Standardized bar height */
   background: var(--progress-bg);
   border-radius: 100px; /* Pill shape */
   overflow: hidden;

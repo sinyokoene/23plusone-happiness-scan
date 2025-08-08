@@ -35,7 +35,7 @@
     width: 100%;
     height: var(--section-height);
     min-height: 600px; /* Desktop minimum */
-    max-height: 800px; /* Desktop maximum */
+    max-height: 750px; /* Desktop maximum per request */
   }
   
   /* Desktop Typography */
@@ -57,7 +57,7 @@
   /* Desktop Progress Bars */
   .progress-container {
     max-width: 400px; /* Desktop: wider progress bars */
-    height: 12px; /* New height */
+    height: 6px; /* Standardized bar height */
   }
   
   /* Desktop Cards */
