@@ -317,10 +317,11 @@
 @media (max-width: 480px) {
   .insight-block { margin-bottom: 2px; }
   #colorVisualization { margin-top: 0; margin-bottom: 0; }
-  #domainBars { margin-top: 0; margin-bottom: 4px; gap: 4px; }
-  .domain-bar { margin: 0; }
-  .bar-header { margin-bottom: 0; }
-  .bar-name, .bar-count { font-size: 10px; }
+  #domainBars { margin-top: 0; margin-bottom: 4px; gap: 2px; }
+  .domain-bar { margin: 0 !important; }
+  .bar-header { margin: 0 !important; line-height: 1; }
+  .bar-name, .bar-count { font-size: 10px; line-height: 1; }
+  .bar-container { margin: 0; }
   #scoreSection { margin: 6px 0 2px; }
   #benchmarkSection { margin: 2px 0 4px; }
   #shareSection { margin-top: 6px; }
