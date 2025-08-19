@@ -200,7 +200,7 @@
 
 /* Results Page */
 #results {
-  overflow-y: hidden;
+  overflow-y: auto; /* allow scrolling if content exceeds card height */
   justify-content: flex-start;
 }
 
@@ -209,6 +209,7 @@
   max-width: 560px;
   margin: 0 auto;
   text-align: center;
+  padding-bottom: 72px; /* ensure CTAs are clear of fixed footer */
 }
 
 #resultsHeader {
@@ -285,7 +286,7 @@
   max-width: 420px;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 2px; /* mobile-first: very tight to surface CTAs */
+  gap: 2px; /* base spacing; overridden tighter on mobile */
 }
 
 .domain-bar { margin: 0; }
@@ -295,6 +296,7 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0; /* label→bar spacing removed on mobile */
+  line-height: 1; /* keep labels compact on all breakpoints */
 }
 
 .bar-name {
@@ -317,11 +319,11 @@
 @media (max-width: 480px) {
   .insight-block { margin-bottom: 6px; line-height: 1.35; font-size: 14px; }
   #colorVisualization { margin-top: 0; margin-bottom: 0; }
-  #domainBars { margin-top: 0; margin-bottom: 6px; gap: 2px; }
+  #domainBars { margin-top: 0; margin-bottom: 6px; gap: 1px; }
   .domain-bar { margin: 0; }
   .bar-header { margin: 0; line-height: 1; }
-  .bar-name, .bar-count { font-size: 10px; line-height: 1; }
-  .bar-container { margin: 0; height: 6px; }
+  .bar-name, .bar-count { font-size: 8px; line-height: 1; }
+  .bar-container { margin: 0; height: 4px; }
   #scoreSection { margin: 10px 0 6px; }
   #benchmarkSection { margin: 6px 0 8px; }
   #shareSection { margin-top: 10px; }
@@ -329,10 +331,10 @@
 
 /* Desktop adjustments only (do not affect mobile) */
 @media (min-width: 481px) {
-  #domainBars { gap: 6px; }
+  #domainBars { gap: 3px; }
   .domain-bar { margin: 4px 0; }
-  .bar-header { margin-bottom: 4px; }
-  .bar-name, .bar-count { font-size: 14px; }
+  .bar-header { margin-bottom: 2px; }
+  .bar-name, .bar-count { font-size: 14px; line-height: 1; }
 }
 
 .bar-container {
@@ -344,9 +346,9 @@
   box-shadow: inset 0 1px 0 rgba(0,0,0,0.05);
 }
 
-/* Desktop: taller bars */
+/* Keep compact bar height on desktop as well to surface CTAs */
 @media (min-width: 481px) {
-  .bar-container { height: 8px; }
+  .bar-container { height: 6px; }
 }
 
 .bar-fill {
@@ -365,7 +367,7 @@
 .palette-tagline {
   font-size: 12px;
   color: #666;
-  margin-top: 10px;
+  margin-top: 4px;
   font-style: normal;
   line-height: 1.4;
   text-align: center;
