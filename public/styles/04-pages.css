@@ -225,6 +225,13 @@
   color: var(--brand-pink);
 }
 
+/* Force two-line heading on mobile */
+@media (max-width: 480px) {
+  #resultsHeader h2 { font-size: 22px; line-height: 1.2; }
+  #resultsHeader .heading-part-1 { display: block; }
+  #resultsHeader .heading-part-2 { display: block; }
+}
+
 #dominantDomainsText {
   font-size: var(--font-size-base);
   color: var(--text-secondary);
@@ -269,9 +276,7 @@
 }
 
 /* Results - Page 2 (Domain Bars) */
-#colorVisualization {
-  margin: 8px 0;
-}
+#colorVisualization { margin: 6px 0; }
 
 /* removed visible palette heading to save space */
 
@@ -310,7 +315,7 @@
 
 .bar-container {
   background: var(--progress-bg);
-  height: 8px; /* requested 8px height */
+  height: 6px; /* mobile compact height */
   border-radius: 999px;
   overflow: hidden;
   position: relative;
@@ -364,6 +369,12 @@
   color: #2c1f1c;
 }
 
+/* Mobile: keep benchmark labels on one line */
+@media (max-width: 480px) {
+  #benchmarkStats { gap: 10px; font-size: 11px; flex-wrap: nowrap; }
+  #benchmarkStats .benchmark-item { white-space: nowrap; }
+}
+
 #benchmarkStats {
   display: flex;
   gap: 20px;
@@ -371,6 +382,10 @@
   align-items: center;
   color: var(--text-secondary);
   font-size: 12px;
+}
+/* Hide "Your Score:" label on mobile to save space */
+@media (max-width: 480px) {
+  #benchmarkStats .benchmark-item:first-child .benchmark-label { display: none; }
 }
 
 .benchmark-item {

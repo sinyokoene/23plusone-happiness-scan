@@ -890,8 +890,7 @@
     const messageEl = document.getElementById('benchmarkMessage');
     messageEl.textContent = performanceMessage;
     
-    // Update the statistics with cleaner, non-redundant labels
-    document.getElementById('benchmarkYourScore').textContent = results.ihs;
+    // Removed 'Your Score' row from UI; keep average/participants only
     document.getElementById('benchmarkTotal').textContent = benchmark.totalResponses.toLocaleString();
     document.getElementById('benchmarkAverage').textContent = benchmark.context.averageScore || '--';
     
