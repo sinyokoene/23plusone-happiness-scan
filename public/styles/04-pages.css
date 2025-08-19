@@ -200,29 +200,44 @@
 
 /* Results Page */
 #results {
-  overflow-y: auto;
+  overflow-y: hidden;
   justify-content: flex-start;
 }
 
 #resultsContent {
   width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
   text-align: center;
 }
 
 #resultsHeader {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-sm);
 }
 
 #resultsHeader h2 {
-  font-size: var(--font-size-lg);
+  font-size: 20px;
   margin: 0 0 var(--spacing-md) 0;
   font-weight: 600;
+}
+
+#resultsHeader .accent {
+  color: var(--brand-pink);
 }
 
 #dominantDomainsText {
   font-size: var(--font-size-base);
   color: var(--text-secondary);
   margin: 0;
+}
+
+.insight-block {
+  max-width: 420px;
+  margin: 0 auto var(--spacing-sm);
+  text-align: left;
+  font-size: 13px;
+  color: #333;
+  line-height: 1.3;
 }
 
 #valuesList {
@@ -255,32 +270,26 @@
 
 /* Results - Page 2 (Domain Bars) */
 #colorVisualization {
-  margin: 15px 0;
+  margin: 8px 0;
 }
 
-#colorVisualization h3 {
-  color: #333;
-  margin-bottom: 15px;
-  font-size: 18px;
-  font-weight: 700;
-}
+/* removed visible palette heading to save space */
 
 #domainBars {
-  margin: 15px 0;
+  margin: 6px auto;
+  max-width: 420px;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 8px;
+  gap: 6px;
 }
 
-.domain-bar {
-  margin: 6px 0;
-}
+.domain-bar { margin: 3px 0; }
 
 .bar-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
 }
 
 .bar-name {
@@ -288,14 +297,14 @@
   text-align: left;
   font-weight: 700;
   color: #333;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .bar-count {
   font-weight: 800;
   color: var(--brand-pink);
-  font-size: 16px;
-  min-width: 25px;
+  font-size: 12px;
+  min-width: 20px;
   text-align: right;
 }
 
@@ -305,6 +314,7 @@
   border-radius: 999px;
   overflow: hidden;
   position: relative;
+  box-shadow: inset 0 1px 0 rgba(0,0,0,0.05);
 }
 
 .bar-fill {
@@ -321,13 +331,55 @@
 .bar-attraction { background: var(--domain-beauty); }
 
 .palette-tagline {
-  font-size: 14px;
+  font-size: 12px;
   color: #666;
-  margin-top: 15px;
-  font-style: italic;
+  margin-top: 10px;
+  font-style: normal;
   line-height: 1.4;
   text-align: center;
 }
+
+/* Score & Benchmark styling to match design */
+#scoreSection {
+  margin: 10px 0;
+}
+
+#totalScore {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+  color: #2c1f1c;
+  margin-bottom: var(--spacing-xs);
+}
+
+/* #ihsLabel removed */
+
+#benchmarkSection {
+  margin: 10px 0 12px 0;
+}
+
+#benchmarkMessage {
+  margin-top: 4px;
+  font-weight: 600;
+  color: #2c1f1c;
+}
+
+#benchmarkStats {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.benchmark-item {
+  display: flex;
+  gap: 6px;
+}
+
+.benchmark-label { color: var(--text-secondary); }
+.benchmark-value { color: #2c1f1c; font-weight: 600; }
 
 /* Results - Page 3 (Insights & Sharing) */
 #personalInsights {
@@ -388,9 +440,9 @@
 }
 
 #shareSection {
-  margin-top: 15px;
-  padding-top: 12px;
-  border-top: 2px solid var(--border-light);
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: none;
 }
 
 #shareSection h3 {
@@ -401,11 +453,11 @@
   font-weight: 700;
 }
 
-#shareBtn, #retakeBtn {
-  padding: 12px 24px;
+.share-button, #retakeBtn {
+  padding: 8px 16px;
   border: none;
   border-radius: var(--radius);
-  font-size: var(--font-size-base);
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   transition: all var(--transition);
@@ -413,22 +465,36 @@
   display: inline-block;
 }
 
-#shareBtn {
+.share-button.native {
   background: var(--brand-pink);
   color: white;
 }
 
-#retakeBtn {
-  background: var(--bg-light);
-  color: var(--text-primary);
-  border: 1px solid var(--border-medium);
+.share-button.copy {
+   background: #3b2a25;
+   color: var(--white);
+}
+
+.link-like {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
 }
 
 .share-buttons {
   display: flex;
   justify-content: center;
-  gap: 15px;
-  margin-bottom: 20px;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.link-like {
+  display: block;
+  margin: 8px auto 0;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
 }
 
 

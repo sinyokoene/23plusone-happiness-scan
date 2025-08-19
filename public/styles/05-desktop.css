@@ -29,13 +29,14 @@
   
   /* Desktop Sections */
   .section.active-section {
-    justify-content: space-between; /* Desktop: space content */
+    justify-content: flex-start; /* Desktop: content from top */
     margin: var(--spacing-xl) auto; /* Center with equal margins */
     padding: var(--section-padding);
     width: 100%;
     height: var(--section-height);
     min-height: 550px; /* Desktop minimum */
     max-height: 630px; /* Desktop maximum per request */
+    overflow: hidden; /* prevent internal scroll */
   }
   
   /* Desktop Typography */
@@ -160,8 +161,12 @@
   
   /* Desktop Results */
   #resultsHeader h2 {
-    font-size: var(--font-size-xl);
+    font-size: 22px;
+    line-height: 1.15;
   }
+
+  #totalScore { font-size: 50px; }
+  #benchmarkStats { font-size: 12px; gap: 20px; }
   
   #valuesList li {
     font-size: var(--font-size-base);

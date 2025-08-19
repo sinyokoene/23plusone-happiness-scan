@@ -563,15 +563,23 @@
     // Get domain data for visualization
     const domainData = getDomainAnalysis(results.domainCounts);
     
-    // Update dominant domains text
+    // Update dominant domains text (optional element)
     const topDomainsText = getDominantDomainsText(domainData);
-    document.getElementById('topDomains').textContent = topDomainsText;
+    const topDomainsEl = document.getElementById('topDomains');
+    if (topDomainsEl) {
+      topDomainsEl.textContent = topDomainsText;
+    }
+    // Personalized insight block (bold fueled-by + adaptive insight)
+    const insightHtml = buildPersonalizedInsight(domainData);
+    const insightBlock = document.getElementById('insightBlock');
+    if (insightBlock && insightHtml) {
+      insightBlock.innerHTML = insightHtml;
+    }
     
     // Update domain bars with animation
     updateDomainBars(results.domainCounts);
     
-    // Generate personalized insights
-    generatePersonalizedInsights(domainData, results);
+    // Insights removed in current design
   }
   
   function getDomainAnalysis(domainCounts) {
@@ -609,6 +617,36 @@
     
     return `${domainNames[topDomains[0].name]} and ${domainNames[topDomains[1].name]}`;
   }
+
+  function buildPersonalizedInsight(domainData) {
+    if (!domainData || domainData.length === 0) return '';
+    const topDomain = domainData[0];
+    const totalSelected = domainData.reduce((sum, d) => sum + d.count, 0);
+
+    // Baseline insight by selection breadth
+    let insightText = '';
+    if (totalSelected <= 5) {
+      insightText = "You're selective and intentional with what brings you joy. Quality over quantity defines your happiness approach.";
+    } else if (totalSelected <= 12) {
+      insightText = "You have a balanced happiness palette — diverse but not overwhelming. You appreciate variety while staying grounded.";
+    } else {
+      insightText = "You're a happiness maximalist! You find joy in many places and aren't afraid to embrace life's full spectrum.";
+    }
+
+    // Domain-specific add-on
+    const domainInsights = {
+      'Basics': 'Your foundation is strong — you value security, connection, and moral clarity.',
+      'Self-development': "You're driven by growth and self-expression — a true lifelong learner.",
+      'Ambition': "Achievement and recognition fuel your fire — you're built to succeed.",
+      'Vitality': 'Energy and health are your superpowers — you prioritize feeling alive.',
+      'Attraction': "Beauty and allure matter to you — you appreciate life's aesthetic pleasures."
+    };
+    const domainSentence = domainInsights[topDomain.name] || '';
+
+    // Bold fueled-by sentence first
+    const fueledBy = `<strong>You're fueled by ${topDomain.name}.</strong>`;
+    return `${fueledBy} ${insightText} ${domainSentence}`.trim();
+  }
   
   function updateDomainBars(domainCounts) {
     const domainMaxes = {
@@ -619,6 +657,8 @@
       'Attraction': 2
     };
     
+    console.log('Updating domain bars with counts:', domainCounts);
+
     Object.keys(domainMaxes).forEach(domain => {
       const count = domainCounts[domain] || 0;
       const percentage = (count / domainMaxes[domain]) * 100;
@@ -646,61 +686,7 @@
     });
   }
   
-  function generatePersonalizedInsights(domainData, results) {
-    const topDomain = domainData[0];
-    const totalSelected = domainData.reduce((sum, d) => sum + d.count, 0);
-    
-    // Generate insight text
-    let insightText = '';
-    let recommendations = [];
-    
-    if (totalSelected <= 5) {
-      insightText = "You're selective and intentional with what brings you joy. Quality over quantity defines your happiness approach.";
-      recommendations = [
-        "Dive deeper into the few things that truly matter to you",
-        "Practice mindfulness to appreciate your chosen sources of joy",
-        "Consider exploring one new area gradually"
-      ];
-    } else if (totalSelected <= 12) {
-      insightText = "You have a balanced happiness palette - diverse but not overwhelming. You appreciate variety while staying grounded.";
-      recommendations = [
-        "Keep nurturing your diverse interests",
-        "Notice patterns in what consistently brings you joy",
-        "Share your balanced approach with others"
-      ];
-    } else {
-      insightText = "You're a happiness maximalist! You find joy in many places and aren't afraid to embrace life's full spectrum.";
-      recommendations = [
-        "Your enthusiasm is contagious - share it!",
-        "Ensure you have time to fully enjoy each source of happiness",
-        "Consider prioritizing to avoid happiness overwhelm"
-      ];
-    }
-    
-    // Add domain-specific insights
-    if (topDomain.count > 0) {
-      const domainInsights = {
-        'Basics': "Your foundation is strong - you value security, connection, and moral clarity.",
-        'Self-development': "You're driven by growth and self-expression - a true lifelong learner.",
-        'Ambition': "Achievement and recognition fuel your fire - you're built to succeed.",
-        'Vitality': "Energy and health are your superpowers - you prioritize feeling alive.",
-        'Attraction': "Beauty and allure matter to you - you appreciate life's aesthetic pleasures."
-      };
-      
-      insightText += ` ${domainInsights[topDomain.name]}`;
-    }
-    
-    // Update the display
-    document.getElementById('insightText').textContent = insightText;
-    
-    const recList = document.getElementById('recommendationsList');
-    recList.innerHTML = '';
-    recommendations.forEach(rec => {
-      const li = document.createElement('li');
-      li.textContent = rec;
-      recList.appendChild(li);
-    });
-  }
+  function generatePersonalizedInsights() { /* removed */ }
   
   function submitResults(results) {
     // Create complete card selections with ALL responses
@@ -813,10 +799,12 @@
     async function copyToClipboard(text, button) {
       try {
         await navigator.clipboard.writeText(text);
+        const original = button.getAttribute('data-original-label') || button.innerHTML;
+        button.setAttribute('data-original-label', original);
         button.innerHTML = '<span>Copied!</span>';
         button.classList.add('copied');
         setTimeout(() => {
-          button.innerHTML = '<span>Copy Link</span>';
+          button.innerHTML = button.getAttribute('data-original-label');
           button.classList.remove('copied');
         }, 2000);
       } catch (err) {
@@ -828,10 +816,12 @@
         document.execCommand('copy');
         document.body.removeChild(textArea);
         
+        const original = button.getAttribute('data-original-label') || button.innerHTML;
+        button.setAttribute('data-original-label', original);
         button.innerHTML = '<span>Copied!</span>';
         button.classList.add('copied');
         setTimeout(() => {
-          button.innerHTML = '<span>Copy Link</span>';
+          button.innerHTML = button.getAttribute('data-original-label');
           button.classList.remove('copied');
         }, 2000);
       }

@@ -122,17 +122,14 @@
         <div id="resultsContent" class="results-content">
           <!-- Page 1 Content: Score & Overview -->
           <header id="resultsHeader">
-            <h2 id="results-heading">Done! Here's your happiness mix:</h2>
-            <p id="dominantDomainsText" aria-live="polite">You're fueled by <span id="topDomains">--</span> — nice combo!</p>
-            <p id="personalityInsight" class="subtitle">Your score shows how rich your emotional landscape is today.</p>
+            <h2 id="results-heading">Done! Here’s <span class="accent">your happiness profile.</span></h2>
           </header>
           <section id="scoreSection" aria-labelledby="score-heading">
             <h3 id="score-heading" class="sr-only">Your Happiness Score</h3>
             <div id="totalScore" role="img" aria-label="Individual Happiness Score">--</div>
-            <div id="ihsLabel">Individual Happiness Score (IHS)</div>
           </section>
           <section id="benchmarkSection" aria-labelledby="benchmark-heading">
-            <h3 id="benchmark-heading">How You Compare</h3>
+            
             <div id="benchmarkMessage" role="status" aria-live="polite">Calculating your ranking...</div>
             <div id="benchmarkStats" role="list" aria-label="Comparison statistics">
               <div class="benchmark-item" role="listitem">
@@ -150,9 +147,11 @@
             </div>
           </section>
 
+          <!-- Personalized insight placed under benchmark, before bars -->
+          <section id="insightBlock" class="insight-block" aria-label="Personalized insight"></section>
+
           <!-- Page 2 Content: Your Happiness Palette -->
-          <section id="colorVisualization" aria-labelledby="palette-heading">
-            <h3 id="palette-heading">Your Happiness Palette</h3>
+          <section id="colorVisualization" aria-label="Your Happiness Palette">
             <div id="domainBars" role="list" aria-label="Happiness domains breakdown">
               <div class="domain-bar" role="listitem" data-domain="Basics" aria-labelledby="basics-label">
                 <div class="bar-header">
@@ -200,29 +199,20 @@
                 </div>
               </div>
             </div>
-            <p class="palette-tagline">More color = more joy. Want to try again and mix it up?</p>
+            <p class="palette-tagline">More color = more joy.</p>
           </section>
 
-          <!-- Page 3 Content: Insights & Actions -->
-          <h3 id="insights-heading">Your Happiness Profile</h3>
-          <section id="personalInsights" aria-labelledby="insights-heading">
-            <p id="insightText" role="region" aria-live="polite">Analyzing your unique happiness mix...</p>
-            <div id="recommendations">
-              <h4>Ways to amplify your joy:</h4>
-              <ul id="recommendationsList" aria-label="Personalized recommendations"></ul>
-            </div>
-          </section>
+          <!-- Insights section removed per design -->
           <section id="shareSection" aria-labelledby="share-heading">
-            <h3 id="share-heading">Share & Explore More</h3>
             <div class="share-buttons" role="group" aria-label="Sharing options">
+              <a id="learnMoreBtn" href="https://23plusone.com" target="_blank" rel="noopener" class="share-button copy" aria-label="Learn more about 23plusone">
+                <span>Learn more</span>
+              </a>
               <button id="nativeShareBtn" type="button" class="share-button native" aria-label="Share results using device's native sharing">
-                <span>Share Results</span>
-              </button>
-              <button id="copyLinkBtn" type="button" class="share-button copy" aria-label="Copy link to scan">
-                <span>Copy Link</span>
+                <span>Share</span>
               </button>
             </div>
-            <button id="retakeBtn" type="button" class="btn" aria-label="Start a new happiness scan" onclick="location.reload()">Take Again</button>
+            <button id="retakeBtn" type="button" class="link-like" aria-label="Start a new happiness scan" onclick="location.reload()">Try again</button>
           </section>
         </div>
       </div>
