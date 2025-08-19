@@ -317,7 +317,7 @@
 
 /* Mobile: tighter spacing and smaller bar labels */
 @media (max-width: 480px) {
-  .insight-block { margin-bottom: 6px; line-height: 1.35; font-size: 13px; }
+  .insight-block { margin-bottom: 6px; line-height: 1.35; font-size: 12px; }
   #colorVisualization { margin-top: 0; margin-bottom: 0; }
   #domainBars { margin-top: 0; margin-bottom: 6px; gap: 10px; }
   .domain-bar { margin: 0; }
@@ -327,8 +327,8 @@
   #scoreSection { margin: 10px 0 6px; }
   #benchmarkSection { margin: 6px 0 8px; }
   #shareSection { margin-top: 10px; }
-  /* Disable results scrolling on mobile */
-  #results { overflow-y: hidden; }
+  /* Disable results scrolling on mobile and add slight horizontal padding */
+  #results { overflow-y: hidden; padding-left: 16px; padding-right: 16px; }
 }
 
 /* Desktop adjustments only (do not affect mobile) */
