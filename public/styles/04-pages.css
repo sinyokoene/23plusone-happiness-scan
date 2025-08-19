@@ -285,7 +285,7 @@
   max-width: 420px;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 4px; /* mobile-first: tight */
+  gap: 2px; /* mobile-first: very tight to surface CTAs */
 }
 
 .domain-bar { margin: 0; }
@@ -294,7 +294,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0;
+  margin-bottom: 0; /* label→bar spacing removed on mobile */
 }
 
 .bar-name {
@@ -302,36 +302,36 @@
   text-align: left;
   font-weight: 700;
   color: #333;
-  font-size: 12px;
+  font-size: 10px; /* mobile label */
 }
 
 .bar-count {
   font-weight: 800;
   color: var(--brand-pink);
-  font-size: 12px;
+  font-size: 10px;
   min-width: 20px;
   text-align: right;
 }
 
 /* Mobile: tighter spacing and smaller bar labels */
 @media (max-width: 480px) {
-  .insight-block { margin-bottom: 2px; }
+  .insight-block { margin-bottom: 6px; line-height: 1.35; font-size: 14px; }
   #colorVisualization { margin-top: 0; margin-bottom: 0; }
-  #domainBars { margin-top: 0; margin-bottom: 4px; gap: 2px; }
+  #domainBars { margin-top: 0; margin-bottom: 6px; gap: 2px; }
   .domain-bar { margin: 0; }
   .bar-header { margin: 0; line-height: 1; }
   .bar-name, .bar-count { font-size: 10px; line-height: 1; }
-  .bar-container { margin: 0; }
-  #scoreSection { margin: 6px 0 2px; }
-  #benchmarkSection { margin: 2px 0 4px; }
-  #shareSection { margin-top: 6px; }
+  .bar-container { margin: 0; height: 6px; }
+  #scoreSection { margin: 10px 0 6px; }
+  #benchmarkSection { margin: 6px 0 8px; }
+  #shareSection { margin-top: 10px; }
 }
 
 /* Desktop adjustments only (do not affect mobile) */
 @media (min-width: 481px) {
-  #domainBars { gap: 8px; }
-  .domain-bar { margin: 6px 0; }
-  .bar-header { margin-bottom: 6px; }
+  #domainBars { gap: 6px; }
+  .domain-bar { margin: 4px 0; }
+  .bar-header { margin-bottom: 4px; }
   .bar-name, .bar-count { font-size: 14px; }
 }
 
