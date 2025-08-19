@@ -319,7 +319,7 @@
 @media (max-width: 480px) {
   .insight-block { margin-bottom: 6px; line-height: 1.35; font-size: 14px; }
   #colorVisualization { margin-top: 0; margin-bottom: 0; }
-  #domainBars { margin-top: 0; margin-bottom: 6px; gap: 2px; }
+  #domainBars { margin-top: 0; margin-bottom: 6px; gap: 6px; }
   .domain-bar { margin: 0; }
   .bar-header { margin: 0; line-height: 1; }
   .bar-name, .bar-count { font-size: 8px; line-height: 1; }
