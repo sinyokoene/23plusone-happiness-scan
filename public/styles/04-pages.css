@@ -330,8 +330,8 @@
 /* Desktop adjustments only (do not affect mobile) */
 @media (min-width: 481px) {
   #domainBars { gap: 8px; }
-  .domain-bar { margin: 4px 0; }
-  .bar-header { margin-bottom: 4px; }
+  .domain-bar { margin: 6px 0; }
+  .bar-header { margin-bottom: 6px; }
   .bar-name, .bar-count { font-size: 14px; }
 }
 
