@@ -319,11 +319,11 @@
 @media (max-width: 480px) {
   .insight-block { margin-bottom: 6px; line-height: 1.35; font-size: 14px; }
   #colorVisualization { margin-top: 0; margin-bottom: 0; }
-  #domainBars { margin-top: 0; margin-bottom: 6px; gap: 1px; }
+  #domainBars { margin-top: 0; margin-bottom: 6px; gap: 2px; }
   .domain-bar { margin: 0; }
   .bar-header { margin: 0; line-height: 1; }
   .bar-name, .bar-count { font-size: 8px; line-height: 1; }
-  .bar-container { margin: 0; height: 4px; }
+  .bar-container { margin: 0; height: 6px; }
   #scoreSection { margin: 10px 0 6px; }
   #benchmarkSection { margin: 6px 0 8px; }
   #shareSection { margin-top: 10px; }
