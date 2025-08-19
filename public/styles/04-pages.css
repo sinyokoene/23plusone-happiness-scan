@@ -313,6 +313,14 @@
   text-align: right;
 }
 
+/* Mobile: tighter spacing and smaller bar labels */
+@media (max-width: 480px) {
+  .insight-block { margin-bottom: 4px; }
+  #colorVisualization { margin-top: 2px; }
+  #domainBars { margin-top: 2px; }
+  .bar-name, .bar-count { font-size: 10px; }
+}
+
 .bar-container {
   background: var(--progress-bg);
   height: 6px; /* mobile compact height */
@@ -320,6 +328,11 @@
   overflow: hidden;
   position: relative;
   box-shadow: inset 0 1px 0 rgba(0,0,0,0.05);
+}
+
+/* Desktop: taller bars */
+@media (min-width: 481px) {
+  .bar-container { height: 8px; }
 }
 
 .bar-fill {
