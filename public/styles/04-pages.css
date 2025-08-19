@@ -315,10 +315,15 @@
 
 /* Mobile: tighter spacing and smaller bar labels */
 @media (max-width: 480px) {
-  .insight-block { margin-bottom: 4px; }
-  #colorVisualization { margin-top: 2px; }
-  #domainBars { margin-top: 2px; }
+  .insight-block { margin-bottom: 2px; }
+  #colorVisualization { margin-top: 0; margin-bottom: 0; }
+  #domainBars { margin-top: 0; margin-bottom: 4px; gap: 4px; }
+  .domain-bar { margin: 0; }
+  .bar-header { margin-bottom: 0; }
   .bar-name, .bar-count { font-size: 10px; }
+  #scoreSection { margin: 6px 0 2px; }
+  #benchmarkSection { margin: 2px 0 4px; }
+  #shareSection { margin-top: 6px; }
 }
 
 .bar-container {
