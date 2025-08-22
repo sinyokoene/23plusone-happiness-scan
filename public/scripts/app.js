@@ -663,12 +663,7 @@
       const count = domainCounts[domain] || 0;
       const percentage = (count / domainMaxes[domain]) * 100;
       
-      // Update count
-      const countElement = document.querySelector(`[data-domain="${domain}"] .bar-count`);
-      if (countElement) {
-        countElement.textContent = count;
-        countElement.setAttribute('aria-label', `${count} selections`);
-      }
+      // Count display removed from UI; skip updating
       
       // Animate bar
       setTimeout(() => {
