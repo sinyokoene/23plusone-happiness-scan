@@ -32,12 +32,12 @@
 }
 
 .btn-primary:hover {
-  background: var(--danger-hover);
+  background: var(--brand-pink);
   transform: translateY(-1px);
 }
 
 .btn-primary:active {
-  background: var(--danger-active);
+  background: var(--brand-pink);
   transform: translateY(0);
 }
 
