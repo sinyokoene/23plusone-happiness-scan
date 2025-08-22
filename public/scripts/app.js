@@ -473,6 +473,13 @@
       time: responseTime
     });
     
+    // If more than 3 NULLs, stop immediately and show retry message
+    const nullCount = answers.filter(a => a.yes === null).length;
+    if (nullCount > 3) {
+      showValidationError('You took too long — try again.');
+      return;
+    }
+    
     currentCardIndex++;
     showCard();
   }
