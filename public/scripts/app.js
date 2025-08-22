@@ -398,10 +398,10 @@
     }, 3000);
     timerTimeouts.push(timeout3);
     
-    // Auto-submit "No" after 4 seconds
+    // Auto-timeout after 4 seconds (record NULL response)
     timerInterval = setTimeout(() => {
       if (!timerActive) return;
-      recordAnswer(false);
+      recordTimeout();
     }, 4000);
   }
   
@@ -440,14 +440,48 @@
     currentCardIndex++;
     showCard();
   }
+
+  // Record a NULL response on timeout
+  function recordTimeout() {
+    // Stop timer immediately
+    timerActive = false;
+    
+    // Clear main timer
+    if (timerInterval) {
+      clearTimeout(timerInterval);
+      timerInterval = null;
+    }
+    
+    // Clear all timer-related timeouts
+    timerTimeouts.forEach(item => {
+      if (typeof item === 'number') {
+        clearTimeout(item);
+      } else if (item && item.clear) {
+        item.clear();
+      }
+    });
+    timerTimeouts = [];
+    
+    const responseTime = 4000; // full timeout
+    const card = deck[currentCardIndex];
+    
+    answers.push({
+      id: card.id,
+      domain: card.domain,
+      label: card.label,
+      yes: null,
+      time: responseTime
+    });
+    
+    currentCardIndex++;
+    showCard();
+  }
   
   function calculateIHS() {
-    // Time multipliers based on response speed
+    // Linear time multiplier from 1.0 (instant) → 0.0 (4s timeout)
     function getTimeMultiplier(time) {
-      if (time <= 1000) return 1.0;
-      if (time <= 2000) return 0.8;
-      if (time <= 3000) return 0.6;
-      return 0.4;
+      const clamped = Math.max(0, Math.min(4000, time));
+      return (4000 - clamped) / 4000;
     }
     
     // N1: Affirmations + Time
@@ -488,10 +522,12 @@
     const selectedCount = answers.filter(a => a.yes).length;
     const totalResponses = answers.length;
     const totalTime = scanStartTime > 0 ? (Date.now() - scanStartTime) / 1000 : 0; // Use scan start time
+    const nullCount = answers.filter(a => a.yes === null).length;
     
     console.log('🔍 Frontend validation:', {
       totalResponses,
       selectedCount,
+      nullCount,
       totalTime: `${totalTime}s`,
       scanStartTime,
       now: Date.now()
@@ -510,6 +546,12 @@
     }
     
     // Allow all "Yes" responses - removed restriction
+    
+    // Too many unanswered (NULL) responses
+    if (nullCount > 3) {
+      console.log('❌ Frontend: Too many unanswered cards');
+      return { isValid: false, reason: 'You took too long — try again.' };
+    }
     
     // Allow fast individual clicks but prevent completing entire scan too quickly
     if (totalTime < 5) {
@@ -692,21 +734,28 @@
       allResponses: [] // Complete response data
     };
     
-    // Process ALL answers (both Yes and No)
+    // Process ALL answers (Yes, No, and NULL timeouts)
     answers.forEach(answer => {
+      const clamped = Math.max(0, Math.min(4000, answer.time));
+      const timeMultiplier = (4000 - clamped) / 4000; // 1.0 → 0.0
+      const perCardScore = 4 * timeMultiplier;
+      const sign = (answer.yes === true) ? 1 : (answer.yes === false) ? -1 : null;
+      const affirmationScore = sign === null ? null : Math.round(sign * perCardScore * 100) / 100;
+
       // Add to complete responses
       cardSelections.allResponses.push({
         cardId: answer.id,
         domain: answer.domain,
         label: answer.label,
-        response: answer.yes,
-        responseTime: answer.time
+        response: answer.yes, // true/false/null
+        responseTime: answer.time,
+        affirmationScore: affirmationScore
       });
       
-      // Track selected vs rejected
-      if (answer.yes) {
+      // Track selected vs rejected (ignore NULL)
+      if (answer.yes === true) {
         cardSelections.selected.push(answer.id);
-      } else {
+      } else if (answer.yes === false) {
         cardSelections.rejected.push(answer.id);
       }
       
@@ -727,7 +776,8 @@
       userAgent: navigator.userAgent,
       totalCards: answers.length, // Should be 24
       selectedCount: cardSelections.selected.length,
-      rejectedCount: cardSelections.rejected.length
+      rejectedCount: cardSelections.rejected.length,
+      unansweredCount: answers.filter(a => a.yes === null).length
     };
     
     console.log('Submitting complete scan data:', {

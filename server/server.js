@@ -101,10 +101,12 @@ function validateScanQuality(cardSelections, completionTime) {
   const responses = cardSelections.allResponses;
   const selectedCount = cardSelections.selected?.length || 0;
   const totalResponses = responses.length;
+  const nullCount = responses.filter(r => r.response === null).length;
   
   console.log('📊 Scan details:', {
     totalResponses,
     selectedCount,
+    nullCount,
     completionTime: `${completionTime}s`
   });
   
@@ -124,6 +126,12 @@ function validateScanQuality(cardSelections, completionTime) {
   if (selectedCount === 24) {
     console.log('❌ All Yes responses');
     return { isValid: false, reason: 'All responses were "Yes" - likely clicking through' };
+  }
+  
+  // Too many unanswered (NULL) responses
+  if (nullCount > 3) {
+    console.log('❌ Too many unanswered cards (NULL responses)');
+    return { isValid: false, reason: 'Too many unanswered cards' };
   }
   
   // Allow fast individual clicks but prevent completing entire scan too quickly
@@ -164,8 +172,8 @@ app.post('/api/responses', async (req, res) => {
       // Insert scan response using current schema
       const result = await client.query(
         `INSERT INTO scan_responses 
-         (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, ip_address)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+         (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, ip_address, selected_count, rejected_count)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          RETURNING id`,
         [
           sessionId, 
@@ -176,7 +184,9 @@ app.post('/api/responses', async (req, res) => {
           n3Score || 0,
           completionTime || 0,
           userAgent || null,
-          req.ip || null
+          req.ip || null,
+          cardSelections?.selected?.length || 0,
+          cardSelections?.rejected?.length || 0
         ]
       );
       
