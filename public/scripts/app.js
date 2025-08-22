@@ -9,6 +9,7 @@
   let timerInterval = null;
   let timerTimeouts = []; // Track all timer-related timeouts
   let timerActive = false; // Flag to prevent timer conflicts
+  let scanTerminated = false; // Hard stop flag (e.g., too many NULLs)
 
   
   // DOM elements
@@ -38,6 +39,7 @@
   
   // Helper function to control which section is visible
   function showSection(sectionToShow) {
+    if (scanTerminated) return; // Do not switch sections after termination
     console.log('🔄 showSection called with:', sectionToShow);
     
     // Hide all main sections first
@@ -85,6 +87,7 @@
   }
   
   function startScan() {
+    scanTerminated = false;
     console.log('🎯 startScan function called'); // Debug log
     console.log('Available sections:', {
       introDiv: introDiv,
@@ -276,6 +279,7 @@
   }
   
   function showCard() {
+    if (scanTerminated) return;
     if (currentCardIndex >= deck.length) {
       finishScan();
       return;
@@ -333,6 +337,7 @@
   }
   
   function startTimer() {
+    if (scanTerminated) return;
     // Clear any existing timers first
     if (timerInterval) {
       clearTimeout(timerInterval);
@@ -406,6 +411,7 @@
   }
   
   function recordAnswer(isYes) {
+    if (scanTerminated) return;
     // Stop timer immediately
     timerActive = false;
     
@@ -443,6 +449,7 @@
 
   // Record a NULL response on timeout
   function recordTimeout() {
+    if (scanTerminated) return;
     // Stop timer immediately
     timerActive = false;
     
@@ -476,6 +483,7 @@
     // If more than 3 NULLs, stop immediately and show retry message
     const nullCount = answers.filter(a => a.yes === null).length;
     if (nullCount > 3) {
+      scanTerminated = true;
       showValidationError('You took too long — try again.');
       return;
     }
