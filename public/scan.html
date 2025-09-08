@@ -12,19 +12,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   
-  <!-- Preload critical resources -->
-  <link rel="preload" href="styles/01-base.css" as="style">
-  <link rel="preload" href="styles/02-layout.css" as="style">
-  <link rel="preload" href="styles/03-components.css" as="style">
-  <link rel="preload" href="styles/04-pages.css" as="style">
-  <link rel="preload" href="styles/05-desktop.css" as="style">
-  
-  <!-- Clean CSS Architecture -->
-  <link rel="stylesheet" href="styles/01-base.css">
-  <link rel="stylesheet" href="styles/02-layout.css">
-  <link rel="stylesheet" href="styles/03-components.css">
-  <link rel="stylesheet" href="styles/04-pages.css">
-  <link rel="stylesheet" href="styles/05-desktop.css">
+  <!-- Tailwind CSS only -->
+  <link rel="stylesheet" href="styles/tw.build.css">
   
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -34,126 +23,233 @@
   <!-- Dynamic viewport height script - early execution for mobile browser support -->
   <script src="scripts/viewport.js"></script>
   
+  <!-- Minimal CSS variables needed after removing legacy CSS -->
+  <style>
+    :root {
+      --progress-bg: #e0e0e0;
+      --domain-basics: #4CAF50;
+      --domain-growth: #FF9800;
+      --domain-ambition: #9C27B0;
+      --domain-vitality: #2196F3;
+      --domain-beauty: #E91E63;
+      --footer-h: 64px;
+      /* Active state colors */
+      --btn-active-pink: #c2185b;  /* darker brand pink */
+      --btn-active-green: #16a34a; /* green-600 */
+      --btn-active-red: #dc2626;   /* red-600 */
+    }
+    body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    /* Domain bar fill: height 100% so width animations are visible */
+    .bar-fill { height: 100%; border-radius: 999px; transition: width 1.5s ease-out; position: relative; }
+    #globalFooter { height: var(--footer-h); }
+    /* Active feedback for Yes/No buttons */
+    #yesBtn, #noBtn { opacity: 0.8; transition: opacity 120ms ease, transform 60ms ease; }
+    #yesBtn:active, #noBtn:active { opacity: 1; }
+    /* Practice mode buttons same behavior */
+    #practiceYesBtn, #practiceNoBtn { opacity: 0.8; transition: opacity 120ms ease, transform 60ms ease; }
+    #practiceYesBtn:active, #practiceNoBtn:active { opacity: 1; }
 
+    /* Universal button active states */
+    button, .share-button, .link-like { -webkit-tap-highlight-color: transparent; }
+    button, .share-button { transition: background-color 120ms ease, transform 60ms ease; }
+
+    /* Start and Share buttons use brand pink by default; darken on press */
+    #startBtn:active, .share-button:active { background-color: var(--btn-active-pink); transform: translateY(1px); }
+
+    /* Let's go button active state uses green */
+    #letsGoBtn:active { background-color: var(--btn-active-green); transform: translateY(1px); }
+
+    /* Icon buttons get colored fill on press */
+    #yesBtn:active { transform: translateY(1px); }
+    #noBtn:active { transform: translateY(1px); }
+    #yesBtn img, #noBtn img { pointer-events: none; }
+
+    /* Text link button subtle active color */
+    .link-like:active { color: var(--btn-active-pink); }
+  </style>
+  
+  
 </head>
-<body>
-  <div class="main-content">
-  <div class="container">
-    <!-- White header above intro -->
-    <header class="intro-header">
-      <h1 class="intro-title">The Happiness Scan</h1>
-    </header>
+<body class="bg-white text-[#2c1f1c]">
+  <div class="min-h-screen flex flex-col">
+  <div class="container flex flex-col items-center flex-1 py-0" style="padding-bottom: var(--footer-h);">
     
-    <section id="intro" class="section active-section" role="banner" aria-labelledby="intro-heading">
-      <div id="introContent">
-        <div class="intro-left">
-            <h1 id="intro-heading" style="font-weight: 600;">Let's find out how <span style="color: #e91e63;">happy</span> you are.</h1>
+    <section id="intro" class="section active-section w-full flex items-center justify-center" role="banner" aria-labelledby="intro-heading">
+      <div class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 py-10 md:py-16 text-center">
+        <div class="flex flex-col items-center gap-3">
+          <h2 class="text-center text-yellow-950 text-3xl font-semibold">
+            Let’s find out what <span class="text-pink-600">drives</span> you!
+          </h2>
+          <p class="text-center text-yellow-950 text-xl max-w-[900px] leading-relaxed font-normal">
+            23plusone is a science-based method that presents 24 unique cards.<br>
+            Each card highlights something that we humans love and live for.
+          </p>
         </div>
-        
-        <div class="intro-right full-width-mobile">
-          <img src="23plusone_humanvaluesvisualized.gif" alt="Animated visualization showing diverse human values and emotions represented as colorful, flowing elements" class="hero-image" loading="lazy">
+        <div class="w-full flex items-center justify-center pt-2">
+          <div class="w-full max-w-[560px] flex items-center justify-center rounded-[16px] overflow-hidden" style="aspect-ratio: 3 / 2;">
+            <img src="23plusone_humanvaluesvisualized.gif" alt="Human values visualized" class="w-auto h-auto max-w-full max-h-full object-contain block" loading="lazy">
+          </div>
         </div>
-        
-        <div class="intro-text" style="max-width: 500px; margin: 0 auto;">
-          <p>You'll see 24 cards. Each shows something we humans love and live for.</p>
-          <p class="lets-go" style="font-weight: 600;">Pick the ones you find important in your life!</p>
+        <div class="w-full flex flex-col items-center gap-4">
+          <button id="startBtn" type="button" class="w-[200px] h-[56px] bg-pink-600 rounded-xl text-white text-lg font-semibold shadow-sm" onclick="startPractice()">Continue</button>
         </div>
       </div>
-      
-      <button id="startBtn" type="button" class="btn btn-primary btn-start" aria-describedby="intro-heading" onclick="console.log('INLINE CLICK WORKS!'); startScan();">Let's go</button>
+    </section>
+
+    <!-- Practice Section (between Intro and Countdown) -->
+    <section id="practice" class="section w-full flex items-center justify-center relative" role="region" aria-labelledby="practice-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none;">
+      <div class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center">
+        <div class="w-full flex items-center justify-end" style="position: absolute; top: 16px; left: 16px; right: 16px; height: 24px;">
+          <button id="practiceNextBtn" type="button" class="text-sm font-medium text-yellow-950 inline-flex items-center gap-1" style="position: absolute; top: 0; right: 0;">
+            <span>Next</span>
+            <span aria-hidden>→</span>
+          </button>
+        </div>
+        <div class="flex flex-col items-center gap-2 pt-2">
+          <h2 id="practice-heading" class="text-xl md:text-2xl font-semibold text-yellow-950">How does it work?</h2>
+          <p class="text-base md:text-lg text-yellow-950 max-w-[560px] mx-auto">Choose the cards that feel right by swiping or clicking. Go with your gut, and don’t overthink it! Give it a shot:</p>
+          <span class="inline-flex items-center rounded-full text-sm font-semibold py-1" style="background-color:#FF9800; color:#ffffff; padding-left:6px; padding-right:6px;">Practice round</span>
+          <div class="w-[280px] h-[2px] bg-neutral-200 rounded-full mt-2"></div>
+        </div>
+
+        <!-- thin progress/timer line at top -->
+        <div id="practiceTimerContainer" class="w-[560px] max-w-full mx-auto" role="timer" aria-label="Practice timer" style="visibility: hidden; min-height: 10px;">
+          <div id="practiceTimerBar" class="h-[4px] bg-[var(--progress-bg)] rounded-full overflow-hidden" role="progressbar" aria-label="Time remaining" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 80%; margin-left: auto; margin-right: auto;">
+            <div id="practiceTimerProgress" class="h-full w-full rounded-full bg-green-500"></div>
+          </div>
+        </div>
+
+        <!-- Card area -->
+        <div id="practiceCardContainer" class="w-full min-h-0 flex items-center justify-center text-center" role="region" aria-live="polite" aria-label="Practice card presentation area">
+          <div id="practiceCard" class="w-full max-w-[560px] flex items-center justify-center" style="aspect-ratio: 3 / 2;">
+            <div class="loading">Loading practice cards...</div>
+          </div>
+        </div>
+
+        <!-- Icon buttons -->
+        <div id="practiceButtons" class="buttons" role="group" aria-label="Practice response options" style="visibility: hidden; min-height: 72px;">
+          <div class="flex items-center justify-center gap-24 pt-2 pb-1">
+            <button id="practiceNoBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="No - I don't connect with this" accesskey="n">
+              <img src="x-mark.svg" alt="No" class="w-7 h-7" />
+            </button>
+            <button id="practiceYesBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="Yes - This speaks to me" accesskey="y">
+              <img src="heart.svg" alt="Yes" class="w-7 h-7" />
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
 
     <!-- Countdown Section -->
-    <section id="countdown" class="section" role="region" aria-labelledby="countdown-heading">
-      <div id="countdownContent" class="section-content">
+    <section id="countdown" class="section w-full flex items-center justify-center" role="region" aria-labelledby="countdown-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
+      <div id="countdownContent" class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center">
         <h2 id="countdown-heading" class="sr-only">Countdown to start</h2>
-        <div id="countdownText" aria-live="assertive">Ready?</div>
-        <div class="progress-container">
-          <div id="countdownProgress" class="progress-bar" role="progressbar" aria-label="Countdown progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        <div id="countdownText" class="text-lg md:text-xl font-semibold min-h-[40px] w-full flex items-center justify-center" aria-live="assertive">Ready?</div>
+        <div class="progress-container w-full max-w-[280px] h-[6px] bg-[var(--progress-bg)] rounded-full overflow-hidden mx-auto">
+          <div id="countdownProgress" class="progress-bar h-full w-0 bg-[var(--brand-pink)]" role="progressbar" aria-label="Countdown progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
         </div>
+        <div></div>
       </div>
     </section>
 
-    <main id="game" class="section" role="main" aria-labelledby="game-heading">
+    <main id="game" class="section w-full flex items-center justify-center" role="main" aria-labelledby="game-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
       <h2 id="game-heading" class="sr-only">Happiness Scan Question</h2>
-      
-      <!-- Progress indicator -->
-      <!-- <div id="progress" role="progressbar" aria-label="Scan progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
-        <div id="progressBar"></div>
-      </div> -->
-      
-      <div id="cardContainer" class="game-container" role="region" aria-live="polite" aria-label="Card presentation area">
-        <!-- Timer positioned above cards -->
-        <div id="timerContainer" role="timer" aria-label="Response timer" style="display: none;">
-          <div id="timerBar" role="progressbar" aria-label="Time remaining" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100">
-            <div id="timerProgress"></div>
+      <div class="w-full flex flex-col justify-center items-center px-6 md:px-16 gap-6 text-center">
+        <!-- thin progress/timer line at top -->
+        <div id="timerContainer" class="w-[560px] max-w-full mx-auto" role="timer" aria-label="Response timer" style="display: none;">
+          <div id="timerBar" class="h-[4px] bg-[var(--progress-bg)] rounded-full overflow-hidden" role="progressbar" aria-label="Time remaining" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 80%; margin-left: auto; margin-right: auto;">
+            <div id="timerProgress" class="h-full w-full rounded-full bg-green-500"></div>
           </div>
         </div>
-        
-        <div id="card" class="card-area full-width-mobile" aria-live="assertive">
-          <div class="loading">Loading cards...</div>
+
+        <!-- Card area -->
+        <div id="cardContainer" class="w-full min-h-0 flex items-center justify-center text-center" role="region" aria-live="polite" aria-label="Card presentation area">
+          <div id="card" class="w-full max-w-[560px] flex items-center justify-center" aria-live="assertive">
+            <div class="loading">Loading cards...</div>
+          </div>
         </div>
-      </div>
-      
-      <div class="buttons" role="group" aria-label="Response options" style="display: none;">
-        <button id="noBtn" type="button" class="btn btn-danger" aria-label="No - I don't connect with this" accesskey="n">
-          No
-        </button>
-        <button id="yesBtn" type="button" class="btn btn-success" aria-label="Yes - This speaks to me" accesskey="y">
-          Yes
-        </button>
+
+        <!-- Icon buttons -->
+        <div id="gameButtons" class="buttons" role="group" aria-label="Response options" style="display: none;">
+          <div class="flex items-center justify-center gap-24 pt-2 pb-1">
+            <button id="noBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="No - I don't connect with this" accesskey="n">
+              <img src="x-mark.svg" alt="No" class="w-7 h-7" />
+            </button>
+            <button id="yesBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="Yes - This speaks to me" accesskey="y">
+              <img src="heart.svg" alt="Yes" class="w-7 h-7" />
+            </button>
+          </div>
+        </div>
+
+        <!-- removed inline footer row -->
       </div>
     </main>
 
-    <!-- Processing Section -->
-    <section id="processing" class="section" role="region" aria-labelledby="processing-heading">
-      <div id="processingContent" class="section-content">
-        <h2 id="processing-heading" class="sr-only">Processing your results</h2>
-        <div id="processingText" aria-live="assertive">Reviewing...</div>
-        <div class="progress-container">
-          <div id="processingProgress" class="progress-bar" role="progressbar" aria-label="Processing progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    <!-- Practice Complete Section -->
+    <section id="practice-complete" class="section w-full flex items-center justify-center relative" role="region" aria-labelledby="practice-complete-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none;">
+      <div class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center">
+        <div class="flex items-center justify-start" style="position: absolute; top: 16px; left: 16px; height: 24px;">
+          <button id="practicePrevBtn" type="button" class="text-sm font-medium text-yellow-950 inline-flex items-center gap-1">
+            <span aria-hidden>←</span>
+            <span>Previous</span>
+          </button>
         </div>
+        <h2 id="practice-complete-heading" class="text-xl md:text-2xl font-semibold text-yellow-950">Well done!</h2>
+        <p class="text-xl md:text-2xl font-semibold text-yellow-950">Ready to start the test?</p>
+        <button id="letsGoBtn" type="button" class="w-[200px] h-[56px] bg-[#3AB4A0] rounded-xl text-white text-lg font-semibold shadow-sm" style="background-color:#3AB4A0;">Let’s go</button>
       </div>
     </section>
 
-    <section id="results" class="section" role="region" aria-labelledby="results-heading">
+    <!-- Processing Section -->
+    <section id="processing" class="section w-full flex items-center justify-center" role="region" aria-labelledby="processing-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
+      <div id="processingContent" class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center">
+        <h2 id="processing-heading" class="sr-only">Processing your results</h2>
+        <div id="processingText" class="text-lg md:text-xl font-semibold min-h-[40px] w-full flex items-center justify-center" aria-live="assertive">Reviewing...</div>
+        <div class="progress-container w-full max-w-[280px] h-[6px] bg-[var(--progress-bg)] rounded-full overflow-hidden mx-auto">
+          <div id="processingProgress" class="progress-bar h-full w-0 bg-[var(--brand-pink)]" role="progressbar" aria-label="Processing progress" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div></div>
+      </div>
+    </section>
+
+    <section id="results" class="section w-full flex items-center justify-center" role="region" aria-labelledby="results-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
             <!-- Consolidated Results Page -->
       <div class="results-page active" id="results-page-1">
-        <div id="resultsContent" class="results-content">
+        <div id="resultsContent" class="results-content px-4 max-w-[560px] mx-auto text-center pb-[24px]">
           <!-- Page 1 Content: Score & Overview -->
-          <header id="resultsHeader">
-            <h2 id="results-heading"><span class="heading-part-1">Done! Here’s your</span> <span class="accent heading-part-2">happiness profile.</span></h2>
+          <header id="resultsHeader" class="mb-4">
+            <h2 id="results-heading" class="text-xl md:text-2xl font-semibold"><span class="heading-part-1">Done! Here’s your</span> <span class="accent heading-part-2 text-[var(--brand-pink)]">happiness profile.</span></h2>
           </header>
           <section id="scoreSection" aria-labelledby="score-heading">
             <h3 id="score-heading" class="sr-only">Your Happiness Score</h3>
-            <div id="totalScore" role="img" aria-label="Individual Happiness Score">--</div>
+            <div id="totalScore" class="text-6xl md:text-7xl font-extrabold text-[#2c1f1c] mb-1" role="img" aria-label="Individual Happiness Score">--</div>
           </section>
           <section id="benchmarkSection" aria-labelledby="benchmark-heading">
             
-            <div id="benchmarkMessage" role="status" aria-live="polite">Calculating your ranking...</div>
-            <div id="benchmarkStats" role="list" aria-label="Comparison statistics">
+            <div id="benchmarkMessage" class="mt-2 text-base md:text-lg font-semibold text-[#2c1f1c]" role="status" aria-live="polite">Calculating your ranking...</div>
+            <div id="benchmarkStats" class="mt-2 grid grid-cols-2 gap-2 place-items-center" role="list" aria-label="Comparison statistics">
               <div class="benchmark-item" role="listitem">
-                <span class="benchmark-label">Average Score:</span>
+                <span class="benchmark-label font-medium">Average Score:</span>
                 <span class="benchmark-value" id="benchmarkAverage" aria-label="Average participant score">--</span>
               </div>
               <div class="benchmark-item" role="listitem">
-                <span class="benchmark-label">Participants:</span>
+                <span class="benchmark-label font-medium">Participants:</span>
                 <span class="benchmark-value" id="benchmarkTotal" aria-label="Total number of participants">--</span>
               </div>
             </div>
           </section>
 
           <!-- Personalized insight placed under benchmark, before bars -->
-          <section id="insightBlock" class="insight-block" aria-label="Personalized insight"></section>
+          <section id="insightBlock" class="insight-block mt-4" aria-label="Personalized insight"></section>
 
           <!-- Page 2 Content: Your Happiness Palette -->
-          <section id="colorVisualization" aria-label="Your Happiness Palette">
-            <div id="domainBars" role="list" aria-label="Happiness domains breakdown">
+          <section id="colorVisualization" class="mt-6" aria-label="Your Happiness Palette">
+            <div id="domainBars" class="space-y-3 max-w-[420px] mx-auto" role="list" aria-label="Happiness domains breakdown">
               <div class="domain-bar" role="listitem" data-domain="Basics" aria-labelledby="basics-label">
                 <div class="bar-header">
                   <span id="basics-label" class="bar-name">Basics</span>
                 </div>
-                <div class="bar-container" role="progressbar" aria-labelledby="basics-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6">
+                <div class="bar-container bg-[var(--progress-bg)] h-[6px] rounded-full overflow-hidden relative" role="progressbar" aria-labelledby="basics-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6">
                   <div class="bar-fill bar-basics" style="width: 0%"></div>
                 </div>
               </div>
@@ -161,7 +257,7 @@
                 <div class="bar-header">
                   <span id="growth-label" class="bar-name">Growth</span>
                 </div>
-                <div class="bar-container" role="progressbar" aria-labelledby="growth-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6">
+                <div class="bar-container bg-[var(--progress-bg)] h-[6px] rounded-full overflow-hidden relative" role="progressbar" aria-labelledby="growth-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6">
                   <div class="bar-fill bar-self-dev" style="width: 0%"></div>
                 </div>
               </div>
@@ -169,7 +265,7 @@
                 <div class="bar-header">
                   <span id="ambition-label" class="bar-name">Ambition</span>
                 </div>
-                <div class="bar-container" role="progressbar" aria-labelledby="ambition-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
+                <div class="bar-container bg-[var(--progress-bg)] h-[6px] rounded-full overflow-hidden relative" role="progressbar" aria-labelledby="ambition-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
                   <div class="bar-fill bar-ambition" style="width: 0%"></div>
                 </div>
               </div>
@@ -177,7 +273,7 @@
                 <div class="bar-header">
                   <span id="vitality-label" class="bar-name">Vitality</span>
                 </div>
-                <div class="bar-container" role="progressbar" aria-labelledby="vitality-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2">
+                <div class="bar-container bg-[var(--progress-bg)] h-[6px] rounded-full overflow-hidden relative" role="progressbar" aria-labelledby="vitality-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2">
                   <div class="bar-fill bar-vitality" style="width: 0%"></div>
                 </div>
               </div>
@@ -185,25 +281,25 @@
                 <div class="bar-header">
                   <span id="beauty-label" class="bar-name">Beauty</span>
                 </div>
-                <div class="bar-container" role="progressbar" aria-labelledby="beauty-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2">
+                <div class="bar-container bg-[var(--progress-bg)] h-[6px] rounded-full overflow-hidden relative" role="progressbar" aria-labelledby="beauty-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2">
                   <div class="bar-fill bar-attraction" style="width: 0%"></div>
                 </div>
               </div>
             </div>
-            <p class="palette-tagline">More Color = More Joy</p>
+            <p class="palette-tagline mt-2">More Color = More Joy</p>
           </section>
 
           <!-- Insights section removed per design -->
-          <section id="shareSection" aria-labelledby="share-heading">
-            <div class="share-buttons" role="group" aria-label="Sharing options">
-              <a id="learnMoreBtn" href="https://23plusone.org/" target="_blank" rel="noopener" class="share-button copy" aria-label="Learn more about 23plusone">
+          <section id="shareSection" class="mt-6" aria-labelledby="share-heading">
+            <div class="share-buttons flex justify-center gap-3" role="group" aria-label="Sharing options">
+              <a id="learnMoreBtn" href="https://23plusone.org/" target="_blank" rel="noopener" class="share-button copy inline-flex items-center justify-center px-4 py-2 rounded-md bg-[var(--brand-pink)] text-white" aria-label="Learn more about 23plusone">
                 <span>Learn more</span>
               </a>
-              <button id="nativeShareBtn" type="button" class="share-button native" aria-label="Share results using device's native sharing">
+              <button id="nativeShareBtn" type="button" class="share-button native inline-flex items-center justify-center px-4 py-2 rounded-md bg-[var(--brand-pink)] text-white" aria-label="Share results using device's native sharing">
                 <span>Share</span>
               </button>
             </div>
-            <button id="retakeBtn" type="button" class="link-like" aria-label="Start a new happiness scan" onclick="location.reload()">Try again</button>
+            <button id="retakeBtn" type="button" class="link-like block mx-auto mt-2" aria-label="Start a new happiness scan" onclick="location.reload()">Try again</button>
           </section>
         </div>
       </div>
@@ -213,20 +309,11 @@
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer class="bottom-branding">
-    <div class="bottom-branding-content">
-      <div class="bottom-branding-left">
-        <svg class="bottom-branding-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 29.84 51.28">
-          <defs><style>.cls-1{fill:#672d21;}.cls-2{fill:#da006b;}</style></defs>
-          <g><rect class="cls-1" y="17.5" width="2.06" height="33.78"/><rect class="cls-1" x="4.12" y="5.15" width="2.06" height="46.13"/><rect class="cls-1" x="12.35" y="21.62" width="2.06" height="29.66"/><path class="cls-2" d="M26.75,2.55c-.8,0-1.52.3-2.07.8,0-.09.01-.17.01-.26,0-1.7-1.38-3.09-3.09-3.09s-3.09,1.38-3.09,3.09c0,.35.13.96.31,1.35.32.7.38,1.54.37,2.03-.08,2.23-1.2,2.91-2.99,3.6-4.68,1.81-7.97,6.27-7.97,11.55v29.66h2.06v-29.66c0-4.4,2.76-8.15,6.65-9.63,6.72-2.55,11.02-2.35,12.57-4.96.21-.42.33-.89.33-1.4,0-1.71-1.38-3.09-3.09-3.09Z"/></g>
-        </svg>
-        <div class="bottom-branding-text">by BR-ND People</div>
-      </div>
-      <div class="bottom-branding-right">
-        <div class="bottom-copyright">© 2006-2025 Cramer & Koene</div>
-        <img src="23plusone.png" alt="23plusone" class="bottom-brand-logo">
-      </div>
+  <footer id="globalFooter" class="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200">
+    <div class="w-full grid items-center text-yellow-950 text-xs px-6 md:px-16" style="height: 100%; grid-template-columns: 1fr auto 1fr;">
+      <div class="opacity-80 flex items-center h-full" style="justify-self: start;"><img src="Br-ndLogo.webp" alt="BR-ND People logo" class="w-auto" style="height: auto; width: auto; max-height: calc(var(--footer-h) - 12px);"></div>
+      <div class="opacity-80" style="justify-self: center;">© 2006-2025 Cramer & Koene</div>
+      <div class="opacity-80 flex items-center h-full" style="justify-self: end;"><img src="23plusone.png" alt="23plusone logo" class="w-auto" style="height: auto; width: auto; max-height: calc((var(--footer-h) - 12px) * 0.55);"></div>
     </div>
   </footer>
 

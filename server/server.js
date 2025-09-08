@@ -24,11 +24,48 @@ app.use((req, res, next) => {
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Database connection pool
+// Database connection pool with robust env detection
+function resolveDatabaseUrl() {
+  const candidates = [
+    process.env.DATABASE_URL,
+    process.env.SUPABASE_DB_URL,
+    process.env.POSTGRES_URL,
+    process.env.POSTGRES_PRISMA_URL,
+    process.env.POSTGRESQL_URL,
+    process.env.DB_URL
+  ];
+  for (const url of candidates) {
+    if (url && typeof url === 'string' && url.trim().length > 0) return url.trim();
+  }
+  return 'postgresql://sinyo@localhost:5432/happiness_benchmark';
+}
+
+const resolvedDbUrl = resolveDatabaseUrl();
+const isSupabase = /supabase\.co|supabase\.in/i.test(resolvedDbUrl);
+
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL || 'postgresql://sinyo@localhost:5432/happiness_benchmark',
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  connectionString: resolvedDbUrl,
+  ssl: (process.env.NODE_ENV === 'production' || isSupabase) ? { rejectUnauthorized: false } : false
 });
+
+console.log('🔌 DB URL source resolved:', resolvedDbUrl ? 'set' : 'missing');
+
+// Runtime schema feature detection (local vs Supabase differences)
+let hasIpAddressColumn = null; // lazily detected
+async function detectSchemaFeatures(client) {
+  if (hasIpAddressColumn !== null) return;
+  try {
+    const res = await client.query(
+      `SELECT 1 FROM information_schema.columns
+       WHERE table_schema='public' AND table_name='scan_responses' AND column_name='ip_address'`
+    );
+    hasIpAddressColumn = res.rowCount > 0;
+    console.log(`🧭 Schema detection: ip_address ${hasIpAddressColumn ? 'present' : 'absent'}`);
+  } catch (e) {
+    hasIpAddressColumn = false;
+    console.warn('Schema detection failed; assuming no ip_address column');
+  }
+}
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -169,26 +206,49 @@ app.post('/api/responses', async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Insert scan response using current schema
-      const result = await client.query(
-        `INSERT INTO scan_responses 
-         (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, ip_address, selected_count, rejected_count)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-         RETURNING id`,
-        [
-          sessionId, 
-          JSON.stringify(cardSelections), 
-          ihsScore,
-          n1Score || 0,
-          n2Score || 0, 
-          n3Score || 0,
-          completionTime || 0,
-          userAgent || null,
-          req.ip || null,
-          cardSelections?.selected?.length || 0,
-          cardSelections?.rejected?.length || 0
-        ]
-      );
+      // Detect schema once and insert accordingly
+      await detectSchemaFeatures(client);
+      let result;
+      if (hasIpAddressColumn) {
+        result = await client.query(
+          `INSERT INTO scan_responses 
+           (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, ip_address, selected_count, rejected_count)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+           RETURNING id`,
+          [
+            sessionId, 
+            JSON.stringify(cardSelections), 
+            ihsScore,
+            n1Score || 0,
+            n2Score || 0, 
+            n3Score || 0,
+            completionTime || 0,
+            userAgent || null,
+            req.ip || null,
+            cardSelections?.selected?.length || 0,
+            cardSelections?.rejected?.length || 0
+          ]
+        );
+      } else {
+        result = await client.query(
+          `INSERT INTO scan_responses 
+           (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, selected_count, rejected_count)
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+           RETURNING id`,
+          [
+            sessionId, 
+            JSON.stringify(cardSelections), 
+            ihsScore,
+            n1Score || 0,
+            n2Score || 0, 
+            n3Score || 0,
+            completionTime || 0,
+            userAgent || null,
+            cardSelections?.selected?.length || 0,
+            cardSelections?.rejected?.length || 0
+          ]
+        );
+      }
       
       console.log(`✅ Valid scan saved: ${sessionId} (${cardSelections.selected?.length || 0} selected)`);
       
@@ -395,12 +455,19 @@ app.use((req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+const IS_VERCEL = !!process.env.VERCEL;
 
-app.listen(PORT, () => {
-  console.log(`🚀 23plusone Happiness Scan server running on port ${PORT}`);
-  console.log(`📊 Visit http://localhost:${PORT} to test the scan`);
-  console.log(`🔗 Embed URL: http://localhost:${PORT}/scan.html`);
-});
+// On Vercel, export the Express app as a serverless function handler.
+// Locally, start the HTTP server.
+if (!IS_VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`🚀 23plusone Happiness Scan server running on port ${PORT}`);
+    console.log(`📊 Visit http://localhost:${PORT} to test the scan`);
+    console.log(`🔗 Embed URL: http://localhost:${PORT}/scan.html`);
+  });
+}
+
+module.exports = app;
 
 // Graceful shutdown
 process.on('SIGTERM', () => {

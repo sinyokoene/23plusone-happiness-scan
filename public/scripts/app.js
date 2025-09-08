@@ -14,6 +14,8 @@
   
   // DOM elements
   const introDiv = document.getElementById('intro');
+  const practiceDiv = document.getElementById('practice');
+  const practiceCompleteDiv = document.getElementById('practice-complete');
   const countdownDiv = document.getElementById('countdown');
   const processingDiv = document.getElementById('processing');
   const gameDiv = document.getElementById('game');
@@ -33,7 +35,7 @@
 
   const timerContainer = document.getElementById('timerContainer');
   const timerProgress = document.getElementById('timerProgress');
-  const buttonsDiv = document.querySelector('.buttons');
+  const buttonsDiv = document.getElementById('gameButtons');
   const yesBtn = document.getElementById('yesBtn');
   const noBtn = document.getElementById('noBtn');
   
@@ -43,9 +45,12 @@
     console.log('🔄 showSection called with:', sectionToShow);
     
     // Hide all main sections first
-    [introDiv, countdownDiv, gameDiv, processingDiv, resultsDiv].forEach(div => {
+    [introDiv, practiceDiv, practiceCompleteDiv, countdownDiv, gameDiv, processingDiv, resultsDiv].forEach(div => {
       if (div) {
         div.classList.remove('active-section');
+        // Let CSS control the card white box; only toggle display
+        div.style.display = 'none';
+        div.setAttribute('aria-hidden', 'true');
         console.log('Removed active-section from:', div.id);
       }
     });
@@ -53,6 +58,9 @@
     // Then show the requested section
     if (sectionToShow) {
       sectionToShow.classList.add('active-section');
+      // Ensure visible
+      sectionToShow.style.display = 'flex';
+      sectionToShow.removeAttribute('aria-hidden');
       console.log('✅ Added active-section to:', sectionToShow.id);
     }
   }
@@ -66,14 +74,14 @@
       console.log('Button clicked - addEventListener method');
       e.preventDefault();
       e.stopPropagation();
-      startScan();
+      startPractice();
     });
     
     startBtn.onclick = function(e) {
       console.log('Button clicked - onclick method');
       e.preventDefault();
       e.stopPropagation();
-      startScan();
+      startPractice();
     };
     
     // Test if button is clickable
@@ -84,6 +92,246 @@
     console.log('All event listeners attached to start button');
   } else {
     console.error('Start button not found!');
+  }
+
+  // Practice mode state and elements
+  const practiceCardDiv = document.getElementById('practiceCard');
+  const practiceTimerContainer = document.getElementById('practiceTimerContainer');
+  const practiceTimerProgress = document.getElementById('practiceTimerProgress');
+  const practiceButtonsDiv = document.getElementById('practiceButtons');
+  const practiceYesBtn = document.getElementById('practiceYesBtn');
+  const practiceNoBtn = document.getElementById('practiceNoBtn');
+  const letsGoBtn = document.getElementById('letsGoBtn');
+  const practiceNextBtn = document.getElementById('practiceNextBtn');
+  const practicePrevBtn = document.getElementById('practicePrevBtn');
+
+  const practiceImages = [
+    'fakeCards/25. resilience_strength.jpeg',
+    'fakeCards/26. expression_extravegance.jpeg',
+    'fakeCards/27. precision_highstakes.jpeg'
+  ];
+  // Preload practice images once
+  (function preloadPracticeImages(){
+    practiceImages.forEach(src => { const img = new Image(); img.src = src; });
+  })();
+  let practiceIndex = 0;
+  let practiceTimerInterval = null;
+  let practiceTimerTimeouts = [];
+  let practiceTimerActive = false;
+  let practiceStartX = null;
+  let practiceCurrentCard = null;
+
+  function startPractice() {
+    console.log('🎯 startPractice called');
+    showSection(practiceDiv);
+    practiceIndex = 0;
+    showPracticeCard();
+  }
+  window.startPractice = startPractice;
+
+  function showPracticeCard() {
+    if (practiceIndex >= practiceImages.length) {
+      // Completed practice
+      practiceTimerContainer.style.visibility = 'hidden';
+      practiceButtonsDiv.style.visibility = 'hidden';
+      showSection(practiceCompleteDiv);
+      return;
+    }
+
+    const imgSrc = practiceImages[practiceIndex];
+    practiceCardDiv.innerHTML = `
+      <div id="practiceCardImages" class="w-full h-full max-h-full flex items-center justify-center">
+        <img src="${imgSrc}" alt="Practice card" class="practice-card-image w-auto h-auto max-w-full max-h-full object-contain rounded-[16px] shadow-[0_10px_15px_rgba(0,0,0,0.15)]" tabindex="0" role="img" onerror="this.style.display='none'" style="opacity: 1 !important;">
+      </div>
+    `;
+
+    // Show timer and buttons (keep layout space reserved for stability)
+    practiceTimerContainer.style.visibility = 'visible';
+    practiceButtonsDiv.style.visibility = 'visible';
+
+    setTimeout(() => {
+      setupPracticeSwipeListeners();
+      setupPracticeKeyboardNavigation();
+      const cardImage = document.querySelector('.practice-card-image');
+      if (cardImage) {
+        cardImage.style.opacity = '1';
+        cardImage.style.transform = '';
+        cardImage.style.transition = '';
+      }
+    }, 100);
+
+    startPracticeTimer();
+  }
+
+  function startPracticeTimer() {
+    // Clear existing
+    if (practiceTimerInterval) {
+      clearTimeout(practiceTimerInterval);
+      practiceTimerInterval = null;
+    }
+    practiceTimerTimeouts.forEach(item => {
+      if (typeof item === 'number') {
+        clearTimeout(item);
+      } else if (item && item.clear) {
+        item.clear();
+      }
+    });
+    practiceTimerTimeouts = [];
+
+    practiceTimerActive = true;
+    practiceTimerProgress.style.transition = 'none';
+    practiceTimerProgress.style.width = '100%';
+    if (practiceTimerProgress.classList) {
+      practiceTimerProgress.classList.remove('warning', 'danger', 'timer-warning', 'timer-danger');
+    }
+
+    const t1 = setTimeout(() => {
+      if (!practiceTimerActive) return;
+      practiceTimerProgress.style.transition = 'width 4s linear, background-color 0.3s ease';
+      practiceTimerProgress.style.width = '0%';
+      let currentTime = 100;
+      const update = setInterval(() => {
+        if (!practiceTimerActive) { clearInterval(update); return; }
+        currentTime -= 2.5;
+        const bar = document.getElementById('practiceTimerBar');
+        if (bar && currentTime >= 0) {
+          bar.setAttribute('aria-valuenow', Math.round(currentTime));
+        }
+        if (currentTime <= 0) { clearInterval(update); }
+      }, 100);
+      practiceTimerTimeouts.push({ clear: () => clearInterval(update) });
+    }, 50);
+    practiceTimerTimeouts.push(t1);
+
+    const t2 = setTimeout(() => {
+      if (!practiceTimerActive) return;
+      practiceTimerProgress.classList.remove('danger', 'timer-danger');
+      practiceTimerProgress.classList.add('warning', 'timer-warning');
+    }, 2000);
+    practiceTimerTimeouts.push(t2);
+
+    const t3 = setTimeout(() => {
+      if (!practiceTimerActive) return;
+      practiceTimerProgress.classList.remove('warning', 'timer-warning');
+      practiceTimerProgress.classList.add('danger', 'timer-danger');
+    }, 3000);
+    practiceTimerTimeouts.push(t3);
+
+    practiceTimerInterval = setTimeout(() => {
+      if (!practiceTimerActive) return;
+      recordPracticeTimeout();
+    }, 4000);
+  }
+
+  function recordPracticeAnswer(isYes) {
+    practiceTimerActive = false;
+    if (practiceTimerInterval) { clearTimeout(practiceTimerInterval); practiceTimerInterval = null; }
+    practiceTimerTimeouts.forEach(item => { if (typeof item === 'number') { clearTimeout(item); } else if (item && item.clear) { item.clear(); } });
+    practiceTimerTimeouts = [];
+    practiceIndex++;
+    showPracticeCard();
+  }
+
+  function recordPracticeTimeout() { recordPracticeAnswer(null); }
+
+  // Practice controls
+  if (practiceYesBtn) practiceYesBtn.addEventListener('click', () => recordPracticeAnswer(true));
+  if (practiceNoBtn) practiceNoBtn.addEventListener('click', () => recordPracticeAnswer(false));
+  if (letsGoBtn) letsGoBtn.addEventListener('click', () => {
+    // Proceed to real countdown
+    // stop any running practice timers
+    practiceTimerActive = false;
+    if (practiceTimerInterval) { clearTimeout(practiceTimerInterval); practiceTimerInterval = null; }
+    practiceTimerTimeouts.forEach(item => { if (typeof item === 'number') { clearTimeout(item); } else if (item && item.clear) { item.clear(); } });
+    practiceTimerTimeouts = [];
+    startScan();
+  });
+  if (practiceNextBtn) practiceNextBtn.addEventListener('click', () => {
+    // Immediate go to Well done page
+    practiceTimerActive = false;
+    if (practiceTimerInterval) { clearTimeout(practiceTimerInterval); practiceTimerInterval = null; }
+    practiceTimerTimeouts.forEach(item => { if (typeof item === 'number') { clearTimeout(item); } else if (item && item.clear) { item.clear(); } });
+    practiceTimerTimeouts = [];
+    showSection(practiceCompleteDiv);
+  });
+  if (practicePrevBtn) practicePrevBtn.addEventListener('click', () => {
+    // Return to practice mode
+    practiceTimerActive = false;
+    if (practiceTimerInterval) { clearTimeout(practiceTimerInterval); practiceTimerInterval = null; }
+    practiceTimerTimeouts.forEach(item => { if (typeof item === 'number') { clearTimeout(item); } else if (item && item.clear) { item.clear(); } });
+    practiceTimerTimeouts = [];
+    practiceIndex = 0; // reset and allow retake from first fake card
+    showSection(practiceDiv);
+    showPracticeCard();
+  });
+
+  function setupPracticeKeyboardNavigation() {
+    const cardImage = document.querySelector('.practice-card-image');
+    if (!cardImage) return;
+    cardImage.addEventListener('keydown', function(e) {
+      switch(e.key) {
+        case 'Enter':
+        case ' ':
+          e.preventDefault();
+          if (practiceYesBtn && practiceButtonsDiv.style.display !== 'none') { practiceYesBtn.focus(); }
+          break;
+        case 'ArrowLeft':
+          e.preventDefault();
+          recordPracticeAnswer(false);
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          recordPracticeAnswer(true);
+          break;
+      }
+    });
+  }
+
+  function setupPracticeSwipeListeners() {
+    const cardImage = document.querySelector('.practice-card-image');
+    if (!cardImage) return;
+    practiceCurrentCard = cardImage;
+
+    cardImage.addEventListener('touchstart', function(e){ e.preventDefault(); practiceStartX = e.touches[0].clientX; }, { passive: false });
+    cardImage.addEventListener('touchmove', function(e){
+      e.preventDefault();
+      if (practiceStartX == null) return;
+      const deltaX = e.touches[0].clientX - practiceStartX;
+      if (practiceCurrentCard) { practiceCurrentCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX * 0.1}deg)`; }
+    }, { passive: false });
+    cardImage.addEventListener('touchend', function(e){
+      e.preventDefault();
+      if (practiceStartX == null || !practiceCurrentCard) return;
+      const deltaX = e.changedTouches[0].clientX - practiceStartX;
+      if (Math.abs(deltaX) > 100) {
+        const isYes = deltaX > 0;
+        animatePracticeCardExit(isYes);
+        setTimeout(() => recordPracticeAnswer(isYes), 300);
+      } else {
+        practiceCurrentCard.style.transform = '';
+      }
+      practiceStartX = null;
+    }, { passive: false });
+
+    // Mouse
+    cardImage.addEventListener('mousedown', function(e){ e.preventDefault(); practiceStartX = e.clientX; });
+    cardImage.addEventListener('mousemove', function(e){ if (practiceStartX == null || !practiceCurrentCard) return; const dx = e.clientX - practiceStartX; practiceCurrentCard.style.transform = `translateX(${dx}px) rotate(${dx * 0.1}deg)`; });
+    const up = function(e){ if (practiceStartX == null || !practiceCurrentCard) return; const dx = e.clientX - practiceStartX; if (Math.abs(dx) > 100) { const isYes = dx > 0; animatePracticeCardExit(isYes); setTimeout(() => recordPracticeAnswer(isYes), 300); } else { practiceCurrentCard.style.transform = ''; } practiceStartX = null; };
+    cardImage.addEventListener('mouseup', up);
+    cardImage.addEventListener('mouseleave', up);
+  }
+
+  function animatePracticeCardExit(isYes) {
+    if (!practiceCurrentCard) return;
+    const direction = isYes ? 1 : -1;
+    practiceCurrentCard.style.transform = `translateX(${direction * 400}px) rotate(${direction * 30}deg)`;
+    practiceCurrentCard.style.transition = 'all 0.3s ease-out';
+    if (isYes && practiceYesBtn) { practiceYesBtn.style.transform = 'scale(1.1)'; }
+    if (!isYes && practiceNoBtn) { practiceNoBtn.style.transform = 'scale(1.1)'; }
+    setTimeout(() => {
+      if (practiceYesBtn) { practiceYesBtn.style.transform = ''; }
+      if (practiceNoBtn) { practiceNoBtn.style.transform = ''; }
+    }, 200);
   }
   
   function startScan() {
@@ -305,10 +553,10 @@
     
     // Display card (visual only - no text labels)
     cardDiv.innerHTML = `
-      <div id="cardImages">
-        <img src="${card.images[0]}" alt="Happiness card" class="card-image" 
-             tabindex="0" role="img"
-             onerror="this.style.display='none'" style="opacity: 1 !important;">
+      <div id=\"cardImages\" class=\"w-full h-full max-h-full flex items-center justify-center\"> 
+        <img src=\"${card.images[0]}\" alt=\"Happiness card\" class=\"card-image w-auto h-auto max-w-full max-h-full object-contain rounded-[16px] shadow-[0_10px_15px_rgba(0,0,0,0.15)]\" 
+             tabindex=\"0\" role=\"img\"
+             onerror=\"this.style.display='none'\" style=\"opacity: 1 !important;\">
       </div>
     `;
     
@@ -357,10 +605,15 @@
     // Set timer as active
     timerActive = true;
     
-    // Reset timer immediately
+    // Reset timer immediately (preserve base classes, remove only state modifiers)
     timerProgress.style.transition = 'none';
     timerProgress.style.width = '100%';
-    timerProgress.className = ''; // Remove any existing classes, defaults to green via CSS
+    if (timerProgress.classList) {
+      timerProgress.classList.remove('warning', 'danger', 'timer-warning', 'timer-danger');
+    } else {
+      // Fallback for very old browsers
+      timerProgress.className = (timerProgress.className || '').replace(/\b(warning|danger|timer-warning|timer-danger)\b/g, '').trim();
+    }
     
     // Start countdown after a tiny delay
     const timeout1 = setTimeout(() => {
@@ -393,13 +646,23 @@
     // Color changes during countdown - only if timer still active
     const timeout2 = setTimeout(() => {
       if (!timerActive) return;
-      timerProgress.className = 'warning';
+      if (timerProgress.classList) {
+        timerProgress.classList.remove('danger', 'timer-danger');
+        timerProgress.classList.add('warning', 'timer-warning');
+      } else {
+        timerProgress.className = 'warning';
+      }
     }, 2000);
     timerTimeouts.push(timeout2);
     
     const timeout3 = setTimeout(() => {
       if (!timerActive) return;
-      timerProgress.className = 'danger';
+      if (timerProgress.classList) {
+        timerProgress.classList.remove('warning', 'timer-warning');
+        timerProgress.classList.add('danger', 'timer-danger');
+      } else {
+        timerProgress.className = 'danger';
+      }
     }, 3000);
     timerTimeouts.push(timeout3);
     
@@ -825,13 +1088,14 @@
   
   function setupSharing(results) {
     const nativeShareBtn = document.getElementById('nativeShareBtn');
-    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    // copyLinkBtn no longer exists; use learnMoreBtn as a harmless anchor for status text if needed
+    const fallbackStatusBtn = document.getElementById('learnMoreBtn');
     
     const shareText = `I just completed the 23plusone Happiness Scan and scored ${results.ihs}! Discover what drives your happiness.`;
     const shareUrl = window.location.href;
     
     // Native share handler
-    nativeShareBtn.addEventListener('click', async () => {
+    if (nativeShareBtn) nativeShareBtn.addEventListener('click', async () => {
       if (navigator.share) {
         try {
           await navigator.share({
@@ -841,32 +1105,29 @@
           });
         } catch (err) {
           // User cancelled or error occurred, fallback to copy
-          if (err.name !== 'AbortError') {
-            copyToClipboard(shareUrl, copyLinkBtn);
-          }
+          // Silently ignore if cancelled
         }
       } else {
         // Fallback for browsers without Web Share API
-        copyToClipboard(shareUrl, copyLinkBtn);
+        copyToClipboard(shareUrl, fallbackStatusBtn);
       }
     });
     
-    // Copy link handler
-    copyLinkBtn.addEventListener('click', () => {
-      copyToClipboard(shareUrl, copyLinkBtn);
-    });
+    // No separate copy button in UI; keep function for fallback use
     
     async function copyToClipboard(text, button) {
       try {
         await navigator.clipboard.writeText(text);
-        const original = button.getAttribute('data-original-label') || button.innerHTML;
-        button.setAttribute('data-original-label', original);
-        button.innerHTML = '<span>Copied!</span>';
-        button.classList.add('copied');
-        setTimeout(() => {
-          button.innerHTML = button.getAttribute('data-original-label');
-          button.classList.remove('copied');
-        }, 2000);
+        if (button) {
+          const original = button.getAttribute('data-original-label') || button.innerHTML;
+          button.setAttribute('data-original-label', original);
+          button.innerHTML = '<span>Copied!</span>';
+          button.classList.add('copied');
+          setTimeout(() => {
+            button.innerHTML = button.getAttribute('data-original-label');
+            button.classList.remove('copied');
+          }, 2000);
+        }
       } catch (err) {
         // Fallback for older browsers
         const textArea = document.createElement('textarea');
@@ -875,15 +1136,16 @@
         textArea.select();
         document.execCommand('copy');
         document.body.removeChild(textArea);
-        
-        const original = button.getAttribute('data-original-label') || button.innerHTML;
-        button.setAttribute('data-original-label', original);
-        button.innerHTML = '<span>Copied!</span>';
-        button.classList.add('copied');
-        setTimeout(() => {
-          button.innerHTML = button.getAttribute('data-original-label');
-          button.classList.remove('copied');
-        }, 2000);
+        if (button) {
+          const original = button.getAttribute('data-original-label') || button.innerHTML;
+          button.setAttribute('data-original-label', original);
+          button.innerHTML = '<span>Copied!</span>';
+          button.classList.add('copied');
+          setTimeout(() => {
+            button.innerHTML = button.getAttribute('data-original-label');
+            button.classList.remove('copied');
+          }, 2000);
+        }
       }
     }
   }
@@ -957,7 +1219,7 @@
     console.log('Benchmark display updated with top percentage:', topPercentage);
   }
   
-  // Button event listeners
+  // Button event listeners - immediate record; visual feedback handled via :active CSS
   yesBtn.addEventListener('click', () => recordAnswer(true));
   noBtn.addEventListener('click', () => recordAnswer(false));
   
@@ -1118,20 +1380,16 @@
     
     // Visual feedback on buttons
     if (isYes) {
-      yesBtn.style.background = '#66bb6a';
       yesBtn.style.transform = 'scale(1.1)';
     } else {
-      noBtn.style.background = '#ef5350';
       noBtn.style.transform = 'scale(1.1)';
     }
     
     setTimeout(() => {
       if (yesBtn) {
-        yesBtn.style.background = '';
         yesBtn.style.transform = '';
       }
       if (noBtn) {
-        noBtn.style.background = '';
         noBtn.style.transform = '';
       }
     }, 200);

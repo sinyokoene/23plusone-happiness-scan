@@ -29,7 +29,7 @@
     },
     {
       "src": "/",
-      "dest": "/public/index.html"
+      "dest": "/public/scan.html"
     }
   ],
   "env": {

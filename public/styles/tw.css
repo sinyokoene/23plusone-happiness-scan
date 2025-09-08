@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Optional: expose brand colors as CSS vars for inline styles */
+    --brand-pink: #e91e63;
+    --brand-dark: #291D1B;
+  }
+}
+
+/* Utilities to replace remaining bespoke classes */
+@layer utilities {
+  .timer-warning { background-color: #FF9800; }
+  .timer-danger { background-color: var(--brand-pink); }
+  /* Support legacy 'warning'/'danger' classes used by JS */
+  .warning { background-color: #FF9800; }
+  .danger { background-color: var(--brand-pink); }
+
+  .bar-basics { background: var(--domain-basics); }
+  .bar-self-dev { background: var(--domain-growth); }
+  .bar-ambition { background: var(--domain-ambition); }
+  .bar-vitality { background: var(--domain-vitality); }
+  .bar-attraction { background: var(--domain-beauty); }
+
+  /* Card frame: consistent white box and sizing across sections */
+  .card-frame {
+    @apply flex flex-col justify-center text-center bg-white rounded-[12px] shadow-md mx-auto px-6;
+    max-width: 1200px;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+  }
+
+  /* Inner content pattern for 3:2 frames: top header, flexible middle, bottom actions */
+  .frame-content { @apply w-full h-full flex flex-col justify-between items-center px-16 py-16 gap-6; }
+}
