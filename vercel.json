@@ -24,7 +24,7 @@
       "dest": "/public/23plusoneCards/$1"
     },
     {
-      "src": "/(.*\\.(html|css|js|json|jpg|png|gif))",
+      "src": "/(.*\\.(html|css|js|json|jpg|png|gif|svg|webp))",
       "dest": "/public/$1"
     },
     {
