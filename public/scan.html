@@ -80,23 +80,29 @@
       #intro h2 { font-size: 1.25rem; line-height: 1.6; }
       #intro p { font-size: 0.95rem; }
       #intro { padding-top: 30px; height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); }
+      #intro > div { padding-top: 8px !important; padding-bottom: 8px !important; gap: 10px; }
 
       /* Smaller footer on mobile */
       :root { --footer-h: 48px; }
       #globalFooter .grid { font-size: 10px; }
 
       /* Results */
-      #results { overflow: hidden; }
-      #resultsHeader { margin-top: 6px; margin-bottom: 6px; }
-      #totalScore { font-size: 2.6rem; }
-      #benchmarkMessage { font-size: 0.9rem; }
-      #benchmarkStats .benchmark-label, 
-      #benchmarkStats .benchmark-value { font-size: 0.85rem; }
-      .bar-name { font-size: 0.9rem; }
-      #resultsContent { padding-top: 12px; padding-left: 8px; padding-right: 8px; padding-bottom: 12px; }
-      #domainBars .bar-container { height: 4px; }
-      .palette-tagline { margin-top: 6px; }
-      .share-buttons .share-button { padding: 8px 12px; font-size: 0.95rem; }
+      #results { overflow: hidden; align-items: center; }
+      #resultsHeader { margin-top: 4px; margin-bottom: 4px; }
+      #resultsHeader h2 { font-size: 1rem; line-height: 1.35; }
+      #insightBlock { margin-top: 6px; font-size: 0.85rem; line-height: 1.35; }
+      #colorVisualization { margin-top: 4px; }
+      #totalScore { font-size: 2.2rem; }
+      #benchmarkMessage { font-size: 0.8rem; }
+      #benchmarkStats .benchmark-label,
+      #benchmarkStats .benchmark-value { font-size: 0.78rem; }
+      .bar-name { font-size: 0.8rem; }
+      #resultsContent { padding-top: calc(8px + env(safe-area-inset-top)); padding-left: 8px; padding-right: 8px; padding-bottom: 8px; height: calc(var(--vh, 1vh) * 100 - var(--footer-h) - 8px); display: flex; flex-direction: column; justify-content: space-between; gap: 8px; }
+      #domainBars { max-width: 360px; }
+      #domainBars .bar-container { height: 3px; }
+      .palette-tagline { margin-top: 4px; font-size: 0.85rem; }
+      .share-buttons .share-button { padding: 6px 10px; font-size: 0.9rem; }
+      #retakeBtn { margin-top: 2px; font-size: 0.9rem; }
     }
   </style>
   
@@ -104,7 +110,7 @@
 </head>
 <body class="bg-white text-[#2c1f1c]">
   <div class="min-h-screen flex flex-col">
-  <div class="container flex flex-col items-center flex-1 py-0" style="padding-bottom: var(--footer-h);">
+  <div class="container flex flex-col items-center flex-1 py-0" style="padding-bottom: 0;">
     
     <section id="intro" class="section active-section w-full flex items-center justify-center" role="banner" aria-labelledby="intro-heading">
       <div class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 py-10 md:py-16 text-center">
