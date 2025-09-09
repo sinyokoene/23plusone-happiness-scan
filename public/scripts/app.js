@@ -551,31 +551,39 @@
       progressContainer.setAttribute('aria-valuenow', Math.round(progress));
     }
     
-    // Display card (visual only - no text labels)
-    cardDiv.innerHTML = `
-      <div id=\"cardImages\" class=\"w-full h-full max-h-full flex items-center justify-center\"> 
-        <img src=\"${card.images[0]}\" alt=\"Happiness card\" class=\"card-image w-auto h-auto max-w-full max-h-full object-contain rounded-[16px] shadow-[0_10px_15px_rgba(0,0,0,0.15)]\" 
-             tabindex=\"0\" role=\"img\"
-             onerror=\"this.style.display='none'\" style=\"opacity: 1 !important;\">
-      </div>
-    `;
+    // Display card (reuse persistent image to avoid layout reset/flicker)
+    let imagesContainer = document.getElementById('cardImages');
+    if (!imagesContainer) {
+      imagesContainer = document.createElement('div');
+      imagesContainer.id = 'cardImages';
+      imagesContainer.className = 'w-full h-full max-h-full flex items-center justify-center';
+      cardDiv.replaceChildren(imagesContainer);
+    }
+    let img = imagesContainer.querySelector('#gameCardImage');
+    if (!img) {
+      img = document.createElement('img');
+      img.id = 'gameCardImage';
+      img.className = 'card-image w-auto h-auto max-w-full max-h-full object-contain rounded-[16px] shadow-[0_10px_15px_rgba(0,0,0,0.15)]';
+      img.setAttribute('tabindex', '0');
+      img.setAttribute('role', 'img');
+      img.alt = 'Happiness card';
+      img.onerror = function(){ this.style.display = 'none'; };
+      imagesContainer.appendChild(img);
+      // Attach gesture listeners once to the persistent image
+      setupSwipeListeners();
+      setupKeyboardNavigation();
+    }
+    // Reset transient styles and update source
+    img.style.opacity = '1';
+    img.style.transform = '';
+    img.style.transition = '';
+    img.src = card.images[0];
     
     // Show timer and buttons
     timerContainer.style.display = 'block';
     buttonsDiv.style.display = 'flex';
     
-    // Setup swipe listeners and keyboard navigation for the new card
-    setTimeout(() => {
-      setupSwipeListeners();
-      setupKeyboardNavigation();
-      // Ensure card is fully visible and reset any lingering styles
-      const cardImage = document.querySelector('.card-image');
-      if (cardImage) {
-        cardImage.style.opacity = '1';
-        cardImage.style.transform = '';
-        cardImage.style.transition = '';
-      }
-    }, 100);
+    // Ensure card is fully visible and reset any lingering styles (already done above)
     
     // Reset and start timer
     startTimer();
