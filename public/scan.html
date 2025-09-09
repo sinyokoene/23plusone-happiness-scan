@@ -67,10 +67,11 @@
     /* Text link button subtle active color */
     .link-like:active { color: var(--btn-active-pink); }
 
-    /* Prevent scroll when JS toggles no-scroll */
-    body.no-scroll { overflow: hidden; height: 100vh; }
-    /* Reduce accidental pull-to-refresh/overscroll on mobile */
-    html, body { overscroll-behavior: none; }
+    /* Prevent scroll globally and use dynamic viewport height */
+    html, body { height: calc(var(--vh, 1vh) * 100); overflow: hidden; overscroll-behavior: none; }
+    body.no-scroll { overflow: hidden; height: calc(var(--vh, 1vh) * 100); }
+    /* Ensure each app section cannot create its own scrollbars */
+    .section { overflow: hidden; }
     /* Remove double-tap-to-zoom on interactive elements */
     button, .share-button, .link-like { touch-action: manipulation; }
 
@@ -99,7 +100,7 @@
       .bar-name { font-size: 0.8rem; }
       #resultsContent { padding-top: calc(8px + env(safe-area-inset-top)); padding-left: 8px; padding-right: 8px; padding-bottom: 8px; height: calc(var(--vh, 1vh) * 100 - var(--footer-h) - 8px); display: flex; flex-direction: column; justify-content: space-between; gap: 8px; }
       #domainBars { max-width: 360px; }
-      #domainBars .bar-container { height: 3px; }
+      #domainBars .bar-container { height: 4px; }
       .palette-tagline { margin-top: 4px; font-size: 0.85rem; }
       .share-buttons .share-button { padding: 6px 10px; font-size: 0.9rem; }
       #retakeBtn { margin-top: 2px; font-size: 0.9rem; }
