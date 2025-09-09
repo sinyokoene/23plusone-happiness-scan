@@ -79,18 +79,24 @@
       /* Intro */
       #intro h2 { font-size: 1.25rem; line-height: 1.6; }
       #intro p { font-size: 0.95rem; }
+      #intro { padding-top: 30px; height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); }
 
       /* Smaller footer on mobile */
       :root { --footer-h: 48px; }
       #globalFooter .grid { font-size: 10px; }
 
       /* Results */
-      #totalScore { font-size: 3rem; }
-      #benchmarkMessage { font-size: 1rem; }
+      #results { overflow: hidden; }
+      #resultsHeader { margin-top: 6px; margin-bottom: 6px; }
+      #totalScore { font-size: 2.6rem; }
+      #benchmarkMessage { font-size: 0.9rem; }
       #benchmarkStats .benchmark-label, 
-      #benchmarkStats .benchmark-value { font-size: 0.9rem; }
-      .bar-name { font-size: 0.95rem; }
-      #resultsContent { padding-left: 12px; padding-right: 12px; }
+      #benchmarkStats .benchmark-value { font-size: 0.85rem; }
+      .bar-name { font-size: 0.9rem; }
+      #resultsContent { padding-top: 12px; padding-left: 8px; padding-right: 8px; padding-bottom: 12px; }
+      #domainBars .bar-container { height: 4px; }
+      .palette-tagline { margin-top: 6px; }
+      .share-buttons .share-button { padding: 8px 12px; font-size: 0.95rem; }
     }
   </style>
   
