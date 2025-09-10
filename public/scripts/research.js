@@ -43,19 +43,20 @@
   function renderLikert(container, tpl, items, answers, scaleHint){
     container.replaceChildren();
     items.forEach((text, idx) => {
-      const node = tpl.content.cloneNode(true);
-      const label = node.querySelector('label');
+      const fragment = tpl.content.cloneNode(true);
+      const rowEl = fragment.querySelector('.qgrid');
+      const label = fragment.querySelector('label');
       label.textContent = text;
-      node.querySelectorAll('.choice').forEach(btn => {
+      rowEl.querySelectorAll('.choice').forEach(btn => {
         btn.addEventListener('click', () => {
           const value = parseInt(btn.dataset.val, 10);
           answers[idx] = value;
-          // visual state
-          node.querySelectorAll('.choice').forEach(b => b.classList.remove('bg-pink-600','text-white','border-pink-600'));
-          btn.classList.add('bg-pink-600','text-white','border-pink-600');
+          // ensure only ONE active per row
+          rowEl.querySelectorAll('.choice').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
         });
       });
-      container.appendChild(node);
+      container.appendChild(fragment);
     });
   }
 
@@ -106,9 +107,32 @@
         const base = 'scan.html';
         scanFrame.src = `${base}?pid=${encodeURIComponent(participantId)}`;
       }
-      hide(who5Section); show(scanHost);
+      hide(who5Section);
+      show(scanHost);
+      // Hide outer footer to avoid double footer when iframe is visible
+      const footer = document.getElementById('globalFooter');
+      if (footer) footer.style.display = 'none';
+      const main = document.querySelector('main');
+      if (main) main.style.paddingBottom = '0';
     });
   }
+
+  // Ensure footer is visible for non-scan sections when shown via show()
+  const _origShow = show;
+  function showWithFooter(el){
+    _origShow(el);
+    const footer = document.getElementById('globalFooter');
+    const main = document.querySelector('main');
+    if (!el || el.id === 'scanHost') {
+      if (footer) footer.style.display = 'none';
+      if (main) main.style.paddingBottom = '0';
+    } else {
+      if (footer) footer.style.display = '';
+      if (main) main.style.paddingBottom = 'var(--footer-h)';
+    }
+  }
+  // Override local helper for the rest of this file
+  show = showWithFooter;
 })();
 
 

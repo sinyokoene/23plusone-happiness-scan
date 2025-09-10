@@ -10,16 +10,23 @@
   <style>
     :root { --footer-h: 64px; }
     html, body { height: calc(var(--vh, 1vh) * 100); overflow: hidden; }
-    .section { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none; }
+    .section { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none; width: 100%; }
     .active { display: flex; }
     .qcard { width: 100%; max-width: 960px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; }
     .qgrid { width: 100%; display: grid; gap: 12px; }
-    .likert-7 { grid-template-columns: 1fr repeat(7, minmax(0, 1fr)); }
-    .likert-6 { grid-template-columns: 1fr repeat(6, minmax(0, 1fr)); }
+    /* Desktop: keep labels on one line by giving first column more space */
+    .likert-7 { grid-template-columns: minmax(420px, 2fr) repeat(7, minmax(0, 1fr)); }
+    .likert-6 { grid-template-columns: minmax(420px, 2fr) repeat(6, minmax(0, 1fr)); }
     .cell-h { font-size: 12px; color: #6b7280; text-align: center; }
-    .cell-l { font-size: 14px; color: #e91e63; }
+    .cell-l { font-size: 14px; color: #e91e63; white-space: nowrap; }
     .choice { width: 28px; height: 28px; border-radius: 9999px; border: 2px solid #c6a299; margin-left: auto; margin-right: auto; display: inline-flex; align-items: center; justify-content: center; transition: background-color 120ms ease, border-color 120ms ease; }
     .choice.active { background-color: #e91e63; border-color: #e91e63; }
+    /* On small screens, allow wrapping so layout fits */
+    @media (max-width: 768px) {
+      .likert-7 { grid-template-columns: 1fr repeat(7, minmax(0, 1fr)); }
+      .likert-6 { grid-template-columns: 1fr repeat(6, minmax(0, 1fr)); }
+      .cell-l { white-space: normal; }
+    }
     @media (max-width: 480px) { :root { --footer-h: 48px; } .qcard { max-width: 560px; } }
   </style>
 </head>
