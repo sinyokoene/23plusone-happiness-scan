@@ -5,11 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
   <title>23plusone Research | Intro · SWLS · WHO-5</title>
   <link rel="stylesheet" href="styles/tw.build.css">
+  <!-- Google Fonts: Poppins to match scan.html -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <script>window.RESEARCH_MODE = true;</script>
   <script src="scripts/viewport.js"></script>
   <style>
-    :root { --footer-h: 64px; }
+    :root { --footer-h: 64px; --btn-active-pink: #c2185b; }
     html, body { height: calc(var(--vh, 1vh) * 100); overflow: hidden; }
+    body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     .section { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none; width: 100%; }
     .active { display: flex; }
     .qcard { width: 100%; max-width: 960px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; }
@@ -21,6 +26,9 @@
     .cell-l { font-size: 14px; color: #e91e63; white-space: nowrap; }
     .choice { width: 28px; height: 28px; border-radius: 9999px; border: 2px solid #c6a299; margin-left: auto; margin-right: auto; display: inline-flex; align-items: center; justify-content: center; transition: background-color 120ms ease, border-color 120ms ease; }
     .choice.active { background-color: #e91e63; border-color: #e91e63; }
+    /* Primary buttons to match scan.html */
+    button { -webkit-tap-highlight-color: transparent; transition: background-color 120ms ease, transform 60ms ease; }
+    #toSwlsIntro:active, #toWho5:active, #toScan:active { background-color: var(--btn-active-pink); transform: translateY(1px); }
     /* On small screens, allow wrapping so layout fits */
     @media (max-width: 768px) {
       .likert-7 { grid-template-columns: 1fr repeat(7, minmax(0, 1fr)); }
@@ -42,7 +50,7 @@
           <div class="font-semibold text-pink-600">Well‑being</div>
           <div class="font-semibold text-pink-600">Human drives</div>
         </div>
-        <button id="toSwlsIntro" class="w-[200px] h-[48px] bg-pink-600 rounded-xl text-white font-semibold">Continue</button>
+        <button id="toSwlsIntro" class="w-[200px] h-[56px] bg-pink-600 rounded-xl text-white text-lg font-semibold shadow-sm">Continue</button>
       </div>
     </section>
 
@@ -66,7 +74,7 @@
           </div>
           <div id="swlsForm" class="w-full flex flex-col gap-4"></div>
         </div>
-        <button id="toWho5" class="w-[200px] h-[48px] bg-pink-600 rounded-xl text-white font-semibold">Submit</button>
+        <button id="toWho5" class="w-[200px] h-[56px] bg-pink-600 rounded-xl text-white text-lg font-semibold shadow-sm">Submit</button>
       </div>
     </section>
 
@@ -89,7 +97,7 @@
           </div>
           <div id="who5Form" class="w-full flex flex-col gap-4"></div>
         </div>
-        <button id="toScan" class="w-[200px] h-[48px] bg-pink-600 rounded-xl text-white font-semibold">Submit</button>
+        <button id="toScan" class="w-[200px] h-[56px] bg-pink-600 rounded-xl text-white text-lg font-semibold shadow-sm">Submit</button>
       </div>
     </section>
 
