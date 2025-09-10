@@ -788,10 +788,20 @@
     
     // N3: Spread Score
     const domainCounts = {};
+    const domainAffirmations = {};
     const totalAnswers = answers.length;
     
     answers.filter(a => a.yes).forEach(a => {
       domainCounts[a.domain] = (domainCounts[a.domain] || 0) + 1;
+    });
+
+    // Build affirmation sums per domain (Yes positive, No negative, Null ignored)
+    answers.forEach(a => {
+      if (a.yes === null) return;
+      const timeMultiplier = getTimeMultiplier(a.time);
+      const perCardScore = 4 * timeMultiplier;
+      const sign = a.yes === true ? 1 : -1;
+      domainAffirmations[a.domain] = (domainAffirmations[a.domain] || 0) + sign * perCardScore;
     });
     
     const domainPercentages = Object.values(domainCounts).map(count => count / totalAnswers);
@@ -806,7 +816,8 @@
       n1: Math.round(n1 * 10) / 10,
       n2: Math.round(n2 * 10) / 10,
       n3: Math.round(n3 * 10) / 10,
-      domainCounts
+      domainCounts,
+      domainAffirmations
     };
   }
   
@@ -895,8 +906,8 @@
     // Update main score
     document.getElementById('totalScore').textContent = results.ihs;
     
-    // Get domain data for visualization
-    const domainData = getDomainAnalysis(results.domainCounts);
+    // Get domain data for visualization (counts + affirmation)
+    const domainData = getDomainAnalysis(results.domainCounts, results.domainAffirmations);
     
     // Update dominant domains text (optional element)
     const topDomainsText = getDominantDomainsText(domainData);
@@ -904,21 +915,22 @@
     if (topDomainsEl) {
       topDomainsEl.textContent = topDomainsText;
     }
-    // Replace single paragraph insight with multi-card insights (top 3 on mobile)
-    renderInsightCards(domainData, results.domainCounts);
+    // Replace paragraph insight with multi-card insights: only 2, chosen by dominance incl. affirmation
+    renderInsightCards(domainData, results.domainCounts, results.domainAffirmations, 2);
     
-    // Update domain bars with animation
-    updateDomainBars(results.domainCounts);
+    // Update domain bars with animation (affirmation-based fill)
+    updateDomainBars(results.domainCounts, results.domainAffirmations);
     
     // Insights removed in current design
   }
-  function renderInsightCards(domainData, domainCounts) {
+  function renderInsightCards(domainData, domainCounts, domainAffirmations, overrideMax) {
     const container = document.getElementById('insightBlock');
     if (!container) return;
 
     // Determine how many to show based on viewport (3 on small, up to 5 on larger)
     const isMobile = window.innerWidth <= 480;
-    const maxCards = isMobile ? 3 : 5;
+    let maxCards = isMobile ? 3 : 5;
+    if (typeof overrideMax === 'number') maxCards = overrideMax;
 
     // Compute per-domain level using normalized thresholds
     const domainMaxes = {
@@ -929,15 +941,12 @@
       'Attraction': 2
     };
 
-    // Choose domains sorted by user strength (count desc)
-    const selectedDomains = domainData
-      .slice(0, maxCards)
-      .map(d => {
-        const normalized = domainMaxes[d.name] ? (d.count / domainMaxes[d.name]) : 0;
-        // Fallback thresholds when cohort stats unavailable: <=.33 low, >=.67 high
-        const level = normalized <= 0.33 ? 'low' : (normalized >= 0.67 ? 'high' : 'mid');
-        return { name: d.name, count: d.count, level };
-      });
+    // Choose domains already sorted by dominance in getDomainAnalysis
+    const selectedDomains = domainData.slice(0, maxCards).map(d => {
+      const normalized = domainMaxes[d.name] ? (d.count / domainMaxes[d.name]) : 0;
+      const level = normalized <= 0.33 ? 'low' : (normalized >= 0.67 ? 'high' : 'mid');
+      return { name: d.name, count: d.count, level };
+    });
 
     // Build HTML from insightsContent when available
     let html = '';
@@ -964,7 +973,7 @@
   }
 
   
-  function getDomainAnalysis(domainCounts) {
+  function getDomainAnalysis(domainCounts, domainAffirmations) {
     const domains = [
       { name: 'Basics', count: domainCounts['Basics'] || 0, color: '#4CAF50', max: 6 },
       { name: 'Self-development', count: domainCounts['Self-development'] || 0, color: '#FF9800', max: 6 },
@@ -973,12 +982,20 @@
       { name: 'Attraction', count: domainCounts['Attraction'] || 0, color: '#E91E63', max: 2 }
     ];
     
-    // Sort by count and calculate percentages
+    // Calculate percentages for count and affirmation
     domains.forEach(domain => {
-      domain.percentage = (domain.count / domain.max) * 100;
+      domain.countPercentage = (domain.count / domain.max) * 100;
+      const aff = (domainAffirmations && typeof domainAffirmations[domain.name] === 'number') ? domainAffirmations[domain.name] : 0;
+      const maxAff = domain.max * 4; // 4 points max per card
+      const affClamped = Math.max(0, Math.min(maxAff, aff));
+      domain.affirmation = affClamped;
+      domain.affirmationPercentage = (maxAff > 0) ? (affClamped / maxAff) * 100 : 0;
+      // Composite dominance score: equal blend of count and affirmation
+      domain.dominance = 0.5 * domain.countPercentage + 0.5 * domain.affirmationPercentage;
     });
     
-    domains.sort((a, b) => b.count - a.count);
+    // Sort by composite dominance
+    domains.sort((a, b) => b.dominance - a.dominance);
     
     return domains;
   }
@@ -1030,7 +1047,7 @@
     return `${fueledBy} ${insightText} ${domainSentence}`.trim();
   }
   
-  function updateDomainBars(domainCounts) {
+  function updateDomainBars(domainCounts, domainAffirmations) {
     const domainMaxes = {
       'Basics': 6,
       'Self-development': 6, 
@@ -1043,7 +1060,12 @@
 
     Object.keys(domainMaxes).forEach(domain => {
       const count = domainCounts[domain] || 0;
-      const percentage = (count / domainMaxes[domain]) * 100;
+      const percentageCount = (count / domainMaxes[domain]) * 100;
+      // Affirmation-based width
+      const aff = (domainAffirmations && typeof domainAffirmations[domain] === 'number') ? domainAffirmations[domain] : 0;
+      const maxAff = domainMaxes[domain] * 4;
+      const affClamped = Math.max(0, Math.min(maxAff, aff));
+      const percentageAff = maxAff > 0 ? (affClamped / maxAff) * 100 : 0;
       
       // Count display removed from UI; skip updating
       
@@ -1051,13 +1073,14 @@
       setTimeout(() => {
         const barFill = document.querySelector(`[data-domain="${domain}"] .bar-fill`);
         if (barFill) {
-          barFill.style.width = percentage + '%';
+          barFill.style.width = percentageAff + '%';
         }
         
         // Update progress bar ARIA attributes
         const barContainer = document.querySelector(`[data-domain="${domain}"] .bar-container`);
         if (barContainer) {
-          barContainer.setAttribute('aria-valuenow', count);
+          barContainer.setAttribute('aria-valuenow', Math.round(percentageAff));
+          barContainer.setAttribute('aria-valuemax', 100);
         }
       }, 500);
     });
