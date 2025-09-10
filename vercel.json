@@ -28,6 +28,14 @@
       "dest": "/public/$1"
     },
     {
+      "src": "/scan",
+      "dest": "/public/scan.html"
+    },
+    {
+      "src": "/research",
+      "dest": "/public/research.html"
+    },
+    {
       "src": "/",
       "dest": "/public/scan.html"
     }
