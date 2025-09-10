@@ -1,0 +1,88 @@
+{
+  "Basics": {
+    "low": {
+      "title": "Self‑reliance, amplified",
+      "body": "You’re strong on self‑reliance. Flourishing grows when strength meets connection. Research suggests interdependence supports resilience and joy.",
+      "cta": "Do one small generous act this week."
+    },
+    "mid": {
+      "title": "Tend your support system",
+      "body": "You balance independence with connection. Relationships thrive with small, intentional care.",
+      "cta": "Send one specific thank‑you today."
+    },
+    "high": {
+      "title": "Builder of safety",
+      "body": "You create trust and psychological safety. That lifts everyone around you.",
+      "cta": "Name and savor this strength today."
+    }
+  },
+  "Self-development": {
+    "low": {
+      "title": "Play is self‑care",
+      "body": "Responsibilities can mute curiosity. Brief play boosts creativity and ease without demanding time.",
+      "cta": "Take a five‑minute play break today."
+    },
+    "mid": {
+      "title": "Curiosity on purpose",
+      "body": "You feel the spark of learning and ideas. Make it a practice by giving curiosity a regular time and place.",
+      "cta": "Book a 30‑minute curiosity session."
+    },
+    "high": {
+      "title": "Spirit of discovery",
+      "body": "You see possibilities everywhere. Sharing discoveries invites others to explore too.",
+      "cta": "Share one delightful find with someone."
+    }
+  },
+  "Ambition": {
+    "low": {
+      "title": "Intrinsic drive",
+      "body": "You enjoy mastery and teamwork more than trophies. That’s a steady, sustainable form of ambition.",
+      "cta": "Practice one skill for 20 minutes."
+    },
+    "mid": {
+      "title": "Aim with purpose",
+      "body": "You strive without letting results define you. Purpose turns effort into meaning.",
+      "cta": "Name the value this week’s work serves."
+    },
+    "high": {
+      "title": "Drive with a legacy",
+      "body": "Your fire is powerful. It’s most fulfilling when aimed at something larger than winning.",
+      "cta": "Journal: Which value should your drive serve?"
+    }
+  },
+  "Vitality": {
+    "low": {
+      "title": "Energy first",
+      "body": "Vitality isn’t a reward after work; it’s the foundation for everything else.",
+      "cta": "Take three slow breaths; relax your shoulders."
+    },
+    "mid": {
+      "title": "Kind rhythms",
+      "body": "You know what helps you feel good. Consistency grows from self‑compassion, not perfection.",
+      "cta": "Choose one body‑kind treat today."
+    },
+    "high": {
+      "title": "Honor your basecamp",
+      "body": "You protect sleep, nourishment, and calm. That quiet leadership lifts your circles.",
+      "cta": "Thank your body for its strength."
+    }
+  },
+  "Attraction": {
+    "low": {
+      "title": "Arrive through the senses",
+      "body": "Engaging sight, sound, taste and touch helps you land in the present, where joy lives.",
+      "cta": "Listen for 60 seconds—just notice."
+    },
+    "mid": {
+      "title": "Design for savoring",
+      "body": "You appreciate beauty. Seeking it on purpose turns days from functional to felt.",
+      "cta": "Add one sensory delight tomorrow."
+    },
+    "high": {
+      "title": "Share your richness",
+      "body": "You experience the world vividly. Pointing out small beauty helps others feel alive too.",
+      "cta": "Show someone one tiny moment of beauty."
+    }
+  }
+}
+

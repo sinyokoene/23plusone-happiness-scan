@@ -92,6 +92,10 @@
       #resultsHeader { margin-top: 4px; margin-bottom: 4px; }
       #resultsHeader h2 { font-size: 1rem; line-height: 1.35; }
       #insightBlock { margin-top: 6px; font-size: 0.85rem; line-height: 1.35; }
+      #insightBlock { display: grid; grid-template-columns: 1fr; gap: 8px; }
+      .insight-card { text-align: left; padding: 8px; border: 1px solid #eee; border-radius: 10px; background: #fff; }
+      .insight-title { font-weight: 600; margin-bottom: 2px; }
+      .insight-cta { margin-top: 4px; color: var(--brand-pink); font-weight: 500; }
       #colorVisualization { margin-top: 4px; }
       #totalScore { font-size: 2.2rem; }
       #benchmarkMessage { font-size: 0.8rem; }
@@ -257,7 +261,7 @@
         <div id="resultsContent" class="results-content px-4 max-w-[560px] mx-auto text-center pb-[24px]">
           <!-- Page 1 Content: Score & Overview -->
           <header id="resultsHeader" class="mb-4">
-            <h2 id="results-heading" class="text-xl md:text-2xl font-semibold"><span class="heading-part-1">Done! Here’s your</span> <span class="accent heading-part-2 text-[var(--brand-pink)]">happiness profile.</span></h2>
+            <h2 id="results-heading" class="text-xl md:text-2xl font-semibold"><span class="heading-part-1">Done! Here’s your</span> <span class="accent heading-part-2 text-[var(--brand-pink)]">value profile.</span></h2>
           </header>
           <section id="scoreSection" aria-labelledby="score-heading">
             <h3 id="score-heading" class="sr-only">Your Happiness Score</h3>

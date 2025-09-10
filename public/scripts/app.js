@@ -10,6 +10,7 @@
   let timerTimeouts = []; // Track all timer-related timeouts
   let timerActive = false; // Flag to prevent timer conflicts
   let scanTerminated = false; // Hard stop flag (e.g., too many NULLs)
+  let insightsContent = null; // Loaded from data/insights.json
 
   
   // DOM elements
@@ -467,6 +468,12 @@
       startBtn.disabled = true;
     });
 
+  // Preload insights content (trimmed copy blocks per domain level)
+  fetch('data/insights.json')
+    .then(r => r.json())
+    .then(json => { insightsContent = json; })
+    .catch(() => { insightsContent = null; });
+
     // Preload all card images for instant loading during game
   function preloadCardImages() {
     let loadedCount = 0;
@@ -897,18 +904,65 @@
     if (topDomainsEl) {
       topDomainsEl.textContent = topDomainsText;
     }
-    // Personalized insight block (bold fueled-by + adaptive insight)
-    const insightHtml = buildPersonalizedInsight(domainData);
-    const insightBlock = document.getElementById('insightBlock');
-    if (insightBlock && insightHtml) {
-      insightBlock.innerHTML = insightHtml;
-    }
+    // Replace single paragraph insight with multi-card insights (top 3 on mobile)
+    renderInsightCards(domainData, results.domainCounts);
     
     // Update domain bars with animation
     updateDomainBars(results.domainCounts);
     
     // Insights removed in current design
   }
+  function renderInsightCards(domainData, domainCounts) {
+    const container = document.getElementById('insightBlock');
+    if (!container) return;
+
+    // Determine how many to show based on viewport (3 on small, up to 5 on larger)
+    const isMobile = window.innerWidth <= 480;
+    const maxCards = isMobile ? 3 : 5;
+
+    // Compute per-domain level using normalized thresholds
+    const domainMaxes = {
+      'Basics': 6,
+      'Self-development': 6,
+      'Ambition': 8,
+      'Vitality': 2,
+      'Attraction': 2
+    };
+
+    // Choose domains sorted by user strength (count desc)
+    const selectedDomains = domainData
+      .slice(0, maxCards)
+      .map(d => {
+        const normalized = domainMaxes[d.name] ? (d.count / domainMaxes[d.name]) : 0;
+        // Fallback thresholds when cohort stats unavailable: <=.33 low, >=.67 high
+        const level = normalized <= 0.33 ? 'low' : (normalized >= 0.67 ? 'high' : 'mid');
+        return { name: d.name, count: d.count, level };
+      });
+
+    // Build HTML from insightsContent when available
+    let html = '';
+    if (insightsContent) {
+      selectedDomains.forEach(item => {
+        const domainCopy = insightsContent[item.name] && insightsContent[item.name][item.level];
+        if (!domainCopy) return;
+        html += `
+          <article class="insight-card" role="article" aria-label="${item.name} insight">
+            <div class="insight-title">${domainCopy.title}</div>
+            <div class="insight-body">${domainCopy.body}</div>
+            <div class="insight-cta">${domainCopy.cta}</div>
+          </article>
+        `;
+      });
+    } else {
+      // Fallback single-line summary if content not loaded
+      selectedDomains.forEach(item => {
+        html += `<div class="insight-card"><div class="insight-title">${item.name}</div><div class="insight-body">Personal tip coming soon.</div></div>`;
+      });
+    }
+
+    container.innerHTML = html;
+  }
+
   
   function getDomainAnalysis(domainCounts) {
     const domains = [
