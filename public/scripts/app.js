@@ -10,7 +10,6 @@
   let timerTimeouts = []; // Track all timer-related timeouts
   let timerActive = false; // Flag to prevent timer conflicts
   let scanTerminated = false; // Hard stop flag (e.g., too many NULLs)
-  let insightsContent = null; // Loaded from data/insights.json
 
   
   // DOM elements
@@ -468,12 +467,6 @@
       startBtn.disabled = true;
     });
 
-  // Preload insights content (trimmed copy blocks per domain level)
-  fetch('data/insights.json')
-    .then(r => r.json())
-    .then(json => { insightsContent = json; })
-    .catch(() => { insightsContent = null; });
-
     // Preload all card images for instant loading during game
   function preloadCardImages() {
     let loadedCount = 0;
@@ -785,23 +778,16 @@
     // N2: Domain Coverage
     const uniqueDomains = new Set(answers.filter(a => a.yes).map(a => a.domain));
     const n2 = uniqueDomains.size * 19.2;
-    
-    // N3: Spread Score
+
+    // N3 & visualizations: Domain counts and time‑weighted affirmations
     const domainCounts = {};
     const domainAffirmations = {};
     const totalAnswers = answers.length;
     
     answers.filter(a => a.yes).forEach(a => {
       domainCounts[a.domain] = (domainCounts[a.domain] || 0) + 1;
-    });
-
-    // Build affirmation sums per domain (Yes positive, No negative, Null ignored)
-    answers.forEach(a => {
-      if (a.yes === null) return;
-      const timeMultiplier = getTimeMultiplier(a.time);
-      const perCardScore = 4 * timeMultiplier;
-      const sign = a.yes === true ? 1 : -1;
-      domainAffirmations[a.domain] = (domainAffirmations[a.domain] || 0) + sign * perCardScore;
+      const perCardAffirmation = 4 * getTimeMultiplier(a.time);
+      domainAffirmations[a.domain] = (domainAffirmations[a.domain] || 0) + perCardAffirmation;
     });
     
     const domainPercentages = Object.values(domainCounts).map(count => count / totalAnswers);
@@ -906,8 +892,8 @@
     // Update main score
     document.getElementById('totalScore').textContent = results.ihs;
     
-    // Get domain data for visualization (counts + affirmation)
-    const domainData = getDomainAnalysis(results.domainCounts, results.domainAffirmations);
+    // Get domain data for visualization
+    const domainData = getDomainAnalysis(results.domainCounts);
     
     // Update dominant domains text (optional element)
     const topDomainsText = getDominantDomainsText(domainData);
@@ -915,65 +901,20 @@
     if (topDomainsEl) {
       topDomainsEl.textContent = topDomainsText;
     }
-    // Replace paragraph insight with multi-card insights: only 2, chosen by dominance incl. affirmation
-    renderInsightCards(domainData, results.domainCounts, results.domainAffirmations, 2);
+    // Personalized insight block (bold fueled-by + adaptive insight)
+    const insightHtml = buildPersonalizedInsight(domainData);
+    const insightBlock = document.getElementById('insightBlock');
+    if (insightBlock && insightHtml) {
+      insightBlock.innerHTML = insightHtml;
+    }
     
-    // Update domain bars with animation (affirmation-based fill)
-    updateDomainBars(results.domainCounts, results.domainAffirmations);
+    // Update domain bars with animation (use time‑weighted affirmation totals)
+    updateDomainBars(results.domainAffirmations);
     
     // Insights removed in current design
   }
-  function renderInsightCards(domainData, domainCounts, domainAffirmations, overrideMax) {
-    const container = document.getElementById('insightBlock');
-    if (!container) return;
-
-    // Determine how many to show based on viewport (3 on small, up to 5 on larger)
-    const isMobile = window.innerWidth <= 480;
-    let maxCards = isMobile ? 3 : 5;
-    if (typeof overrideMax === 'number') maxCards = overrideMax;
-
-    // Compute per-domain level using normalized thresholds
-    const domainMaxes = {
-      'Basics': 6,
-      'Self-development': 6,
-      'Ambition': 8,
-      'Vitality': 2,
-      'Attraction': 2
-    };
-
-    // Choose domains already sorted by dominance in getDomainAnalysis
-    const selectedDomains = domainData.slice(0, maxCards).map(d => {
-      const normalized = domainMaxes[d.name] ? (d.count / domainMaxes[d.name]) : 0;
-      const level = normalized <= 0.33 ? 'low' : (normalized >= 0.67 ? 'high' : 'mid');
-      return { name: d.name, count: d.count, level };
-    });
-
-    // Build HTML from insightsContent when available
-    let html = '';
-    if (insightsContent) {
-      selectedDomains.forEach(item => {
-        const domainCopy = insightsContent[item.name] && insightsContent[item.name][item.level];
-        if (!domainCopy) return;
-        html += `
-          <article class="insight-card" role="article" aria-label="${item.name} insight">
-            <div class="insight-title">${domainCopy.title}</div>
-            <div class="insight-body">${domainCopy.body}</div>
-            <div class="insight-cta">${domainCopy.cta}</div>
-          </article>
-        `;
-      });
-    } else {
-      // Fallback single-line summary if content not loaded
-      selectedDomains.forEach(item => {
-        html += `<div class="insight-card"><div class="insight-title">${item.name}</div><div class="insight-body">Personal tip coming soon.</div></div>`;
-      });
-    }
-
-    container.innerHTML = html;
-  }
-
   
-  function getDomainAnalysis(domainCounts, domainAffirmations) {
+  function getDomainAnalysis(domainCounts) {
     const domains = [
       { name: 'Basics', count: domainCounts['Basics'] || 0, color: '#4CAF50', max: 6 },
       { name: 'Self-development', count: domainCounts['Self-development'] || 0, color: '#FF9800', max: 6 },
@@ -982,20 +923,12 @@
       { name: 'Attraction', count: domainCounts['Attraction'] || 0, color: '#E91E63', max: 2 }
     ];
     
-    // Calculate percentages for count and affirmation
+    // Sort by count and calculate percentages
     domains.forEach(domain => {
-      domain.countPercentage = (domain.count / domain.max) * 100;
-      const aff = (domainAffirmations && typeof domainAffirmations[domain.name] === 'number') ? domainAffirmations[domain.name] : 0;
-      const maxAff = domain.max * 4; // 4 points max per card
-      const affClamped = Math.max(0, Math.min(maxAff, aff));
-      domain.affirmation = affClamped;
-      domain.affirmationPercentage = (maxAff > 0) ? (affClamped / maxAff) * 100 : 0;
-      // Composite dominance score: equal blend of count and affirmation
-      domain.dominance = 0.5 * domain.countPercentage + 0.5 * domain.affirmationPercentage;
+      domain.percentage = (domain.count / domain.max) * 100;
     });
     
-    // Sort by composite dominance
-    domains.sort((a, b) => b.dominance - a.dominance);
+    domains.sort((a, b) => b.count - a.count);
     
     return domains;
   }
@@ -1047,25 +980,21 @@
     return `${fueledBy} ${insightText} ${domainSentence}`.trim();
   }
   
-  function updateDomainBars(domainCounts, domainAffirmations) {
-    const domainMaxes = {
-      'Basics': 6,
-      'Self-development': 6, 
-      'Ambition': 8,
-      'Vitality': 2,
-      'Attraction': 2
+  function updateDomainBars(domainAffirmations) {
+    // Maximum affirmation per domain = maxYesCount * 4 (fastest response score)
+    const domainMaxAffirmation = {
+      'Basics': 6 * 4,
+      'Self-development': 6 * 4, 
+      'Ambition': 8 * 4,
+      'Vitality': 2 * 4,
+      'Attraction': 2 * 4
     };
     
-    console.log('Updating domain bars with counts:', domainCounts);
+    console.log('Updating domain bars with affirmation totals:', domainAffirmations);
 
-    Object.keys(domainMaxes).forEach(domain => {
-      const count = domainCounts[domain] || 0;
-      const percentageCount = (count / domainMaxes[domain]) * 100;
-      // Affirmation-based width
-      const aff = (domainAffirmations && typeof domainAffirmations[domain] === 'number') ? domainAffirmations[domain] : 0;
-      const maxAff = domainMaxes[domain] * 4;
-      const affClamped = Math.max(0, Math.min(maxAff, aff));
-      const percentageAff = maxAff > 0 ? (affClamped / maxAff) * 100 : 0;
+    Object.keys(domainMaxAffirmation).forEach(domain => {
+      const totalAffirmation = domainAffirmations[domain] || 0;
+      const percentage = (totalAffirmation / domainMaxAffirmation[domain]) * 100;
       
       // Count display removed from UI; skip updating
       
@@ -1073,14 +1002,13 @@
       setTimeout(() => {
         const barFill = document.querySelector(`[data-domain="${domain}"] .bar-fill`);
         if (barFill) {
-          barFill.style.width = percentageAff + '%';
+          barFill.style.width = percentage + '%';
         }
         
         // Update progress bar ARIA attributes
         const barContainer = document.querySelector(`[data-domain="${domain}"] .bar-container`);
         if (barContainer) {
-          barContainer.setAttribute('aria-valuenow', Math.round(percentageAff));
-          barContainer.setAttribute('aria-valuemax', 100);
+          barContainer.setAttribute('aria-valuenow', Math.round(totalAffirmation));
         }
       }, 500);
     });
