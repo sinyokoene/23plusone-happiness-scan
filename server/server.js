@@ -47,6 +47,13 @@ const pool = new Pool({
   connectionString: resolvedDbUrl,
   ssl: (process.env.NODE_ENV === 'production' || isSupabase) ? { rejectUnauthorized: false } : false
 });
+// Optional separate research DB (falls back to main if not provided)
+const researchDbUrl = process.env.RESEARCH_DATABASE_URL || resolvedDbUrl;
+const researchPool = new Pool({
+  connectionString: researchDbUrl,
+  ssl: (process.env.NODE_ENV === 'production' || /supabase\.co|supabase\.in/i.test(researchDbUrl)) ? { rejectUnauthorized: false } : false
+});
+
 
 console.log('🔌 DB URL source resolved:', resolvedDbUrl ? 'set' : 'missing');
 
@@ -264,6 +271,39 @@ app.post('/api/responses', async (req, res) => {
   } catch (err) {
     console.error('Error saving response:', err);
     res.status(500).json({ error: 'Failed to save response' });
+  }
+});
+
+// Store WHO-5 and SWLS for research mode
+app.post('/api/research', async (req, res) => {
+  try {
+    const { sessionId, who5, swls, userAgent } = req.body || {};
+    if (!sessionId || !Array.isArray(who5) || !Array.isArray(swls)) {
+      return res.status(400).json({ error: 'Invalid research payload' });
+    }
+    const client = await researchPool.connect();
+    try {
+      await client.query(
+        `CREATE TABLE IF NOT EXISTS research_entries (
+          id SERIAL PRIMARY KEY,
+          session_id TEXT NOT NULL,
+          who5 INTEGER[] NOT NULL,
+          swls INTEGER[] NOT NULL,
+          user_agent TEXT,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
+        )`
+      );
+      await client.query(
+        `INSERT INTO research_entries (session_id, who5, swls, user_agent) VALUES ($1,$2,$3,$4)`,
+        [sessionId, who5, swls, userAgent || null]
+      );
+      res.status(201).json({ message: 'Research saved' });
+    } finally {
+      client.release();
+    }
+  } catch (e) {
+    console.error('Error saving research:', e);
+    res.status(500).json({ error: 'Failed to save research' });
   }
 });
 

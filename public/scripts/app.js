@@ -64,6 +64,8 @@
       console.log('✅ Added active-section to:', sectionToShow.id);
     }
   }
+  // Expose for research mode orchestrator
+  window._showSection = showSection;
   
   // Start button event listener with comprehensive debugging
   if (startBtn) {
@@ -447,7 +449,10 @@
   
   // Initialize page state
   document.body.classList.remove('showing-results');
-  showSection(introDiv); // Show the intro section by default
+  // In research mode, an external script controls the first sections
+  if (!window.RESEARCH_MODE) {
+    showSection(introDiv); // Show the intro section by default
+  }
   
   // Prevent scrolling on mobile
   document.body.classList.add('no-scroll');
