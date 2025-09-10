@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>23plusone Research | Intro · SWLS · WHO-5</title>
+  <link rel="stylesheet" href="styles/tw.build.css">
+  <script>window.RESEARCH_MODE = true;</script>
+  <script src="scripts/viewport.js"></script>
+  <style>
+    :root { --footer-h: 64px; }
+    html, body { height: calc(var(--vh, 1vh) * 100); overflow: hidden; }
+    .section { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none; }
+    .active { display: flex; }
+    .qcard { width: 100%; max-width: 960px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; }
+    .qgrid { width: 100%; display: grid; gap: 12px; }
+    .likert-7 { grid-template-columns: 1fr repeat(7, minmax(0, 1fr)); }
+    .likert-6 { grid-template-columns: 1fr repeat(6, minmax(0, 1fr)); }
+    .cell-h { font-size: 12px; color: #6b7280; text-align: center; }
+    .cell-l { font-size: 14px; color: #e91e63; }
+    .choice { width: 28px; height: 28px; border-radius: 9999px; border: 2px solid #c6a299; margin-left: auto; margin-right: auto; display: inline-flex; align-items: center; justify-content: center; transition: background-color 120ms ease, border-color 120ms ease; }
+    .choice.active { background-color: #e91e63; border-color: #e91e63; }
+    @media (max-width: 480px) { :root { --footer-h: 48px; } .qcard { max-width: 560px; } }
+  </style>
+</head>
+<body class="bg-white text-[#2c1f1c]">
+  <main class="min-h-screen flex flex-col items-center" style="padding-bottom: var(--footer-h);">
+    <!-- Intro -->
+    <section id="intro" class="section active items-center justify-center">
+      <div class="qcard flex flex-col items-center gap-4 text-center">
+        <h2 class="text-2xl md:text-3xl font-semibold">Help us research methods that measure happiness.</h2>
+        <p class="text-base opacity-80">This test is anonymous and consists of three parts:</p>
+        <div class="text-sm">
+          <div class="font-semibold text-pink-600">Satisfaction</div>
+          <div class="font-semibold text-pink-600">Well‑being</div>
+          <div class="font-semibold text-pink-600">Human drives</div>
+        </div>
+        <button id="toSwlsIntro" class="w-[200px] h-[48px] bg-pink-600 rounded-xl text-white font-semibold">Continue</button>
+      </div>
+    </section>
+
+    <!-- SWLS -->
+    <section id="swls" class="section items-center justify-center">
+      <div class="qcard flex flex-col items-center gap-6 text-center">
+        <div class="max-w-[800px]">
+          <h2 class="text-2xl font-semibold">Please choose the number that best matches how much you agree.</h2>
+          <p class="text-sm opacity-80">Use the scale from 1 (Strongly disagree) to 7 (Strongly agree).</p>
+        </div>
+        <div class="w-full text-left">
+          <div class="qgrid likert-7 mb-2">
+            <div></div>
+            <div class="cell-h">Strongly<br>disagree</div>
+            <div class="cell-h">Disagree</div>
+            <div class="cell-h">Slightly<br>disagree</div>
+            <div class="cell-h">Neutral</div>
+            <div class="cell-h">Slightly<br>agree</div>
+            <div class="cell-h">Agree</div>
+            <div class="cell-h">Strongly<br>agree</div>
+          </div>
+          <div id="swlsForm" class="w-full flex flex-col gap-4"></div>
+        </div>
+        <button id="toWho5" class="w-[200px] h-[48px] bg-pink-600 rounded-xl text-white font-semibold">Submit</button>
+      </div>
+    </section>
+
+    <!-- WHO-5 -->
+    <section id="who5" class="section items-center justify-center">
+      <div class="qcard flex flex-col items-center gap-6 text-center">
+        <div class="max-w-[860px]">
+          <h2 class="text-2xl font-semibold">Please respond to each item by marking one box per row,</h2>
+          <p class="text-sm opacity-80">regarding how you felt in the last two weeks.</p>
+        </div>
+        <div class="w-full text-left">
+          <div class="qgrid likert-6 mb-2">
+            <div></div>
+            <div class="cell-h">All of the<br>time</div>
+            <div class="cell-h">Most of the<br>time</div>
+            <div class="cell-h">More than half<br>the time</div>
+            <div class="cell-h">Less than half<br>the time</div>
+            <div class="cell-h">Some of the<br>time</div>
+            <div class="cell-h">At no time</div>
+          </div>
+          <div id="who5Form" class="w-full flex flex-col gap-4"></div>
+        </div>
+        <button id="toScan" class="w-[200px] h-[48px] bg-pink-600 rounded-xl text-white font-semibold">Submit</button>
+      </div>
+    </section>
+
+    <!-- Reuse existing scan via iframe to avoid code duplication -->
+    <section id="scanHost" class="section items-center justify-center">
+      <iframe id="scanFrame" src="scan.html" title="Happiness Scan" style="width:100%; height:100%; border:0;"></iframe>
+    </section>
+  </main>
+
+  <footer id="globalFooter" class="fixed bottom-0 left-0 right-0 bg-white border-t border-neutral-200">
+    <div class="w-full grid items-center text-yellow-950 text-xs px-6 md:px-16" style="height: 100%; grid-template-columns: 1fr auto 1fr;">
+      <div class="opacity-80 flex items-center h-full" style="justify-self: start;"><img src="Br-ndLogo.webp" alt="BR-ND People logo" class="w-auto" style="height: auto; width: auto; max-height: calc(var(--footer-h) - 12px);"></div>
+      <div class="opacity-80" style="justify-self: center;">© 2006-2025 Cramer & Koene</div>
+      <div class="opacity-80 flex items-center h-full" style="justify-self: end;"><img src="23plusone.png" alt="23plusone logo" class="w-auto" style="height: auto; width: auto; max-height: calc((var(--footer-h) - 12px) * 0.55);"></div>
+    </div>
+  </footer>
+
+  <!-- Templates for dynamic rendering -->
+  <template id="swlsRow">
+    <div class="qgrid likert-7 items-center">
+      <label class="cell-l"></label>
+      <button type="button" class="choice" data-val="1" aria-label="1"></button>
+      <button type="button" class="choice" data-val="2" aria-label="2"></button>
+      <button type="button" class="choice" data-val="3" aria-label="3"></button>
+      <button type="button" class="choice" data-val="4" aria-label="4"></button>
+      <button type="button" class="choice" data-val="5" aria-label="5"></button>
+      <button type="button" class="choice" data-val="6" aria-label="6"></button>
+      <button type="button" class="choice" data-val="7" aria-label="7"></button>
+    </div>
+  </template>
+
+  <template id="who5Row">
+    <div class="qgrid likert-6 items-center">
+      <label class="cell-l"></label>
+      <button type="button" class="choice" data-val="5" aria-label="All of the time"></button>
+      <button type="button" class="choice" data-val="4" aria-label="Most of the time"></button>
+      <button type="button" class="choice" data-val="3" aria-label="More than half the time"></button>
+      <button type="button" class="choice" data-val="2" aria-label="Less than half the time"></button>
+      <button type="button" class="choice" data-val="1" aria-label="Some of the time"></button>
+      <button type="button" class="choice" data-val="0" aria-label="At no time"></button>
+    </div>
+  </template>
+
+  <script src="scripts/research.js" defer></script>
+</body>
+</html>
+
+

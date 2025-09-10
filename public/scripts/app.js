@@ -1,5 +1,18 @@
 // 23plusone Happiness Scan - Main JavaScript
 (function() {
+  // Participant/session identifier shared across research and scan
+  const urlParams = new URLSearchParams(window.location.search || '');
+  const pidFromUrl = urlParams.get('pid');
+  let participantId = null;
+  try {
+    const stored = (typeof localStorage !== 'undefined') ? localStorage.getItem('participantId') : null;
+    participantId = pidFromUrl || stored || `pid-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+    if (stored !== participantId) {
+      localStorage.setItem('participantId', participantId);
+    }
+  } catch (_) {
+    participantId = pidFromUrl || `pid-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+  }
   let cards = [];
   let deck = [];
   let currentCardIndex = 0;
@@ -1062,7 +1075,8 @@
     });
     
     const payload = {
-      sessionId: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      sessionId: participantId,
+      participantId: participantId,
       cardSelections: cardSelections,
       ihsScore: results.ihs,
       n1Score: results.n1, // Now properly sending calculated N1 score

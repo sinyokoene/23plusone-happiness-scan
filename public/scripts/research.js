@@ -1,6 +1,11 @@
 (function(){
   'use strict';
 
+  // Generate or reuse a persistent participant ID to join research ↔ scan
+  const existingPid = (typeof localStorage !== 'undefined') ? localStorage.getItem('participantId') : null;
+  const participantId = existingPid || `pid-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+  try { localStorage.setItem('participantId', participantId); } catch (_) {}
+
   const who5Items = [
     'I have felt cheerful and in good spirits',
     'I have felt calm and relaxed',
@@ -17,10 +22,13 @@
     'If I could live my life over, I would change almost nothing'
   ];
 
+  const introSection = document.getElementById('intro');
   const who5Section = document.getElementById('who5');
   const swlsSection = document.getElementById('swls');
   const scanHost = document.getElementById('scanHost');
-  const toSwlsBtn = document.getElementById('toSwls');
+  const scanFrame = document.getElementById('scanFrame');
+  const toSwlsIntroBtn = document.getElementById('toSwlsIntro');
+  const toSwlsBtn = document.getElementById('toWho5');
   const toScanBtn = document.getElementById('toScan');
 
   const who5Form = document.getElementById('who5Form');
@@ -58,7 +66,8 @@
 
   async function submitResearch(){
     const payload = {
-      sessionId: `research-${Date.now()}-${Math.random().toString(36).slice(2,9)}`,
+      sessionId: participantId,
+      participantId: participantId,
       who5: who5Answers,
       swls: swlsAnswers,
       userAgent: navigator.userAgent
@@ -79,16 +88,27 @@
   renderLikert(who5Form, who5RowTpl, who5Items, who5Answers);
   renderLikert(swlsForm, swlsRowTpl, swlsItems, swlsAnswers);
 
-  toSwlsBtn.addEventListener('click', () => {
-    if (!allAnswered(who5Answers)) { return; }
-    hide(who5Section); show(swlsSection);
-  });
+  if (toSwlsIntroBtn) {
+    toSwlsIntroBtn.addEventListener('click', () => { hide(introSection); show(swlsSection); });
+  }
+  if (toSwlsBtn) {
+    toSwlsBtn.addEventListener('click', () => {
+      if (!allAnswered(swlsAnswers)) { return; }
+      hide(swlsSection); show(who5Section);
+    });
+  }
 
-  toScanBtn.addEventListener('click', async () => {
-    if (!allAnswered(swlsAnswers)) { return; }
-    await submitResearch();
-    hide(swlsSection); show(scanHost);
-  });
+  if (toScanBtn) {
+    toScanBtn.addEventListener('click', async () => {
+      if (!allAnswered(who5Answers)) { return; }
+      await submitResearch();
+      if (scanFrame) {
+        const base = 'scan.html';
+        scanFrame.src = `${base}?pid=${encodeURIComponent(participantId)}`;
+      }
+      hide(who5Section); show(scanHost);
+    });
+  }
 })();
 
 
