@@ -143,6 +143,16 @@
   function startPractice() {
     console.log('🎯 startPractice called');
     showSection(practiceDiv);
+    // Shuffle practice images each time practice starts
+    if (Array.isArray(practiceImages) && practiceImages.length > 0) {
+      // Fisher-Yates shuffle for unbiased random order
+      for (let i = practiceImages.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = practiceImages[i];
+        practiceImages[i] = practiceImages[j];
+        practiceImages[j] = tmp;
+      }
+    }
     practiceIndex = 0;
     showPracticeCard();
   }
