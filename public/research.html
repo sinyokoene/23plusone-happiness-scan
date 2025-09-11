@@ -16,6 +16,8 @@
     html, body { height: calc(var(--vh, 1vh) * 100); overflow: hidden; }
     body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
     .section { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none; width: 100%; }
+    /* When embedding the scan (iframe), footer is hidden → use full viewport height */
+    #scanHost.section { height: calc(var(--vh, 1vh) * 100); }
     .active { display: flex; }
     .qcard { width: 100%; max-width: 1100px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; }
     .qgrid { width: 100%; display: grid; row-gap: 24px; column-gap: var(--col-gap, 24px); }
