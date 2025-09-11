@@ -35,6 +35,19 @@
     /* Primary buttons to match scan.html */
     button { -webkit-tap-highlight-color: transparent; transition: background-color 120ms ease, transform 60ms ease; }
     #toSwlsIntro:active, #toWho5:active, #toScan:active { background-color: var(--btn-active-pink); transform: translateY(1px); }
+    /* Compact layout for small tablets/large phones in landscape (481–660px) */
+    @media (min-width: 481px) and (max-width: 660px) {
+      .qcard { padding-left: 12px; padding-right: 12px; }
+      .qgrid { column-gap: 8px; row-gap: 14px; }
+      /* SWLS: seven columns + label */
+      .likert-7 { grid-template-columns: minmax(180px, 2fr) repeat(7, minmax(30px, 1fr)); }
+      /* WHO-5: six columns + label */
+      .likert-6 { grid-template-columns: minmax(180px, 2fr) repeat(6, minmax(32px, 1fr)); }
+      .cell-l { font-size: 14px; }
+      .cell-h { font-size: 11px; line-height: 1.15; }
+      .choice { width: 18px; height: 18px; }
+      .choice.active::after { inset: 3px; }
+    }
     /* Medium screens: tighten grid so all columns fit (769px–1100px) */
     @media (min-width: 769px) and (max-width: 1100px) {
       .qgrid { column-gap: 16px; }
@@ -46,7 +59,7 @@
       .qgrid { column-gap: 12px; row-gap: 18px; }
       /* Give labels more room and ensure each dot column has a min width */
       .likert-7 { grid-template-columns: minmax(240px, 2.4fr) repeat(7, minmax(42px, 1fr)); }
-      .likert-6 { grid-template-columns: minmax(240px, 2.4fr) repeat(6, minmax(42px, 1fr)); }
+      .likert-6 { grid-template-columns: minmax(220px, 2.4fr) repeat(6, minmax(40px, 1fr)); }
       .cell-l { white-space: normal; word-break: normal; }
       .cell-h { white-space: normal; line-height: 1.2; }
       /* Reset desktop left offset for first choice column */
