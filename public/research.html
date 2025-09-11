@@ -15,7 +15,7 @@
     :root { --footer-h: 64px; --btn-active-pink: #c2185b; }
     html, body { height: calc(var(--vh, 1vh) * 100); overflow: hidden; }
     body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    .section { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none; width: 100%; }
+    .section { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none; width: 100%; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-top: 12px; padding-bottom: 16px; }
     /* When embedding the scan (iframe), footer is hidden → use full viewport height */
     #scanHost.section { height: calc(var(--vh, 1vh) * 100); }
     .active { display: flex; }
@@ -31,8 +31,8 @@
     .choice.active { background-color: #fff; border-color: #e91e63; }
     .choice.active::after { content: ""; position: absolute; inset: 4px; background-color: #e91e63; border-radius: 9999px; }
     .choice:focus-visible { outline: 3px solid rgba(226, 0, 122, 0.35); outline-offset: 3px; }
-    /* Lower the submit buttons on both tests */
-    #toWho5, #toScan { margin-top: 20px; }
+    /* Keep submit buttons visible above fixed footer */
+    #toWho5, #toScan { margin-top: 20px; position: sticky; bottom: calc(var(--footer-h) + env(safe-area-inset-bottom) + 8px); z-index: 10; }
     @media (min-width: 768px) { #toWho5, #toScan { margin-top: 36px; } }
     /* Primary buttons to match scan.html */
     button { -webkit-tap-highlight-color: transparent; transition: background-color 120ms ease, transform 60ms ease; }
@@ -91,14 +91,19 @@
     @media (max-width: 480px) {
       :root { --footer-h: 48px; }
       .qcard { max-width: 560px; padding-left: 12px; padding-right: 12px; }
+      /* Tighten headings and copy for readability on small screens */
+      .qcard h2 { font-size: 1.125rem; line-height: 1.35; }
+      .qcard p { font-size: 0.875rem; line-height: 1.35; }
       .qgrid { column-gap: 6px; row-gap: 14px; }
       /* Ensure all six dots fit on very small screens */
       .likert-6 { grid-template-columns: minmax(112px, 2fr) repeat(6, minmax(24px, 1fr)); }
       /* Ensure all seven dots fit for SWLS */
       .likert-7 { grid-template-columns: minmax(112px, 2fr) repeat(7, minmax(24px, 1fr)); }
-      .cell-l { font-size: 14px; }
+      .cell-l { font-size: 14px; line-height: 1.35; }
       .choice { width: 18px; height: 18px; }
       .choice.active::after { inset: 3px; }
+      /* Add safe breathing room at bottom so last row isn't under footer */
+      .section { padding-bottom: calc(var(--footer-h) + env(safe-area-inset-bottom) + 16px); }
     }
   </style>
 </head>
