@@ -53,7 +53,7 @@
       #swls .qgrid.likert-7.mb-4 > :nth-child(4),
       #swls .qgrid.likert-7.mb-4 > :nth-child(6),
       #swls .qgrid.likert-7.mb-4 > :nth-child(7) { visibility: hidden; }
-      /* WHO-5 header: show All the time, Half the time, At no time (keep column space) */
+      /* WHO-5 header: show At no time, Half the time, All the time (keep column space) */
       #who5 .qgrid.likert-6.mb-4 > :nth-child(3),
       #who5 .qgrid.likert-6.mb-4 > :nth-child(5),
       #who5 .qgrid.likert-6.mb-4 > :nth-child(6) { visibility: hidden; }
@@ -67,7 +67,18 @@
     @media (min-width: 900px) {
       .cell-h { white-space: nowrap; }
     }
-    @media (max-width: 480px) { :root { --footer-h: 48px; } .qcard { max-width: 560px; } }
+    @media (max-width: 480px) {
+      :root { --footer-h: 48px; }
+      .qcard { max-width: 560px; padding-left: 12px; padding-right: 12px; }
+      .qgrid { column-gap: 6px; row-gap: 14px; }
+      /* Ensure all six dots fit on very small screens */
+      .likert-6 { grid-template-columns: minmax(112px, 2fr) repeat(6, minmax(24px, 1fr)); }
+      /* Ensure all seven dots fit for SWLS */
+      .likert-7 { grid-template-columns: minmax(112px, 2fr) repeat(7, minmax(24px, 1fr)); }
+      .cell-l { font-size: 14px; }
+      .choice { width: 18px; height: 18px; }
+      .choice.active::after { inset: 3px; }
+    }
   </style>
 </head>
 <body class="bg-white text-[#2c1f1c]">
@@ -114,18 +125,18 @@
     <section id="who5" class="section items-center justify-center">
       <div class="qcard flex flex-col items-center gap-8 text-center">
         <div class="max-w-[860px]">
-          <h2 class="text-2xl font-semibold">Please respond to each item by marking one box per row,</h2>
-          <p class="text-sm opacity-80">regarding how you felt in the last two weeks.</p>
+          <h2 class="text-2xl font-semibold">Please tick the box corresponding to how you felt in the last two weeks.</h2>
+          <p class="text-sm opacity-80">Use the scale from 1 (At no time) to 6 (All the time).</p>
         </div>
         <div class="w-full text-left">
           <div class="qgrid likert-6 mb-4">
             <div></div>
-            <div class="cell-h">All of the<br>time</div>
-            <div class="cell-h">Most of the<br>time</div>
-            <div class="cell-h">More than half<br>the time</div>
-            <div class="cell-h">Less than half<br>the time</div>
+            <div class="cell-h">At no<br>time</div>
             <div class="cell-h">Some of the<br>time</div>
-            <div class="cell-h">At no time</div>
+            <div class="cell-h">Less than half<br>the time</div>
+            <div class="cell-h">More than half<br>the time</div>
+            <div class="cell-h">Most of the<br>time</div>
+            <div class="cell-h">All of the<br>time</div>
           </div>
           <div id="who5Form" class="w-full flex flex-col gap-6"></div>
         </div>
@@ -164,12 +175,12 @@
   <template id="who5Row">
     <div class="qgrid likert-6 items-center">
       <label class="cell-l"></label>
-      <button type="button" class="choice" data-val="5" aria-label="All of the time"></button>
-      <button type="button" class="choice" data-val="4" aria-label="Most of the time"></button>
-      <button type="button" class="choice" data-val="3" aria-label="More than half the time"></button>
-      <button type="button" class="choice" data-val="2" aria-label="Less than half the time"></button>
-      <button type="button" class="choice" data-val="1" aria-label="Some of the time"></button>
       <button type="button" class="choice" data-val="0" aria-label="At no time"></button>
+      <button type="button" class="choice" data-val="1" aria-label="Some of the time"></button>
+      <button type="button" class="choice" data-val="2" aria-label="Less than half the time"></button>
+      <button type="button" class="choice" data-val="3" aria-label="More than half the time"></button>
+      <button type="button" class="choice" data-val="4" aria-label="Most of the time"></button>
+      <button type="button" class="choice" data-val="5" aria-label="All of the time"></button>
     </div>
   </template>
 
