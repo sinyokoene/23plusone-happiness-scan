@@ -123,7 +123,11 @@
   const practiceImages = [
     'fakeCards/25. resilience_strength.jpeg',
     'fakeCards/26. expression_extravegance.jpeg',
-    'fakeCards/27. precision_highstakes.jpeg'
+    'fakeCards/27. precision_highstakes.jpeg',
+    'fakeCards/28. tradition_nostalgia.jpeg',
+    'fakeCards/30. rural_outdoor.jpeg',
+    'fakeCards/31. contemporaryart_modern.jpeg',
+    'fakeCards/35. insects_micro 2.jpeg'
   ];
   // Preload practice images once
   (function preloadPracticeImages(){
