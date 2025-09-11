@@ -35,6 +35,12 @@
     /* Primary buttons to match scan.html */
     button { -webkit-tap-highlight-color: transparent; transition: background-color 120ms ease, transform 60ms ease; }
     #toSwlsIntro:active, #toWho5:active, #toScan:active { background-color: var(--btn-active-pink); transform: translateY(1px); }
+    /* Medium screens: tighten grid so all columns fit (769px–1100px) */
+    @media (min-width: 769px) and (max-width: 1100px) {
+      .qgrid { column-gap: 16px; }
+      .likert-7 { grid-template-columns: minmax(360px, 2fr) repeat(7, minmax(56px, 1fr)); }
+      .likert-6 { grid-template-columns: minmax(360px, 2fr) repeat(6, minmax(56px, 1fr)); }
+    }
     /* On small screens, allow wrapping so layout fits */
     @media (max-width: 768px) {
       .qgrid { column-gap: 12px; row-gap: 18px; }
