@@ -44,10 +44,8 @@
       .cell-l { white-space: normal; word-break: normal; }
       .cell-h { white-space: normal; line-height: 1.2; }
       /* Reset desktop left offset for first choice column */
-      .qgrid.likert-6 > .choice:first-of-type,
-      .qgrid.likert-7 > .choice:first-of-type,
-      .qgrid.likert-6 > :nth-child(2),
-      .qgrid.likert-7 > :nth-child(2) { margin-left: 0; }
+      /* Ensure consistent centering for all choice dots on mobile */
+      .qgrid .choice { margin-left: auto; margin-right: auto; }
       /* SWLS header: show only anchor labels on mobile (keep column space) */
       #swls .qgrid.likert-7.mb-4 > :nth-child(3),
       #swls .qgrid.likert-7.mb-4 > :nth-child(4),
@@ -104,8 +102,8 @@
           <h2 class="text-2xl font-semibold">Please choose the number that best matches how much you agree.</h2>
           <p class="text-sm opacity-80">Use the scale from 1 (Strongly disagree) to 7 (Strongly agree).</p>
         </div>
-        <div class="w-full text-left">
-          <div class="qgrid likert-7 mb-4">
+        <div class="w-full text-left" style="margin-top: 20px;">
+          <div class="qgrid likert-7 mb-4" style="margin-bottom: 20px;">
             <div></div>
             <div class="cell-h">Strongly<br>disagree</div>
             <div class="cell-h">Disagree</div>
@@ -128,8 +126,8 @@
           <h2 class="text-2xl font-semibold">Please tick the box corresponding to how you felt in the last two weeks.</h2>
           <p class="text-sm opacity-80">Use the scale from 1 (At no time) to 6 (All the time).</p>
         </div>
-        <div class="w-full text-left">
-          <div class="qgrid likert-6 mb-4">
+        <div class="w-full text-left" style="margin-top: 20px;">
+          <div class="qgrid likert-6 mb-4" style="margin-bottom: 20px;">
             <div></div>
             <div class="cell-h">At no<br>time</div>
             <div class="cell-h">Some of the<br>time</div>
