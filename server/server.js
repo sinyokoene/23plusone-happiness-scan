@@ -342,6 +342,66 @@ app.get('/api/research-results', async (req, res) => {
   }
 });
 
+// Compare research WHO-5/SWLS with scan IHS by session
+app.get('/api/research-compare', async (req, res) => {
+  try {
+    const { limit = 500 } = req.query;
+    const mainClient = await pool.connect();
+    const researchClient = await researchPool.connect();
+    try {
+      await researchClient.query(
+        `CREATE TABLE IF NOT EXISTS research_entries (
+          id SERIAL PRIMARY KEY,
+          session_id TEXT NOT NULL,
+          who5 INTEGER[] NOT NULL,
+          swls INTEGER[] NOT NULL,
+          user_agent TEXT,
+          created_at TIMESTAMPTZ DEFAULT now()
+        )`
+      );
+      // Fetch recent scan results and map by session_id
+      const scanRows = (await mainClient.query(
+        `SELECT session_id, ihs_score, created_at FROM scan_responses 
+         WHERE ihs_score IS NOT NULL 
+         ORDER BY created_at DESC LIMIT $1`, [Math.min(parseInt(limit,10)||500, 2000)])).rows;
+      const bySession = new Map();
+      for (const r of scanRows) bySession.set(r.session_id, r);
+
+      // Fetch research entries that have matching session_ids
+      const sessions = scanRows.map(r => r.session_id).filter(Boolean);
+      let researchRows = [];
+      if (sessions.length) {
+        const chunks = [];
+        for (let i=0;i<sessions.length;i+=500) chunks.push(sessions.slice(i,i+500));
+        for (const chunk of chunks) {
+          const params = chunk.map((_,i)=>`$${i+1}`).join(',');
+          const { rows } = await researchClient.query(
+            `SELECT session_id, who5, swls, created_at FROM research_entries WHERE session_id IN (${params})`, chunk);
+          researchRows = researchRows.concat(rows);
+        }
+      }
+
+      // Join
+      const joined = researchRows.map(r => ({
+        session_id: r.session_id,
+        who5: r.who5,
+        swls: r.swls,
+        ihs: bySession.get(r.session_id)?.ihs_score ?? null,
+        scan_created_at: bySession.get(r.session_id)?.created_at ?? null,
+        research_created_at: r.created_at
+      })).filter(j => j.ihs !== null);
+
+      res.json({ count: joined.length, entries: joined });
+    } finally {
+      mainClient.release();
+      researchClient.release();
+    }
+  } catch (e) {
+    console.error('Error building research comparison:', e);
+    res.status(500).json({ error: 'Failed to build comparison' });
+  }
+});
+
 // Get benchmark percentiles
 app.get('/api/benchmarks', async (req, res) => {
   try {

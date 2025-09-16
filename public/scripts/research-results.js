@@ -5,8 +5,12 @@
   const tbody = document.querySelector('#resultsTable tbody');
   const who5Canvas = document.getElementById('who5Chart');
   const swlsCanvas = document.getElementById('swlsChart');
+  const who5VsIhsCanvas = document.getElementById('who5VsIhs');
+  const swlsVsIhsCanvas = document.getElementById('swlsVsIhs');
+  const statsWho5El = document.getElementById('statsWho5');
+  const statsSwlsEl = document.getElementById('statsSwls');
 
-  let who5Chart, swlsChart;
+  let who5Chart, swlsChart, who5Scatter, swlsScatter;
 
   function sum(arr){ return arr.reduce((a,b)=>a+(Number(b)||0),0); }
 
@@ -14,6 +18,16 @@
     const who5Totals = entries.map(e => sum(e.who5||[]));
     const swlsTotals = entries.map(e => sum(e.swls||[]));
     return { who5Totals, swlsTotals };
+  }
+
+  function corr(x, y){
+    const n = Math.min(x.length, y.length);
+    if (!n) return 0;
+    const xm = x.reduce((a,b)=>a+b,0)/n;
+    const ym = y.reduce((a,b)=>a+b,0)/n;
+    let num = 0, dx=0, dy=0;
+    for (let i=0;i<n;i++) { const xv=x[i]-xm; const yv=y[i]-ym; num += xv*yv; dx += xv*xv; dy += yv*yv; }
+    return (dx && dy) ? (num/Math.sqrt(dx*dy)) : 0;
   }
 
   function renderTable(entries){
@@ -66,6 +80,34 @@
     const json = await res.json();
     renderTable(json.entries || []);
     renderCharts(json.entries || []);
+
+    // Comparison fetch
+    const cmp = await (await fetch(`/api/research-compare?limit=${limit}`)).json();
+    const cmpEntries = cmp.entries || [];
+    const who5Totals = cmpEntries.map(e => sum(e.who5||[]));
+    const swlsTotals = cmpEntries.map(e => sum(e.swls||[]));
+    const ihs = cmpEntries.map(e => Number(e.ihs)||0);
+
+    // Scatter charts
+    const scatterCommon = {
+      type: 'scatter', options: { responsive: true, scales: { x: { beginAtZero: true }, y: { beginAtZero: true } } }
+    };
+    if (who5Scatter) who5Scatter.destroy();
+    who5Scatter = new Chart(who5VsIhsCanvas, {
+      ...scatterCommon,
+      data: { datasets: [{ label: 'WHO‑5 vs IHS', data: who5Totals.map((v,i)=>({x:v, y: ihs[i]})), backgroundColor: 'rgba(236,72,153,.5)' }] }
+    });
+    if (swlsScatter) swlsScatter.destroy();
+    swlsScatter = new Chart(swlsVsIhsCanvas, {
+      ...scatterCommon,
+      data: { datasets: [{ label: 'SWLS vs IHS', data: swlsTotals.map((v,i)=>({x:v, y: ihs[i]})), backgroundColor: 'rgba(99,102,241,.5)' }] }
+    });
+
+    // Correlations
+    const rWho5 = corr(who5Totals, ihs);
+    const rSwls = corr(swlsTotals, ihs);
+    if (statsWho5El) statsWho5El.textContent = `n=${who5Totals.length}  r(WHO‑5, IHS)=${rWho5.toFixed(2)}`;
+    if (statsSwlsEl) statsSwlsEl.textContent = `n=${swlsTotals.length}  r(SWLS, IHS)=${rSwls.toFixed(2)}`;
   }
 
   limitInput.addEventListener('change', load);

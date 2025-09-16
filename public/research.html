@@ -108,7 +108,7 @@
     }
     /* On small screens, allow wrapping so layout fits */
     @media (max-width: 768px) {
-      .qgrid { column-gap: 10px; row-gap: 12px; }
+      .qgrid { column-gap: 10px; row-gap: 13px; }
       /* Give labels more room and ensure each dot column has a min width */
       .likert-7 { grid-template-columns: minmax(240px, 2.4fr) repeat(7, minmax(42px, 1fr)); }
       .likert-7-only { grid-template-columns: repeat(7, minmax(42px, 1fr)); }
@@ -145,7 +145,7 @@
       /* Tighten headings and copy for readability and to fit one screen */
       .qcard h2, .title-inner h2 { font-size: 1.02rem; line-height: 1.2; }
       .qcard p { font-size: 0.82rem; line-height: 1.2; }
-      .qgrid { column-gap: 6px; row-gap: 8px; }
+      .qgrid { column-gap: 6px; row-gap: 9px; }
       /* Ensure all six dots fit on very small screens */
       .likert-6 { grid-template-columns: minmax(112px, 2fr) repeat(6, minmax(24px, 1fr)); }
       .likert-6-only { grid-template-columns: repeat(6, minmax(24px, 1fr)); }
@@ -160,9 +160,9 @@
       .qcard .w-full.text-left { margin-top: 8px !important; }
       .qgrid.mb-4 { margin-bottom: 6px !important; }
       /* Compress WHO‑5 row spacing further so 5 questions fit without scroll */
-      #who5 .swls-sep { margin: 10px 0 6px; }
-      #who5 .swls-q { margin-bottom: 6px; }
-      #who5 .qgrid.likert-6-only.mt-6 { margin-top: 8px !important; }
+      #who5 .swls-sep { margin: 12px 0 8px; }
+      #who5 .swls-q { margin-bottom: 8px; }
+      #who5 .qgrid.likert-6-only.mt-6 { margin-top: 10px !important; }
     }
   </style>
 </head>
