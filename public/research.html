@@ -64,11 +64,13 @@
       height: calc(100% - 16px - var(--box-shrink));
       width: 100%;
     }
-    /* Ensure the middle content stretches fully and scrolls internally only if necessary */
+    /* Ensure the middle content stretches fully (no scroll) */
     #swls .qcard > div.w-full, #who5 .qcard > div.w-full {
       align-self: stretch;
       overflow: hidden;
     }
+    /* Prevent double-tap zoom and make taps feel instant */
+    html, body, button, .choice { touch-action: manipulation; }
     /* Keep form area scroll-free but allow inner grids to flow naturally */
     #swlsForm, #who5Form { overflow: visible; }
     /* Center the submit buttons in the grid's last row */
@@ -77,8 +79,8 @@
     button { -webkit-tap-highlight-color: transparent; transition: background-color 120ms ease, transform 60ms ease; }
     #toSwlsIntro:active, #toWho5:active, #toScan:active { background-color: var(--btn-active-pink); transform: translateY(1px); }
     /* Slightly reduce shrink on small screens so content remains comfortable */
-    @media (max-width: 768px) { :root { --box-shrink: 56px; } }
-    @media (max-width: 480px) { :root { --box-shrink: 44px; } }
+    @media (max-width: 768px) { :root { --box-shrink: 36px; } }
+    @media (max-width: 480px) { :root { --box-shrink: 24px; } }
     /* Compact layout for small tablets/large phones in landscape (481–660px) */
     @media (min-width: 481px) and (max-width: 660px) {
       .qcard { padding-left: 12px; padding-right: 12px; }
@@ -106,7 +108,7 @@
     }
     /* On small screens, allow wrapping so layout fits */
     @media (max-width: 768px) {
-      .qgrid { column-gap: 12px; row-gap: 18px; }
+      .qgrid { column-gap: 10px; row-gap: 12px; }
       /* Give labels more room and ensure each dot column has a min width */
       .likert-7 { grid-template-columns: minmax(240px, 2.4fr) repeat(7, minmax(42px, 1fr)); }
       .likert-7-only { grid-template-columns: repeat(7, minmax(42px, 1fr)); }
@@ -129,8 +131,8 @@
       /* Replace middle header text with concise 'Half the time' */
       #who5 .qgrid.likert-6.mb-4 > :nth-child(4) { position: relative; color: transparent; }
       #who5 .qgrid.likert-6.mb-4 > :nth-child(4)::after { content: "Half the\A time"; white-space: pre; color: #6b7280; position: absolute; inset: 0; display: block; text-align: center; }
-      /* Lower submit buttons a touch on mobile */
-      #toWho5, #toScan { margin-top: 28px; }
+      /* Tighten submit spacing on mobile */
+      #toWho5, #toScan { margin-top: 16px; }
     }
     /* On desktop, keep header labels at two lines max (breaks only at <br>) */
     @media (min-width: 900px) {
@@ -141,22 +143,26 @@
       .qcard { max-width: 560px; padding-left: 12px; padding-right: 12px; gap: 10px !important; }
       .title-inner { max-width: 560px; padding-left: 12px; padding-right: 12px; }
       /* Tighten headings and copy for readability and to fit one screen */
-      .qcard h2, .title-inner h2 { font-size: 1.05rem; line-height: 1.25; }
-      .qcard p { font-size: 0.84rem; line-height: 1.25; }
-      .qgrid { column-gap: 6px; row-gap: 10px; }
+      .qcard h2, .title-inner h2 { font-size: 1.02rem; line-height: 1.2; }
+      .qcard p { font-size: 0.82rem; line-height: 1.2; }
+      .qgrid { column-gap: 6px; row-gap: 8px; }
       /* Ensure all six dots fit on very small screens */
       .likert-6 { grid-template-columns: minmax(112px, 2fr) repeat(6, minmax(24px, 1fr)); }
       .likert-6-only { grid-template-columns: repeat(6, minmax(24px, 1fr)); }
       /* Ensure all seven dots fit for SWLS */
       .likert-7 { grid-template-columns: minmax(112px, 2fr) repeat(7, minmax(24px, 1fr)); }
       .likert-7-only { grid-template-columns: repeat(7, minmax(24px, 1fr)); }
-      .cell-l { font-size: 13px; line-height: 1.25; }
-      .cell-h { font-size: 10px; line-height: 1.1; }
-      .choice { width: 16px; height: 16px; }
+      .cell-l { font-size: 12px; line-height: 1.2; }
+      .cell-h { font-size: 10px; line-height: 1.05; }
+      .choice { width: 14px; height: 14px; }
       .choice.active::after { inset: 2.5px; }
       /* Reduce internal margins that were set inline in markup */
       .qcard .w-full.text-left { margin-top: 8px !important; }
-      .qgrid.mb-4 { margin-bottom: 8px !important; }
+      .qgrid.mb-4 { margin-bottom: 6px !important; }
+      /* Compress WHO‑5 row spacing further so 5 questions fit without scroll */
+      #who5 .swls-sep { margin: 10px 0 6px; }
+      #who5 .swls-q { margin-bottom: 6px; }
+      #who5 .qgrid.likert-6-only.mt-6 { margin-top: 8px !important; }
     }
   </style>
 </head>

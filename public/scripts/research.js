@@ -46,13 +46,16 @@
       const labelEl = fragment.querySelector('.swls-q') || fragment.querySelector('label');
       if (labelEl) labelEl.textContent = text;
       rowEl.querySelectorAll('.choice').forEach(btn => {
-        btn.addEventListener('click', () => {
+        const activate = () => {
           const value = parseInt(btn.dataset.val, 10);
           answers[idx] = value;
           // ensure only ONE active per row
           rowEl.querySelectorAll('.choice').forEach(b => b.classList.remove('active'));
           btn.classList.add('active');
-        });
+        };
+        btn.addEventListener('click', activate);
+        // Enhance mobile: respond to touchstart to feel instant
+        btn.addEventListener('touchstart', (e) => { e.preventDefault(); activate(); }, { passive: false });
       });
       container.appendChild(fragment);
     });
