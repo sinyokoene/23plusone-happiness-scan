@@ -404,7 +404,7 @@ app.get('/api/research-compare', async (req, res) => {
       // Fetch recent scan results and map by session_id
       const scanRows = (await mainClient.query(
         `SELECT session_id, ihs_score, created_at FROM scan_responses 
-         WHERE ihs_score IS NOT NULL 
+         WHERE ihs_score IS NOT NULL AND created_at > now() - interval '7 days' 
          ORDER BY created_at DESC LIMIT $1`, [Math.min(parseInt(limit,10)||500, 2000)])).rows;
       const bySession = new Map();
       for (const r of scanRows) bySession.set(r.session_id, r);

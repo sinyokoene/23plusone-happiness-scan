@@ -1,9 +1,8 @@
 (function(){
   'use strict';
 
-  // Generate or reuse a persistent participant ID to join research ↔ scan
-  const existingPid = (typeof localStorage !== 'undefined') ? localStorage.getItem('participantId') : null;
-  const participantId = existingPid || `pid-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
+  // Always create a fresh session id for research to avoid joining with old scans
+  const participantId = `pid-${Date.now()}-${Math.random().toString(36).slice(2,9)}`;
   try { localStorage.setItem('participantId', participantId); } catch (_) {}
 
   const who5Items = [
