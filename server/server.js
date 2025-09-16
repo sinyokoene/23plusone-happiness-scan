@@ -74,6 +74,37 @@ async function detectSchemaFeatures(client) {
   }
 }
 
+// Basic abuse controls (configurable via env)
+const RATE_LIMIT_WINDOW_MIN = parseInt(process.env.RATE_LIMIT_WINDOW_MIN || '10', 10);
+const RATE_LIMIT_MAX_PER_IP = parseInt(process.env.RATE_LIMIT_MAX_PER_IP || '3', 10);
+// 0 means "ever" (reject any duplicate session_id)
+const DUPLICATE_SESSION_WINDOW_MIN = process.env.DUPLICATE_SESSION_WINDOW_MIN === undefined
+  ? 0
+  : parseInt(process.env.DUPLICATE_SESSION_WINDOW_MIN, 10);
+
+async function isDuplicateSession(client, sessionId) {
+  if (!sessionId) return false;
+  const windowSql = DUPLICATE_SESSION_WINDOW_MIN > 0
+    ? `AND created_at > now() - interval '${DUPLICATE_SESSION_WINDOW_MIN} minutes'`
+    : '';
+  const { rows } = await client.query(
+    `SELECT 1 FROM scan_responses WHERE session_id = $1 ${windowSql} LIMIT 1`,
+    [sessionId]
+  );
+  return rows.length > 0;
+}
+
+async function isRateLimitedByIp(client, ip) {
+  if (!ip) return false;
+  if (!hasIpAddressColumn) return false;
+  const { rows } = await client.query(
+    `SELECT COUNT(*)::int AS cnt FROM scan_responses WHERE ip_address = $1 AND created_at > now() - interval '${RATE_LIMIT_WINDOW_MIN} minutes'`,
+    [ip]
+  );
+  const cnt = rows?.[0]?.cnt || 0;
+  return cnt >= RATE_LIMIT_MAX_PER_IP;
+}
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -215,6 +246,17 @@ app.post('/api/responses', async (req, res) => {
     try {
       // Detect schema once and insert accordingly
       await detectSchemaFeatures(client);
+
+      // Duplicate session protection
+      if (await isDuplicateSession(client, sessionId)) {
+        return res.status(409).json({ error: 'Duplicate submission', reason: 'Session already submitted' });
+      }
+
+      // Per-IP rate limit (if ip column is present)
+      const requestIp = req.ip || null;
+      if (await isRateLimitedByIp(client, requestIp)) {
+        return res.status(429).json({ error: 'Rate limit exceeded', reason: `Max ${RATE_LIMIT_MAX_PER_IP} per ${RATE_LIMIT_WINDOW_MIN} min` });
+      }
       let result;
       if (hasIpAddressColumn) {
         result = await client.query(
@@ -231,7 +273,7 @@ app.post('/api/responses', async (req, res) => {
             n3Score || 0,
             completionTime || 0,
             userAgent || null,
-            req.ip || null,
+            requestIp || null,
             cardSelections?.selected?.length || 0,
             cardSelections?.rejected?.length || 0
           ]
