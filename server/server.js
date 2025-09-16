@@ -76,7 +76,7 @@ async function detectSchemaFeatures(client) {
 
 // Basic abuse controls (configurable via env)
 const RATE_LIMIT_WINDOW_MIN = parseInt(process.env.RATE_LIMIT_WINDOW_MIN || '10', 10);
-const RATE_LIMIT_MAX_PER_IP = parseInt(process.env.RATE_LIMIT_MAX_PER_IP || '3', 10);
+const RATE_LIMIT_MAX_PER_IP = parseInt(process.env.RATE_LIMIT_MAX_PER_IP || '40', 10);
 // 0 means "ever" (reject any duplicate session_id)
 const DUPLICATE_SESSION_WINDOW_MIN = process.env.DUPLICATE_SESSION_WINDOW_MIN === undefined
   ? 0
