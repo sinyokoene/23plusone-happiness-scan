@@ -17,9 +17,7 @@
   const swlsItems = [
     'In most ways my life is close to my ideal',
     'The conditions of my life are excellent',
-    'I am satisfied with my life',
-    'So far I have gotten the important things I want in life',
-    'If I could live my life over, I would change almost nothing'
+    'I am satisfied with my life'
   ];
 
   const introSection = document.getElementById('intro');
@@ -45,8 +43,8 @@
     items.forEach((text, idx) => {
       const fragment = tpl.content.cloneNode(true);
       const rowEl = fragment.querySelector('.qgrid');
-      const label = fragment.querySelector('label');
-      label.textContent = text;
+      const labelEl = fragment.querySelector('.swls-q') || fragment.querySelector('label');
+      if (labelEl) labelEl.textContent = text;
       rowEl.querySelectorAll('.choice').forEach(btn => {
         btn.addEventListener('click', () => {
           const value = parseInt(btn.dataset.val, 10);
@@ -74,11 +72,17 @@
       userAgent: navigator.userAgent
     };
     try {
-      await fetch('/api/research', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
+      if (navigator.sendBeacon) {
+        const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+        navigator.sendBeacon('/api/research', blob);
+      } else {
+        fetch('/api/research', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+          keepalive: true
+        });
+      }
     } catch (e) {
       // Silent fail - research is optional for flow
       console.warn('Research submit failed', e);
@@ -100,13 +104,10 @@
   }
 
   if (toScanBtn) {
-    toScanBtn.addEventListener('click', async () => {
+    toScanBtn.addEventListener('click', () => {
       if (!allAnswered(who5Answers)) { return; }
-      await submitResearch();
-      if (scanFrame) {
-        const base = 'scan.html';
-        scanFrame.src = `${base}?pid=${encodeURIComponent(participantId)}`;
-      }
+      // Fire-and-forget submit to avoid blocking UI transition
+      try { submitResearch(); } catch (_) {}
       hide(who5Section);
       show(scanHost);
       // Hide outer footer to avoid double footer when iframe is visible
@@ -133,6 +134,12 @@
   }
   // Override local helper for the rest of this file
   show = showWithFooter;
+
+  // Preload the scan iframe early so transition is instant
+  if (scanFrame) {
+    const base = 'scan.html';
+    scanFrame.src = `${base}?pid=${encodeURIComponent(participantId)}`;
+  }
 })();
 
 

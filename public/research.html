@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-  <title>23plusone Research | Intro · SWLS · WHO-5</title>
+  <title>23plusone Research | Intro · SWLS-3 · WHO-5</title>
   <link rel="stylesheet" href="styles/tw.build.css">
   <!-- Google Fonts: Poppins to match scan.html -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,10 +12,10 @@
   <script>window.RESEARCH_MODE = true;</script>
   <script src="scripts/viewport.js"></script>
   <style>
-    :root { --footer-h: 64px; --btn-active-pink: #c2185b; }
+    :root { --footer-h: 64px; --btn-active-pink: #c2185b; --box-shrink: 72px; }
     html, body { height: calc(var(--vh, 1vh) * 100); overflow: hidden; }
     body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    .section { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none; width: 100%; overflow: hidden; padding-top: 8px; padding-bottom: 8px; }
+    .section { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none; width: 100%; overflow: hidden; padding-top: 8px; padding-bottom: 8px; position: relative; }
     /* When embedding the scan (iframe), footer is hidden → use full viewport height */
     #scanHost.section { height: calc(var(--vh, 1vh) * 100); }
     .active { display: flex; }
@@ -24,9 +24,30 @@
     /* Desktop: keep labels on one line by giving first column more space */
     /* Unified column geometry across SWLS (7) and WHO-5 (6) */
     .likert-7 { grid-template-columns: minmax(460px, 2fr) repeat(7, minmax(64px, 1fr)); }
+    .likert-7-only { grid-template-columns: repeat(7, minmax(64px, 1fr)); }
     .likert-6 { grid-template-columns: minmax(460px, 2fr) repeat(6, minmax(64px, 1fr)); }
+    .likert-6-only { grid-template-columns: repeat(6, minmax(64px, 1fr)); }
     .cell-h { font-size: 12px; color: #9c8078; text-align: center; line-height: 1.15; }
     .cell-l { font-size: 16px; color: #e91e63; white-space: nowrap; text-align: left; }
+    /* SWLS redesigned separators and question styling */
+    .swls-sep { border-top: 2px dotted #e91e63; opacity: 0.7; margin: 32px 0 12px; }
+    .swls-q { font-size: 16px; color: #e91e63; margin-bottom: 12px; }
+    /* WHO-5 center label spans two columns (between middle dots) */
+    .who5-mid { grid-column: 3 / span 2; text-align: center; }
+    /* WHO-5 vertical spacing to better match mockup */
+    #who5 .swls-sep { margin: 28px 0 10px; }
+    #who5 .swls-q { margin-bottom: 10px; }
+    #who5 .qgrid.likert-6-only.mt-6 { margin-top: 14px !important; }
+    /* Remove earlier nudge hack if present */
+    #swls .qcard, #who5 .qcard { transform: none; }
+    /* Consistent section titles: absolute at a shared top offset */
+    .title-wrap { position: absolute; top: var(--title-top, 96px); left: 0; right: 0; }
+    .title-inner { width: 100%; max-width: 1100px; margin-left: auto; margin-right: auto; padding-left: 24px; padding-right: 24px; }
+    .title-inner h2 { text-align: center; }
+    .content-wrap { width: 100%; padding-top: calc(var(--title-top, 96px) + 24px); }
+    /* Ensure submit buttons clear the footer and align across sections */
+    #who5 #toScan { margin-bottom: 12px; }
+    #swls #toWho5 { margin-bottom: 12px; }
     .choice { width: 22px; height: 22px; border-radius: 9999px; border: 2px solid #b98c86; margin-left: auto; margin-right: auto; display: inline-flex; align-items: center; justify-content: center; position: relative; background: #fff; transition: border-color 120ms ease, box-shadow 120ms ease; }
     .choice.active { background-color: #fff; border-color: #e91e63; }
     .choice.active::after { content: ""; position: absolute; inset: 4px; background-color: #e91e63; border-radius: 9999px; }
@@ -34,17 +55,40 @@
     /* Compact default spacing for submit buttons */
     #toWho5, #toScan { margin-top: 16px; position: static; bottom: auto; }
     @media (min-width: 768px) { #toWho5, #toScan { margin-top: 36px; } }
+    /* Equal-height one-box layout for SWLS and WHO-5 */
+    #swls .qcard, #who5 .qcard {
+      /* Override flex to use grid rows: title / content / submit */
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      /* Fill visible section height minus the section's vertical padding (8px top + 8px bottom) */
+      height: calc(100% - 16px - var(--box-shrink));
+      width: 100%;
+    }
+    /* Ensure the middle content stretches fully and scrolls internally only if necessary */
+    #swls .qcard > div.w-full, #who5 .qcard > div.w-full {
+      align-self: stretch;
+      overflow: hidden;
+    }
+    /* Keep form area scroll-free but allow inner grids to flow naturally */
+    #swlsForm, #who5Form { overflow: visible; }
+    /* Center the submit buttons in the grid's last row */
+    #swls .qcard > button, #who5 .qcard > button { justify-self: center; }
     /* Primary buttons to match scan.html */
     button { -webkit-tap-highlight-color: transparent; transition: background-color 120ms ease, transform 60ms ease; }
     #toSwlsIntro:active, #toWho5:active, #toScan:active { background-color: var(--btn-active-pink); transform: translateY(1px); }
+    /* Slightly reduce shrink on small screens so content remains comfortable */
+    @media (max-width: 768px) { :root { --box-shrink: 56px; } }
+    @media (max-width: 480px) { :root { --box-shrink: 44px; } }
     /* Compact layout for small tablets/large phones in landscape (481–660px) */
     @media (min-width: 481px) and (max-width: 660px) {
       .qcard { padding-left: 12px; padding-right: 12px; }
       .qgrid { column-gap: 8px; row-gap: 14px; }
       /* SWLS: seven columns + label */
       .likert-7 { grid-template-columns: minmax(180px, 2fr) repeat(7, minmax(30px, 1fr)); }
+      .likert-7-only { grid-template-columns: repeat(7, minmax(30px, 1fr)); }
       /* WHO-5: six columns + label */
       .likert-6 { grid-template-columns: minmax(180px, 2fr) repeat(6, minmax(32px, 1fr)); }
+      .likert-6-only { grid-template-columns: repeat(6, minmax(32px, 1fr)); }
       .cell-l { font-size: 14px; }
       .cell-h { font-size: 11px; line-height: 1.15; }
       .choice { width: 18px; height: 18px; }
@@ -55,7 +99,9 @@
       /* Match the comfortable 720px layout up through 1100px */
       .qgrid { column-gap: 12px; row-gap: 18px; }
       .likert-7 { grid-template-columns: minmax(240px, 2.4fr) repeat(7, minmax(42px, 1fr)); }
+      .likert-7-only { grid-template-columns: repeat(7, minmax(42px, 1fr)); }
       .likert-6 { grid-template-columns: minmax(220px, 2.4fr) repeat(6, minmax(40px, 1fr)); }
+      .likert-6-only { grid-template-columns: repeat(6, minmax(40px, 1fr)); }
       .cell-h { white-space: normal !important; line-height: 1.2; }
     }
     /* On small screens, allow wrapping so layout fits */
@@ -63,7 +109,9 @@
       .qgrid { column-gap: 12px; row-gap: 18px; }
       /* Give labels more room and ensure each dot column has a min width */
       .likert-7 { grid-template-columns: minmax(240px, 2.4fr) repeat(7, minmax(42px, 1fr)); }
+      .likert-7-only { grid-template-columns: repeat(7, minmax(42px, 1fr)); }
       .likert-6 { grid-template-columns: minmax(220px, 2.4fr) repeat(6, minmax(40px, 1fr)); }
+      .likert-6-only { grid-template-columns: repeat(6, minmax(40px, 1fr)); }
       .cell-l { white-space: normal; word-break: normal; }
       .cell-h { white-space: normal; line-height: 1.2; }
       /* Reset desktop left offset for first choice column */
@@ -91,14 +139,17 @@
     @media (max-width: 480px) {
       :root { --footer-h: 48px; }
       .qcard { max-width: 560px; padding-left: 12px; padding-right: 12px; gap: 10px !important; }
+      .title-inner { max-width: 560px; padding-left: 12px; padding-right: 12px; }
       /* Tighten headings and copy for readability and to fit one screen */
-      .qcard h2 { font-size: 1.05rem; line-height: 1.25; }
+      .qcard h2, .title-inner h2 { font-size: 1.05rem; line-height: 1.25; }
       .qcard p { font-size: 0.84rem; line-height: 1.25; }
       .qgrid { column-gap: 6px; row-gap: 10px; }
       /* Ensure all six dots fit on very small screens */
       .likert-6 { grid-template-columns: minmax(112px, 2fr) repeat(6, minmax(24px, 1fr)); }
+      .likert-6-only { grid-template-columns: repeat(6, minmax(24px, 1fr)); }
       /* Ensure all seven dots fit for SWLS */
       .likert-7 { grid-template-columns: minmax(112px, 2fr) repeat(7, minmax(24px, 1fr)); }
+      .likert-7-only { grid-template-columns: repeat(7, minmax(24px, 1fr)); }
       .cell-l { font-size: 13px; line-height: 1.25; }
       .cell-h { font-size: 10px; line-height: 1.1; }
       .choice { width: 16px; height: 16px; }
@@ -113,62 +164,55 @@
   <main class="min-h-screen flex flex-col items-center" style="padding-bottom: var(--footer-h);">
     <!-- Intro -->
     <section id="intro" class="section active items-center justify-center">
-      <div class="qcard flex flex-col items-center gap-4 text-center">
-        <h2 class="text-2xl md:text-3xl font-semibold">Help us research methods that measure happiness.</h2>
-        <p class="text-base opacity-80">This test is anonymous and consists of three parts:</p>
-        <div class="text-sm">
-          <div class="font-semibold text-pink-600">Satisfaction</div>
-          <div class="font-semibold text-pink-600">Well‑being</div>
-          <div class="font-semibold text-pink-600">Human drives</div>
+      <div class="qcard flex flex-col items-center gap-8 text-left">
+        <div class="max-w-[760px] self-center">
+          <h2 class="text-2xl md:text-3xl font-semibold">We want to know if we are able to measure<br> happiness. Please help us out!</h2>
+          <p class="text-base opacity-80" style="margin-top:160px;">This test is anonymous and consists of three parts:</p>
+          <div class="text-base" style="margin-top:30px;">
+            <div class="font-semibold text-pink-600">1. Satisfaction</div>
+            <div class="font-semibold text-pink-600">2. Well‑being</div>
+            <div class="font-semibold text-pink-600">3. Human drives</div>
+          </div>
         </div>
-        <button id="toSwlsIntro" class="w-[200px] h-[56px] bg-pink-600 rounded-xl text-white text-lg font-semibold shadow-sm">Continue</button>
+        <button id="toSwlsIntro" class="bg-pink-600 rounded-md text-white text-sm font-semibold shadow-sm mt-16 self-center" style="margin-top:160px; width:131px; height:41px;">Continue</button>
       </div>
     </section>
 
     <!-- SWLS -->
     <section id="swls" class="section items-center justify-center">
-      <div class="qcard flex flex-col items-center gap-8 text-center">
-        <div class="max-w-[800px]">
-          <h2 class="text-2xl font-semibold">Please choose the number that best matches how much you agree.</h2>
-          <p class="text-sm opacity-80">Use the scale from 1 (Strongly disagree) to 7 (Strongly agree).</p>
-        </div>
-        <div class="w-full text-left" style="margin-top: 20px;">
-          <div class="qgrid likert-7 mb-4" style="margin-bottom: 20px;">
+      <div class="qcard flex flex-col items-center gap-6 text-left">
+        <h2 class="text-2xl font-semibold text-center">1. Tick the box that best matches how much you agree.</h2>
+        <div class="w-full self-center text-left" style="max-width:600px; margin-left:auto; margin-right:auto;">
+          <div id="swlsForm" class="w-full flex flex-col"></div>
+          <div class="qgrid likert-7-only mt-6">
+            <div class="cell-h text-left">Strongly<br>disagree</div>
             <div></div>
-            <div class="cell-h">Strongly<br>disagree</div>
-            <div class="cell-h">Disagree</div>
-            <div class="cell-h">Slightly<br>disagree</div>
+            <div></div>
             <div class="cell-h">Neutral</div>
-            <div class="cell-h">Slightly<br>agree</div>
-            <div class="cell-h">Agree</div>
-            <div class="cell-h">Strongly<br>agree</div>
+            <div></div>
+            <div></div>
+            <div class="cell-h text-right">Strongly<br>agree</div>
           </div>
-          <div id="swlsForm" class="w-full flex flex-col gap-6"></div>
         </div>
-        <button id="toWho5" class="w-[200px] h-[56px] bg-pink-600 rounded-xl text-white text-lg font-semibold shadow-sm">Submit</button>
+        <button id="toWho5" class="bg-pink-600 rounded-md text-white text-sm font-semibold shadow-sm" style="width:131px; height:41px;">Submit</button>
       </div>
     </section>
 
     <!-- WHO-5 -->
     <section id="who5" class="section items-center justify-center">
-      <div class="qcard flex flex-col items-center gap-8 text-center">
-        <div class="max-w-[860px]">
-          <h2 class="text-2xl font-semibold">Please tick the box corresponding to how you felt in the last two weeks.</h2>
-          <p class="text-sm opacity-80">Use the scale from 1 (At no time) to 6 (All the time).</p>
-        </div>
-        <div class="w-full text-left" style="margin-top: 20px;">
-          <div class="qgrid likert-6 mb-4" style="margin-bottom: 20px;">
+      <div class="qcard flex flex-col items-center gap-6 text-left">
+        <h2 class="text-2xl font-semibold text-center">2. Tick the box that matches to how you felt in the last two weeks.</h2>
+        <div class="w-full self-center text-left" style="max-width:600px; margin-left:auto; margin-right:auto;">
+          <div id="who5Form" class="w-full flex flex-col"></div>
+          <div class="qgrid likert-6-only mt-6">
+            <div class="cell-h text-left">At no<br>time</div>
             <div></div>
-            <div class="cell-h">At no<br>time</div>
-            <div class="cell-h">Some of the<br>time</div>
-            <div class="cell-h">Less than half<br>the time</div>
-            <div class="cell-h">More than half<br>the time</div>
-            <div class="cell-h">Most of the<br>time</div>
-            <div class="cell-h">All of the<br>time</div>
+            <div class="cell-h who5-mid">Half the<br>time</div>
+            <div></div>
+            <div class="cell-h text-right">All the<br>time</div>
           </div>
-          <div id="who5Form" class="w-full flex flex-col gap-6"></div>
         </div>
-        <button id="toScan" class="w-[200px] h-[56px] bg-pink-600 rounded-xl text-white text-lg font-semibold shadow-sm">Submit</button>
+        <button id="toScan" class="bg-pink-600 rounded-md text-white text-sm font-semibold shadow-sm" style="width:131px; height:41px;">Submit</button>
       </div>
     </section>
 
@@ -188,27 +232,33 @@
 
   <!-- Templates for dynamic rendering -->
   <template id="swlsRow">
-    <div class="qgrid likert-7 items-center">
-      <label class="cell-l"></label>
-      <button type="button" class="choice" data-val="1" aria-label="1"></button>
-      <button type="button" class="choice" data-val="2" aria-label="2"></button>
-      <button type="button" class="choice" data-val="3" aria-label="3"></button>
-      <button type="button" class="choice" data-val="4" aria-label="4"></button>
-      <button type="button" class="choice" data-val="5" aria-label="5"></button>
-      <button type="button" class="choice" data-val="6" aria-label="6"></button>
-      <button type="button" class="choice" data-val="7" aria-label="7"></button>
+    <div class="w-full">
+      <hr class="swls-sep">
+      <div class="swls-q"></div>
+      <div class="qgrid likert-7-only items-center">
+        <button type="button" class="choice" data-val="1" aria-label="1"></button>
+        <button type="button" class="choice" data-val="2" aria-label="2"></button>
+        <button type="button" class="choice" data-val="3" aria-label="3"></button>
+        <button type="button" class="choice" data-val="4" aria-label="4"></button>
+        <button type="button" class="choice" data-val="5" aria-label="5"></button>
+        <button type="button" class="choice" data-val="6" aria-label="6"></button>
+        <button type="button" class="choice" data-val="7" aria-label="7"></button>
+      </div>
     </div>
   </template>
 
   <template id="who5Row">
-    <div class="qgrid likert-6 items-center">
-      <label class="cell-l"></label>
-      <button type="button" class="choice" data-val="0" aria-label="At no time"></button>
-      <button type="button" class="choice" data-val="1" aria-label="Some of the time"></button>
-      <button type="button" class="choice" data-val="2" aria-label="Less than half the time"></button>
-      <button type="button" class="choice" data-val="3" aria-label="More than half the time"></button>
-      <button type="button" class="choice" data-val="4" aria-label="Most of the time"></button>
-      <button type="button" class="choice" data-val="5" aria-label="All of the time"></button>
+    <div class="w-full">
+      <hr class="swls-sep">
+      <div class="swls-q"></div>
+      <div class="qgrid likert-6-only items-center">
+        <button type="button" class="choice" data-val="0" aria-label="At no time"></button>
+        <button type="button" class="choice" data-val="1" aria-label=""></button>
+        <button type="button" class="choice" data-val="2" aria-label=""></button>
+        <button type="button" class="choice" data-val="3" aria-label="Half the time"></button>
+        <button type="button" class="choice" data-val="4" aria-label=""></button>
+        <button type="button" class="choice" data-val="5" aria-label="All the time"></button>
+      </div>
     </div>
   </template>
 
