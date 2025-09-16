@@ -239,6 +239,36 @@ Add new migration files to `db/migrations/` and run:
 psql $DATABASE_URL -f db/migrations/001_new_feature.sql
 ```
 
+### Separate research database
+
+The server can write WHO‑5 and SWLS submissions to a dedicated research database, separate from the main scan responses DB.
+
+1. Provision a Postgres database (local or Supabase) for research.
+2. Set the environment variable in `server/.env` or your hosting provider:
+
+```
+RESEARCH_DATABASE_URL=postgresql://USER:PASSWORD@HOST:5432/happiness_research
+```
+
+If the `research_entries` table does not exist, the server will create it automatically on the first write or when calling `GET /api/research-results`.
+
+Schema used:
+
+```sql
+CREATE TABLE IF NOT EXISTS research_entries (
+  id SERIAL PRIMARY KEY,
+  session_id TEXT NOT NULL,
+  who5 INTEGER[] NOT NULL,
+  swls INTEGER[] NOT NULL,
+  user_agent TEXT,
+  created_at TIMESTAMPTZ DEFAULT now()
+);
+```
+
+### Research results dashboard
+
+Visit `/research-results.html` to see quick distributions and the latest entries. Data is fetched from `GET /api/research-results` (supports `?limit=200&from=...&to=...`).
+
 ## 📝 License
 
 MIT License - see LICENSE file for details.

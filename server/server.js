@@ -307,6 +307,41 @@ app.post('/api/research', async (req, res) => {
   }
 });
 
+// Query research results (latest N, or by date range)
+app.get('/api/research-results', async (req, res) => {
+  try {
+    const { limit = 200, from, to } = req.query;
+    const client = await researchPool.connect();
+    try {
+      await client.query(
+        `CREATE TABLE IF NOT EXISTS research_entries (
+          id SERIAL PRIMARY KEY,
+          session_id TEXT NOT NULL,
+          who5 INTEGER[] NOT NULL,
+          swls INTEGER[] NOT NULL,
+          user_agent TEXT,
+          created_at TIMESTAMPTZ DEFAULT now()
+        )`
+      );
+      let query = 'SELECT id, session_id, who5, swls, user_agent, created_at FROM research_entries';
+      const params = [];
+      const clauses = [];
+      if (from) { params.push(from); clauses.push(`created_at >= $${params.length}`); }
+      if (to) { params.push(to); clauses.push(`created_at <= $${params.length}`); }
+      if (clauses.length) query += ' WHERE ' + clauses.join(' AND ');
+      params.push(Math.min(parseInt(limit, 10) || 200, 1000));
+      query += ` ORDER BY created_at DESC LIMIT $${params.length}`;
+      const result = await client.query(query, params);
+      res.json({ count: result.rowCount, entries: result.rows });
+    } finally {
+      client.release();
+    }
+  } catch (e) {
+    console.error('Error fetching research results:', e);
+    res.status(500).json({ error: 'Failed to fetch research results' });
+  }
+});
+
 // Get benchmark percentiles
 app.get('/api/benchmarks', async (req, res) => {
   try {
