@@ -132,7 +132,15 @@
 
     // Scatter charts
     const scatterCommon = {
-      type: 'scatter', options: { responsive: true, scales: { x: { beginAtZero: true }, y: { beginAtZero: true } }, plugins: { legend: { display: true } } }
+      type: 'scatter',
+      options: {
+        responsive: true,
+        scales: {
+          x: { beginAtZero: true, title: { display: true, text: 'Questionnaire total (WHO‑5 % or SWLS 5–35)' } },
+          y: { beginAtZero: true, title: { display: true, text: 'IHS (0–100)' } }
+        },
+        plugins: { legend: { display: true } }
+      }
     };
     if (who5Scatter) who5Scatter.destroy();
     {

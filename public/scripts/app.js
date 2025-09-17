@@ -189,7 +189,27 @@
       }
     }, 100);
 
-    startPracticeTimer();
+    // Start timer: on the very first practice card, wait for the user's first interaction
+    if (practiceIndex === 0) {
+      const startIfIdle = () => {
+        if (!practiceTimerActive) { startPracticeTimer(); }
+      };
+      const cardImage = document.querySelector('.practice-card-image');
+      if (cardImage) {
+        const onceOpts = { once: true };
+        cardImage.addEventListener('touchstart', startIfIdle, onceOpts);
+        cardImage.addEventListener('mousedown', startIfIdle, onceOpts);
+        cardImage.addEventListener('click', startIfIdle, onceOpts);
+        cardImage.addEventListener('keydown', (e) => {
+          if (e && (e.key === 'Enter' || e.key === ' ')) startIfIdle();
+        }, onceOpts);
+      } else {
+        // Fallback: if image not found for any reason, start immediately
+        startPracticeTimer();
+      }
+    } else {
+      startPracticeTimer();
+    }
   }
 
   function startPracticeTimer() {

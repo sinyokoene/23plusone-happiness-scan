@@ -81,6 +81,31 @@
     /* Slightly reduce shrink on small screens so content remains comfortable */
     @media (max-width: 768px) { :root { --box-shrink: 36px; } }
     @media (max-width: 480px) { :root { --box-shrink: 24px; } }
+    /* Short viewport heights: compress layout to keep submit reachable (no scroll) */
+    @media (max-height: 820px) {
+      :root { --title-top: 72px; --box-shrink: 120px; }
+      .qgrid { row-gap: 16px; }
+      #who5 .swls-sep { margin: 20px 0 8px; }
+      #who5 .swls-q { margin-bottom: 8px; }
+      #who5 .qgrid.likert-6-only.mt-6 { margin-top: 8px !important; }
+      #toWho5, #toScan { margin-top: 12px; }
+    }
+    @media (max-height: 700px) {
+      :root { --title-top: 56px; --box-shrink: 156px; }
+      .qgrid { row-gap: 12px; }
+      .cell-l { font-size: 14px; }
+      .cell-h { font-size: 11px; line-height: 1.15; }
+      .choice { width: 18px; height: 18px; }
+      .choice.active::after { inset: 3px; }
+      #toWho5, #toScan { margin-top: 10px; }
+    }
+    @media (max-height: 620px) {
+      :root { --title-top: 48px; --box-shrink: 180px; }
+      .qgrid { row-gap: 10px; }
+      #swls .qgrid.likert-7.mb-4 { margin-bottom: 4px !important; }
+      #who5 .qgrid.likert-6-only.mt-6 { margin-top: 6px !important; }
+      #toWho5, #toScan { margin-top: 8px; }
+    }
     /* Compact layout for small tablets/large phones in landscape (481–660px) */
     @media (min-width: 481px) and (max-width: 660px) {
       .qcard { padding-left: 12px; padding-right: 12px; }
@@ -172,10 +197,10 @@
     <section id="intro" class="section active items-center justify-center">
       <div class="qcard flex flex-col items-center gap-8 text-left">
         <div class="max-w-[760px] self-center">
-          <h2 class="text-2xl md:text-3xl font-semibold">We want to know if we are able to measure<br> happiness. Please help us out!</h2>
+          <h2 class="text-2xl md:text-3xl font-semibold">This research is about<br> happiness. Please help us out!</h2>
           <p class="text-base opacity-80" style="margin-top:160px;">This test is anonymous and consists of three parts:</p>
           <div class="text-base" style="margin-top:30px;">
-            <div class="font-semibold text-pink-600">1. Satisfaction</div>
+            <div class="font-semibold text-pink-600">1. Satisfaction</div>a
             <div class="font-semibold text-pink-600">2. Well‑being</div>
             <div class="font-semibold text-pink-600">3. Human drives</div>
           </div>
