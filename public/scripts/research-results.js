@@ -18,6 +18,37 @@
 
   let who5Chart, swlsChart, cantrilChart, who5Scatter, swlsScatter, cantrilScatter, n123Scatter;
 
+  // Card/domain mapping for colored dots
+  const domainColors = {
+    'Basics': '#4CAF50',
+    'Self-development': '#FF9800',
+    'Ambition': '#9C27B0',
+    'Vitality': '#2196F3',
+    'Attraction': '#E91E63'
+  };
+  let cardIdToDomain = new Map();
+  async function ensureCardDomains(){
+    if (cardIdToDomain.size > 0) return;
+    // Try /data/cards.json first, fallback to /cards.json
+    const sources = ['/data/cards.json', '/cards.json'];
+    for (const src of sources) {
+      try {
+        const r = await fetch(src, { cache: 'no-store' });
+        if (!r.ok) continue;
+        const cards = await r.json();
+        if (Array.isArray(cards)) {
+          cards.forEach(c => {
+            const id = Number(c.id);
+            if (Number.isFinite(id) && c.domain) {
+              cardIdToDomain.set(id, c.domain);
+            }
+          });
+          if (cardIdToDomain.size > 0) return;
+        }
+      } catch (_) { /* ignore and try next */ }
+    }
+  }
+
   function sum(arr){ return arr.reduce((a,b)=>a+(Number(b)||0),0); }
 
   const SCALE = {
@@ -264,6 +295,7 @@
 
     // Fetch server-side correlations for domains and cards
     try {
+      await ensureCardDomains();
       const corrRes = await fetch(`/api/analytics/correlations?limit=${limit}`);
       const corrJson = await corrRes.json();
       const domains = corrJson.domains || [];
@@ -295,8 +327,11 @@
         tbody.replaceChildren();
         rows.forEach(c => {
           const tr = document.createElement('tr');
+          const domain = cardIdToDomain.get(Number(c.cardId)) || '';
+          const color = domainColors[domain] || '#9ca3af';
+          const dot = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>`;
           const name = c.label ? `${c.cardId} · ${c.label}` : c.cardId;
-          tr.innerHTML = `<td>${name}</td><td>${Number(c.r_yes_who5||0).toFixed(2)}</td><td>${c.n_yes_who5||0}</td>`;
+          tr.innerHTML = `<td>${dot}${name}</td><td>${Number(c.r_yes_who5||0).toFixed(2)}</td><td>${c.n_yes_who5||0}</td>`;
           tbody.appendChild(tr);
         });
       }
