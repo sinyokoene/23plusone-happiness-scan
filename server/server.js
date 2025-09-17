@@ -354,6 +354,7 @@ app.get('/api/research-results', async (req, res) => {
   try {
     const { limit = 200, from, to } = req.query;
     const client = await researchPool.connect();
+    const mainClient = await pool.connect();
     try {
       await client.query(
         `CREATE TABLE IF NOT EXISTS research_entries (
@@ -374,9 +375,24 @@ app.get('/api/research-results', async (req, res) => {
       params.push(Math.min(parseInt(limit, 10) || 200, 1000));
       query += ` ORDER BY created_at DESC LIMIT $${params.length}`;
       const result = await client.query(query, params);
-      res.json({ count: result.rowCount, entries: result.rows });
+
+      // Fetch IHS per session_id from main DB and merge
+      const entries = result.rows || [];
+      const sessionIds = entries.map(e => e.session_id).filter(Boolean);
+      let ihsMap = new Map();
+      if (sessionIds.length) {
+        // Use ANY(array) to avoid overly large IN clause
+        const ihsRows = await mainClient.query(
+          `SELECT session_id, ihs_score FROM scan_responses WHERE session_id = ANY($1::text[])`,
+          [sessionIds]
+        );
+        ihsMap = new Map(ihsRows.rows.map(r => [r.session_id, r.ihs_score]));
+      }
+      const merged = entries.map(e => ({ ...e, ihs: ihsMap.get(e.session_id) ?? null }));
+      res.json({ count: merged.length, entries: merged });
     } finally {
       client.release();
+      mainClient.release();
     }
   } catch (e) {
     console.error('Error fetching research results:', e);
