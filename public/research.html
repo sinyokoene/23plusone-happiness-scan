@@ -106,6 +106,26 @@
       #who5 .qgrid.likert-6-only.mt-6 { margin-top: 6px !important; }
       #toWho5, #toScan { margin-top: 8px; }
     }
+    /* Extremely short heights */
+    @media (max-height: 560px) {
+      :root { --title-top: 40px; --box-shrink: 200px; }
+      .cell-l { font-size: 13px; }
+      .cell-h { font-size: 10px; line-height: 1.1; }
+      .choice { width: 16px; height: 16px; }
+      .choice.active::after { inset: 3px; }
+    }
+    @media (max-height: 500px) {
+      :root { --title-top: 32px; --box-shrink: 220px; }
+      .qgrid { row-gap: 8px; }
+      #who5 .swls-sep, #swls .swls-sep { margin: 10px 0 6px; }
+      #toWho5, #toScan { margin-top: 6px; }
+    }
+    @media (max-height: 460px) {
+      :root { --title-top: 28px; --box-shrink: 240px; }
+      .cell-l { font-size: 12px; }
+      .choice { width: 14px; height: 14px; }
+      .choice.active::after { inset: 2.5px; }
+    }
     /* Compact layout for small tablets/large phones in landscape (481–660px) */
     @media (min-width: 481px) and (max-width: 660px) {
       .qcard { padding-left: 12px; padding-right: 12px; }
