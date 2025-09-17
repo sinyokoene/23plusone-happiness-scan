@@ -3,6 +3,8 @@
   // Participant/session identifier shared across research and scan
   const urlParams = new URLSearchParams(window.location.search || '');
   const pidFromUrl = urlParams.get('pid');
+  const modeFromUrl = (urlParams.get('mode') || '').toLowerCase();
+  if (modeFromUrl === 'research') { window.RESEARCH_MODE = true; }
   let participantId = null;
   try {
     const stored = (typeof localStorage !== 'undefined') ? localStorage.getItem('participantId') : null;
@@ -475,21 +477,23 @@
       processingProgress.style.background = '#4CAF50'; // Green for "Wrapping up..."
     }, 2000); // 1200 + 800
     
-    // Wrapping up... (1.0 seconds) then show results
+    // Wrapping up... (1.0 seconds) then show results (or notify parent in research mode)
     setTimeout(() => {
-      // Hide processing, show results
-      showSection(resultsDiv);
-      
-      // Change body layout for results
-      document.body.classList.add('showing-results');
-      
-      // Display enhanced results
-      displayEnhancedResults(results);
-      
-      // Submit to backend
+      // Submit to backend first
       submitResults(results);
-      
-      // Setup sharing
+
+      if (window.RESEARCH_MODE) {
+        // Do not show results when embedded for research; notify host page instead
+        try {
+          window.parent && window.parent.postMessage({ type: 'scan_complete', ihs: results.ihs, sessionId: participantId }, '*');
+        } catch (_) {}
+        return;
+      }
+
+      // Normal mode: show results UI
+      showSection(resultsDiv);
+      document.body.classList.add('showing-results');
+      displayEnhancedResults(results);
       setupSharing(results);
     }, 3000); // 1200 + 800 + 1000
   }

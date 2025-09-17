@@ -95,8 +95,9 @@
   renderLikert(who5Form, who5RowTpl, who5Items, who5Answers);
   renderLikert(swlsForm, swlsRowTpl, swlsItems, swlsAnswers);
 
+  // New order: Intro → Human drives (scan iframe) → SWLS → WHO‑5 → Thanks
   if (toSwlsIntroBtn) {
-    toSwlsIntroBtn.addEventListener('click', () => { hide(introSection); show(swlsSection); });
+    toSwlsIntroBtn.addEventListener('click', () => { hide(introSection); show(scanHost); });
   }
   if (toSwlsBtn) {
     toSwlsBtn.addEventListener('click', () => {
@@ -108,15 +109,10 @@
   if (toScanBtn) {
     toScanBtn.addEventListener('click', () => {
       if (!allAnswered(who5Answers)) { return; }
-      // Fire-and-forget submit to avoid blocking UI transition
+      // Submit research (SWLS + WHO‑5) and show thanks
       try { submitResearch(); } catch (_) {}
       hide(who5Section);
-      show(scanHost);
-      // Hide outer footer to avoid double footer when iframe is visible
-      const footer = document.getElementById('globalFooter');
-      if (footer) footer.style.display = 'none';
-      const main = document.querySelector('main');
-      if (main) main.style.paddingBottom = '0';
+      show(document.getElementById('thanks'));
     });
   }
 
@@ -142,6 +138,16 @@
     const base = 'scan.html';
     scanFrame.src = `${base}?pid=${encodeURIComponent(participantId)}`;
   }
+
+  // Listen for completion from the embedded scan (RESEARCH_MODE hides results and posts a message)
+  window.addEventListener('message', (event) => {
+    const data = event?.data || {};
+    if (data && data.type === 'scan_complete') {
+      // Move from scan to SWLS
+      hide(scanHost);
+      show(swlsSection);
+    }
+  });
 })();
 
 

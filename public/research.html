@@ -229,7 +229,7 @@
       </div>
     </section>
 
-    <!-- SWLS -->
+    <!-- SWLS (now after scan) -->
     <section id="swls" class="section items-center justify-center">
       <div class="qcard flex flex-col items-center gap-6 text-left">
         <h2 class="text-2xl font-semibold text-center">1. Tick the box that best matches how much you agree.</h2>
@@ -269,7 +269,15 @@
 
     <!-- Reuse existing scan via iframe to avoid code duplication -->
     <section id="scanHost" class="section items-center justify-center">
-      <iframe id="scanFrame" src="scan.html" title="Happiness Scan" style="width:100%; height:100%; border:0;"></iframe>
+      <iframe id="scanFrame" src="scan.html?mode=research" title="Happiness Scan" style="width:100%; height:100%; border:0;"></iframe>
+    </section>
+
+    <!-- Thanks screen -->
+    <section id="thanks" class="section items-center justify-center">
+      <div class="qcard flex flex-col items-center gap-6 text-left">
+        <h2 class="text-2xl font-semibold text-center">Thank you for participating!</h2>
+        <p class="text-base opacity-80 text-center" style="max-width:640px;">Your responses have been recorded. You can close this window.</p>
+      </div>
     </section>
   </main>
 
