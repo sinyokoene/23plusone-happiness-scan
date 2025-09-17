@@ -78,7 +78,8 @@
       userAgent: navigator.userAgent
     };
     try {
-      if (navigator.sendBeacon) {
+      // Force fetch: some browsers drop JSON body with sendBeacon to serverless
+      if (false && navigator.sendBeacon) {
         const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
         navigator.sendBeacon('/api/research', blob);
         console.log('🔎 Sent research via beacon', payload);

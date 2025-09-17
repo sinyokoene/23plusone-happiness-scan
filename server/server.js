@@ -319,7 +319,12 @@ app.post('/api/responses', async (req, res) => {
 // Store WHO-5 and SWLS for research mode
 app.post('/api/research', async (req, res) => {
   try {
-    const { sessionId, who5, swls, cantril, userAgent } = req.body || {};
+    // Be resilient to different content-types (sendBeacon may send text/plain)
+    let payload = req.body;
+    if (typeof payload === 'string') {
+      try { payload = JSON.parse(payload); } catch (_) { payload = {}; }
+    }
+    const { sessionId, who5, swls, cantril, userAgent } = payload || {};
     if (!sessionId || !Array.isArray(who5) || !Array.isArray(swls)) {
       return res.status(400).json({ error: 'Invalid research payload' });
     }
