@@ -796,44 +796,58 @@
   }
   
   function calculateIHS() {
-    // Linear time multiplier from 1.0 (instant) → 0.0 (4s timeout)
+    // Gentle non‑linear time multiplier: sqrt of linear proportion
+    // linear = (4s - t)/4s; curve = sqrt(linear) → rewards faster responses but with diminishing returns
     function getTimeMultiplier(time) {
       const clamped = Math.max(0, Math.min(4000, time));
-      return (4000 - clamped) / 4000;
+      const linear = (4000 - clamped) / 4000; // 0..1
+      return Math.sqrt(Math.max(0, linear));
     }
-    
-    // N1: Affirmations + Time
-    const n1 = answers
+
+    // N1 (affirmations × speed), keep same per‑card base 4 then normalize to 0–100 by 96 max (24×4)
+    const rawN1 = answers
       .filter(a => a.yes)
       .reduce((sum, a) => sum + (4 * getTimeMultiplier(a.time)), 0);
-    
-    // N2: Domain Coverage
-    const uniqueDomains = new Set(answers.filter(a => a.yes).map(a => a.domain));
-    const n2 = uniqueDomains.size * 19.2;
+    const N1pct = Math.min(100, (rawN1 / 96) * 100);
 
-    // N3 & visualizations: Domain counts and time‑weighted affirmations
+    // N2 (domain coverage): normalize to 0–100 across the 5 domains
+    const uniqueDomains = new Set(answers.filter(a => a.yes).map(a => a.domain));
+    const N2pct = Math.min(100, (uniqueDomains.size / 5) * 100);
+
+    // N3 (spread across domains) — include zeros for all 5 domains; normalize by total "Yes"
     const domainCounts = {};
     const domainAffirmations = {};
     const totalAnswers = answers.length;
-    
-    answers.filter(a => a.yes).forEach(a => {
-      domainCounts[a.domain] = (domainCounts[a.domain] || 0) + 1;
-      const perCardAffirmation = 4 * getTimeMultiplier(a.time);
+    const domainOrder = ['Basics','Self-development','Ambition','Vitality','Attraction'];
+    const yesCounts = Object.fromEntries(domainOrder.map(d => [d, 0]));
+
+    answers.forEach(a => {
+      if (a.yes) {
+        yesCounts[a.domain] = (yesCounts[a.domain] || 0) + 1;
+      }
+      // Keep time‑weighted affirmation totals for visualization
+      const perCardAffirmation = a.yes ? 4 * getTimeMultiplier(a.time) : 0;
       domainAffirmations[a.domain] = (domainAffirmations[a.domain] || 0) + perCardAffirmation;
+      // Also track raw counts for potential future use
+      domainCounts[a.domain] = (domainCounts[a.domain] || 0) + (a.yes ? 1 : 0);
     });
-    
-    const domainPercentages = Object.values(domainCounts).map(count => count / totalAnswers);
-    const spreadDeviation = domainPercentages.reduce((sum, pct) => sum + Math.abs(pct - 0.2), 0);
-    const n3 = ((1.6 - spreadDeviation) / 1.6) * 100;
-    
-    // Final IHS
-    const ihs = (0.4 * n1) + (0.4 * n2) + (0.2 * Math.max(0, n3));
-    
+
+    const totalYes = Object.values(yesCounts).reduce((s,c)=>s+c,0);
+    let N3pct = 0;
+    if (totalYes > 0) {
+      const proportions = domainOrder.map(d => yesCounts[d] / totalYes); // five terms including zeros
+      const dev = proportions.reduce((s,p) => s + Math.abs(p - 0.2), 0); // Σ|p−0.2| over 5 domains
+      N3pct = Math.max(0, ((1.6 - dev) / 1.6) * 100);
+    }
+
+    // Final IHS on 0–100 scale
+    const ihs = (0.4 * N1pct) + (0.4 * N2pct) + (0.2 * N3pct);
+
     return {
       ihs: Math.round(ihs * 10) / 10,
-      n1: Math.round(n1 * 10) / 10,
-      n2: Math.round(n2 * 10) / 10,
-      n3: Math.round(n3 * 10) / 10,
+      n1: Math.round(N1pct * 10) / 10,
+      n2: Math.round(N2pct * 10) / 10,
+      n3: Math.round(N3pct * 10) / 10,
       domainCounts,
       domainAffirmations
     };

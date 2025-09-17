@@ -60,13 +60,14 @@
     tbody.replaceChildren();
     entries.forEach(e => {
       const tr = document.createElement('tr');
+      const ihs = (e.ihs !== undefined && e.ihs !== null) ? Number(e.ihs).toFixed(1) : '';
       tr.innerHTML = `
         <td>${e.id}</td>
         <td>${new Date(e.created_at).toLocaleString()}</td>
         <td>${e.session_id}</td>
         <td>${(e.who5||[]).join(', ')}</td>
         <td>${(e.swls||[]).join(', ')}</td>
-        <td style="max-width:380px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" title="${e.user_agent||''}">${e.user_agent||''}</td>
+        <td>${ihs}</td>
       `;
       tbody.appendChild(tr);
     });
