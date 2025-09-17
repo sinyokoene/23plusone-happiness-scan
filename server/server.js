@@ -399,12 +399,23 @@ app.get('/api/research-results', async (req, res) => {
       if (sessionIds.length) {
         // Use ANY(array) to avoid overly large IN clause
         const ihsRows = await mainClient.query(
-          `SELECT session_id, ihs_score FROM scan_responses WHERE session_id = ANY($1::text[])`,
+          `SELECT session_id, ihs_score, n1_score, n2_score, n3_score FROM scan_responses WHERE session_id = ANY($1::text[])`,
           [sessionIds]
         );
-        ihsMap = new Map(ihsRows.rows.map(r => [r.session_id, r.ihs_score]));
+        ihsMap = new Map(ihsRows.rows.map(r => [r.session_id, {
+          ihs: r.ihs_score,
+          n1: r.n1_score,
+          n2: r.n2_score,
+          n3: r.n3_score
+        }]));
       }
-      let merged = entries.map(e => ({ ...e, ihs: ihsMap.get(e.session_id) ?? null }));
+      let merged = entries.map(e => ({
+        ...e,
+        ihs: ihsMap.get(e.session_id)?.ihs ?? null,
+        n1: ihsMap.get(e.session_id)?.n1 ?? null,
+        n2: ihsMap.get(e.session_id)?.n2 ?? null,
+        n3: ihsMap.get(e.session_id)?.n3 ?? null
+      }));
       // By default, only include rows that have an IHS score to avoid counting pre-scan refreshes
       const shouldIncludeNoIhs = String(includeNoIhs).toLowerCase() === 'true';
       if (!shouldIncludeNoIhs) {
@@ -418,6 +429,237 @@ app.get('/api/research-results', async (req, res) => {
   } catch (e) {
     console.error('Error fetching research results:', e);
     res.status(500).json({ error: 'Failed to fetch research results' });
+  }
+});
+
+// Correlations across scan and research data
+app.get('/api/analytics/correlations', async (req, res) => {
+  function sumArray(arr) {
+    return (arr || []).reduce((a, b) => a + (Number(b) || 0), 0);
+  }
+  function pearson(x, y) {
+    const n = Math.min(x.length, y.length);
+    if (n < 2) return { r: 0, n: n };
+    const xs = x.slice(0, n);
+    const ys = y.slice(0, n);
+    const xm = xs.reduce((a, b) => a + b, 0) / n;
+    const ym = ys.reduce((a, b) => a + b, 0) / n;
+    let num = 0, dx = 0, dy = 0;
+    for (let i = 0; i < n; i++) {
+      const xv = xs[i] - xm;
+      const yv = ys[i] - ym;
+      num += xv * yv;
+      dx += xv * xv;
+      dy += yv * yv;
+    }
+    const denom = Math.sqrt(dx * dy);
+    return { r: denom ? (num / denom) : 0, n };
+  }
+
+  try {
+    const limit = Math.min(parseInt(req.query.limit, 10) || 500, 2000);
+    const researchClient = await researchPool.connect();
+    const mainClient = await pool.connect();
+    try {
+      // Ensure table exists (for local dev safety)
+      await researchClient.query(
+        `CREATE TABLE IF NOT EXISTS research_entries (
+          id SERIAL PRIMARY KEY,
+          session_id TEXT NOT NULL,
+          who5 INTEGER[] NOT NULL,
+          swls INTEGER[] NOT NULL,
+          cantril INTEGER,
+          user_agent TEXT,
+          created_at TIMESTAMPTZ DEFAULT now()
+        )`
+      );
+
+      // Pull latest research rows
+      const { rows: researchRows } = await researchClient.query(
+        `SELECT session_id, who5, swls, cantril, created_at
+         FROM research_entries
+         ORDER BY created_at DESC
+         LIMIT $1`, [limit]
+      );
+      const rBySession = new Map();
+      for (const r of researchRows) {
+        const who5Total = sumArray(r.who5);
+        const swlsTotal = sumArray(r.swls);
+        const who5Percent = who5Total * 4; // 0-25 -> 0-100
+        const swlsScaled = swlsTotal * (5 / 3); // 3-21 -> 5-35 (approx scaling)
+        rBySession.set(r.session_id, {
+          who5Total,
+          swlsTotal,
+          who5Percent,
+          swlsScaled,
+          cantril: (r.cantril == null ? null : Number(r.cantril))
+        });
+      }
+
+      const sessionIds = Array.from(rBySession.keys());
+      if (!sessionIds.length) {
+        return res.json({ overall: [], domains: [], cards: [], usedSessions: 0 });
+      }
+
+      // Fetch scan data for those sessions
+      const { rows: scanRows } = await mainClient.query(
+        `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, card_selections
+         FROM scan_responses
+         WHERE session_id = ANY($1::text[])`, [sessionIds]
+      );
+
+      // Keep only sessions that exist in both sets and have IHS
+      const joined = [];
+      for (const s of scanRows) {
+        const r = rBySession.get(s.session_id);
+        if (!r) continue;
+        if (s.ihs_score == null) continue;
+        joined.push({
+          sessionId: s.session_id,
+          ihs: Number(s.ihs_score),
+          n1: s.n1_score == null ? null : Number(s.n1_score),
+          n2: s.n2_score == null ? null : Number(s.n2_score),
+          n3: s.n3_score == null ? null : Number(s.n3_score),
+          who5Percent: r.who5Percent,
+          swlsScaled: r.swlsScaled,
+          cantril: r.cantril,
+          selections: s.card_selections
+        });
+      }
+
+      // Helper: build aligned arrays ignoring nulls
+      function pair(fnX, fnY) {
+        const xs = [], ys = [];
+        for (const j of joined) {
+          const x = fnX(j);
+          const y = fnY(j);
+          if (x != null && y != null && !Number.isNaN(x) && !Number.isNaN(y)) {
+            xs.push(Number(x));
+            ys.push(Number(y));
+          }
+        }
+        return { xs, ys };
+      }
+
+      // Overall correlations
+      const overall = [];
+      const combos = [
+        { xKey: 'ihs', yKey: 'who5Percent' },
+        { xKey: 'ihs', yKey: 'swlsScaled' },
+        { xKey: 'ihs', yKey: 'cantril' },
+        { xKey: 'n1', yKey: 'who5Percent' },
+        { xKey: 'n2', yKey: 'who5Percent' },
+        { xKey: 'n3', yKey: 'who5Percent' },
+        { xKey: 'n1', yKey: 'swlsScaled' },
+        { xKey: 'n2', yKey: 'swlsScaled' },
+        { xKey: 'n3', yKey: 'swlsScaled' },
+        { xKey: 'n1', yKey: 'cantril' },
+        { xKey: 'n2', yKey: 'cantril' },
+        { xKey: 'n3', yKey: 'cantril' }
+      ];
+      for (const c of combos) {
+        const { xs, ys } = pair(j => j[c.xKey], j => j[c.yKey]);
+        const { r, n } = pearson(xs, ys);
+        overall.push({ x: c.xKey, y: c.yKey, r, n });
+      }
+
+      // Domain-level correlations
+      const domainNames = ['Basics', 'Self-development', 'Ambition', 'Vitality', 'Attraction'];
+      const domains = [];
+      for (const domain of domainNames) {
+        const xAff = [], xYes = [], yWho = [], ySwls = [];
+        for (const j of joined) {
+          const all = j.selections?.allResponses;
+          if (!Array.isArray(all)) continue;
+          let sumAff = 0, yesCount = 0, answered = 0;
+          for (const e of all) {
+            if (e && e.domain === domain) {
+              const a = (e.affirmationScore == null ? null : Number(e.affirmationScore));
+              if (a != null && !Number.isNaN(a)) sumAff += a;
+              if (e.response !== null) {
+                answered += 1;
+                if (e.response === true) yesCount += 1;
+              }
+            }
+          }
+          const yesRate = answered > 0 ? (yesCount / answered) : null;
+          if (yesRate != null) {
+            xYes.push(yesRate);
+            yWho.push(j.who5Percent);
+            ySwls.push(j.swlsScaled);
+          }
+          // For affirmation, allow zero if no positive values
+          xAff.push(sumAff);
+        }
+        // Align for affirmation vs who/swls
+        const affWho = pearson(xAff.filter((_,i)=>!Number.isNaN(yWho[i])), yWho.filter(v=>!Number.isNaN(v)));
+        const affSwl = pearson(xAff.filter((_,i)=>!Number.isNaN(ySwls[i])), ySwls.filter(v=>!Number.isNaN(v)));
+        const yesWho = pearson(xYes, yWho);
+        const yesSwl = pearson(xYes, ySwls);
+        domains.push({
+          domain,
+          r_affirm_who5: affWho.r,
+          r_affirm_swls: affSwl.r,
+          r_yesrate_who5: yesWho.r,
+          r_yesrate_swls: yesSwl.r,
+          n_affirm_who5: affWho.n,
+          n_affirm_swls: affSwl.n,
+          n_yesrate_who5: yesWho.n,
+          n_yesrate_swls: yesSwl.n
+        });
+      }
+
+      // Card-level correlations
+      const cardStats = new Map(); // cardId -> { label, yes:[], affirm:[], who:[], swls:[] }
+      for (const j of joined) {
+        const all = j.selections?.allResponses;
+        if (!Array.isArray(all)) continue;
+        for (const e of all) {
+          const cid = Number(e.cardId);
+          if (!Number.isFinite(cid)) continue;
+          if (!cardStats.has(cid)) cardStats.set(cid, { label: e.label || null, yes: [], affirm: [], who: [], swls: [] });
+          const bucket = cardStats.get(cid);
+          const yesBin = e.response === true ? 1 : (e.response === false ? 0 : null);
+          const aff = (e.affirmationScore == null ? null : Number(e.affirmationScore));
+          if (yesBin != null) {
+            bucket.yes.push(yesBin);
+            bucket.who.push(j.who5Percent);
+            bucket.swls.push(j.swlsScaled);
+          }
+          if (aff != null && !Number.isNaN(aff)) {
+            bucket.affirm.push(aff);
+            // align with same y arrays for simplicity
+          }
+        }
+      }
+      const cards = [];
+      for (const [cardId, b] of cardStats.entries()) {
+        const rYesWho = pearson(b.yes, b.who);
+        const rYesSwl = pearson(b.yes, b.swls);
+        const rAffWho = pearson(b.affirm, b.who.slice(0, b.affirm.length));
+        const rAffSwl = pearson(b.affirm, b.swls.slice(0, b.affirm.length));
+        cards.push({
+          cardId,
+          label: b.label,
+          r_yes_who5: rYesWho.r,
+          r_yes_swls: rYesSwl.r,
+          r_affirm_who5: rAffWho.r,
+          r_affirm_swls: rAffSwl.r,
+          n_yes_who5: rYesWho.n,
+          n_yes_swls: rYesSwl.n,
+          n_affirm_who5: rAffWho.n,
+          n_affirm_swls: rAffSwl.n
+        });
+      }
+
+      res.json({ overall, domains, cards, usedSessions: joined.length });
+    } finally {
+      researchClient.release();
+      mainClient.release();
+    }
+  } catch (e) {
+    console.error('Error computing correlations:', e);
+    res.status(500).json({ error: 'Failed to compute correlations' });
   }
 });
 

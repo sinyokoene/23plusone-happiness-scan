@@ -9,10 +9,14 @@
   const who5VsIhsCanvas = document.getElementById('who5VsIhs');
   const swlsVsIhsCanvas = document.getElementById('swlsVsIhs');
   const cantrilVsIhsCanvas = document.getElementById('cantrilVsIhs');
+  const n123Canvas = document.getElementById('n123VsWho5');
   const statsWho5El = document.getElementById('statsWho5');
   const statsSwlsEl = document.getElementById('statsSwls');
+  const domainCorrTbody = document.querySelector('#domainCorrTable tbody');
+  const cardTopWhoTbody = document.querySelector('#cardTopWho tbody');
+  const cardBottomWhoTbody = document.querySelector('#cardBottomWho tbody');
 
-  let who5Chart, swlsChart, cantrilChart, who5Scatter, swlsScatter, cantrilScatter;
+  let who5Chart, swlsChart, cantrilChart, who5Scatter, swlsScatter, cantrilScatter, n123Scatter;
 
   function sum(arr){ return arr.reduce((a,b)=>a+(Number(b)||0),0); }
 
@@ -145,6 +149,9 @@
     const swlsTotalsAll = entries.map(e => SCALE.swls(sum(e.swls||[]))); // 5–35
     const ihsAll = entries.map(e => (e.ihs==null?null:Number(e.ihs)));
     const cantrilAll = entries.map(e => (e.cantril==null?null:Number(e.cantril)));
+    const n1All = entries.map(e => (e.n1==null?null:Number(e.n1)));
+    const n2All = entries.map(e => (e.n2==null?null:Number(e.n2)));
+    const n3All = entries.map(e => (e.n3==null?null:Number(e.n3)));
 
     const who5Pairs = who5TotalsAll.map((x,i)=>({x, y: ihsAll[i]})).filter(p=>p.y!=null && !Number.isNaN(p.y));
     const swlsPairs = swlsTotalsAll.map((x,i)=>({x, y: ihsAll[i]})).filter(p=>p.y!=null && !Number.isNaN(p.y));
@@ -213,6 +220,35 @@
       });
     }
 
+    // N1/N2/N3 vs WHO-5 scatter (overlay)
+    if (n123Scatter) n123Scatter.destroy();
+    if (n123Canvas) {
+      const mkPairs = (yArr) => who5TotalsAll.map((x,i)=>({x, y: yArr[i]})).filter(p=>xIsNumber(p.x) && xIsNumber(p.y));
+      const p1 = mkPairs(n1All), p2 = mkPairs(n2All), p3 = mkPairs(n3All);
+      const xs1 = p1.map(p=>p.x), ys1 = p1.map(p=>p.y);
+      const xs2 = p2.map(p=>p.x), ys2 = p2.map(p=>p.y);
+      const xs3 = p3.map(p=>p.x), ys3 = p3.map(p=>p.y);
+      const t1 = ols(xs1, ys1), t2 = ols(xs2, ys2), t3 = ols(xs3, ys3);
+      const r1 = xs1.length ? corr(xs1, ys1) : 0;
+      const r2 = xs2.length ? corr(xs2, ys2) : 0;
+      const r3 = xs3.length ? corr(xs3, ys3) : 0;
+      const xMin = 0, xMax = 100;
+      const line1 = [{x:xMin, y: t1.slope*xMin+t1.intercept}, {x:xMax, y: t1.slope*xMax+t1.intercept}];
+      const line2 = [{x:xMin, y: t2.slope*xMin+t2.intercept}, {x:xMax, y: t2.slope*xMax+t2.intercept}];
+      const line3 = [{x:xMin, y: t3.slope*xMin+t3.intercept}, {x:xMax, y: t3.slope*xMax+t3.intercept}];
+      n123Scatter = new Chart(n123Canvas, {
+        ...scatterCommon,
+        data: { datasets: [
+          { label: `N1 vs WHO‑5 (r=${r1.toFixed(2)})`, data: p1, backgroundColor: 'rgba(99,102,241,.5)' },
+          { type: 'line', label: 'N1 trend', data: line1, borderColor: 'rgba(99,102,241,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 },
+          { label: `N2 vs WHO‑5 (r=${r2.toFixed(2)})`, data: p2, backgroundColor: 'rgba(16,185,129,.5)' },
+          { type: 'line', label: 'N2 trend', data: line2, borderColor: 'rgba(16,185,129,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 },
+          { label: `N3 vs WHO‑5 (r=${r3.toFixed(2)})`, data: p3, backgroundColor: 'rgba(236,72,153,.4)' },
+          { type: 'line', label: 'N3 trend', data: line3, borderColor: 'rgba(236,72,153,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 }
+        ] }
+      });
+    }
+
     // Correlations
     const xsWho5 = who5Pairs.map(p=>p.x), ysWho5 = who5Pairs.map(p=>p.y);
     const xsSwls = swlsPairs.map(p=>p.x), ysSwls = swlsPairs.map(p=>p.y);
@@ -225,6 +261,51 @@
     const pCan = xsCan.length ? pValuePearson(rCan, xsCan.length) : null;
     if (statsWho5El) statsWho5El.textContent = `n=${xsWho5.length}  r(WHO‑5%, IHS)=${rWho5.toFixed(2)}  p=${pWho5===null?'—':pWho5.toExponential(2)}  slope=${ols(xsWho5, ysWho5).slope.toFixed(2)}  (cutoff 50 shown)`;
     if (statsSwlsEl) statsSwlsEl.textContent = `n=${xsSwls.length}  r(SWLS[5–35], IHS)=${rSwls.toFixed(2)}  p=${pSwls===null?'—':pSwls.toExponential(2)}  slope=${ols(xsSwls, ysSwls).slope.toFixed(2)}  (category lines shown)  |  n_can=${xsCan.length} r(Cantril, IHS)=${rCan.toFixed(2)} ${pCan===null?'':`p=${pCan.toExponential(2)}`}`;
+
+    // Fetch server-side correlations for domains and cards
+    try {
+      const corrRes = await fetch(`/api/analytics/correlations?limit=${limit}`);
+      const corrJson = await corrRes.json();
+      const domains = corrJson.domains || [];
+      const cards = corrJson.cards || [];
+
+      // Domain table
+      if (domainCorrTbody) {
+        domainCorrTbody.replaceChildren();
+        domains.forEach(d => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>${d.domain}</td>
+            <td>${Number(d.r_affirm_who5||0).toFixed(2)}</td>
+            <td>${Number(d.r_affirm_swls||0).toFixed(2)}</td>
+            <td>${Number(d.r_yesrate_who5||0).toFixed(2)}</td>
+            <td>${Number(d.r_yesrate_swls||0).toFixed(2)}</td>
+            <td>${Math.max(d.n_affirm_who5||0, d.n_yesrate_who5||0)}</td>
+          `;
+          domainCorrTbody.appendChild(tr);
+        });
+      }
+
+      // Card top/bottom by r_yes_who5
+      const sorted = cards.slice().sort((a,b)=> (b.r_yes_who5||0) - (a.r_yes_who5||0));
+      const top = sorted.slice(0, 10);
+      const bottom = sorted.slice(-10);
+      function renderCardRows(tbody, rows){
+        if (!tbody) return;
+        tbody.replaceChildren();
+        rows.forEach(c => {
+          const tr = document.createElement('tr');
+          const name = c.label ? `${c.cardId} · ${c.label}` : c.cardId;
+          tr.innerHTML = `<td>${name}</td><td>${Number(c.r_yes_who5||0).toFixed(2)}</td><td>${c.n_yes_who5||0}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+      renderCardRows(cardTopWhoTbody, top);
+      renderCardRows(cardBottomWhoTbody, bottom);
+    } catch (e) {
+      // Non-fatal if analytics endpoint is unavailable
+      console.warn('Correlation analytics failed', e);
+    }
   }
 
   limitInput.addEventListener('change', load);

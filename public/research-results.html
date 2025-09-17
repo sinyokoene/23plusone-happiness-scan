@@ -77,6 +77,12 @@
           <canvas id="cantrilVsIhs"></canvas>
         </div>
       </div>
+      <div class="col-6">
+        <div class="card">
+          <h2 class="text-lg font-semibold mb-2">N1/N2/N3 vs WHO‑5 (scatter)</h2>
+          <canvas id="n123VsWho5"></canvas>
+        </div>
+      </div>
       <div class="col-12">
         <div class="card">
           <div class="grid">
@@ -85,6 +91,41 @@
             </div>
             <div class="col-6">
               <div id="statsSwls" class="text-sm"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card">
+          <h2 class="text-lg font-semibold mb-2">Domain Correlations (WHO‑5/SWLS)</h2>
+          <div style="overflow:auto;">
+            <table id="domainCorrTable">
+              <thead>
+                <tr>
+                  <th>Domain</th>
+                  <th>r(affirm, WHO‑5)</th>
+                  <th>r(affirm, SWLS)</th>
+                  <th>r(yes‑rate, WHO‑5)</th>
+                  <th>r(yes‑rate, SWLS)</th>
+                  <th>n</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card">
+          <h2 class="text-lg font-semibold mb-2">Top/Bottom Cards by Correlation</h2>
+          <div class="grid">
+            <div class="col-6">
+              <h3 class="font-medium mb-1">Top 10 (WHO‑5)</h3>
+              <table id="cardTopWho"><thead><tr><th>Card</th><th>r yes</th><th>n</th></tr></thead><tbody></tbody></table>
+            </div>
+            <div class="col-6">
+              <h3 class="font-medium mb-1">Bottom 10 (WHO‑5)</h3>
+              <table id="cardBottomWho"><thead><tr><th>Card</th><th>r yes</th><th>n</th></tr></thead><tbody></tbody></table>
             </div>
           </div>
         </div>
