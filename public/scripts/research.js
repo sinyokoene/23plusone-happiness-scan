@@ -73,6 +73,7 @@
       participantId: participantId,
       who5: who5Answers,
       swls: swlsAnswers,
+      // Ensure numeric string is sent as number
       cantril: (cantril === null || cantril === undefined) ? null : Number(cantril),
       userAgent: navigator.userAgent
     };

@@ -323,6 +323,9 @@ app.post('/api/research', async (req, res) => {
     if (!sessionId || !Array.isArray(who5) || !Array.isArray(swls)) {
       return res.status(400).json({ error: 'Invalid research payload' });
     }
+    // Coerce Cantril to an integer when provided (accept numeric strings)
+    const cantrilNumber = (cantril === null || cantril === undefined) ? null : Number(cantril);
+    const cantrilValue = Number.isFinite(cantrilNumber) ? Math.round(cantrilNumber) : null;
     const client = await researchPool.connect();
     try {
       await client.query(
@@ -340,9 +343,9 @@ app.post('/api/research', async (req, res) => {
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
       await client.query(
         `INSERT INTO research_entries (session_id, who5, swls, cantril, user_agent) VALUES ($1,$2,$3,$4,$5)`,
-        [sessionId, who5, swls, (typeof cantril === 'number' ? cantril : null), userAgent || null]
+        [sessionId, who5, swls, cantrilValue, userAgent || null]
       );
-      res.status(201).json({ message: 'Research saved' });
+      res.status(201).json({ message: 'Research saved', cantril: cantrilValue });
     } finally {
       client.release();
     }
