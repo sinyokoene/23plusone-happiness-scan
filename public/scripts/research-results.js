@@ -67,6 +67,7 @@
         <td>${e.session_id}</td>
         <td>${(e.who5||[]).join(', ')}</td>
         <td>${(e.swls||[]).join(', ')}</td>
+        <td>${e.cantril ?? ''}</td>
         <td>${ihs}</td>
       `;
       tbody.appendChild(tr);

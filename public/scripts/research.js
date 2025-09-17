@@ -22,6 +22,7 @@
   const introSection = document.getElementById('intro');
   const who5Section = document.getElementById('who5');
   const swlsSection = document.getElementById('swls');
+  const cantrilSection = document.getElementById('cantril');
   const scanHost = document.getElementById('scanHost');
   const scanFrame = document.getElementById('scanFrame');
   const toSwlsIntroBtn = document.getElementById('toSwlsIntro');
@@ -30,6 +31,7 @@
 
   const who5Form = document.getElementById('who5Form');
   const swlsForm = document.getElementById('swlsForm');
+  let cantril = null;
 
   const who5RowTpl = document.getElementById('who5Row');
   const swlsRowTpl = document.getElementById('swlsRow');
@@ -71,6 +73,7 @@
       participantId: participantId,
       who5: who5Answers,
       swls: swlsAnswers,
+      cantril: (cantril === null || cantril === undefined) ? null : Number(cantril),
       userAgent: navigator.userAgent
     };
     try {
@@ -95,24 +98,22 @@
   renderLikert(who5Form, who5RowTpl, who5Items, who5Answers);
   renderLikert(swlsForm, swlsRowTpl, swlsItems, swlsAnswers);
 
-  // New order: Intro → Human drives (scan iframe) → SWLS → WHO‑5 → Thanks
+  // New order: Intro → Human drives (scan iframe) → WHO‑5 → SWLS → Cantril → Thanks
   if (toSwlsIntroBtn) {
     toSwlsIntroBtn.addEventListener('click', () => { hide(introSection); show(scanHost); });
   }
   if (toSwlsBtn) {
     toSwlsBtn.addEventListener('click', () => {
       if (!allAnswered(swlsAnswers)) { return; }
-      hide(swlsSection); show(who5Section);
+      hide(swlsSection); show(cantrilSection);
     });
   }
 
   if (toScanBtn) {
     toScanBtn.addEventListener('click', () => {
       if (!allAnswered(who5Answers)) { return; }
-      // Submit research (SWLS + WHO‑5) and show thanks
-      try { submitResearch(); } catch (_) {}
       hide(who5Section);
-      show(document.getElementById('thanks'));
+      show(swlsSection);
     });
   }
 
@@ -148,9 +149,29 @@
     if (data && data.type === 'scan_complete') {
       // Move from scan to SWLS
       hide(scanHost);
-      show(swlsSection);
+      show(who5Section);
     }
   });
+
+  // Cantril interactions
+  document.querySelectorAll('.cantril-choice').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const value = parseInt(btn.dataset.val, 10);
+      cantril = value;
+      // activate state
+      document.querySelectorAll('.cantril-choice').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+  const toThanksBtn = document.getElementById('toThanks');
+  if (toThanksBtn) {
+    toThanksBtn.addEventListener('click', () => {
+      if (cantril === null) { return; }
+      try { submitResearch(); } catch (_) {}
+      hide(cantrilSection);
+      show(document.getElementById('thanks'));
+    });
+  }
 })();
 
 

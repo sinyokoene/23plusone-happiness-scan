@@ -319,7 +319,7 @@ app.post('/api/responses', async (req, res) => {
 // Store WHO-5 and SWLS for research mode
 app.post('/api/research', async (req, res) => {
   try {
-    const { sessionId, who5, swls, userAgent } = req.body || {};
+    const { sessionId, who5, swls, cantril, userAgent } = req.body || {};
     if (!sessionId || !Array.isArray(who5) || !Array.isArray(swls)) {
       return res.status(400).json({ error: 'Invalid research payload' });
     }
@@ -331,13 +331,14 @@ app.post('/api/research', async (req, res) => {
           session_id TEXT NOT NULL,
           who5 INTEGER[] NOT NULL,
           swls INTEGER[] NOT NULL,
+          cantril INTEGER,
           user_agent TEXT,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
         )`
       );
       await client.query(
-        `INSERT INTO research_entries (session_id, who5, swls, user_agent) VALUES ($1,$2,$3,$4)`,
-        [sessionId, who5, swls, userAgent || null]
+        `INSERT INTO research_entries (session_id, who5, swls, cantril, user_agent) VALUES ($1,$2,$3,$4,$5)`,
+        [sessionId, who5, swls, (typeof cantril === 'number' ? cantril : null), userAgent || null]
       );
       res.status(201).json({ message: 'Research saved' });
     } finally {
@@ -362,11 +363,12 @@ app.get('/api/research-results', async (req, res) => {
           session_id TEXT NOT NULL,
           who5 INTEGER[] NOT NULL,
           swls INTEGER[] NOT NULL,
+          cantril INTEGER,
           user_agent TEXT,
           created_at TIMESTAMPTZ DEFAULT now()
         )`
       );
-      let query = 'SELECT id, session_id, who5, swls, user_agent, created_at FROM research_entries';
+      let query = 'SELECT id, session_id, who5, swls, cantril, user_agent, created_at FROM research_entries';
       const params = [];
       const clauses = [];
       if (from) { params.push(from); clauses.push(`created_at >= $${params.length}`); }
