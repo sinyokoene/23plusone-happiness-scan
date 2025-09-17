@@ -133,19 +133,24 @@
 
   async function load(){
     const limit = parseInt(limitInput.value, 10) || 200;
-    // By default only request entries that also have an IHS score (avoids counting refreshes before scan)
-    const res = await fetch(`/api/research-results?limit=${limit}&includeNoIhs=false`);
+    // Fetch all research entries; we will filter for IHS only where needed (scatter/correlations)
+    const res = await fetch(`/api/research-results?limit=${limit}&includeNoIhs=true`);
     const json = await res.json();
-    renderTable(json.entries || []);
-    renderCharts(json.entries || []);
+    const entries = json.entries || [];
+    renderTable(entries);
+    renderCharts(entries);
 
-    // Comparison fetch
-    const cmp = await (await fetch(`/api/research-compare?limit=${limit}`)).json();
-    const cmpEntries = cmp.entries || [];
-    const who5Totals = cmpEntries.map(e => SCALE.who5(sum(e.who5||[]))); // percent
-    const swlsTotals = cmpEntries.map(e => SCALE.swls(sum(e.swls||[])));   // 5–35
-    const ihs = cmpEntries.map(e => Number(e.ihs)||0);
-    const cantril = cmpEntries.map(e => (e.cantril==null?null:Number(e.cantril))).filter(v=>!Number.isNaN(v));
+    // Build arrays for scatter plots from the same dataset, keeping only rows with IHS
+    const who5TotalsAll = entries.map(e => SCALE.who5(sum(e.who5||[]))); // percent
+    const swlsTotalsAll = entries.map(e => SCALE.swls(sum(e.swls||[]))); // 5–35
+    const ihsAll = entries.map(e => (e.ihs==null?null:Number(e.ihs)));
+    const cantrilAll = entries.map(e => (e.cantril==null?null:Number(e.cantril)));
+
+    const who5Pairs = who5TotalsAll.map((x,i)=>({x, y: ihsAll[i]})).filter(p=>p.y!=null && !Number.isNaN(p.y));
+    const swlsPairs = swlsTotalsAll.map((x,i)=>({x, y: ihsAll[i]})).filter(p=>p.y!=null && !Number.isNaN(p.y));
+    const cantrilPairs = cantrilAll.map((x,i)=>({x, y: ihsAll[i]})).filter(p=>xIsNumber(x) && p.y!=null && !Number.isNaN(p.y));
+
+    function xIsNumber(v){ return v!=null && !Number.isNaN(Number(v)); }
 
     // Scatter charts
     const scatterCommon = {
@@ -161,9 +166,10 @@
     };
     if (who5Scatter) who5Scatter.destroy();
     {
-      const pts = who5Totals.map((v,i)=>({x:v, y: ihs[i]}));
-      const { slope, intercept } = ols(who5Totals, ihs);
-      const xMin = Math.min(...who5Totals, 0), xMax = Math.max(...who5Totals, 100);
+      const pts = who5Pairs.map(p=>({x:p.x, y:p.y}));
+      const xs = who5Pairs.map(p=>p.x), ys = who5Pairs.map(p=>p.y);
+      const { slope, intercept } = ols(xs, ys);
+      const xMin = Math.min(...xs, 0), xMax = Math.max(...xs, 100);
       const line = [{x:xMin, y: slope*xMin+intercept}, {x:xMax, y: slope*xMax+intercept}];
       who5Scatter = new Chart(who5VsIhsCanvas, {
         ...scatterCommon,
@@ -176,9 +182,10 @@
     }
     if (swlsScatter) swlsScatter.destroy();
     {
-      const pts = swlsTotals.map((v,i)=>({x:v, y: ihs[i]}));
-      const { slope, intercept } = ols(swlsTotals, ihs);
-      const xMin = Math.min(...swlsTotals, 5), xMax = Math.max(...swlsTotals, 35);
+      const pts = swlsPairs.map(p=>({x:p.x, y:p.y}));
+      const xs = swlsPairs.map(p=>p.x), ys = swlsPairs.map(p=>p.y);
+      const { slope, intercept } = ols(xs, ys);
+      const xMin = Math.min(...xs, 5), xMax = Math.max(...xs, 35);
       const line = [{x:xMin, y: slope*xMin+intercept}, {x:xMax, y: slope*xMax+intercept}];
       swlsScatter = new Chart(swlsVsIhsCanvas, {
         ...scatterCommon,
@@ -192,8 +199,9 @@
 
     if (cantrilScatter) cantrilScatter.destroy();
     if (cantrilVsIhsCanvas) {
-      const pts = cantril.map((v,i)=>({x:v, y: ihs[i]}));
-      const { slope, intercept } = ols(cantril, ihs.slice(0, cantril.length));
+      const pts = cantrilPairs.map(p=>({x:p.x, y:p.y}));
+      const xs = cantrilPairs.map(p=>p.x), ys = cantrilPairs.map(p=>p.y);
+      const { slope, intercept } = ols(xs, ys);
       const xMin = 0, xMax = 10;
       const line = [{x:xMin, y: slope*xMin+intercept}, {x:xMax, y: slope*xMax+intercept}];
       cantrilScatter = new Chart(cantrilVsIhsCanvas, {
@@ -206,14 +214,17 @@
     }
 
     // Correlations
-    const rWho5 = corr(who5Totals, ihs);
-    const rSwls = corr(swlsTotals, ihs);
-    const rCan = cantril.length ? corr(cantril, ihs.slice(0, cantril.length)) : 0;
-    const pWho5 = pValuePearson(rWho5, who5Totals.length);
-    const pSwls = pValuePearson(rSwls, swlsTotals.length);
-    const pCan = cantril.length ? pValuePearson(rCan, cantril.length) : null;
-    if (statsWho5El) statsWho5El.textContent = `n=${who5Totals.length}  r(WHO‑5%, IHS)=${rWho5.toFixed(2)}  p=${pWho5===null?'—':pWho5.toExponential(2)}  slope=${ols(who5Totals, ihs).slope.toFixed(2)}  (cutoff 50 shown)`;
-    if (statsSwlsEl) statsSwlsEl.textContent = `n=${swlsTotals.length}  r(SWLS[5–35], IHS)=${rSwls.toFixed(2)}  p=${pSwls===null?'—':pSwls.toExponential(2)}  slope=${ols(swlsTotals, ihs).slope.toFixed(2)}  (category lines shown)  |  n_can=${cantril.length} r(Cantril, IHS)=${rCan.toFixed(2)} ${pCan===null?'':`p=${pCan.toExponential(2)}`}`;
+    const xsWho5 = who5Pairs.map(p=>p.x), ysWho5 = who5Pairs.map(p=>p.y);
+    const xsSwls = swlsPairs.map(p=>p.x), ysSwls = swlsPairs.map(p=>p.y);
+    const xsCan = cantrilPairs.map(p=>p.x), ysCan = cantrilPairs.map(p=>p.y);
+    const rWho5 = xsWho5.length ? corr(xsWho5, ysWho5) : 0;
+    const rSwls = xsSwls.length ? corr(xsSwls, ysSwls) : 0;
+    const rCan = xsCan.length ? corr(xsCan, ysCan) : 0;
+    const pWho5 = pValuePearson(rWho5, xsWho5.length);
+    const pSwls = pValuePearson(rSwls, xsSwls.length);
+    const pCan = xsCan.length ? pValuePearson(rCan, xsCan.length) : null;
+    if (statsWho5El) statsWho5El.textContent = `n=${xsWho5.length}  r(WHO‑5%, IHS)=${rWho5.toFixed(2)}  p=${pWho5===null?'—':pWho5.toExponential(2)}  slope=${ols(xsWho5, ysWho5).slope.toFixed(2)}  (cutoff 50 shown)`;
+    if (statsSwlsEl) statsSwlsEl.textContent = `n=${xsSwls.length}  r(SWLS[5–35], IHS)=${rSwls.toFixed(2)}  p=${pSwls===null?'—':pSwls.toExponential(2)}  slope=${ols(xsSwls, ysSwls).slope.toFixed(2)}  (category lines shown)  |  n_can=${xsCan.length} r(Cantril, IHS)=${rCan.toFixed(2)} ${pCan===null?'':`p=${pCan.toExponential(2)}`}`;
   }
 
   limitInput.addEventListener('change', load);
