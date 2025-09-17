@@ -136,7 +136,10 @@
   // Preload the scan iframe early so transition is instant
   if (scanFrame) {
     const base = 'scan.html';
-    scanFrame.src = `${base}?pid=${encodeURIComponent(participantId)}`;
+    const url = new URL(base, window.location.href);
+    url.searchParams.set('mode', 'research');
+    url.searchParams.set('pid', participantId);
+    scanFrame.src = url.toString();
   }
 
   // Listen for completion from the embedded scan (RESEARCH_MODE hides results and posts a message)
