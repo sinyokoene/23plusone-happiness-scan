@@ -148,7 +148,7 @@
 
     const who5Pairs = who5TotalsAll.map((x,i)=>({x, y: ihsAll[i]})).filter(p=>p.y!=null && !Number.isNaN(p.y));
     const swlsPairs = swlsTotalsAll.map((x,i)=>({x, y: ihsAll[i]})).filter(p=>p.y!=null && !Number.isNaN(p.y));
-    const cantrilPairs = cantrilAll.map((x,i)=>({x, y: ihsAll[i]})).filter(p=>xIsNumber(x) && p.y!=null && !Number.isNaN(p.y));
+    const cantrilPairs = cantrilAll.map((x,i)=>({x, y: ihsAll[i]})).filter(p=>xIsNumber(p.x) && p.y!=null && !Number.isNaN(p.y));
 
     function xIsNumber(v){ return v!=null && !Number.isNaN(Number(v)); }
 
