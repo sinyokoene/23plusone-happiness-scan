@@ -424,10 +424,12 @@ app.get('/api/research-compare', async (req, res) => {
           session_id TEXT NOT NULL,
           who5 INTEGER[] NOT NULL,
           swls INTEGER[] NOT NULL,
+          cantril INTEGER,
           user_agent TEXT,
           created_at TIMESTAMPTZ DEFAULT now()
         )`
       );
+      await researchClient.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
       // Fetch recent scan results and map by session_id
       const scanRows = (await mainClient.query(
         `SELECT session_id, ihs_score, created_at FROM scan_responses 
@@ -445,7 +447,7 @@ app.get('/api/research-compare', async (req, res) => {
         for (const chunk of chunks) {
           const params = chunk.map((_,i)=>`$${i+1}`).join(',');
           const { rows } = await researchClient.query(
-            `SELECT session_id, who5, swls, created_at FROM research_entries WHERE session_id IN (${params})`, chunk);
+            `SELECT session_id, who5, swls, cantril, created_at FROM research_entries WHERE session_id IN (${params})`, chunk);
           researchRows = researchRows.concat(rows);
         }
       }
@@ -455,6 +457,7 @@ app.get('/api/research-compare', async (req, res) => {
         session_id: r.session_id,
         who5: r.who5,
         swls: r.swls,
+        cantril: r.cantril,
         ihs: bySession.get(r.session_id)?.ihs_score ?? null,
         scan_created_at: bySession.get(r.session_id)?.created_at ?? null,
         research_created_at: r.created_at

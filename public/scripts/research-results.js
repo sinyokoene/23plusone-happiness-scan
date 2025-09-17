@@ -5,12 +5,14 @@
   const tbody = document.querySelector('#resultsTable tbody');
   const who5Canvas = document.getElementById('who5Chart');
   const swlsCanvas = document.getElementById('swlsChart');
+  const cantrilCanvas = document.getElementById('cantrilChart');
   const who5VsIhsCanvas = document.getElementById('who5VsIhs');
   const swlsVsIhsCanvas = document.getElementById('swlsVsIhs');
+  const cantrilVsIhsCanvas = document.getElementById('cantrilVsIhs');
   const statsWho5El = document.getElementById('statsWho5');
   const statsSwlsEl = document.getElementById('statsSwls');
 
-  let who5Chart, swlsChart, who5Scatter, swlsScatter;
+  let who5Chart, swlsChart, cantrilChart, who5Scatter, swlsScatter, cantrilScatter;
 
   function sum(arr){ return arr.reduce((a,b)=>a+(Number(b)||0),0); }
 
@@ -22,9 +24,10 @@
   function computeDistributions(entries){
     const who5TotalsRaw = entries.map(e => sum(e.who5||[]));
     const swlsTotalsRaw = entries.map(e => sum(e.swls||[]));
+    const cantrilVals = entries.map(e => (e.cantril==null?null:Number(e.cantril))).filter(v=>v!=null && !Number.isNaN(v));
     const who5Scaled = who5TotalsRaw.map(SCALE.who5);
     const swlsScaled = swlsTotalsRaw.map(SCALE.swls);
-    return { who5Scaled, swlsScaled };
+    return { who5Scaled, swlsScaled, cantrilVals };
   }
 
   function corr(x, y){
@@ -75,7 +78,7 @@
   }
 
   function renderCharts(entries){
-    const { who5Scaled, swlsScaled } = computeDistributions(entries);
+    const { who5Scaled, swlsScaled, cantrilVals } = computeDistributions(entries);
     // WHO-5 percent bins 0..100 step 4 (26 bins)
     const who5Bins = new Array(26).fill(0);
     const who5Labels = Array.from({length:26}, (_,i)=>i*4);
@@ -114,6 +117,18 @@
       data: { labels: swlsLabels, datasets: [{ label: 'SWLS (5–35)', data: swlsBins, backgroundColor: 'rgba(99, 102, 241, .5)' }] },
       plugins: [vline([9,14,19,20,25,30], 'rgba(99,102,241,.5)')]
     });
+
+    // Cantril bins 0..10 (11 bins)
+    if (cantrilCanvas) {
+      const canBins = new Array(11).fill(0);
+      const canLabels = Array.from({length:11}, (_,i)=>i);
+      cantrilVals.forEach(v=>{ const i=Math.max(0,Math.min(10, Math.round(v))); canBins[i]++; });
+      if (cantrilChart) cantrilChart.destroy();
+      cantrilChart = new Chart(cantrilCanvas, {
+        ...common,
+        data: { labels: canLabels, datasets: [{ label: 'Cantril (0–10)', data: canBins, backgroundColor: 'rgba(16,185,129,.5)' }] }
+      });
+    }
   }
 
   async function load(){
@@ -130,6 +145,7 @@
     const who5Totals = cmpEntries.map(e => SCALE.who5(sum(e.who5||[]))); // percent
     const swlsTotals = cmpEntries.map(e => SCALE.swls(sum(e.swls||[])));   // 5–35
     const ihs = cmpEntries.map(e => Number(e.ihs)||0);
+    const cantril = cmpEntries.map(e => (e.cantril==null?null:Number(e.cantril))).filter(v=>!Number.isNaN(v));
 
     // Scatter charts
     const scatterCommon = {
@@ -174,13 +190,30 @@
       });
     }
 
+    if (cantrilScatter) cantrilScatter.destroy();
+    if (cantrilVsIhsCanvas) {
+      const pts = cantril.map((v,i)=>({x:v, y: ihs[i]}));
+      const { slope, intercept } = ols(cantril, ihs.slice(0, cantril.length));
+      const xMin = 0, xMax = 10;
+      const line = [{x:xMin, y: slope*xMin+intercept}, {x:xMax, y: slope*xMax+intercept}];
+      cantrilScatter = new Chart(cantrilVsIhsCanvas, {
+        ...scatterCommon,
+        data: { datasets: [
+          { label: 'Cantril vs IHS', data: pts, backgroundColor: 'rgba(16,185,129,.5)' },
+          { type: 'line', label: 'Trend', data: line, borderColor: 'rgba(16,185,129,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 }
+        ] }
+      });
+    }
+
     // Correlations
     const rWho5 = corr(who5Totals, ihs);
     const rSwls = corr(swlsTotals, ihs);
+    const rCan = cantril.length ? corr(cantril, ihs.slice(0, cantril.length)) : 0;
     const pWho5 = pValuePearson(rWho5, who5Totals.length);
     const pSwls = pValuePearson(rSwls, swlsTotals.length);
+    const pCan = cantril.length ? pValuePearson(rCan, cantril.length) : null;
     if (statsWho5El) statsWho5El.textContent = `n=${who5Totals.length}  r(WHO‑5%, IHS)=${rWho5.toFixed(2)}  p=${pWho5===null?'—':pWho5.toExponential(2)}  slope=${ols(who5Totals, ihs).slope.toFixed(2)}  (cutoff 50 shown)`;
-    if (statsSwlsEl) statsSwlsEl.textContent = `n=${swlsTotals.length}  r(SWLS[5–35], IHS)=${rSwls.toFixed(2)}  p=${pSwls===null?'—':pSwls.toExponential(2)}  slope=${ols(swlsTotals, ihs).slope.toFixed(2)}  (category lines shown)`;
+    if (statsSwlsEl) statsSwlsEl.textContent = `n=${swlsTotals.length}  r(SWLS[5–35], IHS)=${rSwls.toFixed(2)}  p=${pSwls===null?'—':pSwls.toExponential(2)}  slope=${ols(swlsTotals, ihs).slope.toFixed(2)}  (category lines shown)  |  n_can=${cantril.length} r(Cantril, IHS)=${rCan.toFixed(2)} ${pCan===null?'':`p=${pCan.toExponential(2)}`}`;
   }
 
   limitInput.addEventListener('change', load);
