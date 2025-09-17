@@ -117,7 +117,8 @@
 
   async function load(){
     const limit = parseInt(limitInput.value, 10) || 200;
-    const res = await fetch(`/api/research-results?limit=${limit}`);
+    // By default only request entries that also have an IHS score (avoids counting refreshes before scan)
+    const res = await fetch(`/api/research-results?limit=${limit}&includeNoIhs=false`);
     const json = await res.json();
     renderTable(json.entries || []);
     renderCharts(json.entries || []);

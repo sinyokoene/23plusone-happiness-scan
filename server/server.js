@@ -352,7 +352,7 @@ app.post('/api/research', async (req, res) => {
 // Query research results (latest N, or by date range)
 app.get('/api/research-results', async (req, res) => {
   try {
-    const { limit = 200, from, to } = req.query;
+    const { limit = 200, from, to, includeNoIhs } = req.query;
     const client = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -388,7 +388,12 @@ app.get('/api/research-results', async (req, res) => {
         );
         ihsMap = new Map(ihsRows.rows.map(r => [r.session_id, r.ihs_score]));
       }
-      const merged = entries.map(e => ({ ...e, ihs: ihsMap.get(e.session_id) ?? null }));
+      let merged = entries.map(e => ({ ...e, ihs: ihsMap.get(e.session_id) ?? null }));
+      // By default, only include rows that have an IHS score to avoid counting pre-scan refreshes
+      const shouldIncludeNoIhs = String(includeNoIhs).toLowerCase() === 'true';
+      if (!shouldIncludeNoIhs) {
+        merged = merged.filter(e => e.ihs !== null && !Number.isNaN(Number(e.ihs)));
+      }
       res.json({ count: merged.length, entries: merged });
     } finally {
       client.release();
