@@ -326,6 +326,7 @@ app.post('/api/research', async (req, res) => {
     // Coerce Cantril to an integer when provided (accept numeric strings)
     const cantrilNumber = (cantril === null || cantril === undefined) ? null : Number(cantril);
     const cantrilValue = Number.isFinite(cantrilNumber) ? Math.round(cantrilNumber) : null;
+    console.log('📥 /api/research payload', { sessionId, cantrilRaw: cantril, cantrilValue });
     const client = await researchPool.connect();
     try {
       await client.query(
@@ -341,11 +342,12 @@ app.post('/api/research', async (req, res) => {
       );
       // Ensure cantril column exists for older tables
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
-      await client.query(
-        `INSERT INTO research_entries (session_id, who5, swls, cantril, user_agent) VALUES ($1,$2,$3,$4,$5)`,
+      const inserted = await client.query(
+        `INSERT INTO research_entries (session_id, who5, swls, cantril, user_agent) VALUES ($1,$2,$3,$4,$5) RETURNING id, cantril`,
         [sessionId, who5, swls, cantrilValue, userAgent || null]
       );
-      res.status(201).json({ message: 'Research saved', cantril: cantrilValue });
+      console.log('✅ Research saved', inserted.rows[0]);
+      res.status(201).json({ message: 'Research saved', cantril: inserted.rows[0]?.cantril ?? cantrilValue });
     } finally {
       client.release();
     }

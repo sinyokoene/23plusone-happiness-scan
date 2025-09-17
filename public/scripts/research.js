@@ -81,13 +81,15 @@
       if (navigator.sendBeacon) {
         const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
         navigator.sendBeacon('/api/research', blob);
+        console.log('🔎 Sent research via beacon', payload);
       } else {
-        fetch('/api/research', {
+        const resp = await fetch('/api/research', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
           keepalive: true
         });
+        try { console.log('🔎 Server saved research', await resp.json()); } catch(_) {}
       }
     } catch (e) {
       // Silent fail - research is optional for flow
