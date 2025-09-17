@@ -336,6 +336,8 @@ app.post('/api/research', async (req, res) => {
           created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
         )`
       );
+      // Ensure cantril column exists for older tables
+      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
       await client.query(
         `INSERT INTO research_entries (session_id, who5, swls, cantril, user_agent) VALUES ($1,$2,$3,$4,$5)`,
         [sessionId, who5, swls, (typeof cantril === 'number' ? cantril : null), userAgent || null]
@@ -368,6 +370,8 @@ app.get('/api/research-results', async (req, res) => {
           created_at TIMESTAMPTZ DEFAULT now()
         )`
       );
+      // Ensure cantril column exists for older tables
+      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
       let query = 'SELECT id, session_id, who5, swls, cantril, user_agent, created_at FROM research_entries';
       const params = [];
       const clauses = [];
