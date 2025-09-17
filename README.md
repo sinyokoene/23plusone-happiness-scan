@@ -122,23 +122,42 @@ Get basic statistics.
 }
 ```
 
-## 🎯 Scoring Algorithm
+## 🎯 Scoring Algorithm (current)
 
-The Individual Happiness Score (IHS) combines three components:
+The Individual Happiness Score (IHS) is a 0–100 score built from three normalized components:
 
-### N1: Affirmations + Time (40% weight)
-- Sum of (4 × time_multiplier) for all "Yes" responses
-- Time multipliers: ≤1s = 1.0, ≤2s = 0.8, ≤3s = 0.6, >3s = 0.4
+### N1: Affirmations × Speed (40%)
+- For each "Yes" response i with reaction time tᵢ (ms, clamped 0–4000):
+  - linearᵢ = (4000 − tᵢ) / 4000 ∈ [0,1]
+  - timeMultiplierᵢ = √(linearᵢ)  (gentle non‑linear curve, diminishing returns for ultra‑fast taps)
+  - affirmationᵢ = 4 × timeMultiplierᵢ
+- rawN1 = Σ affirmationᵢ across all "Yes"; max 24 × 4 = 96
+- N1% = min(100, rawN1 / 96 × 100)
 
-### N2: Domain Coverage (40% weight)
-- Number of unique domains with ≥1 "Yes" × 19.2
-- Domains: Basics, Ambition, Self-development, Vitality, Attraction
+### N2: Domain Coverage (40%)
+- Count distinct domains with ≥1 "Yes" across the five 23plusone domains
+- N2% = (coveredDomains / 5) × 100
 
-### N3: Spread Score (20% weight)
-- Measures balanced responses across domains
-- Formula: (1.6 - Σ|domain_pct - 0.2|) / 1.6 × 100
+### N3: Spread/Evenness (20%)
+- Let counts cᵈ be the number of "Yes" per domain d across all five domains (zeros included)
+- If totalYes = Σ cᵈ is 0 → N3% = 0
+- Otherwise proportions pᵈ = cᵈ / totalYes for the five domains; ideal balance is 0.2 each
+- deviation = Σ |pᵈ − 0.2| over the five domains (max 1.6)
+- N3% = max(0, (1.6 − deviation) / 1.6 × 100)
 
-**Final IHS = 0.4×N1 + 0.4×N2 + 0.2×N3**
+### Final score
+IHS = 0.4 × N1% + 0.4 × N2% + 0.2 × N3%
+
+### Examples
+- One fast "Yes" only: N1% ≈ 4.2, N2% = 20, N3% = 0 → IHS ≈ 9.7
+- Balanced 12 "Yes" evenly across domains at moderate speed: N1% ≈ 50, N2% ≈ 100, N3% ≈ 100 → IHS ≈ 80
+
+### Quality rules (server + client)
+- Must have 24 responses; >3 NULL timeouts → invalid
+- All "No" → invalid; too fast total completion (<5s) → invalid
+- Server protections: duplicate session guard; per‑IP rate limit (configurable)
+
+Implementation: see `public/scripts/app.js`, function `calculateIHS`.
 
 ## 🌐 Deployment
 
