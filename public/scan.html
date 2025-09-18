@@ -162,6 +162,21 @@
           <div class="w-[280px] h-[2px] bg-neutral-200 rounded-full mt-2"></div>
         </div>
 
+        <!-- Quick rules inside practice page -->
+        <div id="practiceRules" class="overlay-card" style="background:#fafafa;">
+          <h3 class="text-base font-semibold mb-1" style="margin:0;">Quick rules</h3>
+          <ul class="text-sm" style="margin:0 0 8px 18px;">
+            <li>Each card shows <strong>4 images</strong> that belong together.</li>
+            <li>You have about <strong>4 seconds per card</strong>. Faster is better.</li>
+            <li>Use <strong>Yes</strong> (heart) / <strong>No</strong> (X), or swipe <strong>right/left</strong>, or press <strong>Y/N</strong>.</li>
+            <li><strong>Clicking the images does nothing</strong> — choose Yes/No.</li>
+          </ul>
+          <div class="swipe-demo" aria-hidden="true">
+            <div class="swipe-ghost"></div>
+            <div class="swipe-arrows"><span>← No</span><span>Yes →</span></div>
+          </div>
+        </div>
+
         <!-- thin progress/timer line at top -->
         <div id="practiceTimerContainer" class="w-[560px] max-w-full mx-auto" role="timer" aria-label="Practice timer" style="visibility: hidden; min-height: 10px;">
           <div id="practiceTimerBar" class="h-[4px] bg-[var(--progress-bg)] rounded-full overflow-hidden" role="progressbar" aria-label="Time remaining" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 80%; margin-left: auto; margin-right: auto;">
@@ -205,28 +220,6 @@
     <main id="game" class="section w-full flex items-center justify-center" role="main" aria-labelledby="game-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
       <h2 id="game-heading" class="sr-only">Happiness Scan Question</h2>
       <div class="w-full flex flex-col justify-center items-center px-6 md:px-16 gap-6 text-center">
-        <!-- Rules overlay (shown just before first real card) -->
-        <div id="rulesOverlay" class="overlay-backdrop" role="dialog" aria-modal="true" aria-labelledby="rules-title" aria-describedby="rules-desc">
-          <div class="overlay-card">
-            <h3 id="rules-title">Quick rules</h3>
-            <div id="rules-desc" class="text-sm">
-              <ul>
-                <li>Each card shows 4 images that belong together.</li>
-                <li>You have about 4 seconds per card. Faster is better.</li>
-                <li>Tap the heart or press Y / swipe right for “Yes”.</li>
-                <li>Tap the X or press N / swipe left for “No”.</li>
-                <li>Clicking the images does nothing — choose Yes/No.</li>
-              </ul>
-              <div class="swipe-demo" aria-hidden="true">
-                <div class="swipe-ghost"></div>
-                <div class="swipe-arrows"><span>← No</span><span>Yes →</span></div>
-              </div>
-            </div>
-            <div class="overlay-actions">
-              <button id="rulesGotIt" type="button" class="overlay-btn">Got it</button>
-            </div>
-          </div>
-        </div>
         <!-- thin progress/timer line at top -->
         <div id="timerContainer" class="w-[560px] max-w-full mx-auto" role="timer" aria-label="Response timer" style="display: none;">
           <div id="timerBar" class="h-[4px] bg-[var(--progress-bg)] rounded-full overflow-hidden" role="progressbar" aria-label="Time remaining" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 80%; margin-left: auto; margin-right: auto;">
