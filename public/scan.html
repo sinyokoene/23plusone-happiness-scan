@@ -112,10 +112,16 @@
     .overlay-card ul { margin: 0 0 10px 18px; color: #2c1f1c; }
     .overlay-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
     .overlay-btn { background: #e91e63; color: #ffffff; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 600; }
-    .swipe-demo { position: relative; height: 44px; overflow: hidden; margin: 10px 0 0; }
-    .swipe-ghost { position: absolute; left: 0; top: 6px; width: 36px; height: 36px; border-radius: 999px; background: rgba(233,30,99,0.14); border: 2px solid #e91e63; display: inline-block; animation: swipeX 1.6s ease-in-out infinite; }
-    .swipe-arrows { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; color: #666; font-weight: 600; }
-    @keyframes swipeX { 0% { transform: translateX(6px); } 50% { transform: translateX(calc(100% - 42px)); } 100% { transform: translateX(6px); } }
+    /* Practice hint arrows */
+    .practice-swipe-hint { position: absolute; top: 50%; transform: translateY(-50%); color: rgba(0,0,0,0.35); font-size: 24px; font-weight: 600; pointer-events: none; user-select: none; }
+    .practice-swipe-left { left: calc(50% - 330px); animation: nudgeLeft 1.8s ease-in-out infinite; }
+    .practice-swipe-right { right: calc(50% - 330px); animation: nudgeRight 1.8s ease-in-out infinite; }
+    @media (max-width: 640px) {
+      .practice-swipe-left { left: 10px; }
+      .practice-swipe-right { right: 10px; }
+    }
+    @keyframes nudgeLeft { 0%,100% { transform: translate(-6px, -50%); opacity: .6; } 50% { transform: translate(0, -50%); opacity: .2; } }
+    @keyframes nudgeRight { 0%,100% { transform: translate(6px, -50%); opacity: .6; } 50% { transform: translate(0, -50%); opacity: .2; } }
   </style>
   
   
@@ -162,18 +168,19 @@
           <div class="w-[280px] h-[2px] bg-neutral-200 rounded-full mt-2"></div>
         </div>
 
-        <!-- Quick rules inside practice page -->
-        <div id="practiceRules" class="overlay-card" style="background:#fafafa;">
-          <h3 class="text-base font-semibold mb-1" style="margin:0;">Quick rules</h3>
-          <ul class="text-sm" style="margin:0 0 8px 18px;">
-            <li>Each card shows <strong>4 images</strong> that belong together.</li>
-            <li>You have about <strong>4 seconds per card</strong>. Faster is better.</li>
-            <li>Use <strong>Yes</strong> (heart) / <strong>No</strong> (X), or swipe <strong>right/left</strong>, or press <strong>Y/N</strong>.</li>
-            <li><strong>Clicking the images does nothing</strong> — choose Yes/No.</li>
-          </ul>
-          <div class="swipe-demo" aria-hidden="true">
-            <div class="swipe-ghost"></div>
-            <div class="swipe-arrows"><span>← No</span><span>Yes →</span></div>
+        <!-- Quick rules overlay on top of card area -->
+        <div id="practiceRulesOverlay" class="overlay-backdrop" style="display: flex;">
+          <div class="overlay-card">
+            <h3 class="text-base font-semibold mb-1" style="margin:0;">Quick rules</h3>
+            <ul class="text-sm" style="margin:0 0 8px 18px;">
+              <li>Each card shows <strong>4 images</strong> that belong together.</li>
+              <li>You have about <strong>4 seconds per card</strong>. Faster is better.</li>
+              <li>Use <strong>Yes</strong> (heart) / <strong>No</strong> (X), or swipe <strong>right/left</strong>, or press <strong>Y/N</strong>.</li>
+              <li><strong>Clicking the images does nothing</strong> — choose Yes/No.</li>
+            </ul>
+            <div class="overlay-actions">
+              <button id="practiceRulesGotIt" type="button" class="overlay-btn">Got it</button>
+            </div>
           </div>
         </div>
 
@@ -185,10 +192,12 @@
         </div>
 
         <!-- Card area -->
-        <div id="practiceCardContainer" class="w-full min-h-0 flex items-center justify-center text-center" role="region" aria-live="polite" aria-label="Practice card presentation area">
-          <div id="practiceCard" class="w-full max-w-[560px] flex items-center justify-center" style="aspect-ratio: 3 / 2;">
+        <div id="practiceCardContainer" class="w-full min-h-0 flex items-center justify-center text-center relative" role="region" aria-live="polite" aria-label="Practice card presentation area">
+          <div id="practiceCard" class="w-full max-w-[560px] flex items-center justify-center" style="aspect-ratio: 3 / 2; position: relative;">
             <div class="loading">Loading practice cards...</div>
           </div>
+          <div id="practiceHintLeft" class="practice-swipe-hint practice-swipe-left" aria-hidden="true">←</div>
+          <div id="practiceHintRight" class="practice-swipe-hint practice-swipe-right" aria-hidden="true">→</div>
         </div>
 
         <!-- Icon buttons -->

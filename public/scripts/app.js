@@ -156,7 +156,17 @@
       }
     }
     practiceIndex = 0;
-    showPracticeCard();
+    // Show quick rules overlay immediately in practice
+    const prOverlay = document.getElementById('practiceRulesOverlay');
+    const prBtn = document.getElementById('practiceRulesGotIt');
+    const begin = () => { if (prOverlay) prOverlay.style.display = 'none'; showPracticeCard(); };
+    if (prOverlay && prBtn) {
+      prOverlay.style.display = 'flex';
+      prBtn.addEventListener('click', begin, { once: true });
+      document.addEventListener('keydown', function onKey(e){ if (e.key==='Escape'){ begin(); document.removeEventListener('keydown', onKey);} });
+    } else {
+      showPracticeCard();
+    }
   }
   window.startPractice = startPractice;
 
@@ -188,6 +198,23 @@
         cardImage.style.opacity = '1';
         cardImage.style.transform = '';
         cardImage.style.transition = '';
+      }
+      // Show swipe arrows until any interaction
+      const left = document.getElementById('practiceHintLeft');
+      const right = document.getElementById('practiceHintRight');
+      const hideHints = () => { if (left) left.style.display='none'; if (right) right.style.display='none'; };
+      if (left && right) {
+        left.style.display = 'block';
+        right.style.display = 'block';
+        const onceOpts = { once: true };
+        if (cardImage) {
+          cardImage.addEventListener('touchstart', hideHints, onceOpts);
+          cardImage.addEventListener('mousedown', hideHints, onceOpts);
+          cardImage.addEventListener('click', hideHints, onceOpts);
+          cardImage.addEventListener('keydown', (e)=>{ if(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key==='Enter'||e.key===' '){ hideHints(); } }, onceOpts);
+        }
+        if (practiceYesBtn) practiceYesBtn.addEventListener('click', hideHints, onceOpts);
+        if (practiceNoBtn) practiceNoBtn.addEventListener('click', hideHints, onceOpts);
       }
     }, 100);
 
