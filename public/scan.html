@@ -122,6 +122,9 @@
     }
     @keyframes nudgeLeft { 0%,100% { transform: translate(-6px, -50%); opacity: .6; } 50% { transform: translate(0, -50%); opacity: .2; } }
     @keyframes nudgeRight { 0%,100% { transform: translate(6px, -50%); opacity: .6; } 50% { transform: translate(0, -50%); opacity: .2; } }
+    /* Place practice popup lower to avoid timer/header */
+    #practiceRulesOverlay { top: 120px; align-items: flex-start; }
+    @media (max-width: 640px) { #practiceRulesOverlay { top: 100px; } }
   </style>
   
   
