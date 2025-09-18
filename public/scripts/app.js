@@ -159,7 +159,12 @@
     // Show quick rules overlay immediately in practice
     const prOverlay = document.getElementById('practiceRulesOverlay');
     const prBtn = document.getElementById('practiceRulesGotIt');
-    const begin = () => { if (prOverlay) prOverlay.style.display = 'none'; showPracticeCard(); };
+    const begin = () => {
+      if (prOverlay) {
+        prOverlay.style.display = 'none';
+      }
+      showPracticeCard();
+    };
     if (prOverlay && prBtn) {
       prOverlay.style.display = 'flex';
       prBtn.addEventListener('click', begin, { once: true });

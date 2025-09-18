@@ -122,9 +122,7 @@
     }
     @keyframes nudgeLeft { 0%,100% { transform: translate(-6px, -50%); opacity: .6; } 50% { transform: translate(0, -50%); opacity: .2; } }
     @keyframes nudgeRight { 0%,100% { transform: translate(6px, -50%); opacity: .6; } 50% { transform: translate(0, -50%); opacity: .2; } }
-    /* Place practice popup lower to avoid timer/header */
-    #practiceRulesOverlay { top: 120px; align-items: flex-start; }
-    @media (max-width: 640px) { #practiceRulesOverlay { top: 100px; } }
+    /* practice popup is positioned within the card container */
   </style>
   
   
@@ -172,7 +170,7 @@
         </div>
 
         <!-- Quick rules overlay on top of card area -->
-        <div id="practiceRulesOverlay" class="overlay-backdrop" style="display: flex;">
+        <div id="practiceRulesOverlay" class="overlay-backdrop" style="display: flex; position: absolute; inset: auto; left: 0; right: 0; top: auto; bottom: auto;">
           <div class="overlay-card" style="position: absolute;">
             <h3 class="text-base font-semibold mb-1" style="margin:0;">Quick rules</h3>
             <ul class="text-sm" style="margin:0 0 8px 18px;">
@@ -196,7 +194,7 @@
 
         <!-- Card area -->
         <div id="practiceCardContainer" class="w-full min-h-0 flex items-center justify-center text-center relative" role="region" aria-live="polite" aria-label="Practice card presentation area">
-          <div id="practiceCard" class="w-full max-w-[560px] flex items-center justify-center" style="aspect-ratio: 3 / 2; position: relative;">
+          <div id="practiceCard" class="w-full max-w-[560px] flex items-center justify-center relative" style="aspect-ratio: 3 / 2;">
             <div class="loading">Loading practice cards...</div>
           </div>
           <div id="practiceHintLeft" class="practice-swipe-hint practice-swipe-left" aria-hidden="true">←</div>
