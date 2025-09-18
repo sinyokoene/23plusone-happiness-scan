@@ -445,7 +445,22 @@
       showSection(gameDiv);
       
       // Initialize the scan
-      initializeScan();
+      // Show quick rules overlay once before first real card
+      const overlay = document.getElementById('rulesOverlay');
+      const btn = document.getElementById('rulesGotIt');
+      if (overlay && btn) {
+        overlay.style.display = 'flex';
+        const closeAndStart = () => {
+          overlay.style.display = 'none';
+          initializeScan();
+        };
+        btn.addEventListener('click', closeAndStart, { once: true });
+        // Also close on Escape
+        document.addEventListener('keydown', function onKey(e){ if (e.key==='Escape'){ closeAndStart(); document.removeEventListener('keydown', onKey);} });
+        // Prevent interaction behind overlay
+      } else {
+        initializeScan();
+      }
     }, 2400); // 1000 + 800 + 600
   }
   

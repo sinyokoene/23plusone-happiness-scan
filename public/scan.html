@@ -105,6 +105,17 @@
       .share-buttons .share-button { padding: 6px 10px; font-size: 0.9rem; }
       #retakeBtn { margin-top: 2px; font-size: 0.9rem; }
     }
+    /* Overlay for rules */
+    .overlay-backdrop { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; z-index: 40; }
+    .overlay-card { background: #ffffff; border-radius: 16px; width: min(560px, 92vw); box-shadow: 0 10px 20px rgba(0,0,0,0.2); padding: 16px; text-align: left; }
+    .overlay-card h3 { font-size: 1.1rem; font-weight: 600; color: #2c1f1c; margin: 0 0 8px; }
+    .overlay-card ul { margin: 0 0 10px 18px; color: #2c1f1c; }
+    .overlay-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
+    .overlay-btn { background: #e91e63; color: #ffffff; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 600; }
+    .swipe-demo { position: relative; height: 44px; overflow: hidden; margin: 10px 0 0; }
+    .swipe-ghost { position: absolute; left: 0; top: 6px; width: 36px; height: 36px; border-radius: 999px; background: rgba(233,30,99,0.14); border: 2px solid #e91e63; display: inline-block; animation: swipeX 1.6s ease-in-out infinite; }
+    .swipe-arrows { position: absolute; inset: 0; display: flex; align-items: center; justify-content: space-between; color: #666; font-weight: 600; }
+    @keyframes swipeX { 0% { transform: translateX(6px); } 50% { transform: translateX(calc(100% - 42px)); } 100% { transform: translateX(6px); } }
   </style>
   
   
@@ -194,6 +205,28 @@
     <main id="game" class="section w-full flex items-center justify-center" role="main" aria-labelledby="game-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
       <h2 id="game-heading" class="sr-only">Happiness Scan Question</h2>
       <div class="w-full flex flex-col justify-center items-center px-6 md:px-16 gap-6 text-center">
+        <!-- Rules overlay (shown just before first real card) -->
+        <div id="rulesOverlay" class="overlay-backdrop" role="dialog" aria-modal="true" aria-labelledby="rules-title" aria-describedby="rules-desc">
+          <div class="overlay-card">
+            <h3 id="rules-title">Quick rules</h3>
+            <div id="rules-desc" class="text-sm">
+              <ul>
+                <li>Each card shows 4 images that belong together.</li>
+                <li>You have about 4 seconds per card. Faster is better.</li>
+                <li>Tap the heart or press Y / swipe right for “Yes”.</li>
+                <li>Tap the X or press N / swipe left for “No”.</li>
+                <li>Clicking the images does nothing — choose Yes/No.</li>
+              </ul>
+              <div class="swipe-demo" aria-hidden="true">
+                <div class="swipe-ghost"></div>
+                <div class="swipe-arrows"><span>← No</span><span>Yes →</span></div>
+              </div>
+            </div>
+            <div class="overlay-actions">
+              <button id="rulesGotIt" type="button" class="overlay-btn">Got it</button>
+            </div>
+          </div>
+        </div>
         <!-- thin progress/timer line at top -->
         <div id="timerContainer" class="w-[560px] max-w-full mx-auto" role="timer" aria-label="Response timer" style="display: none;">
           <div id="timerBar" class="h-[4px] bg-[var(--progress-bg)] rounded-full overflow-hidden" role="progressbar" aria-label="Time remaining" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 80%; margin-left: auto; margin-right: auto;">
