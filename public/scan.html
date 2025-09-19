@@ -165,6 +165,15 @@
         <div class="flex flex-col items-center gap-2 pt-2">
           <h2 id="practice-heading" class="text-xl md:text-2xl font-semibold text-yellow-950">How does it work?</h2>
           <p class="text-base md:text-lg text-yellow-950 max-w-[560px] mx-auto">Choose the cards that feel right by swiping or clicking. Go with your gut—don’t overthink it. This is about speed: faster is better. Give it a shot:</p>
+          <div class="w-full max-w-[560px] text-left mx-auto">
+            <h3 class="text-base font-semibold text-yellow-950" style="margin: 6px 0 6px;">Quick rules</h3>
+            <ul class="text-sm text-yellow-950 list-disc" style="margin: 0 0 6px 18px;">
+              <li>Each card shows <strong>4 images</strong> that belong together.</li>
+              <li>You have about <strong>4 seconds per card</strong>. Faster is better.</li>
+              <li>Use <strong>Yes</strong> (heart) / <strong>No</strong> (X), or swipe <strong>right/left</strong>, or press <strong>Y/N</strong>.</li>
+              <li><strong>Clicking the images does nothing</strong> — choose Yes/No.</li>
+            </ul>
+          </div>
           <span class="inline-flex items-center rounded-full text-sm font-semibold py-1" style="background-color:#FF9800; color:#ffffff; padding-left:6px; padding-right:6px;">Practice round</span>
           <div class="w-[280px] h-[2px] bg-neutral-200 rounded-full mt-2"></div>
         </div>
@@ -179,21 +188,6 @@
         <!-- Card area -->
         <div id="practiceCardContainer" class="w-full min-h-0 flex items-center justify-center text-center relative" role="region" aria-live="polite" aria-label="Practice card presentation area">
           <div id="practiceCard" class="w-full max-w-[560px] flex items-center justify-center relative" style="aspect-ratio: 3 / 2;">
-            <!-- Quick rules overlay positioned inside the card so it matches the fake card area exactly -->
-            <div id="practiceRulesOverlay" class="overlay-backdrop" style="display: none; position: absolute; inset: 0;">
-              <div class="overlay-card" style="position: absolute; inset: 0; margin: auto;">
-                <h3 class="text-base font-semibold mb-1" style="margin:0;">Quick rules</h3>
-                <ul class="text-sm" style="margin:0 0 8px 18px;">
-                  <li>Each card shows <strong>4 images</strong> that belong together.</li>
-                  <li>You have about <strong>4 seconds per card</strong>. Faster is better.</li>
-                  <li>Use <strong>Yes</strong> (heart) / <strong>No</strong> (X), or swipe <strong>right/left</strong>, or press <strong>Y/N</strong>.</li>
-                  <li><strong>Clicking the images does nothing</strong> — choose Yes/No.</li>
-                </ul>
-                <div class="overlay-actions" style="display: flex; justify-content: center; gap: 8px; margin-top: 14px;">
-                  <button id="practiceRulesGotIt" type="button" class="overlay-btn">Got it</button>
-                </div>
-              </div>
-            </div>
             <div class="loading">Loading practice cards...</div>
           </div>
           <div id="practiceHintLeft" class="practice-swipe-hint practice-swipe-left" aria-hidden="true">←</div>
