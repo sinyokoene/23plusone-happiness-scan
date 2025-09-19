@@ -194,6 +194,8 @@
     // Show timer and buttons (keep layout space reserved for stability)
     practiceTimerContainer.style.visibility = 'visible';
     practiceButtonsDiv.style.visibility = 'visible';
+    const practiceGestureHint = document.getElementById('practiceGestureHint');
+    if (practiceGestureHint) { practiceGestureHint.style.display = 'flex'; }
 
     setTimeout(() => {
       setupPracticeSwipeListeners();
@@ -213,13 +215,15 @@
         right.style.display = 'block';
         const onceOpts = { once: true };
         if (cardImage) {
-          cardImage.addEventListener('touchstart', hideHints, onceOpts);
-          cardImage.addEventListener('mousedown', hideHints, onceOpts);
-          cardImage.addEventListener('click', hideHints, onceOpts);
-          cardImage.addEventListener('keydown', (e)=>{ if(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key==='Enter'||e.key===' '){ hideHints(); } }, onceOpts);
+          const hideAllHints = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; };
+          cardImage.addEventListener('touchstart', hideAllHints, onceOpts);
+          cardImage.addEventListener('mousedown', hideAllHints, onceOpts);
+          cardImage.addEventListener('click', hideAllHints, onceOpts);
+          cardImage.addEventListener('keydown', (e)=>{ if(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key==='Enter'||e.key===' '){ hideAllHints(); } }, onceOpts);
         }
-        if (practiceYesBtn) practiceYesBtn.addEventListener('click', hideHints, onceOpts);
-        if (practiceNoBtn) practiceNoBtn.addEventListener('click', hideHints, onceOpts);
+        const hideAll = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; };
+        if (practiceYesBtn) practiceYesBtn.addEventListener('click', hideAll, onceOpts);
+        if (practiceNoBtn) practiceNoBtn.addEventListener('click', hideAll, onceOpts);
       }
     }, 100);
 
