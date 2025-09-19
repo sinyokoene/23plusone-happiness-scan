@@ -116,15 +116,9 @@
     .practice-swipe-hint { position: absolute; top: 50%; transform: translateY(-50%); color: rgba(0,0,0,0.35); font-size: 24px; font-weight: 600; pointer-events: none; user-select: none; }
     .practice-swipe-left { left: calc(50% - 330px); animation: nudgeLeft 1.8s ease-in-out infinite; }
     .practice-swipe-right { right: calc(50% - 330px); animation: nudgeRight 1.8s ease-in-out infinite; }
-    /* Gesture hint below buttons */
-    .gesture-hint { display: flex; align-items: center; justify-content: center; gap: 10px; color: #9c8078; }
-    .swipe-demo { position: relative; width: 80px; height: 44px; border: 1px solid #e0e0e0; border-radius: 10px; background: #fafafa; overflow: hidden; }
-    .swipe-card { position: absolute; top: 10px; left: 8px; width: 36px; height: 24px; background: #ffffff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.15); animation: swipeLR 2.4s ease-in-out infinite; }
-    @keyframes swipeLR { 0%,100% { transform: translateX(0) rotate(0deg); } 25% { transform: translateX(-24px) rotate(-6deg); } 50% { transform: translateX(0) rotate(0deg); } 75% { transform: translateX(24px) rotate(6deg); } }
-    .hint-or { font-size: 12px; color: #9c8078; }
-    .hint-icon { width: 18px; height: 18px; animation: pulse 1.2s ease-in-out infinite; }
-    .hint-icon.no { animation-delay: 0.6s; }
+    /* Pre-interaction pulse for real icons */
     @keyframes pulse { 0%,100% { transform: scale(1); opacity: .8; } 50% { transform: scale(1.15); opacity: 1; } }
+    .pulse-icon { animation: pulse 1.2s ease-in-out infinite; }
     @media (max-width: 640px) {
       .practice-swipe-left { left: 10px; }
       .practice-swipe-right { right: 10px; }
@@ -173,14 +167,8 @@
         </div>
         <div class="flex flex-col items-center gap-2 pt-2">
           <h2 id="practice-heading" class="text-xl md:text-2xl font-semibold text-yellow-950">How does it work?</h2>
-          <p class="text-base md:text-lg text-yellow-950 max-w-[560px] mx-auto">Choose the cards that feel right by swiping or clicking. Go with your gut—don’t overthink it. This is about speed: faster is better. Give it a shot:</p>
-          <div class="w-full max-w-[560px] text-left mx-auto">
-            <h3 class="text-base font-semibold text-yellow-950" style="margin: 6px 0 6px;">Quick rules</h3>
-            <ul class="text-sm text-yellow-950 list-disc" style="margin: 0 0 6px 18px;">
-              <li>Each card shows <strong>4 images</strong> that belong together.</li>
-              <li>You have about <strong>4 seconds per card</strong>. Faster is better.</li>
-            </ul>
-          </div>
+          <p class="text-base md:text-lg text-yellow-950 max-w-[560px] mx-auto">Each card shows 4 images that belong together.
+            You have about 4 seconds per card. Choose the cards that feel right by swiping or clicking. Go with your gut—don’t overthink it. This is about speed: faster is better. Give it a shot:</p> 
           <span class="inline-flex items-center rounded-full text-sm font-semibold py-1" style="background-color:#FF9800; color:#ffffff; padding-left:6px; padding-right:6px;">Practice round</span>
           <div class="w-[280px] h-[2px] bg-neutral-200 rounded-full mt-2"></div>
         </div>
@@ -205,19 +193,11 @@
         <div id="practiceButtons" class="buttons" role="group" aria-label="Practice response options" style="visibility: hidden; min-height: 72px;">
           <div class="flex items-center justify-center gap-24 pt-2 pb-1">
             <button id="practiceNoBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="No - I don't connect with this" accesskey="n">
-              <img src="x-mark.svg" alt="No" class="w-7 h-7" />
+              <img src="x-mark.svg" alt="No" class="w-7 h-7 pulse-icon" />
             </button>
             <button id="practiceYesBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="Yes - This speaks to me" accesskey="y">
-              <img src="heart.svg" alt="Yes" class="w-7 h-7" />
+              <img src="heart.svg" alt="Yes" class="w-7 h-7 pulse-icon" />
             </button>
-          </div>
-          <!-- Gesture hint under buttons -->
-          <div id="practiceGestureHint" class="gesture-hint mt-1" style="display: none; min-height: 26px;">
-            <div class="swipe-demo" aria-hidden="true"><div class="swipe-card"></div></div>
-            <span class="text-xs">Swipe left or right</span>
-            <span class="hint-or">or</span>
-            <img src="heart.svg" alt="Yes" class="hint-icon yes" />
-            <img src="x-mark.svg" alt="No" class="hint-icon no" />
           </div>
         </div>
       </div>

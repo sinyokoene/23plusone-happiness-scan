@@ -196,6 +196,15 @@
     practiceButtonsDiv.style.visibility = 'visible';
     const practiceGestureHint = document.getElementById('practiceGestureHint');
     if (practiceGestureHint) { practiceGestureHint.style.display = 'flex'; }
+    // Stop pre-interaction pulse on first interaction
+    const removePulse = () => {
+      try {
+        const yesIcon = practiceYesBtn ? practiceYesBtn.querySelector('img') : null;
+        const noIcon = practiceNoBtn ? practiceNoBtn.querySelector('img') : null;
+        if (yesIcon) yesIcon.classList.remove('pulse-icon');
+        if (noIcon) noIcon.classList.remove('pulse-icon');
+      } catch (_) {}
+    };
 
     setTimeout(() => {
       setupPracticeSwipeListeners();
@@ -206,7 +215,7 @@
         cardImage.style.transform = '';
         cardImage.style.transition = '';
       }
-      // Show swipe arrows until any interaction
+      // Show swipe arrows until any interaction; also stop icon pulse on any interaction
       const left = document.getElementById('practiceHintLeft');
       const right = document.getElementById('practiceHintRight');
       const hideHints = () => { if (left) left.style.display='none'; if (right) right.style.display='none'; };
@@ -215,13 +224,13 @@
         right.style.display = 'block';
         const onceOpts = { once: true };
         if (cardImage) {
-          const hideAllHints = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; };
+          const hideAllHints = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; removePulse(); };
           cardImage.addEventListener('touchstart', hideAllHints, onceOpts);
           cardImage.addEventListener('mousedown', hideAllHints, onceOpts);
           cardImage.addEventListener('click', hideAllHints, onceOpts);
           cardImage.addEventListener('keydown', (e)=>{ if(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key==='Enter'||e.key===' '){ hideAllHints(); } }, onceOpts);
         }
-        const hideAll = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; };
+        const hideAll = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; removePulse(); };
         if (practiceYesBtn) practiceYesBtn.addEventListener('click', hideAll, onceOpts);
         if (practiceNoBtn) practiceNoBtn.addEventListener('click', hideAll, onceOpts);
       }
@@ -231,6 +240,7 @@
     if (practiceIndex === 0) {
       const startIfIdle = () => {
         if (!practiceTimerActive) { startPracticeTimer(); }
+        removePulse();
       };
       const cardImage = document.querySelector('.practice-card-image');
       if (cardImage) {
