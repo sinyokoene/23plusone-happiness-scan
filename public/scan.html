@@ -156,6 +156,8 @@
     /* Subtle one-time shake for first practice card */
     @keyframes shakeSubtle { 0% { transform: translateX(0) rotate(0); } 15% { transform: translateX(-6px) rotate(-0.4deg); } 30% { transform: translateX(6px) rotate(0.4deg); } 45% { transform: translateX(-4px) rotate(-0.3deg); } 60% { transform: translateX(4px) rotate(0.3deg); } 75% { transform: translateX(-2px) rotate(-0.2deg); } 100% { transform: translateX(0) rotate(0); } }
     .practice-shake { animation: shakeSubtle 1200ms ease-in-out 1; }
+    /* Keyboard hint text */
+    .kbd-hint { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 6px; }
     /* practice popup is positioned within the card container */
   </style>
   
@@ -230,6 +232,7 @@
               <img src="heart.svg" alt="Yes" class="w-7 h-7" />
             </button>
           </div>
+          <div id="practiceKeyboardHint" class="kbd-hint" aria-hidden="true">Use ← for No and → for Yes</div>
         </div>
       </div>
     </section>
@@ -273,6 +276,7 @@
               <img src="heart.svg" alt="Yes" class="w-7 h-7" />
             </button>
           </div>
+          <div id="gameKeyboardHint" class="kbd-hint" aria-hidden="true">Use ← for No and → for Yes</div>
         </div>
 
         <!-- removed inline footer row -->

@@ -339,6 +339,21 @@
   // Practice controls
   if (practiceYesBtn) practiceYesBtn.addEventListener('click', () => recordPracticeAnswer(true));
   if (practiceNoBtn) practiceNoBtn.addEventListener('click', () => recordPracticeAnswer(false));
+  // Global keyboard shortcuts in practice: ArrowLeft = No, ArrowRight = Yes
+  document.addEventListener('keydown', function practiceArrows(e){
+    if (practiceDiv && practiceDiv.style.display !== 'none') {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); recordPracticeAnswer(false); hidePracticeHints(); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); recordPracticeAnswer(true); hidePracticeHints(); }
+    }
+  });
+  function hidePracticeHints(){
+    const left = document.getElementById('practiceHintLeft');
+    const right = document.getElementById('practiceHintRight');
+    const hint = document.getElementById('practiceKeyboardHint');
+    if (left) left.style.display = 'none';
+    if (right) right.style.display = 'none';
+    if (hint) hint.style.display = 'none';
+  }
   if (letsGoBtn) letsGoBtn.addEventListener('click', () => {
     // Proceed to real countdown
     // stop any running practice timers
@@ -1405,6 +1420,16 @@
         recordAnswer(false);
         break;
     }
+  }
+  // Also support ArrowLeft/ArrowRight in game mode
+  document.addEventListener('keydown', function gameArrows(e){
+    if (gameDiv.style.display === 'none' || buttonsDiv.style.display === 'none') return;
+    if (e.key === 'ArrowLeft') { e.preventDefault(); recordAnswer(false); hideGameHint(); }
+    if (e.key === 'ArrowRight') { e.preventDefault(); recordAnswer(true); hideGameHint(); }
+  });
+  function hideGameHint(){
+    const hint = document.getElementById('gameKeyboardHint');
+    if (hint) hint.style.display = 'none';
   }
   
   // Touch/swipe functionality for mobile
