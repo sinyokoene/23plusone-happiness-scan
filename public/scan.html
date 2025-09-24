@@ -154,8 +154,8 @@
       .practice-swipe-left { left: 10px; }
       .practice-swipe-right { right: 10px; }
     }
-    @keyframes nudgeLeft { 0%,100% { transform: translate(-6px, -50%); opacity: .6; } 50% { transform: translate(0, -50%); opacity: .2; } }
-    @keyframes nudgeRight { 0%,100% { transform: translate(6px, -50%); opacity: .6; } 50% { transform: translate(0, -50%); opacity: .2; } }
+    @keyframes nudgeLeft { 0%,100% { transform: translate(-6px, -50%); opacity: 1; } 50% { transform: translate(0, -50%); opacity: 1; } }
+    @keyframes nudgeRight { 0%,100% { transform: translate(6px, -50%); opacity: 1; } 50% { transform: translate(0, -50%); opacity: 1; } }
     /* Subtle one-time shake for first practice card */
     @keyframes shakeSubtle { 0% { transform: translateX(0) rotate(0); } 15% { transform: translateX(-6px) rotate(-0.4deg); } 30% { transform: translateX(6px) rotate(0.4deg); } 45% { transform: translateX(-4px) rotate(-0.3deg); } 60% { transform: translateX(4px) rotate(0.3deg); } 75% { transform: translateX(-2px) rotate(-0.2deg); } 100% { transform: translateX(0) rotate(0); } }
     .practice-shake { animation: shakeSubtle 1200ms ease-in-out 1; }
