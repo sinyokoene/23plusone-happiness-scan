@@ -168,24 +168,21 @@
       .btn-with-hint:hover .arrow-tooltip { opacity: 1; visibility: visible; transform: translate(-50%, -10px); }
     }
     /* practice popup is positioned within the card container */
-    /* Desktop: unify all buttons to white with border, 40px height */
-    @media (hover: hover) and (pointer: fine) {
-      /* Apply unified look */
-      button, .share-button {
-        height: 40px;
-        min-height: 40px;
-        max-height: 40px;
-        background: #ffffff !important;
-        border: 1px solid #E8E8EA;
-        border-radius: 12px;
-        box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25);
-      }
-      /* Preserve colored intent via text color */
-      #startBtn { color: var(--brand-pink, #e91e63); }
-      #letsGoBtn { color: #3AB4A0; }
-      .share-button { color: var(--brand-pink, #e91e63); background: #ffffff !important; }
-      #practiceNextBtn, #practicePrevBtn { color: #2c1f1c; }
+    /* Unified button style (all devices): white pill, border, 40px height */
+    button, .share-button {
+      height: 40px;
+      min-height: 40px;
+      max-height: 40px;
+      background: #ffffff !important;
+      border: 1px solid #E8E8EA;
+      border-radius: 12px;
+      box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25);
     }
+    /* Preserve colored intent via text color */
+    #startBtn { color: var(--brand-pink, #e91e63); }
+    #letsGoBtn { color: #3AB4A0; }
+    .share-button { color: var(--brand-pink, #e91e63); background: #ffffff !important; }
+    #practiceNextBtn, #practicePrevBtn { color: #2c1f1c; }
   </style>
   
   
@@ -219,7 +216,7 @@
     <!-- Practice Section (between Intro and Countdown) -->
     <section id="practice" class="section w-full flex items-center justify-center relative" role="region" aria-labelledby="practice-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none;">
       <div class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center">
-        <div class="w-full flex items-center justify-end" style="position: absolute; top: 16px; left: 16px; right: 16px; height: 24px;">
+        <div class="w-full flex items-center justify-end" style="position: absolute; top: 16px; left: 16px; right: 16px; height: 40px;">
           <button id="practiceNextBtn" type="button" class="text-sm font-medium text-yellow-950 inline-flex items-center gap-1" style="position: absolute; top: 0; right: 0;">
             <span>Next</span>
             <span aria-hidden>→</span>
