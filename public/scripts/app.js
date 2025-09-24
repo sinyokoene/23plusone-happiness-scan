@@ -81,6 +81,68 @@
   }
   // Expose for research mode orchestrator
   window._showSection = showSection;
+
+  // Intro GIF desktop tilt
+  let disableIntroTilt = function(){};
+  function enableIntroGifTiltIfDesktop(){
+    if (!isDesktop) return;
+    const tiltEl = document.getElementById('introGifContainer');
+    if (!tiltEl) return;
+    // Cleanup any previous
+    disableIntroTilt();
+    let rafId = null;
+    let currentRX = 0, currentRY = 0;
+    const maxTilt = 6;
+    const damp = 0.12;
+    const applyTransform = () => {
+      tiltEl.style.transform = `perspective(800px) rotateX(${currentRX}deg) rotateY(${currentRY}deg) scale(1.02)`;
+    };
+    const onMouseMove = (e) => {
+      const rect = tiltEl.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const dx = (e.clientX - cx) / (rect.width / 2);
+      const dy = (e.clientY - cy) / (rect.height / 2);
+      const targetRY = Math.max(-1, Math.min(1, dx)) * maxTilt;
+      const targetRX = Math.max(-1, Math.min(1, -dy)) * maxTilt;
+      if (rafId) cancelAnimationFrame(rafId);
+      const step = () => {
+        currentRX += (targetRX - currentRX) * damp;
+        currentRY += (targetRY - currentRY) * damp;
+        applyTransform();
+        if (Math.abs(targetRX - currentRX) > 0.05 || Math.abs(targetRY - currentRY) > 0.05) {
+          rafId = requestAnimationFrame(step);
+        } else {
+          rafId = null;
+        }
+      };
+      rafId = requestAnimationFrame(step);
+    };
+    const onMouseLeave = () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+      currentRX = 0; currentRY = 0;
+      tiltEl.style.transition = 'transform 180ms ease-out';
+      applyTransform();
+      setTimeout(() => { tiltEl.style.transition = ''; }, 200);
+    };
+    tiltEl.style.willChange = 'transform';
+    tiltEl.style.transformStyle = 'preserve-3d';
+    tiltEl.addEventListener('mousemove', onMouseMove);
+    tiltEl.addEventListener('mouseleave', onMouseLeave);
+    disableIntroTilt = function(){
+      try {
+        tiltEl.removeEventListener('mousemove', onMouseMove);
+        tiltEl.removeEventListener('mouseleave', onMouseLeave);
+      } catch(_) {}
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = null;
+      currentRX = 0; currentRY = 0;
+      tiltEl.style.transition = 'transform 160ms ease-out';
+      tiltEl.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
+      setTimeout(() => { tiltEl.style.transition = ''; }, 180);
+    };
+  }
   
   // Start button event listener with comprehensive debugging
   if (startBtn) {
@@ -91,6 +153,8 @@
       console.log('Button clicked - addEventListener method');
       e.preventDefault();
       e.stopPropagation();
+      // Stop intro GIF tilt when starting practice
+      try { if (typeof disableIntroTilt === 'function') disableIntroTilt(); } catch(_) {}
       startPractice();
     });
     
@@ -98,6 +162,8 @@
       console.log('Button clicked - onclick method');
       e.preventDefault();
       e.stopPropagation();
+      // Stop intro GIF tilt when starting practice
+      try { if (typeof disableIntroTilt === 'function') disableIntroTilt(); } catch(_) {}
       startPractice();
     };
     
@@ -1558,6 +1624,15 @@
   window._showSection = function(section) {
     originalShowSection(section);
     showKeyboardHintsIfDesktop();
+    // Manage intro GIF tilt based on visible section
+    try {
+      const id = section && section.id;
+      if (id === 'intro') {
+        enableIntroGifTiltIfDesktop();
+      } else {
+        if (typeof disableIntroTilt === 'function') disableIntroTilt();
+      }
+    } catch(_) {}
   };
   
   // Touch/swipe functionality for mobile
