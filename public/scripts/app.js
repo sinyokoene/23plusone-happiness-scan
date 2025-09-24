@@ -341,6 +341,15 @@
   // Practice controls
   if (practiceYesBtn) practiceYesBtn.addEventListener('click', () => recordPracticeAnswer(true));
   if (practiceNoBtn) practiceNoBtn.addEventListener('click', () => recordPracticeAnswer(false));
+  // Add colored border flash on click in practice
+  if (practiceYesBtn) practiceYesBtn.addEventListener('click', () => {
+    practiceYesBtn.classList.add('flash-yes');
+    setTimeout(() => practiceYesBtn.classList.remove('flash-yes'), 220);
+  });
+  if (practiceNoBtn) practiceNoBtn.addEventListener('click', () => {
+    practiceNoBtn.classList.add('flash-no');
+    setTimeout(() => practiceNoBtn.classList.remove('flash-no'), 220);
+  });
   // Desktop detection helper
   const isDesktop = (() => {
     const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
@@ -352,9 +361,7 @@
   function showKeyboardHintsIfDesktop() {
     if (!isDesktop) return;
     const ph = document.getElementById('practiceKeyboardHint');
-    const gh = document.getElementById('gameKeyboardHint');
     if (ph && practiceDiv && practiceDiv.style.display !== 'none') ph.style.display = 'block';
-    if (gh && gameDiv && gameDiv.style.display !== 'none') gh.style.display = 'block';
   }
 
   // Global keyboard shortcuts in practice: ArrowLeft = No, ArrowRight = Yes (desktop only)
@@ -1408,6 +1415,9 @@
   // Button event listeners - immediate record; visual feedback handled via :active CSS
   yesBtn.addEventListener('click', () => recordAnswer(true));
   noBtn.addEventListener('click', () => recordAnswer(false));
+  // Add colored border flash on click in game
+  yesBtn.addEventListener('click', () => { yesBtn.classList.add('flash-yes'); setTimeout(()=>yesBtn.classList.remove('flash-yes'), 220); });
+  noBtn.addEventListener('click', () => { noBtn.classList.add('flash-no'); setTimeout(()=>noBtn.classList.remove('flash-no'), 220); });
   
   // Keyboard navigation setup
   function setupKeyboardNavigation() {
