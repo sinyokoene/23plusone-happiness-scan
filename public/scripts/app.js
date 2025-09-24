@@ -194,6 +194,8 @@
     // Show timer and buttons (keep layout space reserved for stability)
     practiceTimerContainer.style.visibility = 'visible';
     practiceButtonsDiv.style.visibility = 'visible';
+    // Reveal desktop keyboard hint now that practice controls are visible
+    try { if (typeof showKeyboardHintsIfDesktop === 'function') { showKeyboardHintsIfDesktop(); } } catch (_) {}
     const practiceGestureHint = document.getElementById('practiceGestureHint');
     if (practiceGestureHint) { practiceGestureHint.style.display = 'flex'; }
     // Stop pre-interaction pulse on first interaction
@@ -361,6 +363,7 @@
     if (practiceDiv && practiceDiv.style.display !== 'none') {
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
+        if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); }
         const btn = document.getElementById('practiceNoBtn');
         if (btn) { btn.classList.add('flash-no'); setTimeout(()=>btn.classList.remove('flash-no'), 220); }
         recordPracticeAnswer(false);
@@ -368,6 +371,7 @@
       }
       if (e.key === 'ArrowRight') {
         e.preventDefault();
+        if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); }
         const btn = document.getElementById('practiceYesBtn');
         if (btn) { btn.classList.add('flash-yes'); setTimeout(()=>btn.classList.remove('flash-yes'), 220); }
         recordPracticeAnswer(true);
@@ -734,6 +738,8 @@
     timerContainer.style.display = 'block';
     // Use block here so the inner row controls layout; prevents hint from sitting beside the row
     buttonsDiv.style.display = 'block';
+    // Reveal desktop keyboard hint now that game controls are visible
+    try { if (typeof showKeyboardHintsIfDesktop === 'function') { showKeyboardHintsIfDesktop(); } } catch (_) {}
     
     // Ensure card is fully visible and reset any lingering styles (already done above)
     
@@ -1457,6 +1463,7 @@
     if (gameDiv.style.display === 'none' || buttonsDiv.style.display === 'none') return;
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
+      if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); }
       const btn = document.getElementById('noBtn');
       if (btn) { btn.classList.add('flash-no'); setTimeout(()=>btn.classList.remove('flash-no'), 220); }
       recordAnswer(false);
@@ -1464,6 +1471,7 @@
     }
     if (e.key === 'ArrowRight') {
       e.preventDefault();
+      if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); }
       const btn = document.getElementById('yesBtn');
       if (btn) { btn.classList.add('flash-yes'); setTimeout(()=>btn.classList.remove('flash-yes'), 220); }
       recordAnswer(true);
