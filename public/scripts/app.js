@@ -86,8 +86,9 @@
   let disableIntroTilt = function(){};
   function enableIntroGifTiltIfDesktop(){
     if (!isDesktop) return;
-    const tiltEl = document.getElementById('introGifContainer');
-    if (!tiltEl) return;
+    const areaEl = document.getElementById('introGifContainer');
+    const tiltEl = document.getElementById('introGifImage');
+    if (!areaEl || !tiltEl) return;
     // Cleanup any previous
     disableIntroTilt();
     let rafId = null;
@@ -95,10 +96,10 @@
     const maxTilt = 6;
     const damp = 0.12;
     const applyTransform = () => {
-      tiltEl.style.transform = `perspective(800px) rotateX(${currentRX}deg) rotateY(${currentRY}deg) scale(1.02)`;
+      tiltEl.style.transform = `perspective(800px) rotateX(${currentRX}deg) rotateY(${currentRY}deg)`;
     };
     const onMouseMove = (e) => {
-      const rect = tiltEl.getBoundingClientRect();
+      const rect = areaEl.getBoundingClientRect();
       const cx = rect.left + rect.width / 2;
       const cy = rect.top + rect.height / 2;
       const dx = (e.clientX - cx) / (rect.width / 2);
@@ -126,21 +127,23 @@
       applyTransform();
       setTimeout(() => { tiltEl.style.transition = ''; }, 200);
     };
+    // prime styles on the image so container's rounded corners keep clipping intact
     tiltEl.style.willChange = 'transform';
-    tiltEl.style.transformStyle = 'preserve-3d';
-    tiltEl.addEventListener('mousemove', onMouseMove);
-    tiltEl.addEventListener('mouseleave', onMouseLeave);
+    tiltEl.style.backfaceVisibility = 'hidden';
+    tiltEl.style.transformOrigin = 'center center';
+    areaEl.addEventListener('mousemove', onMouseMove);
+    areaEl.addEventListener('mouseleave', onMouseLeave);
     disableIntroTilt = function(){
       try {
-        tiltEl.removeEventListener('mousemove', onMouseMove);
-        tiltEl.removeEventListener('mouseleave', onMouseLeave);
+        areaEl.removeEventListener('mousemove', onMouseMove);
+        areaEl.removeEventListener('mouseleave', onMouseLeave);
       } catch(_) {}
       if (rafId) cancelAnimationFrame(rafId);
       rafId = null;
       currentRX = 0; currentRY = 0;
-      tiltEl.style.transition = 'transform 160ms ease-out';
-      tiltEl.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
-      setTimeout(() => { tiltEl.style.transition = ''; }, 180);
+      tiltEl.style.transition = 'transform 120ms ease-out';
+      tiltEl.style.transform = 'none';
+      setTimeout(() => { tiltEl.style.transition = ''; }, 140);
     };
   }
   
