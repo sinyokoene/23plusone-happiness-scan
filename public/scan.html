@@ -123,17 +123,20 @@
     /* Pre-interaction pulse for real icons (subtle) */
     @keyframes pulse { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.06); opacity: .98; } }
     .pulse-icon { animation: pulse 1.8s ease-in-out infinite; }
-    /* Practice buttons: white pill with border and subtle shadow */
+    /* Practice buttons: white pill with border and subtle shadow (exact spec) */
     #practiceYesBtn, #practiceNoBtn {
-      width: 96px; /* override Tailwind w-14 */
-      height: 56px; /* override Tailwind h-14 */
+      width: 180px; /* button width */
+      height: 60px; /* button height */
       background: #ffffff;
-      border: 1px solid #e6e6e6;
-      border-radius: 14px; /* override rounded-full */
-      box-shadow: 0 2px 0 rgba(0,0,0,0.08);
+      border: 1px solid #E8E8EA; /* light gray border */
+      border-radius: 16px; /* pill corners */
+      box-shadow: 0 8px 18px rgba(0,0,0,0.10), 0 1px 0 rgba(0,0,0,0.06);
     }
-    #practiceYesBtn img, #practiceNoBtn img { width: 22px; height: 22px; }
-    #practiceYesBtn:active, #practiceNoBtn:active { box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
+    #practiceYesBtn img { filter: none; }
+    #practiceNoBtn img { filter: none; }
+    /* Icon stroke colors come from SVGs: x '#DC006B' (pink), heart '#3AB4A0' (teal) */
+    #practiceYesBtn img, #practiceNoBtn img { width: 26px; height: 26px; }
+    #practiceYesBtn:active, #practiceNoBtn:active { box-shadow: 0 6px 14px rgba(0,0,0,0.10), 0 1px 0 rgba(0,0,0,0.06); }
     @media (max-width: 640px) {
       .practice-swipe-left { left: 10px; }
       .practice-swipe-right { right: 10px; }
@@ -209,7 +212,7 @@
 
         <!-- Icon buttons -->
         <div id="practiceButtons" class="buttons" role="group" aria-label="Practice response options" style="visibility: hidden; min-height: 72px;">
-          <div class="flex items-center justify-center gap-24 pt-2 pb-1">
+          <div class="flex items-center justify-center gap-10 pt-4 pb-1">
             <button id="practiceNoBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="No - I don't connect with this" accesskey="n">
               <img src="x-mark.svg" alt="No" class="w-7 h-7 pulse-icon" />
             </button>
