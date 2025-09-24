@@ -145,6 +145,9 @@
       border-radius: 12px;
       box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25);
     }
+    /* Brief colored focus/selection flash for keyboard arrows */
+    .flash-yes { outline: 2px solid #3AB4A0; box-shadow: 0 0 0 3px rgba(58,180,160,0.25); transition: outline-color 300ms ease, box-shadow 300ms ease; }
+    .flash-no { outline: 2px solid #DC006B; box-shadow: 0 0 0 3px rgba(220,0,107,0.20); transition: outline-color 300ms ease, box-shadow 300ms ease; }
     #yesBtn img, #noBtn img { width: 26px; height: 26px; }
     #practiceYesBtn:active, #practiceNoBtn:active { opacity: 1; transform: translateY(1px); box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25); }
     @media (max-width: 640px) {
@@ -156,8 +159,8 @@
     /* Subtle one-time shake for first practice card */
     @keyframes shakeSubtle { 0% { transform: translateX(0) rotate(0); } 15% { transform: translateX(-6px) rotate(-0.4deg); } 30% { transform: translateX(6px) rotate(0.4deg); } 45% { transform: translateX(-4px) rotate(-0.3deg); } 60% { transform: translateX(4px) rotate(0.3deg); } 75% { transform: translateX(-2px) rotate(-0.2deg); } 100% { transform: translateX(0) rotate(0); } }
     .practice-shake { animation: shakeSubtle 1200ms ease-in-out 1; }
-    /* Keyboard hint text */
-    .kbd-hint { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 6px; }
+    /* Keyboard hint text (desktop only; JS toggles display) */
+    .kbd-hint { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 6px; display: none; }
     /* practice popup is positioned within the card container */
   </style>
   
@@ -267,7 +270,7 @@
         </div>
 
         <!-- Icon buttons -->
-        <div id="gameButtons" class="buttons" role="group" aria-label="Response options" style="display: none;">
+        <div id="gameButtons" class="buttons" role="group" aria-label="Response options" style="display: none; min-height: 72px;">
           <div class="flex items-center justify-center" style="gap: 20px; padding-top: 16px; padding-bottom: 4px;">
             <button id="noBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="No - I don't connect with this" accesskey="n">
               <img src="x-mark.svg" alt="No" class="w-7 h-7" />
@@ -276,7 +279,7 @@
               <img src="heart.svg" alt="Yes" class="w-7 h-7" />
             </button>
           </div>
-          <div id="gameKeyboardHint" class="kbd-hint" aria-hidden="true">Use ← for No and → for Yes</div>
+          <div id="gameKeyboardHint" class="kbd-hint" aria-hidden="true" style="text-align:center;">Use ← for No and → for Yes</div>
         </div>
 
         <!-- removed inline footer row -->

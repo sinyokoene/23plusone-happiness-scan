@@ -339,11 +339,40 @@
   // Practice controls
   if (practiceYesBtn) practiceYesBtn.addEventListener('click', () => recordPracticeAnswer(true));
   if (practiceNoBtn) practiceNoBtn.addEventListener('click', () => recordPracticeAnswer(false));
-  // Global keyboard shortcuts in practice: ArrowLeft = No, ArrowRight = Yes
+  // Desktop detection helper
+  const isDesktop = (() => {
+    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0;
+    const wideScreen = window.matchMedia && window.matchMedia('(pointer:fine)').matches;
+    return !hasTouch || wideScreen;
+  })();
+
+  // Show keyboard hints only on desktop
+  function showKeyboardHintsIfDesktop() {
+    if (!isDesktop) return;
+    const ph = document.getElementById('practiceKeyboardHint');
+    const gh = document.getElementById('gameKeyboardHint');
+    if (ph && practiceDiv && practiceDiv.style.display !== 'none') ph.style.display = 'block';
+    if (gh && gameDiv && gameDiv.style.display !== 'none') gh.style.display = 'block';
+  }
+
+  // Global keyboard shortcuts in practice: ArrowLeft = No, ArrowRight = Yes (desktop only)
   document.addEventListener('keydown', function practiceArrows(e){
+    if (!isDesktop) return;
     if (practiceDiv && practiceDiv.style.display !== 'none') {
-      if (e.key === 'ArrowLeft') { e.preventDefault(); recordPracticeAnswer(false); hidePracticeHints(); }
-      if (e.key === 'ArrowRight') { e.preventDefault(); recordPracticeAnswer(true); hidePracticeHints(); }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        const btn = document.getElementById('practiceNoBtn');
+        if (btn) { btn.classList.add('flash-no'); setTimeout(()=>btn.classList.remove('flash-no'), 220); }
+        recordPracticeAnswer(false);
+        hidePracticeHints();
+      }
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        const btn = document.getElementById('practiceYesBtn');
+        if (btn) { btn.classList.add('flash-yes'); setTimeout(()=>btn.classList.remove('flash-yes'), 220); }
+        recordPracticeAnswer(true);
+        hidePracticeHints();
+      }
     }
   });
   function hidePracticeHints(){
@@ -703,7 +732,8 @@
     
     // Show timer and buttons
     timerContainer.style.display = 'block';
-    buttonsDiv.style.display = 'flex';
+    // Use block here so the inner row controls layout; prevents hint from sitting beside the row
+    buttonsDiv.style.display = 'block';
     
     // Ensure card is fully visible and reset any lingering styles (already done above)
     
@@ -1423,14 +1453,35 @@
   }
   // Also support ArrowLeft/ArrowRight in game mode
   document.addEventListener('keydown', function gameArrows(e){
+    if (!isDesktop) return;
     if (gameDiv.style.display === 'none' || buttonsDiv.style.display === 'none') return;
-    if (e.key === 'ArrowLeft') { e.preventDefault(); recordAnswer(false); hideGameHint(); }
-    if (e.key === 'ArrowRight') { e.preventDefault(); recordAnswer(true); hideGameHint(); }
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      const btn = document.getElementById('noBtn');
+      if (btn) { btn.classList.add('flash-no'); setTimeout(()=>btn.classList.remove('flash-no'), 220); }
+      recordAnswer(false);
+      hideGameHint();
+    }
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      const btn = document.getElementById('yesBtn');
+      if (btn) { btn.classList.add('flash-yes'); setTimeout(()=>btn.classList.remove('flash-yes'), 220); }
+      recordAnswer(true);
+      hideGameHint();
+    }
   });
   function hideGameHint(){
     const hint = document.getElementById('gameKeyboardHint');
     if (hint) hint.style.display = 'none';
   }
+
+  // Call once on load and when sections change
+  showKeyboardHintsIfDesktop();
+  const originalShowSection = window._showSection;
+  window._showSection = function(section) {
+    originalShowSection(section);
+    showKeyboardHintsIfDesktop();
+  };
   
   // Touch/swipe functionality for mobile
   let startX = null;
