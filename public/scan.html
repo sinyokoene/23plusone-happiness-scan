@@ -70,8 +70,8 @@
     /* Prevent scroll globally and use dynamic viewport height */
     html, body { height: calc(var(--vh, 1vh) * 100); overflow: hidden; overscroll-behavior: none; }
     body.no-scroll { overflow: hidden; height: calc(var(--vh, 1vh) * 100); }
-    /* Ensure each app section cannot create its own scrollbars */
-    .section { overflow: hidden; }
+    /* Ensure each app section cannot create its own vertical scrollbars; allow horizontal overflow for swipe animations */
+    .section { overflow-y: hidden; overflow-x: visible; }
     /* Remove double-tap-to-zoom on interactive elements */
     button, .share-button, .link-like { touch-action: manipulation; }
 

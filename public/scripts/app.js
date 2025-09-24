@@ -612,7 +612,7 @@
     // Move completely off-screen horizontally based on viewport width
     const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
     const rect = practiceCurrentCard.getBoundingClientRect();
-    const distance = (viewportWidth / 2) + rect.width; // half viewport + card width
+    const distance = viewportWidth + rect.width; // full viewport + card width to ensure fully off-screen
     practiceCurrentCard.style.transform = `translateX(${direction * distance}px) rotate(${direction * 30}deg)`;
     practiceCurrentCard.style.transition = 'all 0.3s ease-out';
     if (isYes && practiceYesBtn) { practiceYesBtn.style.transform = 'scale(1.1)'; }
@@ -1749,7 +1749,7 @@
     // Move completely off-screen horizontally based on viewport width
     const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
     const rect = currentCard.getBoundingClientRect();
-    const distance = (viewportWidth / 2) + rect.width; // half viewport + card width
+    const distance = viewportWidth + rect.width; // full viewport + card width to ensure fully off-screen
     currentCard.style.transform = `translateX(${direction * distance}px) rotate(${direction * 30}deg)`;
     // Remove opacity change - keep cards visible during exit animation
     currentCard.style.transition = 'all 0.3s ease-out';
