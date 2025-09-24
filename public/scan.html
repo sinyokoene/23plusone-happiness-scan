@@ -123,6 +123,17 @@
     /* Pre-interaction pulse for real icons (subtle) */
     @keyframes pulse { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.06); opacity: .98; } }
     .pulse-icon { animation: pulse 1.8s ease-in-out infinite; }
+    /* Practice buttons: white pill with border and subtle shadow */
+    #practiceYesBtn, #practiceNoBtn {
+      width: 96px; /* override Tailwind w-14 */
+      height: 56px; /* override Tailwind h-14 */
+      background: #ffffff;
+      border: 1px solid #e6e6e6;
+      border-radius: 14px; /* override rounded-full */
+      box-shadow: 0 2px 0 rgba(0,0,0,0.08);
+    }
+    #practiceYesBtn img, #practiceNoBtn img { width: 22px; height: 22px; }
+    #practiceYesBtn:active, #practiceNoBtn:active { box-shadow: 0 1px 0 rgba(0,0,0,0.08); }
     @media (max-width: 640px) {
       .practice-swipe-left { left: 10px; }
       .practice-swipe-right { right: 10px; }
