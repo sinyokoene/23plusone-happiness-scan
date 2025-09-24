@@ -161,6 +161,10 @@
     .practice-shake { animation: shakeSubtle 1200ms ease-in-out 1; }
     /* Keyboard hint text (desktop only; JS toggles display) */
     .kbd-hint { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 6px; display: none; }
+    /* Hover arrow tooltips above practice buttons */
+    .btn-with-hint { position: relative; }
+    .arrow-tooltip { position: absolute; bottom: 100%; left: 50%; transform: translate(-50%, -8px); background: rgba(0,0,0,0.75); color: #fff; font-size: 12px; line-height: 1; padding: 6px 8px; border-radius: 6px; white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 120ms ease, visibility 120ms ease, transform 120ms ease; pointer-events: none; }
+    .btn-with-hint:hover .arrow-tooltip { opacity: 1; visibility: visible; transform: translate(-50%, -10px); }
     /* practice popup is positioned within the card container */
   </style>
   
@@ -203,8 +207,8 @@
         </div>
         <div class="flex flex-col items-center gap-2 pt-2">
           <h2 id="practice-heading" class="text-xl md:text-2xl font-semibold text-yellow-950">How does it work?</h2>
-          <p class="text-base md:text-lg text-yellow-950 max-w-[560px] mx-auto">One card = 4 pictures.<br>
-            Choose the cards that feel right by swiping or clicking. You have 4 seconds per card. This is about speed: faster is better.</p> 
+          <p class="text-base md:text-lg text-yellow-950 max-w-[560px] mx-auto">A card is made up of 4 pictures.<br>
+            Swipe or select with the buttons or use arrow keys. You have 4 seconds per card.</p> 
           <span class="inline-flex items-center rounded-full text-sm font-semibold py-1" style="background-color:#FF9800; color:#ffffff; padding-left:6px; padding-right:6px;">Practice round</span>
           <div class="w-[280px] h-[2px] bg-neutral-200 rounded-full mt-2"></div>
         </div>
@@ -228,12 +232,18 @@
         <!-- Icon buttons -->
         <div id="practiceButtons" class="buttons" role="group" aria-label="Practice response options" style="visibility: hidden; min-height: 72px;">
           <div class="flex items-center justify-center" style="gap: 20px; padding-top: 16px; padding-bottom: 4px;">
-            <button id="practiceNoBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="No - I don't connect with this" accesskey="n">
-              <img src="x-mark.svg" alt="No" class="w-7 h-7" />
-            </button>
-            <button id="practiceYesBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="Yes - This speaks to me" accesskey="y">
-              <img src="heart.svg" alt="Yes" class="w-7 h-7" />
-            </button>
+            <div class="btn-with-hint">
+              <div class="arrow-tooltip" aria-hidden="true">Use ←</div>
+              <button id="practiceNoBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="No - I don't connect with this" accesskey="n">
+                <img src="x-mark.svg" alt="No" class="w-7 h-7" />
+              </button>
+            </div>
+            <div class="btn-with-hint">
+              <div class="arrow-tooltip" aria-hidden="true">Use →</div>
+              <button id="practiceYesBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="Yes - This speaks to me" accesskey="y">
+                <img src="heart.svg" alt="Yes" class="w-7 h-7" />
+              </button>
+            </div>
           </div>
           <div id="practiceKeyboardHint" class="kbd-hint" aria-hidden="true">Use ← for No and → for Yes</div>
         </div>
