@@ -260,6 +260,18 @@
       </div>
     `;
 
+    // Update practice instructions text based on device
+    try {
+      const practiceIntroTextEl = document.getElementById('practiceIntroText');
+      if (practiceIntroTextEl) {
+        if (isDesktop) {
+          practiceIntroTextEl.innerHTML = 'A card is made up of 4 pictures.<br>Use the buttons or arrow keys. You have 4 seconds per card.';
+        } else {
+          practiceIntroTextEl.innerHTML = 'A card is made up of 4 pictures.<br>Use the buttons or swipe. You have 4 seconds per card.';
+        }
+      }
+    } catch(_) {}
+
     // Show timer and buttons (keep layout space reserved for stability)
     practiceTimerContainer.style.visibility = 'visible';
     practiceButtonsDiv.style.visibility = 'visible';
@@ -354,8 +366,13 @@
       const right = document.getElementById('practiceHintRight');
       const hideHints = () => { if (left) left.style.display='none'; if (right) right.style.display='none'; };
       if (left && right) {
-        left.style.display = 'block';
-        right.style.display = 'block';
+        // Show swipe hints only on mobile
+        if (!isDesktop) {
+          left.style.display = 'block';
+          right.style.display = 'block';
+        } else {
+          hideHints();
+        }
         const onceOpts = { once: true };
         if (cardImage) {
           const hideAllHints = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; removePulse(); disablePracticeTilt(); };
@@ -577,6 +594,7 @@
     if (!cardImage) return;
     practiceCurrentCard = cardImage;
 
+    // Mobile touch swipe only
     cardImage.addEventListener('touchstart', function(e){ e.preventDefault(); practiceStartX = e.touches[0].clientX; }, { passive: false });
     cardImage.addEventListener('touchmove', function(e){
       e.preventDefault();
@@ -598,12 +616,15 @@
       practiceStartX = null;
     }, { passive: false });
 
-    // Mouse
-    cardImage.addEventListener('mousedown', function(e){ e.preventDefault(); practiceStartX = e.clientX; });
-    cardImage.addEventListener('mousemove', function(e){ if (practiceStartX == null || !practiceCurrentCard) return; const dx = e.clientX - practiceStartX; practiceCurrentCard.style.transform = `translateX(${dx}px) rotate(${dx * 0.1}deg)`; });
-    const up = function(e){ if (practiceStartX == null || !practiceCurrentCard) return; const dx = e.clientX - practiceStartX; if (Math.abs(dx) > 100) { const isYes = dx > 0; animatePracticeCardExit(isYes); setTimeout(() => recordPracticeAnswer(isYes), 300); } else { practiceCurrentCard.style.transform = ''; } practiceStartX = null; };
-    cardImage.addEventListener('mouseup', up);
-    cardImage.addEventListener('mouseleave', up);
+    // Disable mouse-drag swipe on desktop
+    if (!isDesktop) {
+      // On mobile with mice, allow mouse drag as well
+      cardImage.addEventListener('mousedown', function(e){ e.preventDefault(); practiceStartX = e.clientX; });
+      cardImage.addEventListener('mousemove', function(e){ if (practiceStartX == null || !practiceCurrentCard) return; const dx = e.clientX - practiceStartX; practiceCurrentCard.style.transform = `translateX(${dx}px) rotate(${dx * 0.1}deg)`; });
+      const up = function(e){ if (practiceStartX == null || !practiceCurrentCard) return; const dx = e.clientX - practiceStartX; if (Math.abs(dx) > 100) { const isYes = dx > 0; animatePracticeCardExit(isYes); setTimeout(() => recordPracticeAnswer(isYes), 300); } else { practiceCurrentCard.style.transform = ''; } practiceStartX = null; };
+      cardImage.addEventListener('mouseup', up);
+      cardImage.addEventListener('mouseleave', up);
+    }
   }
 
   function animatePracticeCardExit(isYes) {
@@ -612,7 +633,7 @@
     // Move completely off-screen horizontally based on viewport width
     const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
     const rect = practiceCurrentCard.getBoundingClientRect();
-    const distance = viewportWidth + rect.width; // full viewport + card width to ensure fully off-screen
+    const distance = (viewportWidth / 2) + rect.width; // half viewport + card width
     practiceCurrentCard.style.transform = `translateX(${direction * distance}px) rotate(${direction * 30}deg)`;
     practiceCurrentCard.style.transition = 'all 0.3s ease-out';
     if (isYes && practiceYesBtn) { practiceYesBtn.style.transform = 'scale(1.1)'; }
@@ -1660,11 +1681,13 @@
     cardImage.addEventListener('touchmove', handleTouchMove, { passive: false });
     cardImage.addEventListener('touchend', handleTouchEnd, { passive: false });
     
-    // Mouse events for desktop
-    cardImage.addEventListener('mousedown', handleMouseDown);
-    cardImage.addEventListener('mousemove', handleMouseMove);
-    cardImage.addEventListener('mouseup', handleMouseUp);
-    cardImage.addEventListener('mouseleave', handleMouseUp);
+    // Disable mouse-drag swipe on desktop; only allow on non-desktop (e.g., tablets with mice)
+    if (!isDesktop) {
+      cardImage.addEventListener('mousedown', handleMouseDown);
+      cardImage.addEventListener('mousemove', handleMouseMove);
+      cardImage.addEventListener('mouseup', handleMouseUp);
+      cardImage.addEventListener('mouseleave', handleMouseUp);
+    }
   }
   
   function handleTouchStart(e) {
@@ -1749,7 +1772,7 @@
     // Move completely off-screen horizontally based on viewport width
     const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
     const rect = currentCard.getBoundingClientRect();
-    const distance = viewportWidth + rect.width; // full viewport + card width to ensure fully off-screen
+    const distance = (viewportWidth / 2) + rect.width; // half viewport + card width
     currentCard.style.transform = `translateX(${direction * distance}px) rotate(${direction * 30}deg)`;
     // Remove opacity change - keep cards visible during exit animation
     currentCard.style.transition = 'all 0.3s ease-out';

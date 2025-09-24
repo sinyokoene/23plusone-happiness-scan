@@ -70,8 +70,8 @@
     /* Prevent scroll globally and use dynamic viewport height */
     html, body { height: calc(var(--vh, 1vh) * 100); overflow: hidden; overscroll-behavior: none; }
     body.no-scroll { overflow: hidden; height: calc(var(--vh, 1vh) * 100); }
-    /* Ensure each app section cannot create its own vertical scrollbars; allow horizontal overflow for swipe animations */
-    .section { overflow-y: hidden; overflow-x: visible; }
+    /* Ensure each app section cannot create its own scrollbars */
+    .section { overflow: hidden; }
     /* Remove double-tap-to-zoom on interactive elements */
     button, .share-button, .link-like { touch-action: manipulation; }
 
@@ -207,7 +207,7 @@
         </div>
         <div class="flex flex-col items-center gap-2 pt-2">
           <h2 id="practice-heading" class="text-xl md:text-2xl font-semibold text-yellow-950">How does it work?</h2>
-          <p class="text-base md:text-lg text-yellow-950 max-w-[560px] mx-auto">A card is made up of 4 pictures.<br>
+          <p id="practiceIntroText" class="text-base md:text-lg text-yellow-950 max-w-[560px] mx-auto">A card is made up of 4 pictures.<br>
             Swipe or select with the buttons or use arrow keys. You have 4 seconds per card.</p> 
           <span class="inline-flex items-center rounded-full text-sm font-semibold py-1" style="background-color:#FF9800; color:#ffffff; padding-left:6px; padding-right:6px;">Practice round</span>
           <div class="w-[280px] h-[2px] bg-neutral-200 rounded-full mt-2"></div>
