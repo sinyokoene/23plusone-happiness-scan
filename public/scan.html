@@ -168,8 +168,8 @@
       .btn-with-hint:hover .arrow-tooltip { opacity: 1; visibility: visible; transform: translate(-50%, -10px); }
     }
     /* practice popup is positioned within the card container */
-    /* Unified button style (all devices): white pill, border, 40px height */
-    button, .share-button {
+    /* Unified button style (opt-in via class): white pill, border, 40px height */
+    .btn-pill {
       height: 40px;
       min-height: 40px;
       max-height: 40px;
@@ -208,7 +208,7 @@
           </div>
         </div>
         <div class="w-full flex flex-col items-center gap-4">
-          <button id="startBtn" type="button" class="w-[200px] h-[56px] bg-pink-600 rounded-xl text-white text-lg font-semibold shadow-sm" onclick="startPractice()">Continue</button>
+          <button id="startBtn" type="button" class="btn-pill w-[200px] text-lg font-semibold" onclick="startPractice()">Continue</button>
         </div>
       </div>
     </section>
@@ -217,7 +217,7 @@
     <section id="practice" class="section w-full flex items-center justify-center relative" role="region" aria-labelledby="practice-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none;">
       <div class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center">
         <div class="w-full flex items-center justify-end" style="position: absolute; top: 16px; left: 16px; right: 16px; height: 40px;">
-          <button id="practiceNextBtn" type="button" class="text-sm font-medium text-yellow-950 inline-flex items-center gap-1" style="position: absolute; top: 0; right: 0;">
+          <button id="practiceNextBtn" type="button" class="btn-pill text-sm font-medium text-yellow-950 inline-flex items-center gap-1 px-3" style="position: absolute; top: 0; right: 0;">
             <span>Next</span>
             <span aria-hidden>→</span>
           </button>
@@ -320,13 +320,13 @@
     <section id="practice-complete" class="section w-full flex items-center justify-center relative" role="region" aria-labelledby="practice-complete-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none;">
       <div class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center">
         <div class="flex items-center justify-start" style="position: absolute; top: 16px; left: 16px; height: 40px;">
-          <button id="practicePrevBtn" type="button" class="text-sm font-medium text-yellow-950 inline-flex items-center gap-1">
+          <button id="practicePrevBtn" type="button" class="btn-pill text-sm font-medium text-yellow-950 inline-flex items-center gap-1 px-3">
             <span>Previous</span>
           </button>
         </div>
         <h2 id="practice-complete-heading" class="text-xl md:text-2xl font-semibold text-yellow-950">Well done!</h2>
         <p class="text-xl md:text-2xl font-semibold text-yellow-950">Ready to start the test?</p>
-        <button id="letsGoBtn" type="button" class="w-[200px] h-[56px] bg-[#3AB4A0] rounded-xl text-white text-lg font-semibold shadow-sm" style="background-color:#3AB4A0;">Let’s go</button>
+        <button id="letsGoBtn" type="button" class="btn-pill w-[200px] text-lg font-semibold">Let’s go</button>
       </div>
     </section>
 
@@ -422,10 +422,10 @@
           <!-- Insights section removed per design -->
           <section id="shareSection" class="mt-6" aria-labelledby="share-heading">
             <div class="share-buttons flex justify-center gap-3" role="group" aria-label="Sharing options">
-              <a id="learnMoreBtn" href="https://23plusone.org/" target="_blank" rel="noopener" class="share-button copy inline-flex items-center justify-center px-4 py-2 rounded-md bg-[var(--brand-pink)] text-white" aria-label="Learn more about 23plusone">
+              <a id="learnMoreBtn" href="https://23plusone.org/" target="_blank" rel="noopener" class="share-button btn-pill copy inline-flex items-center justify-center px-4" aria-label="Learn more about 23plusone">
                 <span>Learn more</span>
               </a>
-              <button id="nativeShareBtn" type="button" class="share-button native inline-flex items-center justify-center px-4 py-2 rounded-md bg-[var(--brand-pink)] text-white" aria-label="Share results using device's native sharing">
+              <button id="nativeShareBtn" type="button" class="share-button btn-pill native inline-flex items-center justify-center px-4" aria-label="Share results using device's native sharing">
                 <span>Share</span>
               </button>
             </div>
