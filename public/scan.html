@@ -136,6 +136,16 @@
     #practiceNoBtn img { filter: none; }
     /* Icon stroke colors come from SVGs: x '#DC006B' (pink), heart '#3AB4A0' (teal) */
     #practiceYesBtn img, #practiceNoBtn img { width: 26px; height: 26px; }
+    /* Game buttons styled same as practice (100x40) */
+    #yesBtn, #noBtn {
+      width: 100px;
+      height: 40px;
+      background: #ffffff;
+      border: 1px solid #E8E8EA;
+      border-radius: 12px;
+      box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25);
+    }
+    #yesBtn img, #noBtn img { width: 26px; height: 26px; }
     #practiceYesBtn:active, #practiceNoBtn:active { box-shadow: 0 6px 14px rgba(0,0,0,0.10), 0 1px 0 rgba(0,0,0,0.06); }
     @media (max-width: 640px) {
       .practice-swipe-left { left: 10px; }
@@ -255,7 +265,7 @@
 
         <!-- Icon buttons -->
         <div id="gameButtons" class="buttons" role="group" aria-label="Response options" style="display: none;">
-          <div class="flex items-center justify-center gap-24 pt-2 pb-1">
+          <div class="flex items-center justify-center" style="gap: 20px; padding-top: 16px; padding-bottom: 4px;">
             <button id="noBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="No - I don't connect with this" accesskey="n">
               <img src="x-mark.svg" alt="No" class="w-7 h-7" />
             </button>
