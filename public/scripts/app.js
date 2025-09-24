@@ -609,7 +609,11 @@
   function animatePracticeCardExit(isYes) {
     if (!practiceCurrentCard) return;
     const direction = isYes ? 1 : -1;
-    practiceCurrentCard.style.transform = `translateX(${direction * 400}px) rotate(${direction * 30}deg)`;
+    // Move completely off-screen horizontally based on viewport width
+    const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
+    const rect = practiceCurrentCard.getBoundingClientRect();
+    const distance = (viewportWidth / 2) + rect.width; // half viewport + card width
+    practiceCurrentCard.style.transform = `translateX(${direction * distance}px) rotate(${direction * 30}deg)`;
     practiceCurrentCard.style.transition = 'all 0.3s ease-out';
     if (isYes && practiceYesBtn) { practiceYesBtn.style.transform = 'scale(1.1)'; }
     if (!isYes && practiceNoBtn) { practiceNoBtn.style.transform = 'scale(1.1)'; }
@@ -1742,7 +1746,11 @@
     if (!currentCard) return;
     
     const direction = isYes ? 1 : -1;
-    currentCard.style.transform = `translateX(${direction * 400}px) rotate(${direction * 30}deg)`;
+    // Move completely off-screen horizontally based on viewport width
+    const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
+    const rect = currentCard.getBoundingClientRect();
+    const distance = (viewportWidth / 2) + rect.width; // half viewport + card width
+    currentCard.style.transform = `translateX(${direction * distance}px) rotate(${direction * 30}deg)`;
     // Remove opacity change - keep cards visible during exit animation
     currentCard.style.transition = 'all 0.3s ease-out';
     
