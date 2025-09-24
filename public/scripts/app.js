@@ -734,6 +734,8 @@
   // In research mode, an external script controls the first sections
   if (!window.RESEARCH_MODE) {
     showSection(introDiv); // Show the intro section by default
+    // Enable intro GIF tilt on initial load (desktop only)
+    try { enableIntroGifTiltIfDesktop(); } catch(_) {}
   }
   
   // Prevent scrolling on mobile
