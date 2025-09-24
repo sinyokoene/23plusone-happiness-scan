@@ -113,8 +113,8 @@
     .overlay-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 8px; }
     .overlay-btn { background: #e91e63; color: #ffffff; border: 0; border-radius: 10px; padding: 10px 14px; font-weight: 600; }
     /* Practice hint arrows */
-    .practice-swipe-hint { position: absolute; top: 50%; transform: translateY(-50%); color: rgba(0,0,0,0.35); font-size: 24px; font-weight: 600; pointer-events: none; user-select: none; display: flex; align-items: center; gap: 6px; z-index: 50; }
-    .practice-swipe-hint .hint-label { font-size: 14px; font-weight: 600; color: rgba(0,0,0,0.45); }
+    .practice-swipe-hint { position: absolute; top: 50%; transform: translateY(-50%); color: #ffffff; font-size: 24px; font-weight: 600; pointer-events: none; user-select: none; display: flex; align-items: center; gap: 6px; z-index: 50; }
+    .practice-swipe-hint .hint-label { font-size: 14px; font-weight: 600; color: #ffffff; }
     .practice-swipe-left { left: calc(50% - 360px); animation: nudgeLeft 1.8s ease-in-out infinite; }
     .practice-swipe-right { right: calc(50% - 360px); animation: nudgeRight 1.8s ease-in-out infinite; }
     .hint-arrow { display: inline-block; }
@@ -161,10 +161,12 @@
     .practice-shake { animation: shakeSubtle 1200ms ease-in-out 1; }
     /* Keyboard hint text (desktop only; JS toggles display) */
     .kbd-hint { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 6px; display: none; }
-    /* Hover arrow tooltips above practice buttons */
+    /* Hover arrow tooltips above practice buttons (desktop-only hover) */
     .btn-with-hint { position: relative; }
     .arrow-tooltip { position: absolute; bottom: 100%; left: 50%; transform: translate(-50%, -8px); background: rgba(0,0,0,0.75); color: #fff; font-size: 12px; line-height: 1; padding: 6px 8px; border-radius: 6px; white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 120ms ease, visibility 120ms ease, transform 120ms ease; pointer-events: none; }
-    .btn-with-hint:hover .arrow-tooltip { opacity: 1; visibility: visible; transform: translate(-50%, -10px); }
+    @media (hover: hover) and (pointer: fine) {
+      .btn-with-hint:hover .arrow-tooltip { opacity: 1; visibility: visible; transform: translate(-50%, -10px); }
+    }
     /* practice popup is positioned within the card container */
   </style>
   
