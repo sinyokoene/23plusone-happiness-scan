@@ -265,9 +265,9 @@
       const practiceIntroTextEl = document.getElementById('practiceIntroText');
       if (practiceIntroTextEl) {
         if (isDesktop) {
-          practiceIntroTextEl.innerHTML = 'A card is made up of 4 pictures.<br>Use the buttons or arrow keys. You have 4 seconds per card.';
+          practiceIntroTextEl.innerHTML = 'A card is made up of 4 pictures.<br>Ask yourself: is this part of my life?<br>Use the buttons or arrow keys. You have 4 seconds per card.';
         } else {
-          practiceIntroTextEl.innerHTML = 'A card is made up of 4 pictures.<br>Use the buttons or swipe. You have 4 seconds per card.';
+          practiceIntroTextEl.innerHTML = 'A card is made up of 4 pictures.<br>Ask yourself: is this part of my life?<br>Use the buttons or swipe. You have 4 seconds per card.';
         }
       }
     } catch(_) {}
