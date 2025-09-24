@@ -207,6 +207,9 @@
         if (noIcon) noIcon.classList.remove('pulse-icon');
       } catch (_) {}
     };
+    
+    // Predefine tilt cleanup so other handlers can stop it on first interaction
+    let disablePracticeTilt = function(){};
 
     setTimeout(() => {
       setupPracticeSwipeListeners();
@@ -216,10 +219,65 @@
         cardImage.style.opacity = '1';
         cardImage.style.transform = '';
         cardImage.style.transition = '';
-        // One-time subtle shake only on the first practice card
-        if (practiceIndex === 0) {
-          cardImage.classList.add('practice-shake');
-          setTimeout(() => cardImage && cardImage.classList.remove('practice-shake'), 900);
+        // Desktop-only: pre-interaction 3D tilt on the first practice card
+        if (practiceIndex === 0 && isDesktop) {
+          const tiltEl = document.getElementById('practiceCardImages');
+          if (tiltEl) {
+            let rafId = null;
+            let currentRX = 0, currentRY = 0;
+            const maxTilt = 6; // degrees
+            const damp = 0.12; // easing toward target
+            const applyTransform = () => {
+              tiltEl.style.transform = `perspective(800px) rotateX(${currentRX}deg) rotateY(${currentRY}deg) scale(1.02)`;
+            };
+            const onMouseMove = (e) => {
+              const rect = tiltEl.getBoundingClientRect();
+              const cx = rect.left + rect.width / 2;
+              const cy = rect.top + rect.height / 2;
+              const dx = (e.clientX - cx) / (rect.width / 2);
+              const dy = (e.clientY - cy) / (rect.height / 2);
+              const targetRY = Math.max(-1, Math.min(1, dx)) * maxTilt; // left/right
+              const targetRX = Math.max(-1, Math.min(1, -dy)) * maxTilt; // up/down
+              if (rafId) cancelAnimationFrame(rafId);
+              const step = () => {
+                currentRX += (targetRX - currentRX) * damp;
+                currentRY += (targetRY - currentRY) * damp;
+                applyTransform();
+                if (Math.abs(targetRX - currentRX) > 0.05 || Math.abs(targetRY - currentRY) > 0.05) {
+                  rafId = requestAnimationFrame(step);
+                } else {
+                  rafId = null;
+                }
+              };
+              rafId = requestAnimationFrame(step);
+            };
+            const onMouseLeave = () => {
+              if (rafId) cancelAnimationFrame(rafId);
+              rafId = null;
+              currentRX = 0; currentRY = 0;
+              tiltEl.style.transition = 'transform 180ms ease-out';
+              applyTransform();
+              setTimeout(() => { tiltEl.style.transition = ''; }, 200);
+            };
+            // prime styles
+            tiltEl.style.willChange = 'transform';
+            tiltEl.style.transformStyle = 'preserve-3d';
+            tiltEl.addEventListener('mousemove', onMouseMove);
+            tiltEl.addEventListener('mouseleave', onMouseLeave);
+            // expose cleanup
+            disablePracticeTilt = function(){
+              try {
+                tiltEl.removeEventListener('mousemove', onMouseMove);
+                tiltEl.removeEventListener('mouseleave', onMouseLeave);
+              } catch(_) {}
+              if (rafId) cancelAnimationFrame(rafId);
+              rafId = null;
+              currentRX = 0; currentRY = 0;
+              tiltEl.style.transition = 'transform 160ms ease-out';
+              tiltEl.style.transform = 'perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)';
+              setTimeout(() => { tiltEl.style.transition = ''; }, 180);
+            };
+          }
         }
       }
       // Show swipe arrows until any interaction; also stop icon pulse on any interaction
@@ -231,13 +289,13 @@
         right.style.display = 'block';
         const onceOpts = { once: true };
         if (cardImage) {
-          const hideAllHints = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; removePulse(); };
+          const hideAllHints = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; removePulse(); disablePracticeTilt(); };
           cardImage.addEventListener('touchstart', hideAllHints, onceOpts);
           cardImage.addEventListener('mousedown', hideAllHints, onceOpts);
           cardImage.addEventListener('click', hideAllHints, onceOpts);
           cardImage.addEventListener('keydown', (e)=>{ if(e.key==='ArrowLeft'||e.key==='ArrowRight'||e.key==='Enter'||e.key===' '){ hideAllHints(); } }, onceOpts);
         }
-        const hideAll = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; removePulse(); };
+        const hideAll = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; removePulse(); disablePracticeTilt(); };
         if (practiceYesBtn) practiceYesBtn.addEventListener('click', hideAll, onceOpts);
         if (practiceNoBtn) practiceNoBtn.addEventListener('click', hideAll, onceOpts);
       }
@@ -248,6 +306,7 @@
       const startIfIdle = () => {
         if (!practiceTimerActive) { startPracticeTimer(); }
         removePulse();
+        disablePracticeTilt();
       };
       const cardImage = document.querySelector('.practice-card-image');
       if (cardImage) {
