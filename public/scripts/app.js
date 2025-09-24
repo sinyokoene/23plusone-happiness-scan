@@ -892,11 +892,14 @@
       setupSwipeListeners();
       setupKeyboardNavigation();
     }
+    // Hide before switching source to prevent brief flash of previous image on mobile
+    img.style.visibility = 'hidden';
     // Reset transient styles and update source
     img.style.opacity = '1';
     img.style.transform = '';
     img.style.transition = '';
-    img.style.visibility = 'visible';
+    // Reveal only after the new image has loaded
+    img.onload = function() { img.style.visibility = 'visible'; img.onload = null; };
     img.src = card.images[0];
     
     // Show timer and buttons
