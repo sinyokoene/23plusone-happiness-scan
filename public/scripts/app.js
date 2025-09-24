@@ -214,6 +214,11 @@
         cardImage.style.opacity = '1';
         cardImage.style.transform = '';
         cardImage.style.transition = '';
+        // One-time subtle shake only on the first practice card
+        if (practiceIndex === 0) {
+          cardImage.classList.add('practice-shake');
+          setTimeout(() => cardImage && cardImage.classList.remove('practice-shake'), 900);
+        }
       }
       // Show swipe arrows until any interaction; also stop icon pulse on any interaction
       const left = document.getElementById('practiceHintLeft');
