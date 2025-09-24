@@ -118,8 +118,8 @@
     .practice-swipe-left { left: calc(50% - 360px); animation: nudgeLeft 1.8s ease-in-out infinite; }
     .practice-swipe-right { right: calc(50% - 360px); animation: nudgeRight 1.8s ease-in-out infinite; }
     .hint-arrow { display: inline-block; }
-    .hint-arrow-left { transform: rotate(12deg); }
-    .hint-arrow-right { transform: rotate(-12deg); }
+    .hint-arrow-left { transform: none; }
+    .hint-arrow-right { transform: none; }
     /* Pre-interaction pulse for real icons (subtle) */
     @keyframes pulse { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.06); opacity: .98; } }
     .pulse-icon { animation: pulse 1.8s ease-in-out infinite; }
@@ -131,7 +131,7 @@
     @keyframes nudgeRight { 0%,100% { transform: translate(6px, -50%); opacity: .6; } 50% { transform: translate(0, -50%); opacity: .2; } }
     /* Subtle one-time shake for first practice card */
     @keyframes shakeSubtle { 0% { transform: translateX(0) rotate(0); } 15% { transform: translateX(-6px) rotate(-0.4deg); } 30% { transform: translateX(6px) rotate(0.4deg); } 45% { transform: translateX(-4px) rotate(-0.3deg); } 60% { transform: translateX(4px) rotate(0.3deg); } 75% { transform: translateX(-2px) rotate(-0.2deg); } 100% { transform: translateX(0) rotate(0); } }
-    .practice-shake { animation: shakeSubtle 650ms ease-in-out 1; }
+    .practice-shake { animation: shakeSubtle 1200ms ease-in-out 1; }
     /* practice popup is positioned within the card container */
   </style>
   
