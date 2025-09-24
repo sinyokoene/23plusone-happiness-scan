@@ -636,6 +636,8 @@
     const distance = (viewportWidth / 2) + rect.width; // half viewport + card width
     practiceCurrentCard.style.transform = `translateX(${direction * distance}px) rotate(${direction * 30}deg)`;
     practiceCurrentCard.style.transition = 'all 0.3s ease-out';
+    // Hide shortly before switch to avoid old-card flash on mobile
+    setTimeout(() => { if (practiceCurrentCard) practiceCurrentCard.style.visibility = 'hidden'; }, 250);
     if (isYes && practiceYesBtn) { practiceYesBtn.style.transform = 'scale(1.1)'; }
     if (!isYes && practiceNoBtn) { practiceNoBtn.style.transform = 'scale(1.1)'; }
     setTimeout(() => {
@@ -894,6 +896,7 @@
     img.style.opacity = '1';
     img.style.transform = '';
     img.style.transition = '';
+    img.style.visibility = 'visible';
     img.src = card.images[0];
     
     // Show timer and buttons
@@ -1776,6 +1779,8 @@
     currentCard.style.transform = `translateX(${direction * distance}px) rotate(${direction * 30}deg)`;
     // Remove opacity change - keep cards visible during exit animation
     currentCard.style.transition = 'all 0.3s ease-out';
+    // Hide shortly before switch to avoid old-card flash on mobile
+    setTimeout(() => { if (currentCard) currentCard.style.visibility = 'hidden'; }, 250);
     
     // Visual feedback on buttons
     if (isYes) {
