@@ -188,8 +188,7 @@
   const practiceYesBtn = document.getElementById('practiceYesBtn');
   const practiceNoBtn = document.getElementById('practiceNoBtn');
   const letsGoBtn = document.getElementById('letsGoBtn');
-  const practiceNextBtn = document.getElementById('practiceNextBtn');
-  const practicePrevBtn = document.getElementById('practicePrevBtn');
+  const practiceMoreBtn = document.getElementById('practiceMoreBtn');
 
   const practiceImages = [
     'fakeCards/25. resilience_strength.jpeg',
@@ -548,16 +547,8 @@
     practiceTimerTimeouts = [];
     startScan();
   });
-  if (practiceNextBtn) practiceNextBtn.addEventListener('click', () => {
-    // Immediate go to Well done page
-    practiceTimerActive = false;
-    if (practiceTimerInterval) { clearTimeout(practiceTimerInterval); practiceTimerInterval = null; }
-    practiceTimerTimeouts.forEach(item => { if (typeof item === 'number') { clearTimeout(item); } else if (item && item.clear) { item.clear(); } });
-    practiceTimerTimeouts = [];
-    showSection(practiceCompleteDiv);
-  });
-  if (practicePrevBtn) practicePrevBtn.addEventListener('click', () => {
-    // Return to practice mode
+  if (practiceMoreBtn) practiceMoreBtn.addEventListener('click', () => {
+    // Practice more: return to practice mode from completion screen
     practiceTimerActive = false;
     if (practiceTimerInterval) { clearTimeout(practiceTimerInterval); practiceTimerInterval = null; }
     practiceTimerTimeouts.forEach(item => { if (typeof item === 'number') { clearTimeout(item); } else if (item && item.clear) { item.clear(); } });
