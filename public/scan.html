@@ -180,6 +180,12 @@
       padding: 0 18px; /* ensure visible horizontal padding without relying on Tailwind */
       white-space: nowrap; /* keep label on one line on mobile */
     }
+    /* Notification pill */
+    .notif-pill { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #E8E8EA; border-radius: 999px; box-shadow: 0 6px 16px rgba(0,0,0,0.12); padding: 8px 14px; display: none; align-items: center; gap: 8px; z-index: 60; }
+    .notif-pill.show { display: inline-flex; animation: fadeInOut 1500ms ease forwards; }
+    .notif-pill-icon { width: 18px; height: 18px; display: inline-block; }
+    .notif-pill-text { font-weight: 600; color: #e91e63; font-size: 14px; }
+    @keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -6px); } 10% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -6px); } }
     /* Preserve colored intent via text color */
     #startBtn { color: var(--brand-pink, #e91e63); }
     #letsGoBtn { color: #3AB4A0; }
@@ -191,6 +197,10 @@
 </head>
 <body class="bg-white text-[#2c1f1c]">
   <div class="min-h-screen flex flex-col">
+  <div id="notificationPill" class="notif-pill" role="status" aria-live="polite">
+    <img src="LightningBoltOutline.svg" alt="" class="notif-pill-icon" aria-hidden>
+    <span class="notif-pill-text">Oops! Too slow.</span>
+  </div>
   <div class="container flex flex-col items-center flex-1 py-0" style="padding-bottom: 0;">
     
     <section id="intro" class="section active-section w-full flex items-center justify-center" role="banner" aria-labelledby="intro-heading">

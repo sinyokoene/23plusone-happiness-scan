@@ -1072,6 +1072,17 @@
       time: responseTime
     });
     
+    // Show transient timeout notification
+    try {
+      const pill = document.getElementById('notificationPill');
+      if (pill) {
+        pill.classList.remove('show');
+        void pill.offsetWidth; // reflow to restart animation
+        pill.classList.add('show');
+        setTimeout(() => { if (pill) pill.classList.remove('show'); }, 1600);
+      }
+    } catch(_) {}
+    
     // If more than 3 NULLs, stop immediately and show retry message
     const nullCount = answers.filter(a => a.yes === null).length;
     if (nullCount > 3) {
