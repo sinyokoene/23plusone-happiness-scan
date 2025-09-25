@@ -16,7 +16,11 @@
   const cardTopWhoTbody = document.querySelector('#cardTopWho tbody');
   const cardBottomWhoTbody = document.querySelector('#cardBottomWho tbody');
   const filterDevice = document.getElementById('filterDevice');
-  const filterModality = document.getElementById('filterModality');
+  const modClick = document.getElementById('modClick');
+  const modSwipe = document.getElementById('modSwipe');
+  const modArrow = document.getElementById('modArrow');
+  const filterExclusive = document.getElementById('filterExclusive');
+  const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
 
   let who5Chart, swlsChart, cantrilChart, who5Scatter, swlsScatter, cantrilScatter, n123Scatter;
@@ -176,25 +180,74 @@
 
   function entryMatchesFilters(entry){
     const wantDevice = (filterDevice && filterDevice.value) || '';
-    const wantMod = (filterModality && filterModality.value) || '';
+    const wantMods = [
+      modClick && modClick.checked ? 'click' : null,
+      modSwipe && modSwipe.checked ? 'swipe' : null,
+      modArrow && modArrow.checked ? 'arrow' : null
+    ].filter(Boolean);
+    const exclusiveOnly = !!(filterExclusive && filterExclusive.checked);
+    const thresholdPct = Number(filterThreshold && filterThreshold.value ? filterThreshold.value : NaN);
 
-    if (!wantDevice && !wantMod) return true;
+    if (!wantDevice && wantMods.length === 0 && !exclusiveOnly && (Number.isNaN(thresholdPct))) return true;
     // device by user agents: prefer scan_user_agent (from scan), fallback to research user_agent
     const ua = entry.scan_user_agent || entry.user_agent || '';
     if (wantDevice === 'mobile' && !isMobileUA(ua)) return false;
     if (wantDevice === 'desktop' && isMobileUA(ua)) return false;
 
-    if (wantMod) {
-      const sel = entry.selections && entry.selections.allResponses;
-      if (!Array.isArray(sel)) return false;
-      const matchMod = (m) => {
-        const v = String(m||'').toLowerCase();
-        if (wantMod === 'click') return v === 'click';
-        if (wantMod === 'swipe') return v === 'swipe-touch' || v === 'swipe-mouse';
-        if (wantMod === 'arrow') return v === 'keyboard-arrow';
-        return true;
-      };
-      if (!sel.some(r => matchMod(r.inputModality))) return false;
+    const sel = entry.selections && entry.selections.allResponses;
+    if ((wantMods.length > 0 || exclusiveOnly || !Number.isNaN(thresholdPct)) && !Array.isArray(sel)) return false;
+
+    if (Array.isArray(sel)) {
+      const counts = sel.reduce((acc, r) => {
+        const v = String(r && r.inputModality || '').toLowerCase();
+        if (v === 'click') acc.click++;
+        else if (v === 'keyboard-arrow') acc.arrow++;
+        else if (v === 'swipe-touch' || v === 'swipe-mouse') acc.swipe++;
+        else acc.other++;
+        acc.total++;
+        return acc;
+      }, { click:0, swipe:0, arrow:0, other:0, total:0 });
+
+      if (exclusiveOnly) {
+        // Exactly one modality present among selected types, and zero of the others
+        const present = {
+          click: counts.click > 0,
+          swipe: counts.swipe > 0,
+          arrow: counts.arrow > 0
+        };
+        const selectedSet = new Set(wantMods);
+        // If no modality selected, exclusivity means single-modality of any type
+        const modalitiesPresent = Object.entries(present).filter(([k,v])=>v).map(([k])=>k);
+        if (wantMods.length === 0) {
+          if (modalitiesPresent.length !== 1) return false;
+        } else {
+          // Must be subset of selected and no others present
+          if (modalitiesPresent.length !== 1) return false;
+          if (!selectedSet.has(modalitiesPresent[0])) return false;
+        }
+      }
+
+      if (!Number.isNaN(thresholdPct) && counts.total > 0) {
+        const thresholds = [];
+        if (wantMods.length === 0) {
+          thresholds.push(counts.click / counts.total, counts.swipe / counts.total, counts.arrow / counts.total);
+        } else {
+          if (wantMods.includes('click')) thresholds.push(counts.click / counts.total);
+          if (wantMods.includes('swipe')) thresholds.push(counts.swipe / counts.total);
+          if (wantMods.includes('arrow')) thresholds.push(counts.arrow / counts.total);
+        }
+        const pass = thresholds.some(frac => (frac * 100) >= thresholdPct);
+        if (!pass) return false;
+      }
+
+      if (wantMods.length > 0) {
+        const anyMatch = (
+          (wantMods.includes('click') && counts.click > 0) ||
+          (wantMods.includes('swipe') && counts.swipe > 0) ||
+          (wantMods.includes('arrow') && counts.arrow > 0)
+        );
+        if (!anyMatch) return false;
+      }
     }
     return true;
   }
@@ -205,7 +258,7 @@
     const res = await fetch(`/api/research-results?limit=${limit}&includeNoIhs=true&includeScanDetails=true`);
     const json = await res.json();
     let entries = json.entries || [];
-    // Apply client-side filters (device, modality)
+    // Apply client-side filters (device, modality, exclusivity, threshold)
     entries = entries.filter(entryMatchesFilters);
     renderTable(entries);
     renderCharts(entries);
@@ -332,10 +385,15 @@
     try {
       await ensureCardDomains();
       const dev = (filterDevice && filterDevice.value) || '';
-      const mod = (filterModality && filterModality.value) || '';
       const q = new URLSearchParams({ limit: String(limit) });
       if (dev) q.set('device', dev);
-      if (mod) q.set('modality', mod);
+      // Server correlations allow a single modality value; if multiple are checked, omit and rely on client-side distributions
+      const selectedMods = [
+        modClick && modClick.checked ? 'click' : null,
+        modSwipe && modSwipe.checked ? 'swipe' : null,
+        modArrow && modArrow.checked ? 'arrow' : null
+      ].filter(Boolean);
+      if (selectedMods.length === 1) q.set('modality', selectedMods[0]);
       const corrRes = await fetch(`/api/analytics/correlations?${q.toString()}`);
       const corrJson = await corrRes.json();
       const domains = corrJson.domains || [];

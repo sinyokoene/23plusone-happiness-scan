@@ -35,13 +35,25 @@
             <option value="desktop">Desktop</option>
           </select>
         </label>
-        <label>Input
-          <select id="filterModality" class="border rounded px-2 py-1">
-            <option value="">All</option>
-            <option value="click">Click</option>
-            <option value="swipe">Swipe</option>
-            <option value="arrow">Arrow keys</option>
-          </select>
+        <div class="flex items-center gap-2">
+          <span>Input:</span>
+          <label class="inline-flex items-center gap-1">
+            <input id="modClick" type="checkbox" class="align-middle"> <span>Click</span>
+          </label>
+          <label class="inline-flex items-center gap-1">
+            <input id="modSwipe" type="checkbox" class="align-middle"> <span>Swipe</span>
+          </label>
+          <label class="inline-flex items-center gap-1">
+            <input id="modArrow" type="checkbox" class="align-middle"> <span>Arrow</span>
+          </label>
+        </div>
+        <label class="inline-flex items-center gap-2">
+          <input id="filterExclusive" type="checkbox" class="align-middle"> <span>Exclusive only</span>
+        </label>
+        <label class="inline-flex items-center gap-1">
+          <span>Threshold ≥</span>
+          <input id="filterThreshold" type="number" min="0" max="100" step="5" placeholder="50" class="border rounded px-2 py-1 w-16">
+          <span>%</span>
         </label>
         <button id="applyFilters" class="bg-pink-600 text-white text-xs font-semibold rounded px-3 py-1">Apply</button>
       </div>

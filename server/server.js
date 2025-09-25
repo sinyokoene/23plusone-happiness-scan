@@ -475,6 +475,8 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const limit = Math.min(parseInt(req.query.limit, 10) || 500, 2000);
     const device = String(req.query.device || '').toLowerCase(); // 'mobile' | 'desktop' | ''
     const modality = String(req.query.modality || '').toLowerCase(); // 'click' | 'swipe' | 'arrow' | ''
+    const exclusive = String(req.query.exclusive || '').toLowerCase() === 'true';
+    const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
     const researchClient = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -555,20 +557,39 @@ app.get('/api/analytics/correlations', async (req, res) => {
       } else if (device === 'desktop') {
         joined = joined.filter(j => !isMobileUA(j.scan_user_agent));
       }
-      if (modality) {
+      if (modality || exclusive || (threshold != null)) {
         const matchers = {
           click: (m) => m === 'click',
           swipe: (m) => m === 'swipe-touch' || m === 'swipe-mouse',
           arrow: (m) => m === 'keyboard-arrow'
         };
-        const fn = matchers[modality];
-        if (fn) {
-          joined = joined.filter(j => {
-            const all = j.selections?.allResponses;
-            if (!Array.isArray(all)) return false;
-            return all.some(e => fn(String(e?.inputModality || '').toLowerCase()));
-          });
-        }
+        joined = joined.filter(j => {
+          const all = j.selections?.allResponses;
+          if (!Array.isArray(all)) return false;
+          let counts = { click:0, swipe:0, arrow:0, other:0, total:0 };
+          for (const e of all) {
+            const v = String(e?.inputModality || '').toLowerCase();
+            if (matchers.click(v)) counts.click++; else if (matchers.swipe(v)) counts.swipe++; else if (matchers.arrow(v)) counts.arrow++; else counts.other++;
+            counts.total++;
+          }
+          // modality presence (any)
+          if (modality) {
+            if (modality === 'click' && counts.click === 0) return false;
+            if (modality === 'swipe' && counts.swipe === 0) return false;
+            if (modality === 'arrow' && counts.arrow === 0) return false;
+          }
+          // exclusivity
+          if (exclusive) {
+            const present = [counts.click>0, counts.swipe>0, counts.arrow>0].filter(Boolean).length;
+            if (present !== 1) return false;
+          }
+          // threshold
+          if (threshold != null && counts.total > 0 && modality) {
+            const frac = (modality === 'click' ? counts.click : modality === 'swipe' ? counts.swipe : counts.arrow) / counts.total;
+            if ((frac * 100) < threshold) return false;
+          }
+          return true;
+        });
       }
 
       // Helper: build aligned arrays ignoring nulls
