@@ -98,7 +98,14 @@
       #benchmarkStats .benchmark-label,
       #benchmarkStats .benchmark-value { font-size: 0.78rem; }
       .bar-name { font-size: 0.8rem; }
-      #resultsContent { padding-top: calc(8px + env(safe-area-inset-top)); padding-left: 8px; padding-right: 8px; padding-bottom: 8px; height: calc(var(--vh, 1vh) * 100 - var(--footer-h) - 8px); display: flex; flex-direction: column; justify-content: space-between; gap: 8px; }
+      #resultsContent { 
+        padding-top: calc(8px + env(safe-area-inset-top)); 
+        padding-left: calc(16px + env(safe-area-inset-left)); 
+        padding-right: calc(16px + env(safe-area-inset-right)); 
+        padding-bottom: 8px; 
+        height: calc(var(--vh, 1vh) * 100 - var(--footer-h) - 8px); 
+        display: flex; flex-direction: column; justify-content: space-between; gap: 8px; 
+      }
       #domainBars { max-width: 360px; }
       #domainBars .bar-container { height: 4px; }
       .palette-tagline { margin-top: 4px; font-size: 0.85rem; }
@@ -217,10 +224,6 @@
     .btn-pill-multi { height: auto; min-height: 56px; max-height: none; white-space: normal; align-items: flex-start; padding-top: 10px; padding-bottom: 10px; text-align: left; }
     #retakeConfirmDelete { background: #e11d48; color: #ffffff; }
     #retakeConfirmCancel { color: #0ea5a4; background: #ffffff; border: 1px solid #E8E8EA; }
-    /* Desktop-only: shift results content slightly lower relative to fixed hint */
-    @media (min-width: 641px) {
-      #resultsContent { transform: translateY(20px); }
-    }
   </style>
   
   
