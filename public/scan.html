@@ -197,6 +197,17 @@
     #letsGoBtn { color: #3AB4A0; }
     .share-button { color: var(--brand-pink, #e91e63); background: #ffffff !important; }
     #practiceNextBtn, #practicePrevBtn { color: #2c1f1c; }
+    /* Results: desktop hint pill at top */
+    #resultsTopRow { display: none; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px; }
+    #desktopResultsHint { display: inline-flex; align-items: center; gap: 8px; background: #E6F4FF; color: #2c1f1c; border: 1px solid #D8ECFF; border-radius: 999px; padding: 8px 12px; font-weight: 600; }
+    #desktopResultsHint .hint-icon { width: 18px; height: 18px; display: inline-block; }
+    #desktopLearnMoreBtn { display: inline-flex; align-items: center; justify-content: center; height: 36px; min-height: 36px; background: #ffffff; border: 1px solid #E8E8EA; border-radius: 12px; padding: 0 12px; font-weight: 600; color: #2c1f1c; }
+    /* Retake confirmation popover */
+    #retakeConfirm { position: absolute; display: none; z-index: 55; background: #ffffff; border: 1px solid #E8E8EA; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); padding: 12px; width: 240px; }
+    #retakeConfirmTitle { font-size: 14px; font-weight: 700; color: #2c1f1c; margin-bottom: 8px; }
+    #retakeConfirm .actions { display: flex; gap: 8px; }
+    #retakeConfirmDelete { background: #e11d48; color: #ffffff; }
+    #retakeConfirmCancel { color: #0ea5a4; background: #ffffff; border: 1px solid #E8E8EA; }
   </style>
   
   
@@ -362,8 +373,16 @@
     <section id="results" class="section w-full flex items-center justify-center" role="region" aria-labelledby="results-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
             <!-- Consolidated Results Page -->
       <div class="results-page active" id="results-page-1">
-        <div id="resultsContent" class="results-content px-4 max-w-[560px] mx-auto text-center pb-[24px]">
+        <div id="resultsContent" class="results-content px-4 max-w-[560px] mx-auto text-center pb-[24px]" style="position: relative;">
           <!-- Page 1 Content: Score & Overview -->
+          <!-- Desktop-only: info hint and learn more button -->
+          <div id="resultsTopRow">
+            <div id="desktopResultsHint">
+              <img src="LightningBoltOutline.svg" alt="" class="hint-icon" aria-hidden>
+              <span>Pssst... Did you know 23plusone is a science-based method?</span>
+            </div>
+            <a id="desktopLearnMoreBtn" href="https://23plusone.org/" target="_blank" rel="noopener">Learn more</a>
+          </div>
           <header id="resultsHeader" class="mb-4">
             <h2 id="results-heading" class="text-xl md:text-2xl font-semibold"><span class="heading-part-1">Done! Here’s your</span> <span class="accent heading-part-2 text-[var(--brand-pink)]">value profile.</span></h2>
           </header>
@@ -438,15 +457,21 @@
 
           <!-- Insights section removed per design -->
           <section id="shareSection" class="mt-6" aria-labelledby="share-heading">
-            <div class="share-buttons flex justify-center gap-3" role="group" aria-label="Sharing options">
-              <a id="learnMoreBtn" href="https://23plusone.org/" target="_blank" rel="noopener" class="share-button btn-pill copy inline-flex items-center justify-center px-4" aria-label="Learn more about 23plusone">
-                <span>Learn more</span>
-              </a>
+            <div class="flex justify-center gap-3" role="group" aria-label="Actions">
+              <button id="retakeBtn" type="button" class="btn-pill inline-flex items-center justify-center px-4" aria-label="Start a new happiness scan">Try again</button>
+              <a id="fullReportBtn" href="https://23plusone.org/" target="_blank" rel="noopener" class="btn-pill inline-flex items-center justify-center px-4 font-semibold">Receive full report</a>
               <button id="nativeShareBtn" type="button" class="share-button btn-pill native inline-flex items-center justify-center px-4" aria-label="Share results using device's native sharing">
                 <span>Share</span>
               </button>
             </div>
-            <button id="retakeBtn" type="button" class="link-like block mx-auto mt-2" aria-label="Start a new happiness scan" onclick="location.reload()">Try again</button>
+            <!-- Confirmation popover for retake -->
+            <div id="retakeConfirm">
+              <div id="retakeConfirmTitle">Sure? Your data will be lost!</div>
+              <div class="actions">
+                <button id="retakeConfirmDelete" class="btn-pill" type="button">Delete</button>
+                <button id="retakeConfirmCancel" class="btn-pill" type="button">Stay here</button>
+              </div>
+            </div>
           </section>
         </div>
       </div>

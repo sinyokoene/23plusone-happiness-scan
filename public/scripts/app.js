@@ -516,6 +516,9 @@
     if (practiceDiv && practiceDiv.style.display !== 'none') {
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
+        // Prevent the same key event from reaching the practice-complete handler
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        else if (e.stopPropagation) e.stopPropagation();
         if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); }
         const btn = document.getElementById('practiceNoBtn');
         if (btn) { btn.classList.add('flash-no'); setTimeout(()=>btn.classList.remove('flash-no'), 220); }
@@ -524,6 +527,9 @@
       }
       if (e.key === 'ArrowRight') {
         e.preventDefault();
+        // Prevent the same key event from reaching the practice-complete handler
+        if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+        else if (e.stopPropagation) e.stopPropagation();
         if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); }
         const btn = document.getElementById('practiceYesBtn');
         if (btn) { btn.classList.add('flash-yes'); setTimeout(()=>btn.classList.remove('flash-yes'), 220); }
@@ -1273,6 +1279,14 @@
     updateDomainBars(results.domainAffirmations);
     
     // Insights removed in current design
+
+    // Desktop-only results hint row
+    try {
+      const topRow = document.getElementById('resultsTopRow');
+      if (topRow) {
+        topRow.style.display = (isDesktop ? 'flex' : 'none');
+      }
+    } catch(_) {}
   }
   
   function getDomainAnalysis(domainCounts) {
@@ -1463,8 +1477,8 @@
   
   function setupSharing(results) {
     const nativeShareBtn = document.getElementById('nativeShareBtn');
-    // copyLinkBtn no longer exists; use learnMoreBtn as a harmless anchor for status text if needed
-    const fallbackStatusBtn = document.getElementById('learnMoreBtn');
+    // Use full report btn as harmless anchor for status text if needed
+    const fallbackStatusBtn = document.getElementById('fullReportBtn');
     
     const shareText = `I just completed the 23plusone Happiness Scan and scored ${results.ihs}! Discover what drives your happiness.`;
     const shareUrl = window.location.href;
@@ -1524,6 +1538,35 @@
       }
     }
   }
+
+  // Results actions: Try again confirmation
+  (function setupRetakeConfirmation(){
+    const retakeBtn = document.getElementById('retakeBtn');
+    const pop = document.getElementById('retakeConfirm');
+    const del = document.getElementById('retakeConfirmDelete');
+    const cancel = document.getElementById('retakeConfirmCancel');
+    if (!retakeBtn || !pop) return;
+    const show = () => {
+      // Position popover centered above the buttons row
+      try {
+        const btnRect = retakeBtn.getBoundingClientRect();
+        const container = document.getElementById('resultsContent');
+        const contRect = container ? container.getBoundingClientRect() : { left: 0, top: 0 };
+        const x = btnRect.left + btnRect.width/2 - contRect.left;
+        pop.style.left = Math.max(12, x - 120) + 'px';
+        pop.style.top = (btnRect.top - contRect.top + window.scrollY + 46) + 'px';
+      } catch(_) {}
+      pop.style.display = 'block';
+      document.addEventListener('keydown', onEsc, { once: true });
+      document.addEventListener('click', onDocClick, { capture: true, once: true });
+    };
+    const hide = () => { pop.style.display = 'none'; };
+    const onEsc = (e) => { if (e.key === 'Escape') hide(); };
+    const onDocClick = (e) => { if (!pop.contains(e.target) && e.target !== retakeBtn) hide(); };
+    retakeBtn.addEventListener('click', (e) => { e.preventDefault(); show(); });
+    if (cancel) cancel.addEventListener('click', hide);
+    if (del) del.addEventListener('click', () => { location.reload(); });
+  })();
   
   function getBenchmarkData(results) {
     // Show the benchmark section
