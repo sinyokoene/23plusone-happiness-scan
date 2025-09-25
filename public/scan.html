@@ -168,6 +168,11 @@
       .btn-with-hint:hover .arrow-tooltip { opacity: 1; visibility: visible; transform: translate(-50%, -10px); }
     }
     /* practice popup is positioned within the card container */
+    /* Practice desktop keyboard hint */
+    #practiceKeyboardHint { position: absolute; top: 16px; right: 16px; display: none; }
+    #practiceKeyboardHint .hint-box { display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid #FFB74D; border-radius: 12px; box-shadow: 0 6px 16px rgba(0,0,0,0.12); padding: 8px 12px; }
+    #practiceKeyboardHint .hint-text { font-size: 12px; font-weight: 600; color: #7A544C; }
+    #practiceKeyboardHint .hint-icon { width: 16px; height: 16px; display: inline-block; }
     /* Unified button style (opt-in via class): white pill, border, 40px height */
     .btn-pill {
       height: 40px;
@@ -249,6 +254,7 @@
           <div id="practiceCard" class="w-full max-w-[560px] flex items-center justify-center relative" style="aspect-ratio: 3 / 2;">
             <div class="loading">Loading practice cards...</div>
           </div>
+          <div id="practiceKeyboardHint"><div class="hint-box"><img src="LightBulbOutline.svg" class="hint-icon" alt="" aria-hidden><span class="hint-text">Use your keyboard arrows to be quickest.</span></div></div>
           <div id="practiceHintLeft" class="practice-swipe-hint practice-swipe-left" aria-hidden="true"><span class="hint-label">No</span> <span class="hint-arrow hint-arrow-left">←</span></div>
           <div id="practiceHintRight" class="practice-swipe-hint practice-swipe-right" aria-hidden="true"><span class="hint-arrow hint-arrow-right">→</span> <span class="hint-label">Yes</span></div>
         </div>
@@ -290,7 +296,7 @@
       <div class="w-full flex flex-col justify-center items-center px-6 md:px-16 gap-6 text-center">
         <!-- Prompt above timer -->
         <div class="w-full flex items-center justify-center" aria-hidden="false">
-          <div class="text-sm md:text-base font-medium text-yellow-950 opacity-90">Is this part of your life?</div>
+          <div class="text-sm md:text-base font-semibold" style="color:#e91e63;">Ask yourself: is this part of my life?</div>
         </div>
         <!-- thin progress/timer line at top -->
         <div id="timerContainer" class="w-[560px] max-w-full mx-auto" role="timer" aria-label="Response timer" style="display: none;">
