@@ -365,7 +365,7 @@ app.post('/api/research', async (req, res) => {
 // Query research results (latest N, or by date range)
 app.get('/api/research-results', async (req, res) => {
   try {
-    const { limit = 200, from, to, includeNoIhs } = req.query;
+    const { limit = 200, from, to, includeNoIhs, includeScanDetails } = req.query;
     const client = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -399,23 +399,38 @@ app.get('/api/research-results', async (req, res) => {
       if (sessionIds.length) {
         // Use ANY(array) to avoid overly large IN clause
         const ihsRows = await mainClient.query(
-          `SELECT session_id, ihs_score, n1_score, n2_score, n3_score FROM scan_responses WHERE session_id = ANY($1::text[])`,
+          `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, user_agent, card_selections, completion_time
+           FROM scan_responses WHERE session_id = ANY($1::text[])`,
           [sessionIds]
         );
         ihsMap = new Map(ihsRows.rows.map(r => [r.session_id, {
           ihs: r.ihs_score,
           n1: r.n1_score,
           n2: r.n2_score,
-          n3: r.n3_score
+          n3: r.n3_score,
+          scan_user_agent: r.user_agent || null,
+          selections: r.card_selections || null,
+          completion_time: r.completion_time == null ? null : Number(r.completion_time)
         }]));
       }
-      let merged = entries.map(e => ({
-        ...e,
-        ihs: ihsMap.get(e.session_id)?.ihs ?? null,
-        n1: ihsMap.get(e.session_id)?.n1 ?? null,
-        n2: ihsMap.get(e.session_id)?.n2 ?? null,
-        n3: ihsMap.get(e.session_id)?.n3 ?? null
-      }));
+      let merged = entries.map(e => {
+        const s = ihsMap.get(e.session_id) || {};
+        const base = {
+          ...e,
+          ihs: s.ihs ?? null,
+          n1: s.n1 ?? null,
+          n2: s.n2 ?? null,
+          n3: s.n3 ?? null
+        };
+        // Include heavy scan details only when requested
+        const wantScan = String(includeScanDetails).toLowerCase() === 'true';
+        if (wantScan) {
+          base.scan_user_agent = s.scan_user_agent ?? null;
+          base.selections = s.selections ?? null;
+          base.completion_time = s.completion_time ?? null;
+        }
+        return base;
+      });
       // By default, only include rows that have an IHS score to avoid counting pre-scan refreshes
       const shouldIncludeNoIhs = String(includeNoIhs).toLowerCase() === 'true';
       if (!shouldIncludeNoIhs) {
@@ -458,6 +473,8 @@ app.get('/api/analytics/correlations', async (req, res) => {
 
   try {
     const limit = Math.min(parseInt(req.query.limit, 10) || 500, 2000);
+    const device = String(req.query.device || '').toLowerCase(); // 'mobile' | 'desktop' | ''
+    const modality = String(req.query.modality || '').toLowerCase(); // 'click' | 'swipe' | 'arrow' | ''
     const researchClient = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -509,7 +526,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
       );
 
       // Keep only sessions that exist in both sets and have IHS
-      const joined = [];
+      let joined = [];
       for (const s of scanRows) {
         const r = rBySession.get(s.session_id);
         if (!r) continue;
@@ -523,8 +540,35 @@ app.get('/api/analytics/correlations', async (req, res) => {
           who5Percent: r.who5Percent,
           swlsScaled: r.swlsScaled,
           cantril: r.cantril,
-          selections: s.card_selections
+          selections: s.card_selections,
+          scan_user_agent: s.user_agent || null
         });
+      }
+
+      // Optional filtering by device and modality
+      function isMobileUA(ua) {
+        if (!ua || typeof ua !== 'string') return false;
+        return /(Mobi|Android|iPhone|iPad|iPod)/i.test(ua);
+      }
+      if (device === 'mobile') {
+        joined = joined.filter(j => isMobileUA(j.scan_user_agent));
+      } else if (device === 'desktop') {
+        joined = joined.filter(j => !isMobileUA(j.scan_user_agent));
+      }
+      if (modality) {
+        const matchers = {
+          click: (m) => m === 'click',
+          swipe: (m) => m === 'swipe-touch' || m === 'swipe-mouse',
+          arrow: (m) => m === 'keyboard-arrow'
+        };
+        const fn = matchers[modality];
+        if (fn) {
+          joined = joined.filter(j => {
+            const all = j.selections?.allResponses;
+            if (!Array.isArray(all)) return false;
+            return all.some(e => fn(String(e?.inputModality || '').toLowerCase()));
+          });
+        }
       }
 
       // Helper: build aligned arrays ignoring nulls

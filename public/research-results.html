@@ -27,6 +27,24 @@
       <img src="23plusone.png" alt="23plusone" style="height:22px; width:auto;" />
     </div>
     <div class="card mb-4">
+      <div class="flex items-center gap-3 mb-2 text-sm">
+        <label>Device
+          <select id="filterDevice" class="border rounded px-2 py-1">
+            <option value="">All</option>
+            <option value="mobile">Mobile</option>
+            <option value="desktop">Desktop</option>
+          </select>
+        </label>
+        <label>Input
+          <select id="filterModality" class="border rounded px-2 py-1">
+            <option value="">All</option>
+            <option value="click">Click</option>
+            <option value="swipe">Swipe</option>
+            <option value="arrow">Arrow keys</option>
+          </select>
+        </label>
+        <button id="applyFilters" class="bg-pink-600 text-white text-xs font-semibold rounded px-3 py-1">Apply</button>
+      </div>
       <p class="text-sm opacity-80">
         The bar charts show the <strong>distribution</strong> of responses: how many people scored within each range.
         The scatter charts compare questionnaire totals against the scan’s <strong>IHS</strong> score (Intrinsic Happiness Score).

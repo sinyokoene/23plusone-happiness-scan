@@ -15,6 +15,9 @@
   const domainCorrTbody = document.querySelector('#domainCorrTable tbody');
   const cardTopWhoTbody = document.querySelector('#cardTopWho tbody');
   const cardBottomWhoTbody = document.querySelector('#cardBottomWho tbody');
+  const filterDevice = document.getElementById('filterDevice');
+  const filterModality = document.getElementById('filterModality');
+  const applyFiltersBtn = document.getElementById('applyFilters');
 
   let who5Chart, swlsChart, cantrilChart, who5Scatter, swlsScatter, cantrilScatter, n123Scatter;
 
@@ -166,12 +169,44 @@
     }
   }
 
+  function isMobileUA(ua){
+    if (!ua || typeof ua !== 'string') return false;
+    return /(Mobi|Android|iPhone|iPad|iPod)/i.test(ua);
+  }
+
+  function entryMatchesFilters(entry){
+    const wantDevice = (filterDevice && filterDevice.value) || '';
+    const wantMod = (filterModality && filterModality.value) || '';
+
+    if (!wantDevice && !wantMod) return true;
+    // device by user agents: prefer scan_user_agent (from scan), fallback to research user_agent
+    const ua = entry.scan_user_agent || entry.user_agent || '';
+    if (wantDevice === 'mobile' && !isMobileUA(ua)) return false;
+    if (wantDevice === 'desktop' && isMobileUA(ua)) return false;
+
+    if (wantMod) {
+      const sel = entry.selections && entry.selections.allResponses;
+      if (!Array.isArray(sel)) return false;
+      const matchMod = (m) => {
+        const v = String(m||'').toLowerCase();
+        if (wantMod === 'click') return v === 'click';
+        if (wantMod === 'swipe') return v === 'swipe-touch' || v === 'swipe-mouse';
+        if (wantMod === 'arrow') return v === 'keyboard-arrow';
+        return true;
+      };
+      if (!sel.some(r => matchMod(r.inputModality))) return false;
+    }
+    return true;
+  }
+
   async function load(){
     const limit = parseInt(limitInput.value, 10) || 200;
-    // Fetch all research entries; we will filter for IHS only where needed (scatter/correlations)
-    const res = await fetch(`/api/research-results?limit=${limit}&includeNoIhs=true`);
+    // Fetch entries with scan details for filtering (device/modality)
+    const res = await fetch(`/api/research-results?limit=${limit}&includeNoIhs=true&includeScanDetails=true`);
     const json = await res.json();
-    const entries = json.entries || [];
+    let entries = json.entries || [];
+    // Apply client-side filters (device, modality)
+    entries = entries.filter(entryMatchesFilters);
     renderTable(entries);
     renderCharts(entries);
 
@@ -296,7 +331,12 @@
     // Fetch server-side correlations for domains and cards
     try {
       await ensureCardDomains();
-      const corrRes = await fetch(`/api/analytics/correlations?limit=${limit}`);
+      const dev = (filterDevice && filterDevice.value) || '';
+      const mod = (filterModality && filterModality.value) || '';
+      const q = new URLSearchParams({ limit: String(limit) });
+      if (dev) q.set('device', dev);
+      if (mod) q.set('modality', mod);
+      const corrRes = await fetch(`/api/analytics/correlations?${q.toString()}`);
       const corrJson = await corrRes.json();
       const domains = corrJson.domains || [];
       const cards = corrJson.cards || [];
@@ -347,6 +387,7 @@
   }
 
   limitInput.addEventListener('change', load);
+  if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', load);
   load();
 })();
 
