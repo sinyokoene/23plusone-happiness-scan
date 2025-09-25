@@ -1557,10 +1557,12 @@
         pop.style.top = (btnRect.top - contRect.top + window.scrollY + 46) + 'px';
       } catch(_) {}
       pop.style.display = 'block';
+      // Fade out the original Try again button for focus
+      try { retakeBtn.style.opacity = '0.4'; } catch(_) {}
       document.addEventListener('keydown', onEsc, { once: true });
       document.addEventListener('click', onDocClick, { capture: true, once: true });
     };
-    const hide = () => { pop.style.display = 'none'; };
+    const hide = () => { pop.style.display = 'none'; try { retakeBtn.style.opacity = ''; } catch(_) {} };
     const onEsc = (e) => { if (e.key === 'Escape') hide(); };
     const onDocClick = (e) => { if (!pop.contains(e.target) && e.target !== retakeBtn) hide(); };
     retakeBtn.addEventListener('click', (e) => { e.preventDefault(); show(); });
