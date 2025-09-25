@@ -1023,7 +1023,7 @@
     }, 4000);
   }
   
-  function recordAnswer(isYes) {
+  function recordAnswer(isYes, modality) {
     if (scanTerminated) return;
     // Stop timer immediately
     timerActive = false;
@@ -1053,7 +1053,8 @@
       domain: card.domain,
       label: card.label,
       yes: isYes,
-      time: responseTime
+      time: responseTime,
+      modality: modality || 'unknown'
     });
     
     currentCardIndex++;
@@ -1090,7 +1091,8 @@
       domain: card.domain,
       label: card.label,
       yes: null,
-      time: responseTime
+      time: responseTime,
+      modality: 'timeout'
     });
     
     // Show transient timeout notification
@@ -1415,6 +1417,7 @@
         label: answer.label,
         response: answer.yes, // true/false/null
         responseTime: answer.time,
+        inputModality: answer.modality || 'unknown',
         affirmationScore: affirmationScore
       });
       
@@ -1431,6 +1434,12 @@
       }
     });
     
+    const modalityCounts = answers.reduce((acc, a) => {
+      const k = a.modality || 'unknown';
+      acc[k] = (acc[k] || 0) + 1;
+      return acc;
+    }, {});
+
     const payload = {
       sessionId: participantId,
       participantId: participantId,
@@ -1444,7 +1453,8 @@
       totalCards: answers.length, // Should be 24
       selectedCount: cardSelections.selected.length,
       rejectedCount: cardSelections.rejected.length,
-      unansweredCount: answers.filter(a => a.yes === null).length
+      unansweredCount: answers.filter(a => a.yes === null).length,
+      modalityCounts: modalityCounts
     };
     
     console.log('Submitting complete scan data:', {
@@ -1679,8 +1689,8 @@
   }
   
   // Button event listeners - immediate record; visual feedback handled via :active CSS
-  yesBtn.addEventListener('click', () => recordAnswer(true));
-  noBtn.addEventListener('click', () => recordAnswer(false));
+  yesBtn.addEventListener('click', () => recordAnswer(true, 'click'));
+  noBtn.addEventListener('click', () => recordAnswer(false, 'click'));
   // Add colored border flash on click in game
   yesBtn.addEventListener('click', () => { yesBtn.classList.add('flash-yes'); setTimeout(()=>yesBtn.classList.remove('flash-yes'), 220); });
   noBtn.addEventListener('click', () => { noBtn.classList.add('flash-no'); setTimeout(()=>noBtn.classList.remove('flash-no'), 220); });
@@ -1709,11 +1719,11 @@
         break;
       case 'ArrowLeft':
         e.preventDefault();
-        recordAnswer(false);
+        recordAnswer(false, 'keyboard-arrow');
         break;
       case 'ArrowRight':
         e.preventDefault();
-        recordAnswer(true);
+        recordAnswer(true, 'keyboard-arrow');
         break;
     }
   }
@@ -1725,11 +1735,11 @@
     switch(e.key.toLowerCase()) {
       case 'y':
         e.preventDefault();
-        recordAnswer(true);
+        recordAnswer(true, 'keyboard-yn');
         break;
       case 'n':
         e.preventDefault();  
-        recordAnswer(false);
+        recordAnswer(false, 'keyboard-yn');
         break;
     }
   }
@@ -1742,7 +1752,7 @@
       if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); }
       const btn = document.getElementById('noBtn');
       if (btn) { btn.classList.add('flash-no'); setTimeout(()=>btn.classList.remove('flash-no'), 220); }
-      recordAnswer(false);
+      recordAnswer(false, 'keyboard-arrow');
       hideGameHint();
     }
     if (e.key === 'ArrowRight') {
@@ -1750,7 +1760,7 @@
       if (document.activeElement && document.activeElement.blur) { document.activeElement.blur(); }
       const btn = document.getElementById('yesBtn');
       if (btn) { btn.classList.add('flash-yes'); setTimeout(()=>btn.classList.remove('flash-yes'), 220); }
-      recordAnswer(true);
+      recordAnswer(true, 'keyboard-arrow');
       hideGameHint();
     }
   });
@@ -1831,7 +1841,7 @@
       // Swipe detected
       const isYes = deltaX > 0;
       animateCardExit(isYes);
-      setTimeout(() => recordAnswer(isYes), 300);
+      setTimeout(() => recordAnswer(isYes, 'swipe-touch'), 300);
     } else {
       // Snap back
       currentCard.style.transform = '';
@@ -1865,7 +1875,7 @@
       // Swipe detected
       const isYes = deltaX > 0;
       animateCardExit(isYes);
-      setTimeout(() => recordAnswer(isYes), 300);
+      setTimeout(() => recordAnswer(isYes, 'swipe-mouse'), 300);
     } else {
       // Snap back
       currentCard.style.transform = '';
