@@ -1616,15 +1616,7 @@
     const topPercentage = 100 - benchmark.ihsPercentile;
     let performanceMessage = '';
     
-    if (topPercentage <= 5) {
-      performanceMessage = `You're in the top ${topPercentage}%! 🏆`;
-    } else if (topPercentage <= 10) {
-      performanceMessage = `You're in the top ${topPercentage}%! 🌟`;
-    } else if (topPercentage <= 25) {
-      performanceMessage = `You're in the top ${topPercentage}%! ✨`;
-    } else {
-      performanceMessage = `You're in the top ${topPercentage}%!`;
-    }
+    performanceMessage = `You're in the top ${topPercentage}%!`;
     
     // Update the main benchmark message
     const messageEl = document.getElementById('benchmarkMessage');
