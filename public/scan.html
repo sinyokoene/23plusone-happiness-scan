@@ -217,6 +217,10 @@
     .btn-pill-multi { height: auto; min-height: 56px; max-height: none; white-space: normal; align-items: flex-start; padding-top: 10px; padding-bottom: 10px; text-align: left; }
     #retakeConfirmDelete { background: #e11d48; color: #ffffff; }
     #retakeConfirmCancel { color: #0ea5a4; background: #ffffff; border: 1px solid #E8E8EA; }
+    /* Desktop-only: shift results content slightly lower relative to fixed hint */
+    @media (min-width: 641px) {
+      #resultsContent { transform: translateY(20px); }
+    }
   </style>
   
   
