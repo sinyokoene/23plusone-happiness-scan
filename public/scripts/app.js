@@ -560,6 +560,19 @@
     showPracticeCard();
   });
 
+  // Desktop: allow arrow keys to activate buttons on the practice-complete screen
+  document.addEventListener('keydown', function handlePracticeCompleteArrows(e){
+    if (!isDesktop) return;
+    if (!practiceCompleteDiv || practiceCompleteDiv.style.display === 'none') return;
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      try { if (practiceMoreBtn) practiceMoreBtn.click(); } catch(_) {}
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      try { if (letsGoBtn) letsGoBtn.click(); } catch(_) {}
+    }
+  });
+
   function setupPracticeKeyboardNavigation() {
     const cardImage = document.querySelector('.practice-card-image');
     if (!cardImage) return;
