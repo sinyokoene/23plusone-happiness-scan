@@ -1542,31 +1542,35 @@
   // Results actions: Try again confirmation
   (function setupRetakeConfirmation(){
     const retakeBtn = document.getElementById('retakeBtn');
-    const pop = document.getElementById('retakeConfirm');
+    const pill = document.getElementById('retakeConfirmPill');
+    const btns = document.getElementById('retakeConfirmButtons');
     const del = document.getElementById('retakeConfirmDelete');
     const cancel = document.getElementById('retakeConfirmCancel');
-    if (!retakeBtn || !pop) return;
+    if (!retakeBtn || !pill || !btns) return;
     const show = () => {
       // Position popover centered above the buttons row
       try {
         const btnRect = retakeBtn.getBoundingClientRect();
         const container = document.getElementById('resultsContent');
         const contRect = container ? container.getBoundingClientRect() : { left: 0, top: 0 };
-        // center the pill under the faded Try again button
-        const pillWidth = 460; // expected approximate width of the message pill
-        const x = btnRect.left + (btnRect.width - pillWidth) / 2 - contRect.left;
-        pop.style.left = Math.max(12, x) + 'px';
-        pop.style.top = (btnRect.bottom - contRect.top + window.scrollY + 14) + 'px';
+        const width = Math.max(btnRect.width, retakeBtn.offsetWidth);
+        pill.style.width = width + 'px';
+        pill.style.left = (btnRect.left - contRect.left) + 'px';
+        pill.style.top = (btnRect.bottom - contRect.top + window.scrollY + 12) + 'px';
+        btns.style.width = width + 'px';
+        btns.style.left = (btnRect.left - contRect.left) + 'px';
+        btns.style.top = (btnRect.bottom - contRect.top + window.scrollY + 12 + pill.offsetHeight + 12) + 'px';
       } catch(_) {}
-      pop.style.display = 'block';
+      pill.style.display = 'flex';
+      btns.style.display = 'block';
       // Fade out the original Try again button for focus
       try { retakeBtn.style.opacity = '0.4'; } catch(_) {}
       document.addEventListener('keydown', onEsc, { once: true });
       document.addEventListener('click', onDocClick, { capture: true, once: true });
     };
-    const hide = () => { pop.style.display = 'none'; try { retakeBtn.style.opacity = ''; } catch(_) {} };
+    const hide = () => { pill.style.display = 'none'; btns.style.display = 'none'; try { retakeBtn.style.opacity = ''; } catch(_) {} };
     const onEsc = (e) => { if (e.key === 'Escape') hide(); };
-    const onDocClick = (e) => { if (!pop.contains(e.target) && e.target !== retakeBtn) hide(); };
+    const onDocClick = (e) => { if (!pill.contains(e.target) && !btns.contains(e.target) && e.target !== retakeBtn) hide(); };
     retakeBtn.addEventListener('click', (e) => { e.preventDefault(); show(); });
     if (cancel) cancel.addEventListener('click', hide);
     if (del) del.addEventListener('click', () => { location.reload(); });
