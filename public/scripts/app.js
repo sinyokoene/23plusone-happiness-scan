@@ -1542,12 +1542,11 @@
   // Results actions: Try again confirmation
   (function setupRetakeConfirmation(){
     const retakeBtn = document.getElementById('retakeBtn');
-    const retakeBtnTop = document.getElementById('retakeBtnTop');
     const pill = document.getElementById('retakeConfirmPill');
     const btns = document.getElementById('retakeConfirmButtons');
     const del = document.getElementById('retakeConfirmDelete');
     const cancel = document.getElementById('retakeConfirmCancel');
-    if ((!retakeBtn && !retakeBtnTop) || !pill || !btns) return;
+    if (!retakeBtn || !pill || !btns) return;
     const actionsRow = document.getElementById('resultsActions');
     const show = () => {
       // Inline the message on the button to avoid overlay stacking and keep bars from reflowing
@@ -1596,9 +1595,7 @@
     };
     const onEsc = (e) => { if (e.key === 'Escape') hide(); };
     const onDocClick = (e) => { if (!btns.contains(e.target) && e.target !== retakeBtn) hide(); };
-    const bind = (el) => { if (el) el.addEventListener('click', (e) => { e.preventDefault(); show(); }); };
-    bind(retakeBtn);
-    bind(retakeBtnTop);
+    retakeBtn.addEventListener('click', (e) => { e.preventDefault(); show(); });
     if (cancel) cancel.addEventListener('click', hide);
     if (del) del.addEventListener('click', () => { location.reload(); });
   })();
