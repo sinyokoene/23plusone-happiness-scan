@@ -1552,6 +1552,7 @@
       const original = retakeBtn.getAttribute('data-original-html') || retakeBtn.innerHTML;
       retakeBtn.setAttribute('data-original-html', original);
       retakeBtn.innerHTML = '<img src="LightningBoltOutline.svg" alt="" width="18" height="18" style="margin-right:6px;filter:brightness(0) saturate(100%) invert(8%) sepia(27%) saturate(982%) hue-rotate(334deg) brightness(92%) contrast(94%);"><span>Sure? Your data will be lost!</span>';
+      retakeBtn.classList.add('btn-pill-multi');
       // Position only the buttons row under the transformed button
       try {
         const btnRect = retakeBtn.getBoundingClientRect();
@@ -1574,6 +1575,7 @@
       btns.style.display = 'none';
       const original = retakeBtn.getAttribute('data-original-html');
       if (original) retakeBtn.innerHTML = original;
+      retakeBtn.classList.remove('btn-pill-multi');
     };
     const onEsc = (e) => { if (e.key === 'Escape') hide(); };
     const onDocClick = (e) => { if (!btns.contains(e.target) && e.target !== retakeBtn) hide(); };
