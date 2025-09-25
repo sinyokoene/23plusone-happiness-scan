@@ -1548,39 +1548,35 @@
     const cancel = document.getElementById('retakeConfirmCancel');
     if (!retakeBtn || !pill || !btns) return;
     const show = () => {
-      // Position popover centered above the buttons row
+      // Inline transform: change Try again into the confirmation message
+      const original = retakeBtn.getAttribute('data-original-html') || retakeBtn.innerHTML;
+      retakeBtn.setAttribute('data-original-html', original);
+      retakeBtn.innerHTML = '<img src="LightningBoltOutline.svg" alt="" width="18" height="18" style="margin-right:6px;filter:brightness(0) saturate(100%) invert(8%) sepia(27%) saturate(982%) hue-rotate(334deg) brightness(92%) contrast(94%);"><span>Sure? Your data will be lost!</span>';
+      // Position only the buttons row under the transformed button
       try {
         const btnRect = retakeBtn.getBoundingClientRect();
         const container = document.getElementById('resultsContent');
         const contRect = container ? container.getBoundingClientRect() : { left: 0, top: 0 };
         const width = Math.max(btnRect.width, retakeBtn.offsetWidth);
-        pill.style.width = width + 'px';
-        pill.style.left = (btnRect.left - contRect.left) + 'px';
-        // Ensure pill is vertically positioned within viewport and not behind other elements
-        pill.style.top = (btnRect.bottom - contRect.top + window.scrollY + 12) + 'px';
         btns.style.width = width + 'px';
         btns.style.left = (btnRect.left - contRect.left) + 'px';
-        // If pill height not measured yet, approximate 48px
-        const pillH = pill.offsetHeight || 48;
-        // Keep buttons above footer: clamp to results content height minus footer spacing
-        const results = document.getElementById('results');
-        const resultsRect = results ? results.getBoundingClientRect() : null;
+        let btnsTop = (btnRect.bottom - contRect.top + window.scrollY + 12);
         const footerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--footer-h')) || 64;
-        let btnsTop = (btnRect.bottom - contRect.top + window.scrollY + 12 + pillH + 12);
-        const maxTop = (resultsRect ? (resultsRect.bottom - contRect.top + window.scrollY) : (window.scrollY + window.innerHeight)) - (footerH + 90);
+        const maxTop = (window.scrollY + window.innerHeight) - (footerH + 90);
         if (btnsTop > maxTop) btnsTop = maxTop;
         btns.style.top = btnsTop + 'px';
       } catch(_) {}
-      pill.style.display = 'flex';
       btns.style.display = 'block';
-      // Fade out the original Try again button for focus
-      try { retakeBtn.style.opacity = '0.4'; } catch(_) {}
       document.addEventListener('keydown', onEsc, { once: true });
       document.addEventListener('click', onDocClick, { capture: true, once: true });
     };
-    const hide = () => { pill.style.display = 'none'; btns.style.display = 'none'; try { retakeBtn.style.opacity = ''; } catch(_) {} };
+    const hide = () => {
+      btns.style.display = 'none';
+      const original = retakeBtn.getAttribute('data-original-html');
+      if (original) retakeBtn.innerHTML = original;
+    };
     const onEsc = (e) => { if (e.key === 'Escape') hide(); };
-    const onDocClick = (e) => { if (!pill.contains(e.target) && !btns.contains(e.target) && e.target !== retakeBtn) hide(); };
+    const onDocClick = (e) => { if (!btns.contains(e.target) && e.target !== retakeBtn) hide(); };
     retakeBtn.addEventListener('click', (e) => { e.preventDefault(); show(); });
     if (cancel) cancel.addEventListener('click', hide);
     if (del) del.addEventListener('click', () => { location.reload(); });
