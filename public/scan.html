@@ -102,15 +102,16 @@
         padding-top: calc(8px + env(safe-area-inset-top)); 
         padding-left: calc(16px + env(safe-area-inset-left)); 
         padding-right: calc(16px + env(safe-area-inset-right)); 
-        padding-bottom: 8px; 
+        padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
         height: calc(var(--vh, 1vh) * 100 - var(--footer-h) - 8px); 
-        display: flex; flex-direction: column; justify-content: space-between; gap: 8px; 
+        display: flex; flex-direction: column; justify-content: space-between; gap: 6px; 
       }
       #domainBars { max-width: 360px; }
       #domainBars .bar-container { height: 4px; }
       .palette-tagline { margin-top: 4px; font-size: 0.85rem; }
       .share-buttons .share-button { padding: 6px 10px; font-size: 0.9rem; }
       #retakeBtn { margin-top: 2px; font-size: 0.9rem; }
+      #shareSection { margin-top: 8px; }
     }
     /* Overlay for rules */
     .overlay-backdrop { position: absolute; inset: 0; background: transparent; display: none; align-items: center; justify-content: center; z-index: 40; }
@@ -214,7 +215,19 @@
     /* Reserve tallest row height so page doesn't re-center when toggling */
     #resultsActions { min-height: 56px; height: 56px; align-items: center; }
     /* Nudge results content slightly lower on desktop to clear the hint */
-    #resultsContent { padding-top: 30px; }
+    @media (min-width: 641px) { #resultsContent { padding-top: 20px; } }
+
+    /* Compress spacing slightly on short screens so all content fits */
+    @media (max-height: 720px) {
+      #resultsHeader { margin-top: 2px; margin-bottom: 2px; }
+      #resultsHeader h2 { font-size: 0.95rem; }
+      #totalScore { font-size: 2rem; }
+      #insightBlock { margin-top: 4px; font-size: 0.82rem; line-height: 1.3; }
+      #benchmarkMessage { font-size: 0.75rem; }
+      #benchmarkStats .benchmark-label, #benchmarkStats .benchmark-value { font-size: 0.74rem; }
+      #domainBars { margin-top: 2px; }
+      .palette-tagline { margin-top: 2px; }
+    }
     #retakeConfirmPill { position: absolute; display: none; z-index: 55; background: #ffffff; border: 1px solid #E8E8EA; border-radius: 12px; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25); padding: 12px 16px; }
     #retakeConfirmPill .title { font-size: 14px; font-weight: 500; color: #2c1f1c; line-height: 1.3; }
     #retakeConfirmButtons { position: absolute; display: none; z-index: 55; }
