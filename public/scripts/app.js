@@ -1556,10 +1556,13 @@
         const width = Math.max(btnRect.width, retakeBtn.offsetWidth);
         pill.style.width = width + 'px';
         pill.style.left = (btnRect.left - contRect.left) + 'px';
+        // Ensure pill is vertically positioned within viewport and not behind other elements
         pill.style.top = (btnRect.bottom - contRect.top + window.scrollY + 12) + 'px';
         btns.style.width = width + 'px';
         btns.style.left = (btnRect.left - contRect.left) + 'px';
-        btns.style.top = (btnRect.bottom - contRect.top + window.scrollY + 12 + pill.offsetHeight + 12) + 'px';
+        // If pill height not measured yet, approximate 48px
+        const pillH = pill.offsetHeight || 48;
+        btns.style.top = (btnRect.bottom - contRect.top + window.scrollY + 12 + pillH + 12) + 'px';
       } catch(_) {}
       pill.style.display = 'flex';
       btns.style.display = 'block';
