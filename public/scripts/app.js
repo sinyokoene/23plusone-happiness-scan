@@ -263,11 +263,12 @@
     try {
       const practiceIntroTextEl = document.getElementById('practiceIntroText');
       if (practiceIntroTextEl) {
-        const pink = '<span style="color:#e91e63; font-weight:600;">Ask yourself: is this part of my life?</span>';
-        if (isDesktop) {
-          practiceIntroTextEl.innerHTML = 'A card is made up of 4 pictures.<br>' + pink + '<br>Use the buttons or arrow keys. You have 4 seconds per card.';
-        } else {
-          practiceIntroTextEl.innerHTML = 'A card is made up of 4 pictures.<br>' + pink + '<br>Use the buttons or swipe. You have 4 seconds per card.';
+        // Only switch the last line based on device; leave the semibold line in HTML
+        const controls = document.getElementById('practiceControlsText');
+        if (controls) {
+          controls.textContent = isDesktop
+            ? 'Use the buttons or arrow keys. You have 4 seconds per card.'
+            : 'Use the buttons or swipe. You have 4 seconds per card.';
         }
       }
     } catch(_) {}
