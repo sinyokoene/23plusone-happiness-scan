@@ -1547,18 +1547,33 @@
     const del = document.getElementById('retakeConfirmDelete');
     const cancel = document.getElementById('retakeConfirmCancel');
     if (!retakeBtn || !pill || !btns) return;
+    const actionsRow = document.getElementById('resultsActions');
     const show = () => {
       // Inline the message on the button to avoid overlay stacking and keep bars from reflowing
       const original = retakeBtn.getAttribute('data-original-html') || retakeBtn.innerHTML;
       retakeBtn.setAttribute('data-original-html', original);
-      retakeBtn.style.visibility = 'hidden';
-      // Position buttons under the button using static container
+      // Move the confirmation pill into the actions row to REPLACE the Try again button spot
       try {
-        const btnRect = retakeBtn.getBoundingClientRect();
+        if (actionsRow && pill && retakeBtn.parentElement === actionsRow) {
+          actionsRow.insertBefore(pill, retakeBtn);
+        }
+      } catch(_) {}
+      // Hide the original button entirely so space is freed
+      retakeBtn.style.display = 'none';
+      // Show the confirmation pill inline, matching the button's visual style and width
+      try {
+        const width = Math.max(retakeBtn.offsetWidth || 0, retakeBtn.getBoundingClientRect().width || 0);
+        pill.style.width = width ? (width + 'px') : '';
+      } catch(_) { pill.style.width = ''; }
+      pill.style.display = 'inline-flex';
+      pill.style.position = 'static';
+      pill.classList.add('btn-pill', 'btn-pill-multi');
+      // Position action buttons just below the pill, aligned under the same x position
+      try {
+        const btnRect = pill.getBoundingClientRect();
         const container = document.getElementById('resultsContent');
         const contRect = container ? container.getBoundingClientRect() : { left: 0, top: 0 };
-        const width = Math.max(btnRect.width, retakeBtn.offsetWidth);
-        btns.style.width = width + 'px';
+        btns.style.width = btnRect.width + 'px';
         btns.style.left = (btnRect.left - contRect.left) + 'px';
         let btnsTop = (btnRect.bottom - contRect.top + window.scrollY + 12);
         const footerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--footer-h')) || 64;
@@ -1572,7 +1587,11 @@
     };
     const hide = () => {
       btns.style.display = 'none';
-      retakeBtn.style.visibility = '';
+      // Hide pill and restore original button in the row
+      pill.style.display = 'none';
+      pill.style.position = 'absolute';
+      pill.style.width = '';
+      retakeBtn.style.display = '';
     };
     const onEsc = (e) => { if (e.key === 'Escape') hide(); };
     const onDocClick = (e) => { if (!btns.contains(e.target) && e.target !== retakeBtn) hide(); };
