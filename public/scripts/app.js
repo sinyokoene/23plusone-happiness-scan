@@ -1562,7 +1562,14 @@
         btns.style.left = (btnRect.left - contRect.left) + 'px';
         // If pill height not measured yet, approximate 48px
         const pillH = pill.offsetHeight || 48;
-        btns.style.top = (btnRect.bottom - contRect.top + window.scrollY + 12 + pillH + 12) + 'px';
+        // Keep buttons above footer: clamp to results content height minus footer spacing
+        const results = document.getElementById('results');
+        const resultsRect = results ? results.getBoundingClientRect() : null;
+        const footerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--footer-h')) || 64;
+        let btnsTop = (btnRect.bottom - contRect.top + window.scrollY + 12 + pillH + 12);
+        const maxTop = (resultsRect ? (resultsRect.bottom - contRect.top + window.scrollY) : (window.scrollY + window.innerHeight)) - (footerH + 90);
+        if (btnsTop > maxTop) btnsTop = maxTop;
+        btns.style.top = btnsTop + 'px';
       } catch(_) {}
       pill.style.display = 'flex';
       btns.style.display = 'block';
