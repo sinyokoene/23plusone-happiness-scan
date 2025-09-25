@@ -1552,9 +1552,11 @@
         const btnRect = retakeBtn.getBoundingClientRect();
         const container = document.getElementById('resultsContent');
         const contRect = container ? container.getBoundingClientRect() : { left: 0, top: 0 };
-        const x = btnRect.left + btnRect.width/2 - contRect.left;
-        pop.style.left = Math.max(12, x - 120) + 'px';
-        pop.style.top = (btnRect.top - contRect.top + window.scrollY + 46) + 'px';
+        // center the pill under the faded Try again button
+        const pillWidth = 460; // expected approximate width of the message pill
+        const x = btnRect.left + (btnRect.width - pillWidth) / 2 - contRect.left;
+        pop.style.left = Math.max(12, x) + 'px';
+        pop.style.top = (btnRect.bottom - contRect.top + window.scrollY + 14) + 'px';
       } catch(_) {}
       pop.style.display = 'block';
       // Fade out the original Try again button for focus

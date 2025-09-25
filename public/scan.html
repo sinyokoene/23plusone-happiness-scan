@@ -202,10 +202,11 @@
     .results-pill { display: inline-flex; align-items: center; gap: 8px; height: 36px; min-height: 36px; background: #ffffff; color: #2c1f1c; border: 1px solid #E8E8EA; border-radius: 12px; padding: 0 12px; box-shadow: 0 1px 1px rgba(0,0,0,0.25); white-space: nowrap; }
     #desktopResultsHint .hint-icon { width: 18px; height: 18px; display: inline-block; filter: brightness(0) saturate(100%) invert(61%) sepia(22%) saturate(544%) hue-rotate(163deg) brightness(90%) contrast(89%); }
     #desktopLearnMoreBtn { color: #2c1f1c; text-decoration: none; }
-    /* Retake confirmation popover */
-    #retakeConfirm { position: absolute; display: none; z-index: 55; background: #ffffff; border: 1px solid #E8E8EA; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); padding: 12px; width: 240px; }
-    #retakeConfirmTitle { font-size: 14px; font-weight: 700; color: #2c1f1c; margin-bottom: 8px; }
-    #retakeConfirm .actions { display: flex; gap: 8px; }
+    /* Retake confirmation popover — looks like a button pill */
+    #retakeConfirm { position: absolute; display: none; z-index: 55; background: #ffffff; border: 1px solid #E8E8EA; border-radius: 999px; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25); padding: 10px 14px; width: auto; }
+    #retakeConfirmTitle { font-size: 16px; font-weight: 700; color: #2c1f1c; margin: 0 0 10px 0; }
+    #retakeConfirm .actions { display: flex; gap: 12px; width: 100%; }
+    #retakeConfirm .actions > button { flex: 1 1 0; }
     #retakeConfirmDelete { background: #e11d48; color: #ffffff; }
     #retakeConfirmCancel { color: #0ea5a4; background: #ffffff; border: 1px solid #E8E8EA; }
   </style>
