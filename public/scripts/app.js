@@ -1548,36 +1548,37 @@
     const cancel = document.getElementById('retakeConfirmCancel');
     if (!retakeBtn || !pill || !btns) return;
     const show = () => {
-      // Show separate overlay elements positioned relative to Try again (no layout shift)
+      // Inline the message on the button to avoid overlay stacking and keep bars from reflowing
+      const original = retakeBtn.getAttribute('data-original-html') || retakeBtn.innerHTML;
+      retakeBtn.setAttribute('data-original-html', original);
+      retakeBtn.innerHTML = '<img src="LightningBoltOutline.svg" alt="" width="18" height="18" style="margin-right:6px;filter:brightness(0) saturate(100%) invert(8%) sepia(27%) saturate(982%) hue-rotate(334deg) brightness(92%) contrast(94%);"><span>Sure? Your data will be lost!</span>';
+      retakeBtn.classList.add('btn-pill-multi');
+      // Position buttons under the button using static container
       try {
         const btnRect = retakeBtn.getBoundingClientRect();
         const container = document.getElementById('resultsContent');
         const contRect = container ? container.getBoundingClientRect() : { left: 0, top: 0 };
         const width = Math.max(btnRect.width, retakeBtn.offsetWidth);
-        // Pill directly under button
-        pill.style.width = width + 'px';
-        pill.style.left = (btnRect.left - contRect.left) + 'px';
-        pill.style.top = (btnRect.bottom - contRect.top + window.scrollY + 12) + 'px';
-        // Buttons below pill
         btns.style.width = width + 'px';
         btns.style.left = (btnRect.left - contRect.left) + 'px';
-        let btnsTop = (btnRect.bottom - contRect.top + window.scrollY + 12 + (pill.offsetHeight || 48) + 12);
+        let btnsTop = (btnRect.bottom - contRect.top + window.scrollY + 12);
         const footerH = parseInt(getComputedStyle(document.documentElement).getPropertyValue('--footer-h')) || 64;
         const maxTop = (window.scrollY + window.innerHeight) - (footerH + 90);
         if (btnsTop > maxTop) btnsTop = maxTop;
         btns.style.top = btnsTop + 'px';
       } catch(_) {}
-      pill.style.display = 'flex';
       btns.style.display = 'block';
       document.addEventListener('keydown', onEsc, { once: true });
       document.addEventListener('click', onDocClick, { capture: true, once: true });
     };
     const hide = () => {
-      pill.style.display = 'none';
       btns.style.display = 'none';
+      const original = retakeBtn.getAttribute('data-original-html');
+      if (original) retakeBtn.innerHTML = original;
+      retakeBtn.classList.remove('btn-pill-multi');
     };
     const onEsc = (e) => { if (e.key === 'Escape') hide(); };
-    const onDocClick = (e) => { if (!pill.contains(e.target) && !btns.contains(e.target) && e.target !== retakeBtn) hide(); };
+    const onDocClick = (e) => { if (!btns.contains(e.target) && e.target !== retakeBtn) hide(); };
     retakeBtn.addEventListener('click', (e) => { e.preventDefault(); show(); });
     if (cancel) cancel.addEventListener('click', hide);
     if (del) del.addEventListener('click', () => { location.reload(); });
