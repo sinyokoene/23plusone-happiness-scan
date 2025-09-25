@@ -197,11 +197,11 @@
     #letsGoBtn { color: #3AB4A0; }
     .share-button { color: var(--brand-pink, #e91e63); background: #ffffff !important; }
     #practiceNextBtn, #practicePrevBtn { color: #2c1f1c; }
-    /* Results: desktop hint pill at top */
-    #resultsTopRow { display: none; align-items: center; justify-content: center; gap: 12px; margin-bottom: 8px; }
-    #desktopResultsHint { display: inline-flex; align-items: center; gap: 8px; background: #E6F4FF; color: #2c1f1c; border: 1px solid #D8ECFF; border-radius: 999px; padding: 8px 12px; font-weight: 600; }
+    /* Results: desktop hint pills fixed at top-right */
+    #resultsTopRow { position: fixed; top: 16px; right: 16px; display: none; align-items: center; justify-content: flex-end; gap: 8px; z-index: 60; }
+    .results-pill { display: inline-flex; align-items: center; gap: 8px; height: 36px; min-height: 36px; background: #E6F4FF; color: #5DA1BB; border: 1px solid #5DA1BB; border-radius: 12px; padding: 0 12px; box-shadow: 0 1px 1px rgba(0,0,0,0.15); white-space: nowrap; }
     #desktopResultsHint .hint-icon { width: 18px; height: 18px; display: inline-block; }
-    #desktopLearnMoreBtn { display: inline-flex; align-items: center; justify-content: center; height: 36px; min-height: 36px; background: #ffffff; border: 1px solid #E8E8EA; border-radius: 12px; padding: 0 12px; font-weight: 600; color: #2c1f1c; }
+    #desktopLearnMoreBtn { color: #5DA1BB; text-decoration: none; }
     /* Retake confirmation popover */
     #retakeConfirm { position: absolute; display: none; z-index: 55; background: #ffffff; border: 1px solid #E8E8EA; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.15); padding: 12px; width: 240px; }
     #retakeConfirmTitle { font-size: 14px; font-weight: 700; color: #2c1f1c; margin-bottom: 8px; }
@@ -377,11 +377,11 @@
           <!-- Page 1 Content: Score & Overview -->
           <!-- Desktop-only: info hint and learn more button -->
           <div id="resultsTopRow">
-            <div id="desktopResultsHint">
-              <img src="LightningBoltOutline.svg" alt="" class="hint-icon" aria-hidden>
+            <div id="desktopResultsHint" class="results-pill">
+              <img src="LightBulbOutline.svg" alt="" class="hint-icon" aria-hidden>
               <span>Pssst... Did you know 23plusone is a science-based method?</span>
             </div>
-            <a id="desktopLearnMoreBtn" href="https://23plusone.org/" target="_blank" rel="noopener">Learn more</a>
+            <a id="desktopLearnMoreBtn" class="results-pill" href="https://23plusone.org/" target="_blank" rel="noopener">Learn more</a>
           </div>
           <header id="resultsHeader" class="mb-4">
             <h2 id="results-heading" class="text-xl md:text-2xl font-semibold"><span class="heading-part-1">Done! Here’s your</span> <span class="accent heading-part-2 text-[var(--brand-pink)]">value profile.</span></h2>
