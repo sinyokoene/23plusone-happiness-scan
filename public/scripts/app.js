@@ -1546,6 +1546,9 @@
     const btns = document.getElementById('retakeConfirmButtons');
     const del = document.getElementById('retakeConfirmDelete');
     const cancel = document.getElementById('retakeConfirmCancel');
+    const overlay = document.getElementById('retakeOverlay');
+    const overlayYes = document.getElementById('retakeOverlayYes');
+    const overlayNo = document.getElementById('retakeOverlayNo');
     if (!retakeBtn || !pill || !btns) return;
     const actionsRow = document.getElementById('resultsActions');
     const show = () => {
@@ -1595,7 +1598,21 @@
     };
     const onEsc = (e) => { if (e.key === 'Escape') hide(); };
     const onDocClick = (e) => { if (!btns.contains(e.target) && e.target !== retakeBtn) hide(); };
-    retakeBtn.addEventListener('click', (e) => { e.preventDefault(); show(); });
+    retakeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      // On mobile, show centered overlay; otherwise use inline pill/buttons
+      const isMobile = window.matchMedia && window.matchMedia('(max-width: 480px)').matches;
+      if (overlay && isMobile) {
+        overlay.style.display = 'flex';
+        const close = () => { overlay.style.display = 'none'; };
+        if (overlayNo) overlayNo.onclick = close;
+        if (overlayYes) overlayYes.onclick = () => { location.reload(); };
+        // Also close if user taps outside card
+        overlay.addEventListener('click', function onBk(e){ if (e.target === overlay) { close(); overlay.removeEventListener('click', onBk); } });
+        return;
+      }
+      show();
+    });
     if (cancel) cancel.addEventListener('click', hide);
     if (del) del.addEventListener('click', () => { location.reload(); });
   })();

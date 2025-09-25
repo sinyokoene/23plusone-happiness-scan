@@ -98,6 +98,8 @@
       #benchmarkStats .benchmark-label,
       #benchmarkStats .benchmark-value { font-size: 0.78rem; }
       .bar-name { font-size: 0.8rem; }
+      /* Pull Average/Participants closer together */
+      #benchmarkStats { display: grid; grid-template-columns: auto auto; column-gap: 8px; justify-content: center; align-items: center; margin-top: 2px; }
       #resultsContent { 
         padding-top: calc(8px + env(safe-area-inset-top)); 
         padding-left: calc(16px + env(safe-area-inset-left)); 
@@ -110,7 +112,10 @@
       #domainBars .bar-container { height: 4px; }
       .palette-tagline { margin-top: 4px; font-size: 0.85rem; }
       .share-buttons .share-button { padding: 6px 10px; font-size: 0.9rem; }
-      #retakeBtn { margin-top: 2px; font-size: 0.9rem; }
+      /* Smaller, equal-width buttons so all three fit */
+      #resultsActions { gap: 6px !important; }
+      #resultsActions .btn-pill { flex: 1 1 0; min-width: 0; height: 36px; min-height: 36px; max-height: 36px; padding: 0 10px; font-size: 0.85rem; }
+      #retakeBtn { margin-top: 2px; font-size: 0.85rem; width: auto; min-width: 0; }
       #shareSection { margin-top: 8px; }
     }
     /* Overlay for rules */
@@ -237,6 +242,10 @@
     .btn-pill-multi { height: auto; min-height: 56px; max-height: none; white-space: normal; align-items: flex-start; padding-top: 10px; padding-bottom: 10px; text-align: left; }
     #retakeConfirmDelete { background: #e11d48; color: #ffffff; }
     #retakeConfirmCancel { color: #0ea5a4; background: #ffffff; border: 1px solid #E8E8EA; }
+    /* Mobile-only retake overlay */
+    @media (max-width: 480px) {
+      #retakeOverlay .overlay-card { max-width: 320px; }
+    }
   </style>
   
   
@@ -509,6 +518,17 @@
               <div class="actions">
                 <button id="retakeConfirmDelete" class="btn-pill" type="button" style="color:#DC006B;">Delete</button>
                 <button id="retakeConfirmCancel" class="btn-pill" type="button" style="color:#0ea5a4;">Stay here</button>
+              </div>
+            </div>
+            <!-- Mobile overlay confirmation for Try again -->
+            <div id="retakeOverlay" class="overlay-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Confirm retake">
+              <div class="overlay-card">
+                <h3>Are you sure?</h3>
+                <p>This will clear your data and restart the scan.</p>
+                <div class="overlay-actions">
+                  <button id="retakeOverlayNo" class="overlay-btn" style="background:#0ea5a4;">No</button>
+                  <button id="retakeOverlayYes" class="overlay-btn" style="background:#e11d48;">Yes</button>
+                </div>
               </div>
             </div>
           </section>
