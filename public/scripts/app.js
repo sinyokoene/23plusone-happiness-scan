@@ -1691,7 +1691,7 @@
           } : null,
           userAgent: navigator.userAgent
         };
-        // Generate PDF in browser if html2pdf is available
+        // Generate PDF in browser
         try {
           const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: null, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
           const iframe = document.createElement('iframe');
@@ -1703,13 +1703,39 @@
           iframe.src = reportUrl;
           document.body.appendChild(iframe);
           await new Promise(resolve => { iframe.onload = resolve; });
-          const page = iframe.contentDocument && iframe.contentDocument.querySelector('.page');
-          const html2pdf = iframe.contentWindow && iframe.contentWindow.html2pdf;
-          if (page && html2pdf) {
-            const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-            const dataUri = await html2pdf().from(page).set(opt).toPdf().output('datauristring');
-            payload.pdfBase64 = dataUri;
+          // wait a beat for fonts/layout
+          await new Promise(r => setTimeout(r, 250));
+          const doc = iframe.contentDocument;
+          const win = iframe.contentWindow;
+          const page = doc && doc.querySelector('.page');
+          // try html2pdf first
+          let dataUri = null;
+          try {
+            // wait up to 2s for html2pdf to appear
+            let tries = 0;
+            while (tries < 8 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
+            if (win && win.html2pdf && page) {
+              const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+              dataUri = await win.html2pdf().from(page).set(opt).toPdf().output('datauristring');
+            }
+          } catch(_) {}
+          // fallback to html2canvas + jsPDF from the iframe bundle
+          if (!dataUri && win) {
+            try {
+              const html2canvas = win.html2canvas;
+              const jsPDF = win.jspdf && win.jspdf.jsPDF;
+              if (page && html2canvas && jsPDF) {
+                const canvas = await html2canvas(page, { scale: 2, useCORS: true });
+                const imgData = canvas.toDataURL('image/png');
+                const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+                const pageWidth = 210;
+                const imgHeight = (canvas.height * pageWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
+                dataUri = pdf.output('datauristring');
+              }
+            } catch(_) {}
           }
+          if (dataUri) { payload.pdfBase64 = dataUri; }
           try { document.body.removeChild(iframe); } catch(_){}
         } catch(_) {}
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
