@@ -1489,6 +1489,14 @@
       unansweredCount: answers.filter(a => a.yes === null).length,
       modalityCounts: modalityCounts
     };
+
+    // Persist quality metrics globally for PDF/report usage
+    try {
+      if (typeof window !== 'undefined') {
+        window.LATEST_COMPLETION_TIME = payload.completionTime;
+        window.LATEST_UNANSWERED = payload.unansweredCount;
+      }
+    } catch(_) {}
     
     console.log('Submitting complete scan data:', {
       totalResponses: answers.length,
@@ -1736,7 +1744,12 @@
               averageScore: (fullBm.context && typeof fullBm.context.averageScore === 'number') ? fullBm.context.averageScore : null
             }
           } : null;
-          const dataPayload = { results, benchmark: safeBenchmark, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null };
+          const dataPayload = { 
+            results, 
+            benchmark: safeBenchmark, 
+            completionTime: (typeof window !== 'undefined' ? (window.LATEST_COMPLETION_TIME ?? null) : null), 
+            unansweredCount: (typeof window !== 'undefined' ? (window.LATEST_UNANSWERED ?? null) : null) 
+          };
           const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(dataPayload)))))}&preview=1`;
           const iframe = document.createElement('iframe');
           // Keep iframe on-screen (but hidden) so Safari/WebKit paints it
