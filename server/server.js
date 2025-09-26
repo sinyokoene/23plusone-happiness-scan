@@ -7,7 +7,7 @@ const nodemailer = require('nodemailer');
 let puppeteer = null; // lazy-loaded (local)
 let puppeteerCore = null; // lazy-loaded (vercel)
 let chromium = null; // lazy-loaded (vercel)
-let chromeLambda = null; // fallback for vercel
+// Removed chrome-aws-lambda fallback due to dependency conflicts on Vercel
 
 // Force deployment update - Complete data structure fix
 const app = express();
@@ -154,16 +154,8 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
         ignoreHTTPSErrors: true
       });
     } catch (e) {
-      // Fallback to chrome-aws-lambda
-      if (!chromeLambda) { chromeLambda = require('chrome-aws-lambda'); }
-      const executablePath = await chromeLambda.executablePath;
-      browser = await puppeteerCore.launch({
-        args: chromeLambda.args,
-        defaultViewport: chromeLambda.defaultViewport,
-        executablePath,
-        headless: chromeLambda.headless,
-        ignoreHTTPSErrors: true
-      });
+      // Re-throw to surface error; primary path should work on Vercel
+      throw e;
     }
   } else {
     if (!puppeteer) { puppeteer = require('puppeteer'); }
