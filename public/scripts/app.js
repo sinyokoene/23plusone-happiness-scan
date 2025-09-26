@@ -1701,7 +1701,7 @@
       }
       try {
         if (sendBtn) { sendBtn.disabled = true; }
-        statusEl.textContent = 'Sending…';
+        statusEl.textContent = 'Preparing PDF…';
         statusEl.style.display = 'block';
         const results = (typeof window !== 'undefined' && window.LATEST_RESULTS) ? window.LATEST_RESULTS : null;
         try {
@@ -1737,14 +1737,14 @@
           iframe.src = reportUrl;
           document.body.appendChild(iframe);
           await new Promise(resolve => { iframe.onload = resolve; });
-          await new Promise(r => setTimeout(r, 250));
+          await new Promise(r => setTimeout(r, 400));
           const doc = iframe.contentDocument;
           const win = iframe.contentWindow;
           const page = doc && doc.querySelector('.page');
           let blob = null;
           // html2pdf (preferred)
           try {
-            let tries = 0; while (tries < 8 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
+            let tries = 0; while (tries < 12 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
             if (win && win.html2pdf && page) {
               const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
               blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
@@ -1770,6 +1770,11 @@
         if (!payload.pdfBase64 && window.LAST_PDF_BASE64) {
           payload.pdfBase64 = window.LAST_PDF_BASE64;
         }
+        if (!payload.pdfBase64) {
+          statusEl.textContent = 'Could not prepare PDF. Please try again.';
+          return;
+        }
+        statusEl.textContent = 'Sending…';
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if (!res.ok) { throw new Error('Failed to send'); }
         showSent();
