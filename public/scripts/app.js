@@ -1704,41 +1704,39 @@
           iframe.src = reportUrl;
           document.body.appendChild(iframe);
           await new Promise(resolve => { iframe.onload = resolve; });
-          // wait a beat for fonts/layout
           await new Promise(r => setTimeout(r, 250));
           const doc = iframe.contentDocument;
           const win = iframe.contentWindow;
           const page = doc && doc.querySelector('.page');
-          // try html2pdf first
-          let dataUri = null;
+          let blob = null;
+          // html2pdf (preferred)
           try {
-            // wait up to 2s for html2pdf to appear
-            let tries = 0;
-            while (tries < 8 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
+            let tries = 0; while (tries < 8 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
             if (win && win.html2pdf && page) {
               const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-              dataUri = await win.html2pdf().from(page).set(opt).toPdf().output('datauristring');
+              blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
             }
           } catch(_) {}
-          // fallback to html2canvas + jsPDF from the iframe bundle
-          if (!dataUri && win) {
-            try {
-              const html2canvas = win.html2canvas;
-              const jsPDF = win.jspdf && win.jspdf.jsPDF;
-              if (page && html2canvas && jsPDF) {
-                const canvas = await html2canvas(page, { scale: 2, useCORS: true });
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-                const pageWidth = 210;
-                const imgHeight = (canvas.height * pageWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
-                dataUri = pdf.output('datauristring');
-              }
-            } catch(_) {}
+          // Fallback: html2canvas + jsPDF
+          if (!blob && win && page && win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
+            const canvas = await win.html2canvas(page, { scale: 2, useCORS: true });
+            const imgData = canvas.toDataURL('image/png');
+            const jsPDF = win.jspdf.jsPDF; const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+            const pageWidth = 210; const imgHeight = (canvas.height * pageWidth) / canvas.width;
+            pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
+            blob = pdf.output('blob');
           }
-          if (dataUri) { payload.pdfBase64 = dataUri; }
+          if (blob) {
+            // Convert to base64
+            const dataUri = await new Promise((resolve) => { const fr = new FileReader(); fr.onload = () => resolve(fr.result); fr.readAsDataURL(blob); });
+            payload.pdfBase64 = String(dataUri);
+            try { window.LAST_PDF_BASE64 = payload.pdfBase64; } catch(_) {}
+          }
           try { document.body.removeChild(iframe); } catch(_){}
         } catch(_) {}
+        if (!payload.pdfBase64 && window.LAST_PDF_BASE64) {
+          payload.pdfBase64 = window.LAST_PDF_BASE64;
+        }
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if (!res.ok) { throw new Error('Failed to send'); }
         showSent();
@@ -1760,25 +1758,29 @@
         await new Promise(r => { iframe.onload = r; });
         await new Promise(r => setTimeout(r, 250));
         const doc = iframe.contentDocument; const win = iframe.contentWindow; const page = doc && doc.querySelector('.page');
-        let dataUri = null;
+        let blob = null;
         try {
           let tries = 0; while (tries < 8 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
           if (win && win.html2pdf && page) {
             const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-            dataUri = await win.html2pdf().from(page).set(opt).toPdf().output('datauristring');
+            blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
           }
         } catch(_) {}
-        if (!dataUri && win && page && win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
+        if (!blob && win && page && win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
           const canvas = await win.html2canvas(page, { scale: 2, useCORS: true });
           const imgData = canvas.toDataURL('image/png');
           const jsPDF = win.jspdf.jsPDF; const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
           const pageWidth = 210; const imgHeight = (canvas.height * pageWidth) / canvas.width;
           pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
-          dataUri = pdf.output('datauristring');
+          blob = pdf.output('blob');
         }
-        if (dataUri) {
-          try { window.LAST_PDF_BASE64 = dataUri; } catch(_) {}
-          const a = document.createElement('a'); a.href = dataUri; a.download = '23plusone-report.pdf'; a.click();
+        if (blob) {
+          // Persist for Send, and download via object URL
+          const dataUri = await new Promise((resolve) => { const fr = new FileReader(); fr.onload = () => resolve(fr.result); fr.readAsDataURL(blob); });
+          try { window.LAST_PDF_BASE64 = String(dataUri); } catch(_) {}
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = '23plusone-report.pdf'; a.click();
+          setTimeout(() => URL.revokeObjectURL(url), 5000);
         }
         try { document.body.removeChild(iframe); } catch(_){}
       } catch(_) {}
