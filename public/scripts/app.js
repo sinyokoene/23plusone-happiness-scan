@@ -1737,7 +1737,9 @@
           iframe.src = reportUrl;
           document.body.appendChild(iframe);
           await new Promise(resolve => { iframe.onload = resolve; });
-          await new Promise(r => setTimeout(r, 400));
+          // wait for layout/fonts/benchmarks ready flag inside iframe
+          let waited = 0;
+          while (waited < 2000 && !(win && win.__REPORT_READY__)) { await new Promise(r => setTimeout(r, 200)); waited += 200; }
           const doc = iframe.contentDocument;
           const win = iframe.contentWindow;
           const page = doc && doc.querySelector('.page');
