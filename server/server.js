@@ -7,6 +7,7 @@ const nodemailer = require('nodemailer');
 let puppeteer = null; // lazy-loaded (local)
 let puppeteerCore = null; // lazy-loaded (vercel)
 let chromium = null; // lazy-loaded (vercel)
+let chromeLambda = null; // fallback for vercel
 
 // Force deployment update - Complete data structure fix
 const app = express();
@@ -143,14 +144,27 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
   if (isVercel) {
     if (!puppeteerCore) { puppeteerCore = require('puppeteer-core'); }
     if (!chromium) { chromium = require('@sparticuz/chromium'); }
-    const executablePath = await chromium.executablePath();
-    browser = await puppeteerCore.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath,
-      headless: chromium.headless,
-      ignoreHTTPSErrors: true
-    });
+    try {
+      const executablePath = await chromium.executablePath();
+      browser = await puppeteerCore.launch({
+        args: chromium.args,
+        defaultViewport: chromium.defaultViewport,
+        executablePath,
+        headless: chromium.headless,
+        ignoreHTTPSErrors: true
+      });
+    } catch (e) {
+      // Fallback to chrome-aws-lambda
+      if (!chromeLambda) { chromeLambda = require('chrome-aws-lambda'); }
+      const executablePath = await chromeLambda.executablePath;
+      browser = await puppeteerCore.launch({
+        args: chromeLambda.args,
+        defaultViewport: chromeLambda.defaultViewport,
+        executablePath,
+        headless: chromeLambda.headless,
+        ignoreHTTPSErrors: true
+      });
+    }
   } else {
     if (!puppeteer) { puppeteer = require('puppeteer'); }
     browser = await puppeteer.launch({ args: ['--no-sandbox'] });
