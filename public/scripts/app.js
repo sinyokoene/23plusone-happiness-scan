@@ -1638,7 +1638,7 @@
     setupReportRequestUI._initialized = true;
     const openBtn = document.getElementById('fullReportBtn');
     const overlay = document.getElementById('reportOverlay');
-    const backBtn = document.getElementById('reportBackBtn');
+    const backBtn = null;
     const sendBtn = document.getElementById('reportSendBtn');
     const emailInput = document.getElementById('reportEmailInput');
     const consent = document.getElementById('reportConsent');
