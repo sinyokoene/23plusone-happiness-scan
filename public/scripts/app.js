@@ -1640,7 +1640,6 @@
     const overlay = document.getElementById('reportOverlay');
     const backBtn = document.getElementById('reportBackBtn');
     const sendBtn = document.getElementById('reportSendBtn');
-    const downloadPdfBtn = document.getElementById('downloadPdfBtn');
     const emailInput = document.getElementById('reportEmailInput');
     const consent = document.getElementById('reportConsent');
     const marketing = document.getElementById('reportMarketing');
@@ -1748,43 +1747,6 @@
       }
     }
     if (sendBtn) sendBtn.addEventListener('click', sendRequest);
-    if (downloadPdfBtn) downloadPdfBtn.addEventListener('click', async () => {
-      try {
-        const results = (typeof window !== 'undefined' && window.LATEST_RESULTS) ? window.LATEST_RESULTS : null;
-        const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: null, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
-        const iframe = document.createElement('iframe');
-        iframe.style.position = 'fixed'; iframe.style.left = '-10000px'; iframe.style.top = '0'; iframe.style.width = '210mm'; iframe.style.height = '297mm';
-        iframe.src = reportUrl; document.body.appendChild(iframe);
-        await new Promise(r => { iframe.onload = r; });
-        await new Promise(r => setTimeout(r, 250));
-        const doc = iframe.contentDocument; const win = iframe.contentWindow; const page = doc && doc.querySelector('.page');
-        let blob = null;
-        try {
-          let tries = 0; while (tries < 8 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
-          if (win && win.html2pdf && page) {
-            const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-            blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
-          }
-        } catch(_) {}
-        if (!blob && win && page && win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
-          const canvas = await win.html2canvas(page, { scale: 2, useCORS: true });
-          const imgData = canvas.toDataURL('image/png');
-          const jsPDF = win.jspdf.jsPDF; const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-          const pageWidth = 210; const imgHeight = (canvas.height * pageWidth) / canvas.width;
-          pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
-          blob = pdf.output('blob');
-        }
-        if (blob) {
-          // Persist for Send, and download via object URL
-          const dataUri = await new Promise((resolve) => { const fr = new FileReader(); fr.onload = () => resolve(fr.result); fr.readAsDataURL(blob); });
-          try { window.LAST_PDF_BASE64 = String(dataUri); } catch(_) {}
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a'); a.href = url; a.download = '23plusone-report.pdf'; a.click();
-          setTimeout(() => URL.revokeObjectURL(url), 5000);
-        }
-        try { document.body.removeChild(iframe); } catch(_){}
-      } catch(_) {}
-    });
   }
   
   function getBenchmarkData(results) {
