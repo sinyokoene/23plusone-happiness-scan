@@ -1727,7 +1727,7 @@
         };
         // Generate PDF in browser
         try {
-          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: null, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
+          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: (typeof window !== 'undefined' ? (window.LATEST_BENCHMARK || null) : null), completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
           const iframe = document.createElement('iframe');
           iframe.style.position = 'fixed';
           iframe.style.left = '-10000px';
