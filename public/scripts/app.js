@@ -1260,6 +1260,13 @@
   function displayEnhancedResults(results) {
     // Persist latest results for report request flow
     try { window.LATEST_RESULTS = results; } catch(_) {}
+    // Persist quality metrics for PDF
+    try {
+      if (typeof window !== 'undefined') {
+        if (typeof results?.completionTime === 'number') window.LATEST_COMPLETION_TIME = results.completionTime;
+        if (typeof results?.unansweredCount === 'number') window.LATEST_UNANSWERED = results.unansweredCount;
+      }
+    } catch(_) {}
     // Update main score
     document.getElementById('totalScore').textContent = results.ihs;
     
@@ -1285,7 +1292,28 @@
     // Insights removed in current design
 
     // Ensure report request UI is wired once
-    try { setupReportRequestUI(); } catch(_) {}
+    try {
+      setupReportRequestUI();
+      // Fetch benchmark immediately and stash for PDF
+      (async () => {
+        try {
+          const ihs = Number(results?.ihs);
+          const domainCounts = results?.domainCounts || {};
+          const domainScores = {
+            red: domainCounts['Attraction'] || 0,
+            orange: domainCounts['Self-development'] || 0,
+            yellow: domainCounts['Ambition'] || 0,
+            green: domainCounts['Basics'] || 0,
+            blue: domainCounts['Vitality'] || 0
+          };
+          const resp = await fetch('/api/benchmarks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ihsScore: ihs, domainScores }) });
+          if (resp.ok) {
+            const data = await resp.json();
+            try { window.LATEST_BENCHMARK = data?.benchmark || null; } catch(_) {}
+          }
+        } catch(_) {}
+      })();
+    } catch(_) {}
 
     // Desktop-only results hint row
     try {
