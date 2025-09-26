@@ -1727,7 +1727,7 @@
         };
         // Generate PDF in browser
         try {
-          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: (typeof window !== 'undefined' ? window.LATEST_BENCHMARK : null) || null, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
+          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: null, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
           const iframe = document.createElement('iframe');
           iframe.style.position = 'fixed';
           iframe.style.left = '-10000px';
@@ -1742,25 +1742,9 @@
           const win = iframe.contentWindow;
           const page = doc && doc.querySelector('.page');
           let blob = null;
-          async function ensureHtml2pdfLoaded() {
-            try {
-              if (win && win.html2pdf) return true;
-              // Inject html2pdf bundle into iframe if missing
-              const s = doc.createElement('script');
-              s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
-              s.referrerPolicy = 'no-referrer';
-              const p = new Promise(res => { s.onload = () => res(true); s.onerror = () => res(false); });
-              doc.head.appendChild(s);
-              const ok = await p;
-              // Wait a bit after load for globals to attach
-              await new Promise(r => setTimeout(r, 150));
-              return ok && !!win.html2pdf;
-            } catch(_) { return false; }
-          }
           // html2pdf (preferred)
           try {
-            let tries = 0; while (tries < 8 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
-            if (win && !win.html2pdf) { await ensureHtml2pdfLoaded(); }
+            let tries = 0; while (tries < 12 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
             if (win && win.html2pdf && page) {
               const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
               blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
