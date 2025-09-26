@@ -4,10 +4,6 @@ const { Pool } = require('pg');
 const path = require('path');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
-let puppeteer = null; // lazy-loaded (local)
-let puppeteerCore = null; // lazy-loaded (vercel)
-let chromium = null; // lazy-loaded (vercel)
-// Removed chrome-aws-lambda fallback due to dependency conflicts on Vercel
 
 // Force deployment update - Complete data structure fix
 const app = express();
@@ -136,121 +132,7 @@ function buildTransport() {
   return nodemailer.createTransport({ jsonTransport: true });
 }
 
-async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
-  const base64 = Buffer.from(JSON.stringify(payload || {}), 'utf8').toString('base64');
-  const url = `${serverOrigin}/report/preview?data=${encodeURIComponent(base64)}`;
-  const isVercel = !!process.env.VERCEL;
-  let browser;
-  let execPathUsed = null;
-  if (isVercel) {
-    if (!puppeteerCore) { puppeteerCore = require('puppeteer-core'); }
-    // Force AWS-like env BEFORE requiring @sparticuz/chromium so it sets env paths
-    try {
-      const nodeMajor = parseInt((process.versions.node || '18').split('.')[0], 10);
-      if (!process.env.AWS_EXECUTION_ENV && !process.env.AWS_LAMBDA_JS_RUNTIME) {
-        process.env.AWS_EXECUTION_ENV = nodeMajor >= 20 ? 'AWS_Lambda_nodejs20.x' : 'AWS_Lambda_nodejs18.x';
-      }
-      if (process.env.HOME === undefined) { process.env.HOME = '/tmp'; }
-      // Pre-seed LD_LIBRARY_PATH with expected extraction locations
-      const ldSet = new Set(String(process.env.LD_LIBRARY_PATH || '').split(':').filter(Boolean));
-      ldSet.add('/tmp/al2/lib');
-      ldSet.add('/tmp/al2023/lib');
-      process.env.LD_LIBRARY_PATH = Array.from(ldSet).join(':');
-    } catch(_) {}
-    if (!chromium) { chromium = require('@sparticuz/chromium'); }
-    try {
-      // Harden settings for Vercel serverless
-      try { chromium.setHeadlessMode = true; } catch (_) {}
-      try { chromium.setGraphicsMode = false; } catch (_) {}
-      // Use default bundled Chromium path for Vercel (@sparticuz/chromium)
-      const executablePath = await chromium.executablePath();
-      execPathUsed = executablePath;
-      // Ensure Chromium's bundled libs are on the loader path for the spawned process
-      try {
-        const chromiumEnv = chromium.env || {};
-        for (const key of Object.keys(chromiumEnv)) {
-          if (typeof chromiumEnv[key] !== 'undefined') {
-            process.env[key] = chromiumEnv[key];
-          }
-        }
-        // Ensure LD_LIBRARY_PATH contains both runtime download dir and packaged libs
-        const path = require('path');
-        const fs = require('fs');
-        const tmpDir = path.dirname(executablePath);
-        const packagedLibDir = path.join(process.cwd(), 'node_modules', '@sparticuz', 'chromium', 'lib');
-        const currentLd = String(process.env.LD_LIBRARY_PATH || '').split(':').filter(Boolean);
-        const candidates = [tmpDir, packagedLibDir].filter(Boolean);
-        const ldSet = new Set([...currentLd, ...candidates]);
-        process.env.LD_LIBRARY_PATH = Array.from(ldSet).join(':');
-        // Basic existence hint for debugging
-        try {
-          const existsTmp = fs.existsSync(path.join(tmpDir, 'libnspr4.so')) || fs.existsSync(path.join(tmpDir, 'lib', 'libnspr4.so'));
-          const existsPkg = fs.existsSync(path.join(packagedLibDir, 'libnspr4.so'));
-          if (!existsTmp && !existsPkg) {
-            console.warn('Chromium libs not found locally: libnspr4.so missing in', tmpDir, 'and', packagedLibDir);
-          }
-        } catch(_) {}
-      } catch(_) {}
-      const extraArgs = ['--no-sandbox','--disable-setuid-sandbox','--single-process','--disable-dev-shm-usage'];
-      browser = await puppeteerCore.launch({
-        args: [...(chromium.args || []), ...extraArgs],
-        defaultViewport: chromium.defaultViewport,
-        executablePath,
-        headless: chromium.headless,
-        ignoreHTTPSErrors: true,
-        env: { ...process.env, ...(chromium.env || {}) }
-      });
-    } catch (e) {
-      const err = new Error(`Chromium launch failed. execPath=${execPathUsed} isVercel=${isVercel}. ${e && e.message ? e.message : e}`);
-      err.stack = e && e.stack ? e.stack : err.stack;
-      throw err;
-    }
-  } else {
-    if (!puppeteerCore) { puppeteerCore = require('puppeteer-core'); }
-    if (!chromium) { chromium = require('@sparticuz/chromium'); }
-    const executablePath = await chromium.executablePath();
-    browser = await puppeteerCore.launch({
-      args: [...(chromium.args || []), '--no-sandbox','--disable-setuid-sandbox'],
-      executablePath,
-      headless: chromium.headless
-    });
-  }
-  const page = await browser.newPage();
-  await page.goto(url, { waitUntil: 'networkidle0' });
-  const pdf = await page.pdf({
-    format: 'A4',
-    printBackground: true,
-    margin: { top: '12mm', right: '12mm', bottom: '12mm', left: '12mm' }
-  });
-  await browser.close();
-  return pdf; // Buffer
-}
-
-// Render report via Browserless cloud (no local Chromium needed)
-async function renderReportPdfWithBrowserless({ serverOrigin, payload }) {
-  const base64 = Buffer.from(JSON.stringify(payload || {}), 'utf8').toString('base64');
-  const url = `${serverOrigin}/report/preview?data=${encodeURIComponent(base64)}`;
-  const base = String(process.env.BROWSERLESS_URL || '').replace(/\/+$/, '');
-  if (!base) { throw new Error('BROWSERLESS_URL not configured'); }
-  const token = process.env.BROWSERLESS_TOKEN || process.env.BROWSERLESS_API_KEY || null;
-  const endpoint = token ? `${base}/pdf?token=${encodeURIComponent(token)}` : `${base}/pdf`;
-  const body = {
-    url,
-    options: {
-      format: 'A4',
-      printBackground: true,
-      margin: { top: '12mm', right: '12mm', bottom: '12mm', left: '12mm' },
-      waitUntil: 'networkidle0'
-    }
-  };
-  const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
-  if (!res.ok) {
-    const text = await res.text().catch(()=>'');
-    throw new Error(`Browserless PDF failed: HTTP ${res.status} ${text?.slice(0,256)}`);
-  }
-  const arr = await res.arrayBuffer();
-  return Buffer.from(arr);
-}
+// All PDF rendering is handled client-side. Server only accepts provided pdfBase64.
 
 // Request full report: generates a PDF from HTML report and emails it
 app.post('/api/report', async (req, res) => {
