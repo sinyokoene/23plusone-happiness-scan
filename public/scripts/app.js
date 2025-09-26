@@ -1693,26 +1693,24 @@
         };
         // Generate PDF in browser if html2pdf is available
         try {
-          if (window.html2pdf) {
-            const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: null, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
-            const iframe = document.createElement('iframe');
-            iframe.style.position = 'fixed';
-            iframe.style.left = '-10000px';
-            iframe.style.top = '0';
-            iframe.style.width = '210mm';
-            iframe.style.height = '297mm';
-            iframe.src = reportUrl;
-            document.body.appendChild(iframe);
-            await new Promise(resolve => { iframe.onload = resolve; });
-            const page = iframe.contentDocument.querySelector('.page');
-            if (page) {
-              const opt = { margin:       [0,0,0,0], filename: 'report.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-              const worker = window.html2pdf().from(page).set(opt).outputPdf('datauristring');
-              const dataUri = await worker;
-              payload.pdfBase64 = dataUri;
-            }
-            try { document.body.removeChild(iframe); } catch(_){}
+          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: null, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
+          const iframe = document.createElement('iframe');
+          iframe.style.position = 'fixed';
+          iframe.style.left = '-10000px';
+          iframe.style.top = '0';
+          iframe.style.width = '210mm';
+          iframe.style.height = '297mm';
+          iframe.src = reportUrl;
+          document.body.appendChild(iframe);
+          await new Promise(resolve => { iframe.onload = resolve; });
+          const page = iframe.contentDocument && iframe.contentDocument.querySelector('.page');
+          const html2pdf = iframe.contentWindow && iframe.contentWindow.html2pdf;
+          if (page && html2pdf) {
+            const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+            const dataUri = await html2pdf().from(page).set(opt).toPdf().output('datauristring');
+            payload.pdfBase64 = dataUri;
           }
+          try { document.body.removeChild(iframe); } catch(_){}
         } catch(_) {}
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if (!res.ok) { throw new Error('Failed to send'); }
