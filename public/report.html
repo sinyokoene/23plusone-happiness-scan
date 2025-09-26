@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>23plusone Drive Profile Report</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    @page { size: A4; margin: 12mm; }
+    html, body { height: 100%; font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { color: #2c1f1c; }
+    .page { display: grid; grid-template-columns: 1fr; row-gap: 12px; }
+    .header { display:flex; align-items:center; justify-content:space-between; }
+    .title { font-weight:600; font-size: 18px; }
+    .logo-left { height: 36px; }
+    .logo-right { height: 24px; }
+    .report-title { text-align:center; font-weight:700; font-size:14px; margin-top: -6px; }
+    .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; gap: 16px; }
+    h2 { font-size: 14px; margin: 0 0 6px; }
+    p { margin: 0 0 8px; font-size: 11px; line-height: 1.6; color:#2c1f1c; }
+    .small { font-size: 10px; color: #666; }
+    .metric-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin: 10px 0 6px; }
+    .muted { color:#9CA3AF; }
+    .metric-bar { height: 6px; background:#e6e6e6; border-radius: 999px; position:relative; overflow:hidden; }
+    .metric-fill { position:absolute; left:0; top:0; bottom:0; width: 0%; background:#b9aca8; border-radius:999px; }
+    .score { font-weight:600; font-size: 12px; color:#b9aca8; }
+    .section { padding-top: 6px; }
+    .domain { margin: 12px 0; }
+    .domain .bar { height: 6px; background:#e6e6e6; border-radius:999px; position:relative; overflow:hidden; }
+    .domain .fill { position:absolute; left:0; top:0; bottom:0; width:0%; border-radius:999px; }
+    .d-green { background:#4CAF50; }
+    .d-orange { background:#FF9800; }
+    .d-purple { background:#9C27B0; }
+    .d-blue { background:#2196F3; }
+    .d-pink { background:#E91E63; }
+    .aside { background:#f6f6f6; border-radius:10px; padding:10px; }
+    .footer { display:flex; align-items:center; justify-content:space-between; margin-top: 6px; color:#8a8a8a; font-size:9px; }
+    /* On-screen A4 preview mode */
+    body.preview { background:#f3f4f6; }
+    body.preview .page { width: 186mm; min-height: 273mm; margin: 16px auto; background:#ffffff; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 12mm; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="header">
+      <img src="Br-ndLogo.webp" class="logo-left" alt="BR-ND">
+      <div class="title">Your Drive Profile Report</div>
+      <img src="23plusone.png" class="logo-right" alt="23plusone">
+    </div>
+
+    <div class="report-title">Your Drive Profile Report</div>
+
+    <div class="two-col">
+      <div>
+        <section class="section">
+          <h2>How it works</h2>
+          <p>This report shows your Drive Profile: a snapshot of the drives that most strongly influence your motivation.</p>
+          <p>Think of it as a mirror — it doesn’t predict your future, but it does reveal what sparks your energy, where you might get stuck, and how balanced your drives are compared to others.</p>
+        </section>
+
+        <section class="section">
+          <div class="metric-row">
+            <div class="small muted">Overall Drive Score</div>
+            <div class="score" id="overallScoreLabel">-- | --</div>
+          </div>
+          <div class="metric-bar"><div id="overallBar" class="metric-fill" style="width: 0%"></div></div>
+          <p class="small" id="overallNote">&nbsp;</p>
+        </section>
+
+        <section id="domains">
+          <div class="domain">
+            <div class="small" style="color:#4CAF50; font-weight:600;">Basics <span id="basicsScore" style="float:right; color:#4CAF50; font-weight:600;">--</span></div>
+            <div class="bar"><div id="basicsFill" class="fill d-green" style="width:0%"></div></div>
+            <p class="small" id="basicsText">&nbsp;</p>
+          </div>
+          <div class="domain">
+            <div class="small" style="color:#FF9800; font-weight:600;">Self-development <span id="growthScore" style="float:right; color:#FF9800; font-weight:600;">--</span></div>
+            <div class="bar"><div id="growthFill" class="fill d-orange" style="width:0%"></div></div>
+            <p class="small" id="growthText">&nbsp;</p>
+          </div>
+          <div class="domain">
+            <div class="small" style="color:#9C27B0; font-weight:600;">Ambition <span id="ambitionScore" style="float:right; color:#9C27B0; font-weight:600;">--</span></div>
+            <div class="bar"><div id="ambitionFill" class="fill d-purple" style="width:0%"></div></div>
+            <p class="small" id="ambitionText">&nbsp;</p>
+          </div>
+          <div class="domain">
+            <div class="small" style="color:#2196F3; font-weight:600;">Vitality <span id="vitalityScore" style="float:right; color:#2196F3; font-weight:600;">--</span></div>
+            <div class="bar"><div id="vitalityFill" class="fill d-blue" style="width:0%"></div></div>
+            <p class="small" id="vitalityText">&nbsp;</p>
+          </div>
+          <div class="domain">
+            <div class="small" style="color:#E91E63; font-weight:600;">Attraction <span id="attractionScore" style="float:right; color:#E91E63; font-weight:600;">--</span></div>
+            <div class="bar"><div id="attractionFill" class="fill d-pink" style="width:0%"></div></div>
+            <p class="small" id="attractionText">&nbsp;</p>
+          </div>
+        </section>
+
+        <section class="footer small" style="margin-top:10px;">
+          <div>This is not a clinical assessment. Privacy: your data is stored securely and can be deleted at any time.</div>
+          <div id="footerMeta" class="small">Version: v1.2.0 • Date: -- • Norms Reference: NL 2025Q3</div>
+        </section>
+      </div>
+
+      <aside>
+        <section class="section">
+          <h2>What you’ll find inside:</h2>
+          <ul class="small" style="margin:6px 0 10px 18px; color:#555;">
+            <li>Your overall Drive Score.</li>
+            <li>Five domains that shape your motivation and simple actions to improve your profile.</li>
+            <li>Benchmarks against a real‑world cohort.</li>
+          </ul>
+        </section>
+        <section class="section">
+          <h2>Benchmarks</h2>
+          <p class="small muted">Percentile: <span id="percentile">--</span></p>
+          <p class="small muted">Cohort average: <span id="cohortAvg">--</span></p>
+        </section>
+        <section class="section">
+          <h2>Confidence & Quality</h2>
+          <ul class="small" style="margin:6px 0 0 18px; color:#555;">
+            <li>Responses: 24/24</li>
+            <li>Timeouts: <span id="timeouts">--</span></li>
+            <li>Total time: <span id="totalTime">--</span></li>
+            <li>Quality flag: <span id="qualityFlag">Pass</span></li>
+          </ul>
+        </section>
+        <section class="section">
+          <div class="aside" id="coachBlock1">&nbsp;</div>
+        </section>
+        <section class="section">
+          <div class="aside" id="coachBlock2">&nbsp;</div>
+        </section>
+        <section class="section">
+          <div class="aside" id="coachBlock3">&nbsp;</div>
+        </section>
+        <section class="section">
+          <div class="aside" id="coachBlock4">&nbsp;</div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    // Allow data via base64 ?data= param for preview/server rendering
+    (function(){
+      const params = new URLSearchParams(location.search || '');
+      const base64 = params.get('data');
+      if ((params.get('preview') || '').toString() === '1') { try { document.body.classList.add('preview'); } catch(_) {} }
+      let payload = {};
+      try { if (base64) payload = JSON.parse(atob(base64)); } catch(_) {}
+
+      const results = payload.results || {};
+      const ihs = Number(results.ihs || 0);
+      const avg = Number((payload.benchmark && payload.benchmark.context && payload.benchmark.context.averageScore) || 0);
+      const percentile = payload.benchmark && payload.benchmark.ihsPercentile;
+
+      function setText(id, text){ var el = document.getElementById(id); if (el) el.textContent = text; }
+      function setWidth(id, pct){ var el = document.getElementById(id); if (el) el.style.width = Math.max(0, Math.min(100, pct)) + '%'; }
+
+      // Overall label: simple banding by score
+      function bandLabel(v){ if (v >= 66) return 'High'; if (v >= 34) return 'Mid'; return 'Low'; }
+      setText('overallScoreLabel', ihs ? (ihs + ' | ' + bandLabel(ihs)) : '-- | --');
+      setWidth('overallBar', Math.max(0, Math.min(100, ihs)));
+      setText('percentile', percentile == null ? '--' : ('Top ' + (100 - percentile) + '%'));
+      setText('cohortAvg', avg ? String(avg) : '--');
+      setText('totalTime', (payload.completionTime ? (payload.completionTime + 's') : '--'));
+      setText('timeouts', (payload.unansweredCount == null ? '--' : String(payload.unansweredCount)));
+
+      const max = { 'Basics': 24, 'Self-development': 24, 'Ambition': 32, 'Vitality': 8, 'Attraction': 8 };
+      const aff = results.domainAffirmations || {};
+      function domainPct(key){ var val = Number(aff[key] || 0); return (val / (max[key]||1)) * 100; }
+      const dp = {
+        Basics: domainPct('Basics'),
+        'Self-development': domainPct('Self-development'),
+        Ambition: domainPct('Ambition'),
+        Vitality: domainPct('Vitality'),
+        Attraction: domainPct('Attraction')
+      };
+      setWidth('basicsFill', dp['Basics']); setText('basicsScore', Math.round(dp['Basics']) + ' | ' + bandLabel(dp['Basics']));
+      setWidth('growthFill', dp['Self-development']); setText('growthScore', Math.round(dp['Self-development']) + ' | ' + bandLabel(dp['Self-development']));
+      setWidth('ambitionFill', dp['Ambition']); setText('ambitionScore', Math.round(dp['Ambition']) + ' | ' + bandLabel(dp['Ambition']));
+      setWidth('vitalityFill', dp['Vitality']); setText('vitalityScore', Math.round(dp['Vitality']) + ' | ' + bandLabel(dp['Vitality']));
+      setWidth('attractionFill', dp['Attraction']); setText('attractionScore', Math.round(dp['Attraction']) + ' | ' + bandLabel(dp['Attraction']));
+
+      // Coaching blocks (simple placeholders that you can refine)
+      var c1 = document.getElementById('coachBlock1'); if (c1) c1.textContent = 'Take a moment to feel proud of this quality. Think about the communities you\'ve helped shape.';
+      var c2 = document.getElementById('coachBlock2'); if (c2) c2.textContent = 'Schedule a 30‑minute “curiosity break” this week. Explore without pressure.';
+      var c3 = document.getElementById('coachBlock3'); if (c3) c3.textContent = 'Pick one skill and practice for 20 minutes. Focus on the joy of learning.';
+      var c4 = document.getElementById('coachBlock4'); if (c4) c4.textContent = 'Tomorrow, add one sensory treat to your day. Do it just for delight.';
+
+      // Overall note: highlight top two domains by pct
+      try {
+        const entries = Object.entries(dp).sort((a,b)=>b[1]-a[1]);
+        if (entries.length >= 2 && entries[0][1] > 0) {
+          const d1 = entries[0][0];
+          const d2 = entries[1][0];
+          setText('overallNote', `${d1} & ${d2} stand out clearly — your reactions here were fast and consistent.`);
+        }
+      } catch(_) {}
+
+      // Footer meta
+      setText('footerMeta', 'Version: v1.2.0 • Date: ' + (new Date().toISOString().slice(0,10)) + ' • Norms Reference: NL 2025Q3');
+    })();
+  </script>
+</body>
+</html>
+
+

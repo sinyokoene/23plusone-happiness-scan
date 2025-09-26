@@ -3,6 +3,8 @@ const express = require('express');
 const { Pool } = require('pg');
 const path = require('path');
 const cors = require('cors');
+const nodemailer = require('nodemailer');
+let puppeteer = null; // lazy-loaded
 
 // Force deployment update - Complete data structure fix
 const app = express();
@@ -112,6 +114,158 @@ app.get('/api/health', (req, res) => {
     timestamp: new Date().toISOString(),
     env_check: process.env.DATABASE_URL ? 'DB_URL_SET' : 'DB_URL_MISSING'
   });
+});
+
+// Create a transport for sending emails. Supports SMTP URL in EMAIL_SMTP_URL or Gmail creds
+function buildTransport() {
+  if (process.env.EMAIL_SMTP_URL) {
+    return nodemailer.createTransport(process.env.EMAIL_SMTP_URL);
+  }
+  if (process.env.SMTP_HOST) {
+    return nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT || 587),
+      secure: String(process.env.SMTP_SECURE || 'false').toLowerCase() === 'true',
+      auth: process.env.SMTP_USER ? { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS } : undefined
+    });
+  }
+  // Fallback to json transport in dev so requests succeed
+  return nodemailer.createTransport({ jsonTransport: true });
+}
+
+async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
+  if (!puppeteer) { puppeteer = require('puppeteer'); }
+  const base64 = Buffer.from(JSON.stringify(payload || {}), 'utf8').toString('base64');
+  const url = `${serverOrigin}/report/preview?data=${encodeURIComponent(base64)}`;
+  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+  const page = await browser.newPage();
+  await page.goto(url, { waitUntil: 'networkidle0' });
+  const pdf = await page.pdf({
+    format: 'A4',
+    printBackground: true,
+    margin: { top: '12mm', right: '12mm', bottom: '12mm', left: '12mm' }
+  });
+  await browser.close();
+  return pdf; // Buffer
+}
+
+// Request full report: generates a PDF from HTML report and emails it
+app.post('/api/report', async (req, res) => {
+  try {
+    const { email, sessionId, results, marketing } = req.body || {};
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ error: 'Invalid email' });
+    }
+
+    // Optional: fetch benchmark context for the report
+    let benchmark = null;
+    try {
+      const client = await pool.connect();
+      try {
+        const ihs = typeof results?.ihs === 'number' ? results.ihs : null;
+        if (ihs != null) {
+          const ihsResult = await client.query(
+            `SELECT COUNT(*) as total, COUNT(CASE WHEN ihs_score < $1 THEN 1 END) as lower FROM scan_responses WHERE ihs_score IS NOT NULL`, [ihs]
+          );
+          const total = parseInt(ihsResult.rows[0].total || 0);
+          const lower = parseInt(ihsResult.rows[0].lower || 0);
+          const percentile = total > 0 ? Math.round((lower / total) * 100) : 0;
+          const ctx = await client.query(`SELECT AVG(ihs_score) as avg_ihs FROM scan_responses WHERE ihs_score IS NOT NULL`);
+          benchmark = { ihsPercentile: percentile, context: { averageScore: ctx.rows[0].avg_ihs ? Math.round(parseFloat(ctx.rows[0].avg_ihs) * 10) / 10 : null } };
+        }
+      } finally { client.release(); }
+    } catch(_) {}
+
+    const serverOrigin = `${req.protocol}://${req.get('host')}`;
+    const pdfBuffer = await renderReportPdfWithPuppeteer({ serverOrigin, payload: { results, benchmark, completionTime: req.body?.completionTime || null, unansweredCount: req.body?.unansweredCount || null } });
+
+    // Send email
+    const from = process.env.MAIL_FROM || 'no-reply@23plusone.org';
+    const transport = buildTransport();
+    const info = await transport.sendMail({
+      from,
+      to: email,
+      subject: 'Your 23plusone Drive Profile Report',
+      text: 'Attached is your drive profile report. Thank you for taking the 23plusone scan!',
+      attachments: [{ filename: '23plusone-report.pdf', content: pdfBuffer }]
+    });
+
+    // Optionally store marketing opt-in; simple log for now
+    try { if (marketing) console.log('Marketing opt-in from', email, sessionId || 'n/a'); } catch(_) {}
+
+    res.json({ ok: true, messageId: info?.messageId || null });
+  } catch (e) {
+    console.error('Error sending report:', e);
+    res.status(500).json({ error: 'Failed to send report' });
+  }
+});
+
+// Preview route: render report HTML with provided base64 data
+app.get('/report/preview', (req, res) => {
+  // serve static file; client-side script reads ?data=
+  res.sendFile(path.join(__dirname, '../public/report.html'));
+});
+
+// Build payload for report by sessionId (for preview without base64)
+app.get('/api/report-payload', async (req, res) => {
+  try {
+    const sessionId = String(req.query.sessionId || '').trim();
+    if (!sessionId) return res.status(400).json({ error: 'sessionId required' });
+    const client = await pool.connect();
+    try {
+      const row = (await client.query(
+        `SELECT ihs_score, n1_score, n2_score, n3_score, completion_time, card_selections
+         FROM scan_responses WHERE session_id = $1 ORDER BY id DESC LIMIT 1`, [sessionId]
+      )).rows?.[0];
+      if (!row) return res.status(404).json({ error: 'Not found' });
+      const selections = row.card_selections || {};
+      const all = Array.isArray(selections.allResponses) ? selections.allResponses : [];
+      const domainAffirmations = {};
+      let unansweredCount = 0;
+      for (const e of all) {
+        if (e && e.response === null) unansweredCount++;
+        const aff = e && e.affirmationScore;
+        const d = e && e.domain;
+        const val = (aff == null ? null : Number(aff));
+        if (d && val != null && !Number.isNaN(val) && val > 0) {
+          domainAffirmations[d] = (domainAffirmations[d] || 0) + val;
+        }
+      }
+      // Benchmark context
+      let benchmark = null;
+      try {
+        const ihs = row.ihs_score == null ? null : Number(row.ihs_score);
+        if (ihs != null) {
+          const ihsResult = await client.query(
+            `SELECT COUNT(*) as total, COUNT(CASE WHEN ihs_score < $1 THEN 1 END) as lower FROM scan_responses WHERE ihs_score IS NOT NULL`, [ihs]
+          );
+          const total = parseInt(ihsResult.rows[0].total || 0);
+          const lower = parseInt(ihsResult.rows[0].lower || 0);
+          const percentile = total > 0 ? Math.round((lower / total) * 100) : 0;
+          const ctx = await client.query(`SELECT AVG(ihs_score) as avg_ihs FROM scan_responses WHERE ihs_score IS NOT NULL`);
+          benchmark = { ihsPercentile: percentile, context: { averageScore: ctx.rows[0].avg_ihs ? Math.round(parseFloat(ctx.rows[0].avg_ihs) * 10) / 10 : null } };
+        }
+      } catch (_) {}
+      const payload = {
+        results: {
+          ihs: row.ihs_score == null ? null : Number(row.ihs_score),
+          n1: row.n1_score == null ? null : Number(row.n1_score),
+          n2: row.n2_score == null ? null : Number(row.n2_score),
+          n3: row.n3_score == null ? null : Number(row.n3_score),
+          domainAffirmations
+        },
+        completionTime: row.completion_time == null ? null : Number(row.completion_time),
+        unansweredCount,
+        benchmark
+      };
+      res.json(payload);
+    } finally {
+      client.release();
+    }
+  } catch (e) {
+    console.error('Error building report payload:', e);
+    res.status(500).json({ error: 'Failed to build payload' });
+  }
 });
 
 // Debug endpoint to check database connection

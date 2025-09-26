@@ -1258,6 +1258,8 @@
 
   
   function displayEnhancedResults(results) {
+    // Persist latest results for report request flow
+    try { window.LATEST_RESULTS = results; } catch(_) {}
     // Update main score
     document.getElementById('totalScore').textContent = results.ihs;
     
@@ -1281,6 +1283,9 @@
     updateDomainBars(results.domainAffirmations);
     
     // Insights removed in current design
+
+    // Ensure report request UI is wired once
+    try { setupReportRequestUI(); } catch(_) {}
 
     // Desktop-only results hint row
     try {
@@ -1626,6 +1631,78 @@
     if (cancel) cancel.addEventListener('click', hide);
     if (del) del.addEventListener('click', () => { location.reload(); });
   })();
+
+  // Full report request: modal, validation, API call
+  function setupReportRequestUI(){
+    if (setupReportRequestUI._initialized) return;
+    setupReportRequestUI._initialized = true;
+    const openBtn = document.getElementById('fullReportBtn');
+    const overlay = document.getElementById('reportOverlay');
+    const backBtn = document.getElementById('reportBackBtn');
+    const sendBtn = document.getElementById('reportSendBtn');
+    const emailInput = document.getElementById('reportEmailInput');
+    const consent = document.getElementById('reportConsent');
+    const marketing = document.getElementById('reportMarketing');
+    const errorEl = document.getElementById('reportError');
+    const statusEl = document.getElementById('reportStatus');
+    const sentBlock = document.getElementById('reportSentBlock');
+    const formBlock = document.getElementById('reportFormBlock');
+    const tryAgainBtn = document.getElementById('reportTryAgainBtn');
+    const shareBtn = document.getElementById('reportShareBtn');
+    if (!openBtn || !overlay) return;
+
+    function showOverlay(){ overlay.style.display = 'flex'; }
+    function hideOverlay(){ overlay.style.display = 'none'; }
+    function showForm(){ formBlock.style.display = 'block'; sentBlock.style.display = 'none'; }
+    function showSent(){ formBlock.style.display = 'none'; sentBlock.style.display = 'block'; }
+    function validateEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim()); }
+
+    openBtn.addEventListener('click', () => { try { showOverlay(); showForm(); errorEl.style.display='none'; statusEl.style.display='none'; } catch(_){} });
+    if (backBtn) backBtn.addEventListener('click', hideOverlay);
+    if (overlay) overlay.addEventListener('click', function(e){ if (e.target === overlay) hideOverlay(); });
+    if (tryAgainBtn) tryAgainBtn.addEventListener('click', showForm);
+    if (shareBtn) shareBtn.addEventListener('click', function(){ try { document.getElementById('nativeShareBtn')?.click(); } catch(_){} });
+
+    async function sendRequest(){
+      errorEl.style.display = 'none';
+      statusEl.style.display = 'none';
+      const email = emailInput ? emailInput.value.trim() : '';
+      if (!validateEmail(email) || !(consent && consent.checked)) {
+        errorEl.style.display = 'block';
+        return;
+      }
+      try {
+        if (sendBtn) { sendBtn.disabled = true; }
+        statusEl.textContent = 'Sending…';
+        statusEl.style.display = 'block';
+        const results = (typeof window !== 'undefined' && window.LATEST_RESULTS) ? window.LATEST_RESULTS : null;
+        const payload = {
+          sessionId: participantId,
+          email,
+          consent: true,
+          marketing: !!(marketing && marketing.checked),
+          results: results ? {
+            ihs: results.ihs,
+            n1: results.n1,
+            n2: results.n2,
+            n3: results.n3,
+            domainCounts: results.domainCounts || null,
+            domainAffirmations: results.domainAffirmations || null
+          } : null,
+          userAgent: navigator.userAgent
+        };
+        const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!res.ok) { throw new Error('Failed to send'); }
+        showSent();
+      } catch (e) {
+        statusEl.textContent = 'Something went wrong. Please try again.';
+        statusEl.style.display = 'block';
+      } finally {
+        if (sendBtn) { sendBtn.disabled = false; }
+      }
+    }
+    if (sendBtn) sendBtn.addEventListener('click', sendRequest);
+  }
   
   function getBenchmarkData(results) {
     // Show the benchmark section
