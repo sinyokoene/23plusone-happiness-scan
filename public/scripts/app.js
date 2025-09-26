@@ -1729,14 +1729,19 @@
         try {
           const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: (typeof window !== 'undefined' ? (window.LATEST_BENCHMARK || null) : null), completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
           const iframe = document.createElement('iframe');
+          // Keep iframe on-screen (but hidden) so Safari/WebKit paints it
           iframe.style.position = 'fixed';
-          iframe.style.left = '-10000px';
+          iframe.style.left = '0';
           iframe.style.top = '0';
+          iframe.style.visibility = 'hidden';
+          iframe.style.pointerEvents = 'none';
           iframe.style.width = '210mm';
           iframe.style.height = '297mm';
           iframe.src = reportUrl;
           document.body.appendChild(iframe);
           await new Promise(resolve => { iframe.onload = resolve; });
+          // Give fonts/layout a moment even after onload
+          await new Promise(r => setTimeout(r, 250));
           const doc = iframe.contentDocument;
           const win = iframe.contentWindow;
           // wait for layout/fonts ready flag inside iframe
@@ -1773,7 +1778,12 @@
             if (win && !win.html2pdf) { await ensureHtml2pdfLoaded(); }
             if (win && win.html2pdf && page) {
               const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
-              blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
+              try {
+                blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
+              } catch(_) {
+                // Low-memory retry at lower scale
+                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { scale: 1, useCORS: true } }).toPdf().output('blob'); } catch(_) {}
+              }
             }
           } catch(_) {}
           // Fallback: ensure libs then use html2canvas + jsPDF
@@ -1781,7 +1791,9 @@
             try {
               if (!(win.html2canvas && win.jspdf && win.jspdf.jsPDF)) { await ensureFallbackLibsLoaded(); }
               if (win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
-                const canvas = await win.html2canvas(page, { scale: 2, useCORS: true });
+                let canvas;
+                try { canvas = await win.html2canvas(page, { scale: 2, useCORS: true }); }
+                catch(_) { canvas = await win.html2canvas(page, { scale: 1, useCORS: true }); }
                 const imgData = canvas.toDataURL('image/png');
                 const jsPDF = win.jspdf.jsPDF; const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
                 const pageWidth = 210; const imgHeight = (canvas.height * pageWidth) / canvas.width;
