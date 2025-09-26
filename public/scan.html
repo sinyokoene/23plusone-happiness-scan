@@ -545,15 +545,16 @@
                   </div>
                   <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px; font-size:12px; color:#2c1f1c;">
                     <label style="display:flex; gap:8px; align-items:flex-start;">
-                      <input id="reportConsent" type="checkbox" style="margin-top:2px;">
-                      <span>I agree to receive my full report and for my email to be processed for this purpose*</span>
+                      <input id="reportConsent" type="checkbox" style="margin-top:3px;">
+                      <span>I agree to receive my full report at this email address, and I understand that this is not a clinical assessment.</span>
                     </label>
-                    <label style="display:flex; gap:8px; align-items:flex-start;">
-                      <input id="reportMarketing" type="checkbox" style="margin-top:2px;">
-                      <span>Also send me BR‑ND People updates & insights.</span>
+                    <label style="display:flex; gap:8px; align-items:flex-start; color:#6b7280;">
+                      <input id="reportMarketing" type="checkbox" style="margin-top:3px;">
+                      <span>Also send me practical tips and updates (optional).</span>
                     </label>
-                    <div id="reportError" style="color:#e11d48; display:none;">Please enter a valid email and accept the consent.</div>
+                    <div id="reportError" style="color:#e11d48; display:none;">Please enter a valid email and consent to receive your report.</div>
                     <div id="reportStatus" style="color:#5DA1BB; display:none;">Sending…</div>
+                    <button id="downloadPdfBtn" type="button" class="btn-pill" style="margin-top:6px; width: fit-content;">Download PDF</button>
                   </div>
                 </div>
                 <div id="reportSentBlock" style="display:none; text-align:center; padding-top:12px;">
