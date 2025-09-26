@@ -152,6 +152,15 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
       // Use default bundled Chromium path for Vercel (@sparticuz/chromium)
       const executablePath = await chromium.executablePath();
       execPathUsed = executablePath;
+      // Ensure Chromium's bundled libs are on the loader path for the spawned process
+      try {
+        const chromiumEnv = chromium.env || {};
+        for (const key of Object.keys(chromiumEnv)) {
+          if (typeof chromiumEnv[key] !== 'undefined') {
+            process.env[key] = chromiumEnv[key];
+          }
+        }
+      } catch(_) {}
       const extraArgs = ['--no-sandbox','--disable-setuid-sandbox','--single-process','--disable-dev-shm-usage'];
       browser = await puppeteerCore.launch({
         args: [...(chromium.args || []), ...extraArgs],
