@@ -1691,32 +1691,6 @@
           } : null,
           userAgent: navigator.userAgent
         };
-        // Try client-side HTML->PDF to avoid server Chromium in serverless
-        try {
-          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: null, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
-          // Render into hidden iframe and convert to PDF
-          const iframe = document.createElement('iframe');
-          iframe.style.position = 'fixed';
-          iframe.style.left = '-10000px';
-          iframe.style.top = '0';
-          iframe.style.width = '210mm';
-          iframe.style.height = '297mm';
-          iframe.src = reportUrl;
-          document.body.appendChild(iframe);
-          await new Promise(resolve => { iframe.onload = resolve; });
-          // Use html2canvas + jsPDF if available on window; otherwise skip
-          if (window.html2canvas && window.jspdf && window.jspdf.jsPDF) {
-            const jsPDF = window.jspdf.jsPDF;
-            const doc = new jsPDF({ unit: 'mm', format: 'a4' });
-            const canvas = await window.html2canvas(iframe.contentDocument.body.querySelector('.page'), { scale: 2, useCORS: true });
-            const imgData = canvas.toDataURL('image/png');
-            const pageWidth = 210, pageHeight = 297;
-            doc.addImage(imgData, 'PNG', 0, 0, pageWidth, (canvas.height * pageWidth) / canvas.width);
-            const pdfDataUri = doc.output('datauristring');
-            payload.pdfBase64 = pdfDataUri;
-          }
-          try { document.body.removeChild(iframe); } catch(_){}
-        } catch(_) {}
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if (!res.ok) { throw new Error('Failed to send'); }
         showSent();

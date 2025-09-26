@@ -206,8 +206,14 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
       throw err;
     }
   } else {
-    if (!puppeteer) { puppeteer = require('puppeteer'); }
-    browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+    if (!puppeteerCore) { puppeteerCore = require('puppeteer-core'); }
+    if (!chromium) { chromium = require('@sparticuz/chromium'); }
+    const executablePath = await chromium.executablePath();
+    browser = await puppeteerCore.launch({
+      args: [...(chromium.args || []), '--no-sandbox','--disable-setuid-sandbox'],
+      executablePath,
+      headless: chromium.headless
+    });
   }
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: 'networkidle0' });
