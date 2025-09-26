@@ -279,31 +279,9 @@ app.post('/api/report', async (req, res) => {
       } finally { client.release(); }
     } catch(_) {}
 
-    let pdfBuffer = null;
-    const pdfBase64 = typeof req.body?.pdfBase64 === 'string' ? req.body.pdfBase64 : null;
-    if (pdfBase64 && pdfBase64.trim().length > 0) {
-      try {
-        const base64 = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
-        pdfBuffer = Buffer.from(base64, 'base64');
-      } catch (_) {
-        // fall through to server-rendering
-      }
-    }
-    if (!pdfBuffer) {
-      const serverOrigin = `${req.protocol}://${req.get('host')}`;
-      const useBrowserless = !!process.env.BROWSERLESS_URL;
-      const renderPayload = { results, benchmark, completionTime: req.body?.completionTime || null, unansweredCount: req.body?.unansweredCount || null };
-      if (useBrowserless) {
-        try {
-          pdfBuffer = await renderReportPdfWithBrowserless({ serverOrigin, payload: renderPayload });
-        } catch (e) {
-          // Fall back to local puppeteer if browserless fails
-          pdfBuffer = await renderReportPdfWithPuppeteer({ serverOrigin, payload: renderPayload });
-        }
-      } else {
-        pdfBuffer = await renderReportPdfWithPuppeteer({ serverOrigin, payload: renderPayload });
-      }
-    }
+    const serverOrigin = `${req.protocol}://${req.get('host')}`;
+    const renderPayload = { results, benchmark, completionTime: req.body?.completionTime || null, unansweredCount: req.body?.unansweredCount || null };
+    const pdfBuffer = await renderReportPdfWithBrowserless({ serverOrigin, payload: renderPayload });
 
     // Send email
     const from = process.env.MAIL_FROM || 'no-reply@23plusone.org';

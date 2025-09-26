@@ -3,12 +3,7 @@
   "builds": [
     {
       "src": "server/server.js",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": [
-          "node_modules/@sparticuz/chromium/**"
-        ]
-      }
+      "use": "@vercel/node"
     },
     {
       "src": "public/**",
