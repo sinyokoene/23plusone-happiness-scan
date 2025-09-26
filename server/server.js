@@ -279,9 +279,18 @@ app.post('/api/report', async (req, res) => {
       } finally { client.release(); }
     } catch(_) {}
 
-    const serverOrigin = `${req.protocol}://${req.get('host')}`;
-    const renderPayload = { results, benchmark, completionTime: req.body?.completionTime || null, unansweredCount: req.body?.unansweredCount || null };
-    const pdfBuffer = await renderReportPdfWithBrowserless({ serverOrigin, payload: renderPayload });
+    // Require client-provided PDF to keep server simple/free
+    const pdfBase64 = typeof req.body?.pdfBase64 === 'string' ? req.body.pdfBase64 : null;
+    if (!pdfBase64) {
+      return res.status(400).json({ error: 'Missing pdfBase64' });
+    }
+    let pdfBuffer;
+    try {
+      const base64 = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
+      pdfBuffer = Buffer.from(base64, 'base64');
+    } catch(_) {
+      return res.status(400).json({ error: 'Invalid pdfBase64' });
+    }
 
     // Send email
     const from = process.env.MAIL_FROM || 'no-reply@23plusone.org';
