@@ -1657,7 +1657,7 @@
     function showSent(){ formBlock.style.display = 'none'; sentBlock.style.display = 'block'; }
     function validateEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim()); }
 
-    openBtn.addEventListener('click', () => { try { showOverlay(); showForm(); errorEl.style.display='none'; statusEl.style.display='none'; } catch(_){} });
+    openBtn.addEventListener('click', () => { try { showOverlay(); showForm(); errorEl.style.display='none'; statusEl.style.display='none'; } catch(_){ } });
     if (backBtn) backBtn.addEventListener('click', hideOverlay);
     if (overlay) overlay.addEventListener('click', function(e){ if (e.target === overlay) hideOverlay(); });
     if (tryAgainBtn) tryAgainBtn.addEventListener('click', showForm);
@@ -1676,6 +1676,12 @@
         statusEl.textContent = 'Sending…';
         statusEl.style.display = 'block';
         const results = (typeof window !== 'undefined' && window.LATEST_RESULTS) ? window.LATEST_RESULTS : null;
+        try {
+          if (typeof window !== 'undefined') {
+            if (results && typeof results.completionTime === 'number') window.LATEST_COMPLETION_TIME = results.completionTime;
+            if (results && typeof results.unansweredCount === 'number') window.LATEST_UNANSWERED = results.unansweredCount;
+          }
+        } catch(_){ }
         const payload = {
           sessionId: participantId,
           email,
@@ -1693,7 +1699,7 @@
         };
         // Generate PDF in browser
         try {
-          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: null, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
+          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: (typeof window !== 'undefined' ? window.LATEST_BENCHMARK : null) || null, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
           const iframe = document.createElement('iframe');
           iframe.style.position = 'fixed';
           iframe.style.left = '-10000px';
