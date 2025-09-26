@@ -16,6 +16,10 @@
       "dest": "/server/server.js"
     },
     {
+      "src": "/report/preview",
+      "dest": "/public/report.html"
+    },
+    {
       "src": "/cards.json",
       "dest": "/public/cards.json"
     },
