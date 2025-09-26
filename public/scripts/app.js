@@ -1741,7 +1741,7 @@
           const win = iframe.contentWindow;
           // wait for layout/fonts ready flag inside iframe
           let waited = 0;
-          while (waited < 2000 && !(win && win.__REPORT_READY__)) { await new Promise(r => setTimeout(r, 200)); waited += 200; }
+          while (waited < 4000 && !(win && win.__REPORT_READY__)) { await new Promise(r => setTimeout(r, 200)); waited += 200; }
           const page = doc && doc.querySelector('.page');
           let blob = null;
           // Ensure html2pdf exists inside iframe (some browsers isolate globals)
@@ -1758,6 +1758,15 @@
               return ok && !!win.html2pdf;
             } catch(_) { return false; }
           }
+          async function ensureFallbackLibsLoaded() {
+            try {
+              async function load(url){ return await new Promise(resolve => { const sc = doc.createElement('script'); sc.src = url; sc.referrerPolicy='no-referrer'; sc.onload = () => resolve(true); sc.onerror = () => resolve(false); doc.head.appendChild(sc); }); }
+              if (!(win && win.html2canvas)) { await load('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'); }
+              if (!(win && win.jspdf && win.jspdf.jsPDF)) { await load('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js'); }
+              await new Promise(r => setTimeout(r, 150));
+              return !!(win && win.html2canvas && win.jspdf && win.jspdf.jsPDF);
+            } catch(_) { return false; }
+          }
           // html2pdf (preferred)
           try {
             let tries = 0; while (tries < 12 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
@@ -1767,14 +1776,19 @@
               blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
             }
           } catch(_) {}
-          // Fallback: html2canvas + jsPDF
-          if (!blob && win && page && win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
-            const canvas = await win.html2canvas(page, { scale: 2, useCORS: true });
-            const imgData = canvas.toDataURL('image/png');
-            const jsPDF = win.jspdf.jsPDF; const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-            const pageWidth = 210; const imgHeight = (canvas.height * pageWidth) / canvas.width;
-            pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
-            blob = pdf.output('blob');
+          // Fallback: ensure libs then use html2canvas + jsPDF
+          if (!blob && win && page) {
+            try {
+              if (!(win.html2canvas && win.jspdf && win.jspdf.jsPDF)) { await ensureFallbackLibsLoaded(); }
+              if (win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
+                const canvas = await win.html2canvas(page, { scale: 2, useCORS: true });
+                const imgData = canvas.toDataURL('image/png');
+                const jsPDF = win.jspdf.jsPDF; const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+                const pageWidth = 210; const imgHeight = (canvas.height * pageWidth) / canvas.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
+                blob = pdf.output('blob');
+              }
+            } catch(_) {}
           }
           if (blob) {
             // Convert to base64
