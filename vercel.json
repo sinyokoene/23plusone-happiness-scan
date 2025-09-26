@@ -3,7 +3,12 @@
   "builds": [
     {
       "src": "server/server.js",
-      "use": "@vercel/node"
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": [
+          "node_modules/@sparticuz/chromium/**"
+        ]
+      }
     },
     {
       "src": "public/**",
@@ -40,14 +45,6 @@
       "dest": "/public/scan.html"
     }
   ],
-  "functions": {
-    "server/server.js": {
-      "runtime": "nodejs18.x",
-      "memory": 1536,
-      "maxDuration": 30,
-      "includeFiles": "node_modules/@sparticuz/chromium/**"
-    }
-  },
   "env": {
     "NODE_ENV": "production"
   }
