@@ -212,7 +212,12 @@ app.post('/api/report', async (req, res) => {
     res.json({ ok: true, messageId: info?.messageId || null });
   } catch (e) {
     console.error('Error sending report:', e);
-    res.status(500).json({ error: 'Failed to send report' });
+    const debug = String(process.env.DEBUG_REPORT || '').toLowerCase() === '1' || String(process.env.NODE_ENV).toLowerCase() !== 'production';
+    if (debug) {
+      res.status(500).json({ error: 'Failed to send report', message: e?.message || null, stack: e?.stack || null });
+    } else {
+      res.status(500).json({ error: 'Failed to send report' });
+    }
   }
 });
 
