@@ -1727,7 +1727,17 @@
         };
         // Generate PDF in browser
         try {
-          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(JSON.stringify({ results, benchmark: (typeof window !== 'undefined' ? (window.LATEST_BENCHMARK || null) : null), completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null })))}&preview=1`;
+          // Build a small, ASCII-safe benchmark object to avoid btoa Unicode errors (emoji, etc.)
+          const fullBm = (typeof window !== 'undefined' ? (window.LATEST_BENCHMARK || null) : null);
+          const safeBenchmark = fullBm ? {
+            ihsPercentile: typeof fullBm.ihsPercentile === 'number' ? fullBm.ihsPercentile : null,
+            totalResponses: typeof fullBm.totalResponses === 'number' ? fullBm.totalResponses : null,
+            context: {
+              averageScore: (fullBm.context && typeof fullBm.context.averageScore === 'number') ? fullBm.context.averageScore : null
+            }
+          } : null;
+          const dataPayload = { results, benchmark: safeBenchmark, completionTime: window?.LATEST_COMPLETION_TIME || null, unansweredCount: window?.LATEST_UNANSWERED || null };
+          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(dataPayload)))))}&preview=1`;
           const iframe = document.createElement('iframe');
           // Keep iframe on-screen (but hidden) so Safari/WebKit paints it
           iframe.style.position = 'fixed';
