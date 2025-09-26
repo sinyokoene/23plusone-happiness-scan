@@ -4,7 +4,9 @@ const { Pool } = require('pg');
 const path = require('path');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
-let puppeteer = null; // lazy-loaded
+let puppeteer = null; // lazy-loaded (local)
+let puppeteerCore = null; // lazy-loaded (vercel)
+let chromium = null; // lazy-loaded (vercel)
 
 // Force deployment update - Complete data structure fix
 const app = express();
@@ -134,10 +136,24 @@ function buildTransport() {
 }
 
 async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
-  if (!puppeteer) { puppeteer = require('puppeteer'); }
   const base64 = Buffer.from(JSON.stringify(payload || {}), 'utf8').toString('base64');
   const url = `${serverOrigin}/report/preview?data=${encodeURIComponent(base64)}`;
-  const browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+  const isVercel = !!process.env.VERCEL;
+  let browser;
+  if (isVercel) {
+    if (!puppeteerCore) { puppeteerCore = require('puppeteer-core'); }
+    if (!chromium) { chromium = require('@sparticuz/chromium'); }
+    const executablePath = await chromium.executablePath();
+    browser = await puppeteerCore.launch({
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath,
+      headless: true,
+    });
+  } else {
+    if (!puppeteer) { puppeteer = require('puppeteer'); }
+    browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+  }
   const page = await browser.newPage();
   await page.goto(url, { waitUntil: 'networkidle0' });
   const pdf = await page.pdf({

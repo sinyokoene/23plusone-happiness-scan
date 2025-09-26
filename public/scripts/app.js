@@ -1446,7 +1446,7 @@
     }, {});
 
     const payload = {
-      sessionId: participantId,
+      sessionId: (window.RESEARCH_MODE ? participantId : `${participantId}-${Date.now()}`),
       participantId: participantId,
       cardSelections: cardSelections,
       ihsScore: results.ihs,
