@@ -146,10 +146,15 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
     if (!puppeteerCore) { puppeteerCore = require('puppeteer-core'); }
     if (!chromium) { chromium = require('@sparticuz/chromium'); }
     try {
-      const executablePath = await chromium.executablePath();
+      // Harden settings for Vercel serverless
+      try { chromium.setHeadlessMode = true; } catch (_) {}
+      try { chromium.setGraphicsMode = false; } catch (_) {}
+      const channel = process.env.CHROMIUM_CHANNEL || 'stable';
+      const executablePath = await chromium.executablePath(channel);
       execPathUsed = executablePath;
+      const extraArgs = ['--no-sandbox','--disable-setuid-sandbox','--single-process','--disable-dev-shm-usage'];
       browser = await puppeteerCore.launch({
-        args: chromium.args,
+        args: [...(chromium.args || []), ...extraArgs],
         defaultViewport: chromium.defaultViewport,
         executablePath,
         headless: chromium.headless,
