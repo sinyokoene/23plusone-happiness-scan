@@ -148,7 +148,8 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
       args: chromium.args,
       defaultViewport: chromium.defaultViewport,
       executablePath,
-      headless: true,
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true
     });
   } else {
     if (!puppeteer) { puppeteer = require('puppeteer'); }
