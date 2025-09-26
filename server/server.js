@@ -158,7 +158,8 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
         defaultViewport: chromium.defaultViewport,
         executablePath,
         headless: chromium.headless,
-        ignoreHTTPSErrors: true
+        ignoreHTTPSErrors: true,
+        env: { ...process.env, ...(chromium.env || {}) }
       });
     } catch (e) {
       const err = new Error(`Chromium launch failed. execPath=${execPathUsed} isVercel=${isVercel}. ${e && e.message ? e.message : e}`);
