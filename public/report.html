@@ -151,7 +151,13 @@
       const base64 = params.get('data');
       if ((params.get('preview') || '').toString() === '1') { try { document.body.classList.add('preview'); } catch(_) {} }
       let payload = {};
-      try { if (base64) payload = JSON.parse(atob(base64)); } catch(_) {}
+      try {
+        if (base64) {
+          // Prefer UTF-8 safe decode; fallback to plain atob
+          try { payload = JSON.parse(decodeURIComponent(escape(atob(base64)))); }
+          catch(_) { payload = JSON.parse(atob(base64)); }
+        }
+      } catch(_) {}
 
       const results = payload.results || {};
       const ihs = Number(results.ihs || 0);
@@ -167,8 +173,11 @@
       setWidth('overallBar', Math.max(0, Math.min(100, ihs)));
       setText('percentile', percentile == null ? '--' : ('Top ' + (100 - percentile) + '%'));
       setText('cohortAvg', avg ? String(avg) : '--');
-      setText('totalTime', (payload.completionTime ? (payload.completionTime + 's') : '--'));
-      setText('timeouts', (payload.unansweredCount == null ? '--' : String(payload.unansweredCount)));
+      // Fallbacks for quality metrics
+      var completion = (payload && payload.completionTime != null) ? payload.completionTime : (results && typeof results.completionTime === 'number' ? results.completionTime : null);
+      var timeoutsCount = (payload && payload.unansweredCount != null) ? payload.unansweredCount : (results && typeof results.unansweredCount === 'number' ? results.unansweredCount : null);
+      setText('totalTime', (completion != null ? (completion + 's') : '--'));
+      setText('timeouts', (timeoutsCount != null ? String(timeoutsCount) : '--'));
 
       const max = { 'Basics': 24, 'Self-development': 24, 'Ambition': 32, 'Vitality': 8, 'Attraction': 8 };
       const aff = results.domainAffirmations || {};
