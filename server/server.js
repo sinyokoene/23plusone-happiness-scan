@@ -149,8 +149,8 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
       // Harden settings for Vercel serverless
       try { chromium.setHeadlessMode = true; } catch (_) {}
       try { chromium.setGraphicsMode = false; } catch (_) {}
-      const channel = process.env.CHROMIUM_CHANNEL || 'stable';
-      const executablePath = await chromium.executablePath(channel);
+      // Use default bundled Chromium path for Vercel (@sparticuz/chromium)
+      const executablePath = await chromium.executablePath();
       execPathUsed = executablePath;
       const extraArgs = ['--no-sandbox','--disable-setuid-sandbox','--single-process','--disable-dev-shm-usage'];
       browser = await puppeteerCore.launch({
