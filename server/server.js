@@ -226,6 +226,32 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
   return pdf; // Buffer
 }
 
+// Render report via Browserless cloud (no local Chromium needed)
+async function renderReportPdfWithBrowserless({ serverOrigin, payload }) {
+  const base64 = Buffer.from(JSON.stringify(payload || {}), 'utf8').toString('base64');
+  const url = `${serverOrigin}/report/preview?data=${encodeURIComponent(base64)}`;
+  const base = String(process.env.BROWSERLESS_URL || '').replace(/\/+$/, '');
+  if (!base) { throw new Error('BROWSERLESS_URL not configured'); }
+  const token = process.env.BROWSERLESS_TOKEN || process.env.BROWSERLESS_API_KEY || null;
+  const endpoint = token ? `${base}/pdf?token=${encodeURIComponent(token)}` : `${base}/pdf`;
+  const body = {
+    url,
+    options: {
+      format: 'A4',
+      printBackground: true,
+      margin: { top: '12mm', right: '12mm', bottom: '12mm', left: '12mm' },
+      waitUntil: 'networkidle0'
+    }
+  };
+  const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+  if (!res.ok) {
+    const text = await res.text().catch(()=>'');
+    throw new Error(`Browserless PDF failed: HTTP ${res.status} ${text?.slice(0,256)}`);
+  }
+  const arr = await res.arrayBuffer();
+  return Buffer.from(arr);
+}
+
 // Request full report: generates a PDF from HTML report and emails it
 app.post('/api/report', async (req, res) => {
   try {
@@ -265,7 +291,18 @@ app.post('/api/report', async (req, res) => {
     }
     if (!pdfBuffer) {
       const serverOrigin = `${req.protocol}://${req.get('host')}`;
-      pdfBuffer = await renderReportPdfWithPuppeteer({ serverOrigin, payload: { results, benchmark, completionTime: req.body?.completionTime || null, unansweredCount: req.body?.unansweredCount || null } });
+      const useBrowserless = !!process.env.BROWSERLESS_URL;
+      const renderPayload = { results, benchmark, completionTime: req.body?.completionTime || null, unansweredCount: req.body?.unansweredCount || null };
+      if (useBrowserless) {
+        try {
+          pdfBuffer = await renderReportPdfWithBrowserless({ serverOrigin, payload: renderPayload });
+        } catch (e) {
+          // Fall back to local puppeteer if browserless fails
+          pdfBuffer = await renderReportPdfWithPuppeteer({ serverOrigin, payload: renderPayload });
+        }
+      } else {
+        pdfBuffer = await renderReportPdfWithPuppeteer({ serverOrigin, payload: renderPayload });
+      }
     }
 
     // Send email
