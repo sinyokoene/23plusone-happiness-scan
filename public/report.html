@@ -228,11 +228,10 @@
         } catch(_) {}
       }
 
-      fetchBenchmarks().finally(() => {
-        try { window.__REPORT_READY__ = true; } catch(_) {}
-      });
-      // Safety ready flag if fetch is skipped
-      setTimeout(function(){ try { window.__REPORT_READY__ = true; } catch(_) {} }, 1200);
+      Promise.race([
+        fetchBenchmarks().catch(()=>{}),
+        new Promise(r => setTimeout(r, 800))
+      ]).then(() => { try { window.__REPORT_READY__ = true; } catch(_) {} });
     })();
   </script>
 </body>

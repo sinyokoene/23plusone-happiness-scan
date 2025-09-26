@@ -1744,9 +1744,24 @@
           const win = iframe.contentWindow;
           const page = doc && doc.querySelector('.page');
           let blob = null;
+          // Ensure html2pdf exists inside iframe (some browsers isolate globals)
+          async function ensureHtml2pdfLoaded() {
+            try {
+              if (win && win.html2pdf) return true;
+              const s = doc.createElement('script');
+              s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+              s.referrerPolicy = 'no-referrer';
+              const done = new Promise(res => { s.onload = () => res(true); s.onerror = () => res(false); });
+              doc.head.appendChild(s);
+              const ok = await done;
+              await new Promise(r => setTimeout(r, 150));
+              return ok && !!win.html2pdf;
+            } catch(_) { return false; }
+          }
           // html2pdf (preferred)
           try {
             let tries = 0; while (tries < 12 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
+            if (win && !win.html2pdf) { await ensureHtml2pdfLoaded(); }
             if (win && win.html2pdf && page) {
               const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
               blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
