@@ -141,11 +141,13 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
   const url = `${serverOrigin}/report/preview?data=${encodeURIComponent(base64)}`;
   const isVercel = !!process.env.VERCEL;
   let browser;
+  let execPathUsed = null;
   if (isVercel) {
     if (!puppeteerCore) { puppeteerCore = require('puppeteer-core'); }
     if (!chromium) { chromium = require('@sparticuz/chromium'); }
     try {
       const executablePath = await chromium.executablePath();
+      execPathUsed = executablePath;
       browser = await puppeteerCore.launch({
         args: chromium.args,
         defaultViewport: chromium.defaultViewport,
@@ -154,8 +156,9 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
         ignoreHTTPSErrors: true
       });
     } catch (e) {
-      // Re-throw to surface error; primary path should work on Vercel
-      throw e;
+      const err = new Error(`Chromium launch failed. execPath=${execPathUsed} isVercel=${isVercel}. ${e && e.message ? e.message : e}`);
+      err.stack = e && e.stack ? e.stack : err.stack;
+      throw err;
     }
   } else {
     if (!puppeteer) { puppeteer = require('puppeteer'); }
