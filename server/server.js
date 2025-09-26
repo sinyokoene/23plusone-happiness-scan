@@ -160,6 +160,23 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
             process.env[key] = chromiumEnv[key];
           }
         }
+        // Ensure LD_LIBRARY_PATH contains both runtime download dir and packaged libs
+        const path = require('path');
+        const fs = require('fs');
+        const tmpDir = path.dirname(executablePath);
+        const packagedLibDir = path.join(process.cwd(), 'node_modules', '@sparticuz', 'chromium', 'lib');
+        const currentLd = String(process.env.LD_LIBRARY_PATH || '').split(':').filter(Boolean);
+        const candidates = [tmpDir, packagedLibDir].filter(Boolean);
+        const ldSet = new Set([...currentLd, ...candidates]);
+        process.env.LD_LIBRARY_PATH = Array.from(ldSet).join(':');
+        // Basic existence hint for debugging
+        try {
+          const existsTmp = fs.existsSync(path.join(tmpDir, 'libnspr4.so')) || fs.existsSync(path.join(tmpDir, 'lib', 'libnspr4.so'));
+          const existsPkg = fs.existsSync(path.join(packagedLibDir, 'libnspr4.so'));
+          if (!existsTmp && !existsPkg) {
+            console.warn('Chromium libs not found locally: libnspr4.so missing in', tmpDir, 'and', packagedLibDir);
+          }
+        } catch(_) {}
       } catch(_) {}
       const extraArgs = ['--no-sandbox','--disable-setuid-sandbox','--single-process','--disable-dev-shm-usage'];
       browser = await puppeteerCore.launch({
