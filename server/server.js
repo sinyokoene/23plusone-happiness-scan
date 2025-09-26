@@ -150,6 +150,14 @@ async function renderReportPdfWithPuppeteer({ serverOrigin, payload }) {
       try { chromium.setHeadlessMode = true; } catch (_) {}
       try { chromium.setGraphicsMode = false; } catch (_) {}
       // Use default bundled Chromium path for Vercel (@sparticuz/chromium)
+      // Force AWS-like env on Vercel so Sparticuz extracts runtime libs (libnspr4, etc.)
+      try {
+        const nodeMajor = parseInt((process.versions.node || '18').split('.')[0], 10);
+        if (!process.env.AWS_EXECUTION_ENV && !process.env.AWS_LAMBDA_JS_RUNTIME) {
+          process.env.AWS_EXECUTION_ENV = nodeMajor >= 20 ? 'AWS_Lambda_nodejs20.x' : 'AWS_Lambda_nodejs18.x';
+        }
+        if (process.env.HOME === undefined) { process.env.HOME = '/tmp'; }
+      } catch(_) {}
       const executablePath = await chromium.executablePath();
       execPathUsed = executablePath;
       // Ensure Chromium's bundled libs are on the loader path for the spawned process
