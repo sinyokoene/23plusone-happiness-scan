@@ -205,33 +205,8 @@
       // Footer meta
       setText('footerMeta', 'Version: v1.2.0 • Date: ' + (new Date().toISOString().slice(0,10)) + ' • Norms Reference: NL 2025Q3');
 
-      // Fetch benchmarks in this iframe so parent can keep PDF logic simple
-      async function fetchBenchmarks() {
-        try {
-          if (!results || typeof results.ihs !== 'number') return;
-          const domainCounts = results.domainCounts || {};
-          const domainScores = {
-            red: domainCounts['Attraction'] || 0,
-            orange: domainCounts['Self-development'] || 0,
-            yellow: domainCounts['Ambition'] || 0,
-            green: domainCounts['Basics'] || 0,
-            blue: domainCounts['Vitality'] || 0
-          };
-          const resp = await fetch('/api/benchmarks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ihsScore: results.ihs, domainScores }) });
-          if (!resp.ok) return;
-          const data = await resp.json();
-          const b = data && data.benchmark;
-          if (b) {
-            setText('percentile', ('Top ' + (100 - (b.ihsPercentile || 0)) + '%'));
-            setText('cohortAvg', (b.context && b.context.averageScore) ? String(b.context.averageScore) : '--');
-          }
-        } catch(_) {}
-      }
-
-      Promise.race([
-        fetchBenchmarks().catch(()=>{}),
-        new Promise(r => setTimeout(r, 800))
-      ]).then(() => { try { window.__REPORT_READY__ = true; } catch(_) {} });
+      // Mark ready quickly; benchmarks disabled for stability
+      try { window.__REPORT_READY__ = true; } catch(_) {}
     })();
   </script>
 </body>
