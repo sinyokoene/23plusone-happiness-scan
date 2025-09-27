@@ -139,6 +139,9 @@
         <section class="section">
           <div class="aside" id="coachBlock4">&nbsp;</div>
         </section>
+        <section class="section">
+          <div class="aside" id="coachBlock5">&nbsp;</div>
+        </section>
       </aside>
     </div>
   </div>
@@ -165,6 +168,7 @@
 
       function setText(id, text){ var el = document.getElementById(id); if (el) el.textContent = text; }
       function setWidth(id, pct){ var el = document.getElementById(id); if (el) el.style.width = Math.max(0, Math.min(100, pct)) + '%'; }
+      function setHTML(id, html){ var el = document.getElementById(id); if (el) el.innerHTML = html; }
 
       // Overall label: simple banding by score
       function bandLabel(v){ if (v >= 66) return 'High'; if (v >= 34) return 'Mid'; return 'Low'; }
@@ -194,13 +198,21 @@
       setWidth('vitalityFill', dp['Vitality']); setText('vitalityScore', Math.round(dp['Vitality']) + ' | ' + bandLabel(dp['Vitality']));
       setWidth('attractionFill', dp['Attraction']); setText('attractionScore', Math.round(dp['Attraction']) + ' | ' + bandLabel(dp['Attraction']));
 
+      // Per-domain narrative content below bars
+      setHTML('basicsText', '<strong>Recognize Your Role as a Connector</strong> You naturally bring people together and build trust. This helps others feel safe and grow. That’s a major contribution to any group.');
+      setHTML('growthText', '<strong>Make Time for Curiosity</strong> You know how energizing it feels to follow your curiosity and lose yourself in an idea. Growth happens when we make space for these moments on purpose.');
+      setHTML('ambitionText', '<strong>Let Ambition Be A Healthy Drive</strong> Your motivation comes from enjoying the process and working with others, not just chasing rewards. That’s sustainable ambition.');
+      setHTML('vitalityText', '<strong>Respect Your Well‑Being</strong> You treat your health as a foundation, not an afterthought. That quiet commitment lifts both you and the people around you.');
+      setHTML('attractionText', '<strong>Add More Sensory Joy</strong> You enjoy life’s beauty—through music, food, or scenery. The next step is to invite more of these moments on purpose.');
+
       // Removed overall narrative; per-domain narratives will be used beside bars in design
 
-      // Coaching blocks (simple placeholders that you can refine)
-      var c1 = document.getElementById('coachBlock1'); if (c1) c1.textContent = 'Take a moment to feel proud of this quality. Think about the communities you\'ve helped shape.';
-      var c2 = document.getElementById('coachBlock2'); if (c2) c2.textContent = 'Schedule a 30‑minute “curiosity break” this week. Explore without pressure.';
-      var c3 = document.getElementById('coachBlock3'); if (c3) c3.textContent = 'Pick one skill and practice for 20 minutes. Focus on the joy of learning.';
-      var c4 = document.getElementById('coachBlock4'); if (c4) c4.textContent = 'Tomorrow, add one sensory treat to your day. Do it just for delight.';
+      // Coaching blocks per domain (aligned in right column)
+      var c1 = document.getElementById('coachBlock1'); if (c1) c1.textContent = 'Take a moment to feel proud of this quality. Think about the communities you\'ve helped shape. That ability to connect is one of your real strengths.'; // Basics
+      var c2 = document.getElementById('coachBlock2'); if (c2) c2.textContent = 'Schedule a 30‑minute “curiosity break” this week. Explore a bookstore, a new street, or dive into an online topic—no productivity required.'; // Self-development
+      var c3 = document.getElementById('coachBlock3'); if (c3) c3.textContent = 'Pick one skill—at work or in a hobby—and practice it for 20 minutes this week. Focus only on the joy of learning.'; // Ambition
+      var c4 = document.getElementById('coachBlock4'); if (c4) c4.textContent = 'Pause today to thank your body—for its strength, resilience, and how it carries you through life. Gratitude reinforces your mind‑body connection.'; // Vitality
+      var c5 = document.getElementById('coachBlock5'); if (c5) c5.textContent = 'Tomorrow, add one sensory treat to your day. Light a candle, add fresh herbs to your meal, or take a more scenic walk. Do it just for delight.'; // Attraction
 
       // Overall note: highlight top two domains by pct
       try {
