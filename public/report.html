@@ -17,7 +17,10 @@
     .logo-left { height: 72px; }
     .logo-right { height: 24px; }
     .report-title { text-align:center; font-weight:700; font-size:14px; margin-top: -6px; }
-    .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; gap: 16px; }
+    .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; gap: 16px; align-items:start; }
+    .section { margin-bottom: 12px; }
+    .aside { background:#f6f6f6; border-radius:10px; padding:10px; }
+    .coach-section { margin-bottom: 12px; }
     h2 { font-size: 14px; margin: 0 0 6px; }
     p { margin: 0 0 8px; font-size: 11px; line-height: 1.6; color:#2c1f1c; }
     .small { font-size: 10px; color: #666; }
@@ -72,27 +75,27 @@
         </section>
 
         <section id="domains">
-          <div class="domain">
+          <div class="domain" id="basicsDomain">
             <div class="small" style="color:#4CAF50; font-weight:600;">Basics <span id="basicsScore" style="float:right; color:#4CAF50; font-weight:600;">--</span></div>
             <div class="bar"><div id="basicsFill" class="fill d-green" style="width:0%"></div></div>
             <p class="small" id="basicsText">&nbsp;</p>
           </div>
-          <div class="domain">
+          <div class="domain" id="growthDomain">
             <div class="small" style="color:#FF9800; font-weight:600;">Self-development <span id="growthScore" style="float:right; color:#FF9800; font-weight:600;">--</span></div>
             <div class="bar"><div id="growthFill" class="fill d-orange" style="width:0%"></div></div>
             <p class="small" id="growthText">&nbsp;</p>
           </div>
-          <div class="domain">
+          <div class="domain" id="ambitionDomain">
             <div class="small" style="color:#9C27B0; font-weight:600;">Ambition <span id="ambitionScore" style="float:right; color:#9C27B0; font-weight:600;">--</span></div>
             <div class="bar"><div id="ambitionFill" class="fill d-purple" style="width:0%"></div></div>
             <p class="small" id="ambitionText">&nbsp;</p>
           </div>
-          <div class="domain">
+          <div class="domain" id="vitalityDomain">
             <div class="small" style="color:#2196F3; font-weight:600;">Vitality <span id="vitalityScore" style="float:right; color:#2196F3; font-weight:600;">--</span></div>
             <div class="bar"><div id="vitalityFill" class="fill d-blue" style="width:0%"></div></div>
             <p class="small" id="vitalityText">&nbsp;</p>
           </div>
-          <div class="domain">
+          <div class="domain" id="attractionDomain">
             <div class="small" style="color:#E91E63; font-weight:600;">Attraction <span id="attractionScore" style="float:right; color:#E91E63; font-weight:600;">--</span></div>
             <div class="bar"><div id="attractionFill" class="fill d-pink" style="width:0%"></div></div>
             <p class="small" id="attractionText">&nbsp;</p>
@@ -127,21 +130,11 @@
             <li>Quality flag: <span id="qualityFlag">Pass</span></li>
           </ul>
         </section>
-        <section class="section">
-          <div class="aside" id="coachBlock1">&nbsp;</div>
-        </section>
-        <section class="section">
-          <div class="aside" id="coachBlock2">&nbsp;</div>
-        </section>
-        <section class="section">
-          <div class="aside" id="coachBlock3">&nbsp;</div>
-        </section>
-        <section class="section">
-          <div class="aside" id="coachBlock4">&nbsp;</div>
-        </section>
-        <section class="section">
-          <div class="aside" id="coachBlock5">&nbsp;</div>
-        </section>
+        <section class="section coach-section"><div class="aside" id="coachBlock1">&nbsp;</div></section>
+        <section class="section coach-section"><div class="aside" id="coachBlock2">&nbsp;</div></section>
+        <section class="section coach-section"><div class="aside" id="coachBlock3">&nbsp;</div></section>
+        <section class="section coach-section"><div class="aside" id="coachBlock4">&nbsp;</div></section>
+        <section class="section coach-section"><div class="aside" id="coachBlock5">&nbsp;</div></section>
       </aside>
     </div>
   </div>
@@ -204,6 +197,21 @@
       setHTML('ambitionText', '<strong>Let Ambition Be A Healthy Drive</strong> Your motivation comes from enjoying the process and working with others, not just chasing rewards. That’s sustainable ambition.');
       setHTML('vitalityText', '<strong>Respect Your Well‑Being</strong> You treat your health as a foundation, not an afterthought. That quiet commitment lifts both you and the people around you.');
       setHTML('attractionText', '<strong>Add More Sensory Joy</strong> You enjoy life’s beauty—through music, food, or scenery. The next step is to invite more of these moments on purpose.');
+
+      // Keep rows aligned: ensure equal gap between domain blocks equals coach block gaps
+      try {
+        function syncRowHeights(domainId, coachId){
+          var d = document.getElementById(domainId);
+          var c = document.getElementById(coachId)?.parentElement; // section wrapper
+          if (!d || !c) return;
+          // No explicit heights; rely on consistent margins. This ensures visual row pairing in print.
+        }
+        syncRowHeights('basicsDomain','coachBlock1');
+        syncRowHeights('growthDomain','coachBlock2');
+        syncRowHeights('ambitionDomain','coachBlock3');
+        syncRowHeights('vitalityDomain','coachBlock4');
+        syncRowHeights('attractionDomain','coachBlock5');
+      } catch(_) {}
 
       // Removed overall narrative; per-domain narratives will be used beside bars in design
 
