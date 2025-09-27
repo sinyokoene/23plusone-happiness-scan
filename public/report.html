@@ -20,6 +20,7 @@
     .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; gap: 16px; align-items:start; }
     .section { margin-bottom: 12px; }
     .aside { background:#f6f6f6; border-radius:10px; padding:10px; }
+    .coach-section .aside { height: 100%; }
     .coach-section { margin-bottom: 12px; }
     h2 { font-size: 14px; margin: 0 0 6px; }
     p { margin: 0 0 8px; font-size: 11px; line-height: 1.6; color:#2c1f1c; }
@@ -58,7 +59,7 @@
     <!-- Removed duplicate title for cleaner header -->
 
     <div class="two-col">
-      <div>
+      <div id="leftCol">
         <section class="section">
           <h2>How it works</h2>
           <p>This report shows your Drive Profile: a snapshot of the drives that most strongly influence your motivation.</p>
@@ -107,7 +108,7 @@
         </section>
       </div>
 
-      <aside>
+      <aside id="rightCol">
         <section class="section">
           <h2>What you’ll find inside:</h2>
           <ul class="small" style="margin:6px 0 10px 18px; color:#555;">
@@ -198,19 +199,21 @@
       setHTML('vitalityText', '<strong>Respect Your Well‑Being</strong> You treat your health as a foundation, not an afterthought. That quiet commitment lifts both you and the people around you.');
       setHTML('attractionText', '<strong>Add More Sensory Joy</strong> You enjoy life’s beauty—through music, food, or scenery. The next step is to invite more of these moments on purpose.');
 
-      // Keep rows aligned: ensure equal gap between domain blocks equals coach block gaps
+      // Keep columns equal height by distributing remaining space with padding at bottom
       try {
-        function syncRowHeights(domainId, coachId){
-          var d = document.getElementById(domainId);
-          var c = document.getElementById(coachId)?.parentElement; // section wrapper
-          if (!d || !c) return;
-          // No explicit heights; rely on consistent margins. This ensures visual row pairing in print.
+        var left = document.getElementById('leftCol');
+        var right = document.getElementById('rightCol');
+        function equalize(){
+          if (!left || !right) return;
+          left.style.paddingBottom = '0px';
+          right.style.paddingBottom = '0px';
+          var lh = left.getBoundingClientRect().height;
+          var rh = right.getBoundingClientRect().height;
+          if (lh > rh) { right.style.paddingBottom = (lh - rh) + 'px'; }
+          else if (rh > lh) { left.style.paddingBottom = (rh - lh) + 'px'; }
         }
-        syncRowHeights('basicsDomain','coachBlock1');
-        syncRowHeights('growthDomain','coachBlock2');
-        syncRowHeights('ambitionDomain','coachBlock3');
-        syncRowHeights('vitalityDomain','coachBlock4');
-        syncRowHeights('attractionDomain','coachBlock5');
+        setTimeout(equalize, 50);
+        window.addEventListener('load', function(){ setTimeout(equalize, 50); });
       } catch(_) {}
 
       // Removed overall narrative; per-domain narratives will be used beside bars in design
