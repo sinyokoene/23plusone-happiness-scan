@@ -98,12 +98,6 @@
             <p class="small" id="attractionText">&nbsp;</p>
           </div>
         </section>
-        <!-- Narrative block based on domain profile -->
-        <section class="section" id="narrativeSection">
-          <h2>Your happiness pattern</h2>
-          <p class="small" id="narrativeText">&nbsp;</p>
-        </section>
-
         <section class="footer small" style="margin-top:10px;">
           <div>This is not a clinical assessment. Privacy: your data is stored securely and can be deleted at any time.</div>
           <div id="footerMeta" class="small">Version: v1.2.0 • Date: -- • Norms Reference: NL 2025Q3</div>
@@ -200,66 +194,7 @@
       setWidth('vitalityFill', dp['Vitality']); setText('vitalityScore', Math.round(dp['Vitality']) + ' | ' + bandLabel(dp['Vitality']));
       setWidth('attractionFill', dp['Attraction']); setText('attractionScore', Math.round(dp['Attraction']) + ' | ' + bandLabel(dp['Attraction']));
 
-      // Narrative text under domains
-      try {
-        const domainOrder = ['Basics','Self-development','Ambition','Vitality','Attraction'];
-        const entries = domainOrder.map(name => [name, Number(dp[name]||0)]).sort((a,b)=>b[1]-a[1]);
-        const primary = (entries[0]||[])[0];
-        const secondary = (entries[1]||[])[0];
-        const values = entries.map(e=>e[1]);
-        const allHigh = values.every(v => v >= 66);
-        const meanOthers = values.length>1 ? (values.slice(1).reduce((s,v)=>s+v,0)/(values.length-1)) : 0;
-        const outlier = (values[0] - meanOthers) >= 20 || values[0] >= 66 && values[1] < 50;
-        const baselineKey = allHigh ? 'maximalist' : (outlier ? 'selective' : 'balanced');
-        const baseText = {
-          selective: 'You’re selective and intentional — happiness for you comes from quality over quantity.',
-          balanced: 'You have a balanced happiness palette — diverse, but never overwhelming.',
-          maximalist: 'You’re a happiness maximalist — finding joy in many places.'
-        }[baselineKey];
-        const prefixByDomain = {
-          'Basics': 'You’re fueled by Basics.',
-          'Self-development': 'You’re fueled by Self-development.',
-          'Ambition': 'You’re fueled by Ambition.',
-          'Vitality': 'You’re fueled by Vitality.',
-          'Attraction': 'You’re fueled by Attraction.'
-        };
-        const addonByDomain = {
-          'Basics': 'With this strong foundation, you value security, connection, and moral clarity.',
-          'Self-development': 'Growth and self-expression guide you, making you a true lifelong learner.',
-          'Ambition': 'Achievement and recognition fuel your fire, and you’re built to succeed.',
-          'Vitality': 'Energy and health are your superpowers, and you prioritize feeling alive.',
-          'Attraction': 'Beauty and allure matter deeply to you, and you cherish life’s aesthetic pleasures.'
-        };
-        const pairAddon = {
-          'Basics|Self-development': 'Your Basics foundation is lifted by your Self-development — curiosity and self-expression keep your connections growing.',
-          'Basics|Ambition': 'Your Basics foundation is powered by your Ambition — purpose and recognition help your values move into action.',
-          'Basics|Vitality': 'Your Basics foundation is energized by your Vitality — care and aliveness help your relationships thrive.',
-          'Basics|Attraction': 'Your Basics foundation is enriched by your Attraction — an eye for beauty deepens moments of connection.',
-          'Self-development|Basics': 'Your Self-development is grounded by your Basics — security and connection give your growth a steady base.',
-          'Self-development|Ambition': 'Your Self-development is focused by your Ambition — clear goals channel your learning into impact.',
-          'Self-development|Vitality': 'Your Self-development is sustained by your Vitality — energy and health keep curiosity alive.',
-          'Self-development|Attraction': 'Your Self-development is inspired by your Attraction — aesthetics and wonder spark fresh ideas.',
-          'Ambition|Basics': 'Your Ambition is steadied by your Basics — values and connection keep success meaningful.',
-          'Ambition|Self-development': 'Your Ambition is refined by your Self-development — learning and self-expression sharpen your edge.',
-          'Ambition|Vitality': 'Your Ambition is fueled by your Vitality — consistent energy turns drive into results.',
-          'Ambition|Attraction': 'Your Ambition is uplifted by your Attraction — a sense of beauty elevates what you achieve.',
-          'Vitality|Basics': 'Your Vitality is anchored by your Basics — trust and stability make well-being stick.',
-          'Vitality|Self-development': 'Your Vitality is amplified by your Self-development — curiosity and growth keep your energy fresh.',
-          'Vitality|Ambition': 'Your Vitality is directed by your Ambition — purpose gives your energy a powerful aim.',
-          'Vitality|Attraction': 'Your Vitality is brightened by your Attraction — savoring beauty restores your energy.',
-          'Attraction|Basics': 'Your Attraction is balanced by your Basics — values and connection keep aesthetics human.',
-          'Attraction|Self-development': 'Your Attraction is expanded by your Self-development — learning opens new ways to appreciate beauty.',
-          'Attraction|Ambition': 'Your Attraction is sharpened by your Ambition — high standards raise the bar for what you create.',
-          'Attraction|Vitality': 'Your Attraction is sustained by your Vitality — feeling alive lets you fully enjoy what you notice.'
-        };
-        var narrative = '';
-        if (primary) {
-          narrative = [prefixByDomain[primary]||'', baseText||'', addonByDomain[primary]||''].filter(Boolean).join(' ');
-          const tie = pairAddon[primary + '|' + secondary];
-          if (tie) narrative += ' ' + tie;
-        }
-        setText('narrativeText', narrative || '\u00A0');
-      } catch(_) {}
+      // Removed overall narrative; per-domain narratives will be used beside bars in design
 
       // Coaching blocks (simple placeholders that you can refine)
       var c1 = document.getElementById('coachBlock1'); if (c1) c1.textContent = 'Take a moment to feel proud of this quality. Think about the communities you\'ve helped shape.';
