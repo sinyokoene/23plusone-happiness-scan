@@ -32,8 +32,9 @@
     .metric-bar { height: 6px; background:#e6e6e6; border-radius: 999px; position:relative; overflow:hidden; }
     .metric-fill { position:absolute; left:0; top:0; bottom:0; width: 0%; background:#b9aca8; border-radius:999px; }
     .score { font-weight:600; font-size: 12px; color:#b9aca8; }
-    /* Cappuccino for overall note */
+    /* Cappuccino for overall note and label */
     #overallNote { color:#b9aca8; }
+    #row0-left .metric-row .small { color:#b9aca8; }
     .section { padding-top: 6px; }
     .domain { margin: 12px 0; }
     .domain .bar { height: 5px; background:#e6e6e6; border-radius:999px; position:relative; overflow:hidden; }
@@ -46,6 +47,10 @@
     .aside { background:#f6f6f6; border-radius:10px; padding:10px; }
     .footer { display:flex; align-items:center; justify-content:space-between; margin-top: 8px; color:#8a8a8a; font-size:9px; flex-wrap: wrap; row-gap: 2px; text-align:left; }
     .footer .small { line-height: 1.2; }
+    /* Benchmarks and Confidence sections cappuccino; lists flush-left */
+    #benchmarksSection, #benchmarksSection + p, #benchmarksSection + p + p { color:#b9aca8; }
+    #confidenceSection, #confidenceSection + ul, #confidenceSection + ul li { color:#b9aca8; }
+    #whatInside + ul, #confidenceSection + ul { margin-left: 0; padding-left: 14px; text-align:left; }
     /* On-screen A4 preview mode */
     body.preview { background:#f3f4f6; }
     body.preview .page { width: 186mm; min-height: 273mm; margin: 16px auto; background:#ffffff; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 0 12mm 12mm; }
@@ -196,11 +201,11 @@
       setWidth('attractionFill', dp['Attraction']); setText('attractionScore', Math.round(dp['Attraction']) + ' | ' + bandLabel(dp['Attraction']));
 
       // Per-domain narrative content below bars (first sentence bold, then newline)
-      setHTML('basicsText', '<strong>Recognize Your Role as a Connector</strong> You naturally bring people together and build trust. This helps others feel safe and grow. That’s a major contribution to any group.');
-      setHTML('growthText', '<strong>Make Time for Curiosity</strong> You know how energizing it feels to follow your curiosity and lose yourself in an idea. Growth happens when we make space for these moments on purpose.');
-      setHTML('ambitionText', '<strong>Let Ambition Be A Healthy Drive</strong> Your motivation comes from enjoying the process and working with others, not just chasing rewards. That’s sustainable ambition.');
-      setHTML('vitalityText', '<strong>Respect Your Well‑Being</strong> You treat your health as a foundation, not an afterthought. That quiet commitment lifts both you and the people around you.');
-      setHTML('attractionText', '<strong>Add More Sensory Joy</strong> You enjoy life’s beauty—through music, food, or scenery. The next step is to invite more of these moments on purpose.');
+      setHTML('basicsText', '<strong>Recognize Your Role as a Connector</strong><br>You naturally bring people together and build trust. This helps others feel safe and grow. That’s a major contribution to any group.');
+      setHTML('growthText', '<strong>Make Time for Curiosity</strong><br>You know how energizing it feels to follow your curiosity and lose yourself in an idea. Growth happens when we make space for these moments on purpose.');
+      setHTML('ambitionText', '<strong>Let Ambition Be A Healthy Drive</strong><br>Your motivation comes from enjoying the process and working with others, not just chasing rewards. That’s sustainable ambition.');
+      setHTML('vitalityText', '<strong>Respect Your Well‑Being</strong><br>You treat your health as a foundation, not an afterthought. That quiet commitment lifts both you and the people around you.');
+      setHTML('attractionText', '<strong>Add More Sensory Joy</strong><br>You enjoy life’s beauty—through music, food, or scenery. The next step is to invite more of these moments on purpose.');
 
       // Keep columns equal height by distributing remaining space with padding at bottom
       try {
