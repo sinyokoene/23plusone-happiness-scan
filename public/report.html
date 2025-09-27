@@ -27,6 +27,9 @@
     h2 { font-size: 14px; margin: 0 0 6px; }
     p { margin: 0 0 8px; font-size: 11px; line-height: 1.5; color:#2c1f1c; }
     .small { font-size: 10px; color: #666; }
+    /* Bump specific labels to 12px */
+    #overallLabel { font-size: 12px; }
+    .domain > .small { font-size: 12px; }
     .metric-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin: 10px 0 6px; }
     .muted { color:#9CA3AF; }
     .metric-bar { height: 6px; background:#e6e6e6; border-radius: 999px; position:relative; overflow:hidden; }
@@ -145,12 +148,13 @@
       </div>
       <section class="section coach-section"><div class="aside" id="coachBlock5">&nbsp;</div></section>
 
-      <!-- Row 6: Footer and empty spacer -->
+      <!-- Row 6: Footer (move version to right column) -->
       <section class="footer small" style="margin-top:10px;">
         <div>This is not a clinical assessment. Privacy: your data is stored securely and can be deleted at any time.</div>
+      </section>
+      <section class="footer small" style="margin-top:10px; justify-content:flex-end;">
         <div id="footerMeta" class="small">Version: v1.2.0 • Date: -- • Norms Reference: NL 2025Q3</div>
       </section>
-      <div></div>
     </div>
   </div>
 
