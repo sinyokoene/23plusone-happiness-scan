@@ -17,8 +17,8 @@
     .logo-left { height: 72px; }
     .logo-right { height: 24px; }
     .report-title { text-align:center; font-weight:700; font-size:14px; margin-top: -6px; }
-    .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; grid-auto-rows: auto; gap: 20px 16px; align-items:start; }
-    .section { margin-bottom: 12px; }
+    .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; grid-auto-rows: auto; gap: 0 16px; align-items:start; }
+    .section { margin-bottom: 0; }
     .aside { background:#f6f6f6; border-radius:10px; padding:10px; font-size:12px; line-height:1.45; text-align:left; }
     /* Domain narratives under bars to 12px */
     #basicsText, #growthText, #ambitionText, #vitalityText, #attractionText { font-size:12px; line-height:1.5; margin-top:8px; }
@@ -68,17 +68,11 @@
     <!-- Removed duplicate title for cleaner header -->
 
     <div class="two-col">
-      <!-- Row 0: Intro/Overall vs Meta blocks -->
+      <!-- Row 0: Intro vs What you'll find inside -->
       <section class="section" id="row0-left">
         <h2>How it works</h2>
         <p>This report shows your Drive Profile: a snapshot of the drives that most strongly influence your motivation.</p>
         <p>Think of it as a mirror — it doesn’t predict your future, but it does reveal what sparks your energy, where you might get stuck, and how balanced your drives are compared to others.</p>
-        <div class="metric-row" style="margin-top:8px;">
-          <div class="small muted">Overall Drive Score</div>
-          <div class="score" id="overallScoreLabel">-- | --</div>
-        </div>
-        <div class="metric-bar"><div id="overallBar" class="metric-fill" style="width: 0%"></div></div>
-        <p class="small" id="overallNote">&nbsp;</p>
       </section>
       <section class="section" id="row0-right">
         <h2 id="whatInside">What you’ll find inside:</h2>
@@ -87,9 +81,30 @@
           <li>Five domains that shape your motivation and simple actions to improve your profile.</li>
           <li>Benchmarks against a real‑world cohort.</li>
         </ul>
+      </section>
+
+      <!-- Row 1: Overall Drive Score (own row) -->
+      <section class="section" id="row1-left">
+        <div class="metric-row" style="margin-top:8px;">
+          <div class="small muted" id="overallLabel">Overall Drive Score</div>
+          <div class="score" id="overallScoreLabel">-- | --</div>
+        </div>
+        <div class="metric-bar"><div id="overallBar" class="metric-fill" style="width: 0%"></div></div>
+        <p class="small" id="overallNote">&nbsp;</p>
+      </section>
+      <div></div>
+
+      <!-- Row 2: Benchmarks (own row) -->
+      <div></div>
+      <section class="section" id="row2-right">
         <h2 id="benchmarksSection">Benchmarks</h2>
         <p class="small muted">Percentile: <span id="percentile">--</span></p>
         <p class="small muted">Cohort average: <span id="cohortAvg">--</span></p>
+      </section>
+
+      <!-- Row 3: Confidence & Quality (own row) -->
+      <div></div>
+      <section class="section" id="row3-right">
         <h2 id="confidenceSection">Confidence & Quality</h2>
         <ul class="small" style="margin:6px 0 0 18px; color:#555; text-align:left;">
           <li>Responses: 24/24</li>
