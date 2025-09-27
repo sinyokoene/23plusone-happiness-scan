@@ -17,7 +17,7 @@
     .logo-left { height: 72px; }
     .logo-right { height: 24px; }
     .report-title { text-align:center; font-weight:700; font-size:14px; margin-top: -6px; }
-    .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; gap: 16px; align-items:start; }
+    .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; grid-auto-rows: auto; gap: 20px 16px; align-items:start; }
     .section { margin-bottom: 12px; }
     .aside { background:#f6f6f6; border-radius:10px; padding:10px; }
     .coach-section .aside { height: 100%; }
@@ -59,84 +59,83 @@
     <!-- Removed duplicate title for cleaner header -->
 
     <div class="two-col">
-      <div id="leftCol">
-        <section class="section">
-          <h2>How it works</h2>
-          <p>This report shows your Drive Profile: a snapshot of the drives that most strongly influence your motivation.</p>
-          <p>Think of it as a mirror — it doesn’t predict your future, but it does reveal what sparks your energy, where you might get stuck, and how balanced your drives are compared to others.</p>
-        </section>
+      <!-- Row 0: Intro/Overall vs Meta blocks -->
+      <section class="section" id="row0-left">
+        <h2>How it works</h2>
+        <p>This report shows your Drive Profile: a snapshot of the drives that most strongly influence your motivation.</p>
+        <p>Think of it as a mirror — it doesn’t predict your future, but it does reveal what sparks your energy, where you might get stuck, and how balanced your drives are compared to others.</p>
+        <div class="metric-row" style="margin-top:8px;">
+          <div class="small muted">Overall Drive Score</div>
+          <div class="score" id="overallScoreLabel">-- | --</div>
+        </div>
+        <div class="metric-bar"><div id="overallBar" class="metric-fill" style="width: 0%"></div></div>
+        <p class="small" id="overallNote">&nbsp;</p>
+      </section>
+      <section class="section" id="row0-right">
+        <h2>What you’ll find inside:</h2>
+        <ul class="small" style="margin:6px 0 10px 18px; color:#555;">
+          <li>Your overall Drive Score.</li>
+          <li>Five domains that shape your motivation and simple actions to improve your profile.</li>
+          <li>Benchmarks against a real‑world cohort.</li>
+        </ul>
+        <h2>Benchmarks</h2>
+        <p class="small muted">Percentile: <span id="percentile">--</span></p>
+        <p class="small muted">Cohort average: <span id="cohortAvg">--</span></p>
+        <h2>Confidence & Quality</h2>
+        <ul class="small" style="margin:6px 0 0 18px; color:#555;">
+          <li>Responses: 24/24</li>
+          <li>Timeouts: <span id="timeouts">--</span></li>
+          <li>Total time: <span id="totalTime">--</span></li>
+          <li>Quality flag: <span id="qualityFlag">Pass</span></li>
+        </ul>
+      </section>
 
-        <section class="section">
-          <div class="metric-row">
-            <div class="small muted">Overall Drive Score</div>
-            <div class="score" id="overallScoreLabel">-- | --</div>
-          </div>
-          <div class="metric-bar"><div id="overallBar" class="metric-fill" style="width: 0%"></div></div>
-          <p class="small" id="overallNote">&nbsp;</p>
-        </section>
-
-        <section id="domains">
-          <div class="domain" id="basicsDomain">
-            <div class="small" style="color:#4CAF50; font-weight:600;">Basics <span id="basicsScore" style="float:right; color:#4CAF50; font-weight:600;">--</span></div>
-            <div class="bar"><div id="basicsFill" class="fill d-green" style="width:0%"></div></div>
-            <p class="small" id="basicsText">&nbsp;</p>
-          </div>
-          <div class="domain" id="growthDomain">
-            <div class="small" style="color:#FF9800; font-weight:600;">Self-development <span id="growthScore" style="float:right; color:#FF9800; font-weight:600;">--</span></div>
-            <div class="bar"><div id="growthFill" class="fill d-orange" style="width:0%"></div></div>
-            <p class="small" id="growthText">&nbsp;</p>
-          </div>
-          <div class="domain" id="ambitionDomain">
-            <div class="small" style="color:#9C27B0; font-weight:600;">Ambition <span id="ambitionScore" style="float:right; color:#9C27B0; font-weight:600;">--</span></div>
-            <div class="bar"><div id="ambitionFill" class="fill d-purple" style="width:0%"></div></div>
-            <p class="small" id="ambitionText">&nbsp;</p>
-          </div>
-          <div class="domain" id="vitalityDomain">
-            <div class="small" style="color:#2196F3; font-weight:600;">Vitality <span id="vitalityScore" style="float:right; color:#2196F3; font-weight:600;">--</span></div>
-            <div class="bar"><div id="vitalityFill" class="fill d-blue" style="width:0%"></div></div>
-            <p class="small" id="vitalityText">&nbsp;</p>
-          </div>
-          <div class="domain" id="attractionDomain">
-            <div class="small" style="color:#E91E63; font-weight:600;">Attraction <span id="attractionScore" style="float:right; color:#E91E63; font-weight:600;">--</span></div>
-            <div class="bar"><div id="attractionFill" class="fill d-pink" style="width:0%"></div></div>
-            <p class="small" id="attractionText">&nbsp;</p>
-          </div>
-        </section>
-        <section class="footer small" style="margin-top:10px;">
-          <div>This is not a clinical assessment. Privacy: your data is stored securely and can be deleted at any time.</div>
-          <div id="footerMeta" class="small">Version: v1.2.0 • Date: -- • Norms Reference: NL 2025Q3</div>
-        </section>
+      <!-- Row 1: Basics -->
+      <div class="domain" id="basicsDomain">
+        <div class="small" style="color:#4CAF50; font-weight:600;">Basics <span id="basicsScore" style="float:right; color:#4CAF50; font-weight:600;">--</span></div>
+        <div class="bar"><div id="basicsFill" class="fill d-green" style="width:0%"></div></div>
+        <p class="small" id="basicsText">&nbsp;</p>
       </div>
+      <section class="section coach-section"><div class="aside" id="coachBlock1">&nbsp;</div></section>
 
-      <aside id="rightCol">
-        <section class="section">
-          <h2>What you’ll find inside:</h2>
-          <ul class="small" style="margin:6px 0 10px 18px; color:#555;">
-            <li>Your overall Drive Score.</li>
-            <li>Five domains that shape your motivation and simple actions to improve your profile.</li>
-            <li>Benchmarks against a real‑world cohort.</li>
-          </ul>
-        </section>
-        <section class="section">
-          <h2>Benchmarks</h2>
-          <p class="small muted">Percentile: <span id="percentile">--</span></p>
-          <p class="small muted">Cohort average: <span id="cohortAvg">--</span></p>
-        </section>
-        <section class="section">
-          <h2>Confidence & Quality</h2>
-          <ul class="small" style="margin:6px 0 0 18px; color:#555;">
-            <li>Responses: 24/24</li>
-            <li>Timeouts: <span id="timeouts">--</span></li>
-            <li>Total time: <span id="totalTime">--</span></li>
-            <li>Quality flag: <span id="qualityFlag">Pass</span></li>
-          </ul>
-        </section>
-        <section class="section coach-section"><div class="aside" id="coachBlock1">&nbsp;</div></section>
-        <section class="section coach-section"><div class="aside" id="coachBlock2">&nbsp;</div></section>
-        <section class="section coach-section"><div class="aside" id="coachBlock3">&nbsp;</div></section>
-        <section class="section coach-section"><div class="aside" id="coachBlock4">&nbsp;</div></section>
-        <section class="section coach-section"><div class="aside" id="coachBlock5">&nbsp;</div></section>
-      </aside>
+      <!-- Row 2: Self-development -->
+      <div class="domain" id="growthDomain">
+        <div class="small" style="color:#FF9800; font-weight:600;">Self-development <span id="growthScore" style="float:right; color:#FF9800; font-weight:600;">--</span></div>
+        <div class="bar"><div id="growthFill" class="fill d-orange" style="width:0%"></div></div>
+        <p class="small" id="growthText">&nbsp;</p>
+      </div>
+      <section class="section coach-section"><div class="aside" id="coachBlock2">&nbsp;</div></section>
+
+      <!-- Row 3: Ambition -->
+      <div class="domain" id="ambitionDomain">
+        <div class="small" style="color:#9C27B0; font-weight:600;">Ambition <span id="ambitionScore" style="float:right; color:#9C27B0; font-weight:600;">--</span></div>
+        <div class="bar"><div id="ambitionFill" class="fill d-purple" style="width:0%"></div></div>
+        <p class="small" id="ambitionText">&nbsp;</p>
+      </div>
+      <section class="section coach-section"><div class="aside" id="coachBlock3">&nbsp;</div></section>
+
+      <!-- Row 4: Vitality -->
+      <div class="domain" id="vitalityDomain">
+        <div class="small" style="color:#2196F3; font-weight:600;">Vitality <span id="vitalityScore" style="float:right; color:#2196F3; font-weight:600;">--</span></div>
+        <div class="bar"><div id="vitalityFill" class="fill d-blue" style="width:0%"></div></div>
+        <p class="small" id="vitalityText">&nbsp;</p>
+      </div>
+      <section class="section coach-section"><div class="aside" id="coachBlock4">&nbsp;</div></section>
+
+      <!-- Row 5: Attraction -->
+      <div class="domain" id="attractionDomain">
+        <div class="small" style="color:#E91E63; font-weight:600;">Attraction <span id="attractionScore" style="float:right; color:#E91E63; font-weight:600;">--</span></div>
+        <div class="bar"><div id="attractionFill" class="fill d-pink" style="width:0%"></div></div>
+        <p class="small" id="attractionText">&nbsp;</p>
+      </div>
+      <section class="section coach-section"><div class="aside" id="coachBlock5">&nbsp;</div></section>
+
+      <!-- Row 6: Footer and empty spacer -->
+      <section class="footer small" style="margin-top:10px;">
+        <div>This is not a clinical assessment. Privacy: your data is stored securely and can be deleted at any time.</div>
+        <div id="footerMeta" class="small">Version: v1.2.0 • Date: -- • Norms Reference: NL 2025Q3</div>
+      </section>
+      <div></div>
     </div>
   </div>
 
