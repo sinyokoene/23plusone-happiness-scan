@@ -35,6 +35,8 @@
     .metric-bar { height: 6px; background:#e6e6e6; border-radius: 999px; position:relative; overflow:hidden; }
     .metric-fill { position:absolute; left:0; top:0; bottom:0; width: 0%; background:#b9aca8; border-radius:999px; }
     .score { font-weight:600; font-size: 12px; color:#b9aca8; }
+    /* Overall score semibold & cappuccino */
+    #overallScoreLabel { font-weight:600; color:#b9aca8; }
     /* Cappuccino for overall note and label */
     #overallNote { color:#b9aca8; }
     #row0-left .metric-row .small { color:#b9aca8; }
@@ -89,7 +91,7 @@
       <!-- Row 1: Overall Drive Score (left) with Benchmarks + Confidence (right) -->
       <section class="section" id="row1-left">
         <div class="metric-row" style="margin-top:8px;">
-          <div class="small muted" id="overallLabel">Overall Drive Score</div>
+          <div class="small" id="overallLabel" style="font-weight:600; color:#b9aca8;">Overall Drive Score</div>
           <div class="score" id="overallScoreLabel">-- | --</div>
         </div>
         <div class="metric-bar"><div id="overallBar" class="metric-fill" style="width: 0%"></div></div>
@@ -236,12 +238,52 @@
 
       // Removed overall narrative; per-domain narratives will be used beside bars in design
 
-      // Coaching blocks per domain (aligned in right column)
-      var c1 = document.getElementById('coachBlock1'); if (c1) c1.textContent = 'Take a moment to feel proud of this quality. Think about the communities you\'ve helped shape. That ability to connect is one of your real strengths.'; // Basics
-      var c2 = document.getElementById('coachBlock2'); if (c2) c2.textContent = 'Schedule a 30‑minute “curiosity break” this week. Explore a bookstore, a new street, or dive into an online topic—no productivity required.'; // Self-development
-      var c3 = document.getElementById('coachBlock3'); if (c3) c3.textContent = 'Pick one skill—at work or in a hobby—and practice it for 20 minutes this week. Focus only on the joy of learning.'; // Ambition
-      var c4 = document.getElementById('coachBlock4'); if (c4) c4.textContent = 'Pause today to thank your body—for its strength, resilience, and how it carries you through life. Gratitude reinforces your mind‑body connection.'; // Vitality
-      var c5 = document.getElementById('coachBlock5'); if (c5) c5.textContent = 'Tomorrow, add one sensory treat to your day. Light a candle, add fresh herbs to your meal, or take a more scenic walk. Do it just for delight.'; // Attraction
+      // Coaching blocks per domain based on band (low/mid/high)
+      function bandLabel(v){ if (v >= 66) return 'high'; if (v >= 34) return 'mid'; return 'low'; }
+      function pickCopy(domain, band){
+        var copy = {
+          Basics: {
+            low: "Low score: Your first step toward deeper connection\n\nThis shows you're very good at relying on yourself, which is a great strength. The next step is to practice letting others in, too. We know from our research that people are happiest when they can both stand on their own and lean on others when needed. It’s not about being needy; it’s about making your own strength even stronger with the support of others.\n\nTo get started, try this. Do one small thing for someone else this week. Try to define what sharing feels like.",
+            mid: "Medium score: Building on your foundation of connection\n\nYou already have a healthy balance between being independent and connecting with others. That’s a wonderful skill. To feel even better, you can shift from just having good people in your life to actively putting a little energy into those friendships, like watering a plant.\n\nTo make your connections stronger, pick one person in your circle. Send them a quick message today simply saying that you think of them.",
+            high: "High score: Celebrating connection\n\nA high score here is fantastic. It means you're a natural at bringing people together and making them feel safe and understood. Creating that kind of trust for yourself and others is one of the most powerful things a person can do.\n\nYour goal is simply to appreciate this quality in yourself. Take a moment today to acknowledge that you’re a connector. Feel proud of the good relationships you’ve built."
+          },
+          'Self-development': {
+            low: "Low score: An invitation to rediscover play\n\nThis score shows there’s a great chance to bring more fun into your life. The demands of being an adult can often push our natural sense of play aside. But making time for fun isn't silly; it’s a direct way to feel more creative, less stressed, and more energized.\n\nHere’s a first step to bring back that playful feeling. Find just five minutes today to do something fun for no reason: put on a great song and dance, doodle, or watch a cool video online.",
+            mid: "Medium score: From curious moments to a consistent habit\n\nYou have a good connection to your fun and creative side, which is a great starting point. To feel even better, you can work on turning those occasional sparks of fun into a regular habit, so it becomes a reliable source of good energy for you.\n\nTo make this a habit, schedule a 30-minute \"curiosity appointment\" with yourself this week. Use that time to wander a bookstore or explore something interesting online, with no pressure for it to be productive.",
+            high: "High score: Honoring your curiosity\n\nThis is a top-level score. It means you live with a wonderful spirit of discovery and are naturally open to new things. You tend to see life not just as a to-do list, but as an adventure full of possibilities.\n\nTo keep this strength alive, share it! The next time you find something cool or interesting, make a point to show it to someone else. Let them see the world through your eyes for a moment."
+          },
+          Ambition: {
+            low: "Low score: Getting your inner drive going\n\nYou are driven by the joy of the work itself, not just by praise or rewards. That's a very healthy and sustainable way to be. To build on this, you can start to aim that positive energy toward goals that feel meaningful to you and help others.\n\nTo get started, think of one skill you enjoy that also benefits others. Spend 20 minutes this week practicing it, just for the satisfaction of something that has a positive effect.",
+            mid: "Medium score: Boosting your ambition\n\nYou have a very healthy relationship with ambition, which shows you’re emotionally smart. To take it to the next level, you can work on clearly connecting your goals to what truly matters to you. This turns the feeling of a race into the feeling of a meaningful mission.\n\nTo amplify this, think about something you achieved recently. Ask yourself, \"What part of that felt the best and most like 'me'?\" Let that feeling guide what you aim for next.",
+            high: "High score: Leading with your positive impact\n\nA high score here shows you have a powerful inner drive. You have the energy to do great things. The key for you is remembering that this strength isn't just about winning; it’s about using your drive to leave a positive mark on the world.\n\nYour goal is to make sure your powerful drive serves a good purpose. Spend some time thinking: \"What drives my ambition?\""
+          },
+          Vitality: {
+            low: "Low score: Building your foundation of well-being\n\nThis score shows that taking care of yourself is a big opportunity for you to feel better. The most important first step is a simple shift in thinking: your well-being isn't a prize you get after all the work is done. It’s the fuel in your tank that lets you do the work in the first place.\n\nHere is the easiest first step you can take. Practice a \"one-minute reset.\" Right now, just close your eyes, take three slow, deep breaths, and let your shoulders drop as you breathe out.",
+            mid: "Medium score: Turning awareness to consistent self-care\n\nYou already know what you need to do to feel good, which is the perfect starting point. To feel even better, the goal is to create small habits that stick, so that taking care of yourself feels like a choice you deserve, not a chore you have to do.\n\nTo build this habit, find one chance today to do something for your well-being that feels like a treat, not a task. This could be a five-minute stretch, a big glass of water, or just stepping outside for fresh air.",
+            high: "High score: Enjoying your health\n\nThis is an outstanding score. It shows you make your well-being a top priority in a deep and consistent way. Treating your health as the foundation for everything else is a sign of wisdom, and it quietly inspires the people around you.\n\nYour job is to simply appreciate this foundation to keep it strong. Today, take a moment to thank your body for all that it does for you. This simple act of gratitude will strengthen that positive habit."
+          },
+          Attraction: {
+            low: "Low score: Reconnecting with your senses\n\nThis score shows you have a great opportunity to connect with the world in a richer way. Our busy lives can make us feel disconnected. Tuning back into your senses—what you see, hear, and feel—is one of the fastest ways to feel calm and happy.\n\nHere’s a simple way to start. For the next 60 seconds, just stop and listen. Notice the little sounds around you that you normally ignore. Don’t judge them, just notice them.",
+            mid: "Medium score: Actively designing a richer life\n\nYou have a notice and enjoy beautiful moments. Now, let's go from being aware of these moments to actively making time for them in your day.\n\nTo put this into practice, intentionally add one small moment of pleasure to your day. Smell your morning coffee or pick a prettier route on your commute. Do it just for the pure enjoyment of it. ",
+            high: "High score: Spreading your attraction\n\nYour high score means you experience the world with a richness and depth that many people miss. Your ability to see the beauty and passion in life keeps you in the present moment.\n\nTo keep this wonderful strength active, share it. Today, gently point out something beautiful to someone who might have missed it—like the light on a building, the smell after it rains, or the taste of a perfect strawberry."
+          }
+        };
+        return (copy[domain] && copy[domain][band]) || '';
+      }
+
+      function setCoach(id, domain, pct){
+        var el = document.getElementById(id);
+        if (!el) return;
+        var band = bandLabel(pct);
+        var text = pickCopy(domain, band);
+        el.textContent = text;
+      }
+
+      setCoach('coachBlock1', 'Basics', dp['Basics']);
+      setCoach('coachBlock2', 'Self-development', dp['Self-development']);
+      setCoach('coachBlock3', 'Ambition', dp['Ambition']);
+      setCoach('coachBlock4', 'Vitality', dp['Vitality']);
+      setCoach('coachBlock5', 'Attraction', dp['Attraction']);
 
       // Overall note: highlight top two domains by pct
       try {
