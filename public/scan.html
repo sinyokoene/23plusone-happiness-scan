@@ -254,7 +254,8 @@
     /* Mobile overlay sizing */
     @media (max-width: 480px) {
       .overlay-card { max-width: 94vw; padding: 16px; }
-      #reportOverlay .overlay-card { min-height: 320px; }
+      /* Match in-game card ratio on mobile as well */
+      #reportOverlay .overlay-card { aspect-ratio: 3 / 2; min-height: 0; height: auto; }
       #reportOverlay #reportEmailInput { font-size: 16px; padding: 14px 12px; }
       #reportOverlay #reportSendBtn { height: 44px; min-height: 44px; max-height: 44px; }
     }
@@ -544,7 +545,7 @@
 
             <!-- Full report request overlay -->
             <div id="reportOverlay" class="overlay-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Receive full report">
-              <div class="overlay-card" style="max-width:560px; position: relative;">
+              <div class="overlay-card" style="max-width:560px; position: relative; width: 100%; aspect-ratio: 3 / 2;">
                 <div id="reportFormBlock">
                   <h3 style="margin-top:8px;">We’ll send <span style="color:#e91e63;">your drives</span> over!</h3>
                   <div style="margin-top:12px; display:flex; gap:8px;">
