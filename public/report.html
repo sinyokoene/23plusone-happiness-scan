@@ -53,7 +53,7 @@
     .footer { display:flex; align-items:center; justify-content:space-between; margin-top: 8px; color:#8a8a8a; font-size:9px; flex-wrap: wrap; row-gap: 2px; text-align:left; }
     .footer .small { line-height: 1.2; }
     /* Benchmarks and Confidence sections cappuccino; lists flush-left */
-    #benchmarksSection, #benchmarksSection + p, #benchmarksSection + p + p { color:#b9aca8; }
+    #benchmarksSection, #benchmarksSection + p, #benchmarksSection + p + p, #benchmarksSection + p + p + p { color:#b9aca8; }
     #confidenceSection, #confidenceSection + ul, #confidenceSection + ul li { color:#b9aca8; }
     #whatInside + ul, #confidenceSection + ul { margin-left: 0; padding-left: 0; text-align:left; list-style-position: inside; }
     /* On-screen A4 preview mode */
@@ -101,6 +101,7 @@
         <h2 id="benchmarksSection">Benchmarks</h2>
         <p class="small muted">Percentile: <span id="percentile">--</span></p>
         <p class="small muted">Cohort average: <span id="cohortAvg">--</span></p>
+        <p class="small muted">n = <span id="cohortN">--</span></p>
         <h2 id="confidenceSection">Confidence & Quality</h2>
         <ul class="small" style="margin:6px 0 0 18px; color:#555; text-align:left;">
           <li>Responses: 24/24</li>
@@ -190,6 +191,14 @@
       setWidth('overallBar', Math.max(0, Math.min(100, ihs)));
       setText('percentile', percentile == null ? '--' : ('Top ' + (100 - percentile) + '%'));
       setText('cohortAvg', avg ? String(avg) : '--');
+      // Benchmarks sample size (n)
+      var n = null;
+      try {
+        var b = payload && payload.benchmark;
+        var ctx = b && b.context;
+        n = (b && (b.n || b.N || b.count || b.size)) || (ctx && (ctx.n || ctx.N || ctx.count || ctx.sampleSize || ctx.size)) || null;
+      } catch(_) {}
+      setText('cohortN', (n != null ? String(n) : '--'));
       // Fallbacks for quality metrics
       var completion = (payload && payload.completionTime != null) ? payload.completionTime : (results && typeof results.completionTime === 'number' ? results.completionTime : null);
       var timeoutsCount = (payload && payload.unansweredCount != null) ? payload.unansweredCount : (results && typeof results.unansweredCount === 'number' ? results.unansweredCount : null);
