@@ -1609,7 +1609,7 @@
     const overlay = document.getElementById('retakeOverlay');
     const overlayYes = document.getElementById('retakeOverlayYes');
     const overlayNo = document.getElementById('retakeOverlayNo');
-    if (!retakeBtn || !pill || !btns) return;
+    if (!retakeBtn) return;
     const actionsRow = document.getElementById('resultsActions');
     const show = () => {
       // Inline the message on the button to avoid overlay stacking and keep bars from reflowing
@@ -1658,21 +1658,16 @@
     };
     const onEsc = (e) => { if (e.key === 'Escape') hide(); };
     const onDocClick = (e) => { if (!btns.contains(e.target) && e.target !== retakeBtn) hide(); };
-    retakeBtn.addEventListener('click', (e) => {
+    // Always show modal overlay for Try again (desktop and mobile)
+    retakeBtn.onclick = function(e){
       e.preventDefault();
-      // On mobile, show centered overlay; otherwise use inline pill/buttons
-      const isMobile = window.matchMedia && window.matchMedia('(max-width: 480px)').matches;
-      if (overlay && isMobile) {
-        overlay.style.display = 'flex';
-        const close = () => { overlay.style.display = 'none'; };
-        if (overlayNo) overlayNo.onclick = close;
-        if (overlayYes) overlayYes.onclick = () => { location.reload(); };
-        // Also close if user taps outside card
-        overlay.addEventListener('click', function onBk(e){ if (e.target === overlay) { close(); overlay.removeEventListener('click', onBk); } });
-        return;
-      }
-      show();
-    });
+      if (!overlay) return;
+      overlay.style.display = 'flex';
+      const close = () => { overlay.style.display = 'none'; };
+      if (overlayNo) overlayNo.onclick = close;
+      if (overlayYes) overlayYes.onclick = () => { location.reload(); };
+      overlay.addEventListener('click', function onBk(ev){ if (ev.target === overlay) { close(); overlay.removeEventListener('click', onBk); } });
+    };
     if (cancel) cancel.addEventListener('click', hide);
     if (del) del.addEventListener('click', () => { location.reload(); });
   })();
