@@ -191,12 +191,14 @@
       setWidth('overallBar', Math.max(0, Math.min(100, ihs)));
       setText('percentile', percentile == null ? '--' : ('Top ' + (100 - percentile) + '%'));
       setText('cohortAvg', avg ? String(avg) : '--');
-      // Benchmarks sample size (n)
+      // Benchmarks sample size (n). Prefer explicit participants count if provided.
       var n = null;
       try {
         var b = payload && payload.benchmark;
         var ctx = b && b.context;
-        n = (b && (b.n || b.N || b.count || b.size)) || (ctx && (ctx.n || ctx.N || ctx.count || ctx.sampleSize || ctx.size)) || null;
+        n = (b && (b.totalResponses || b.n || b.N || b.count || b.size))
+          || (ctx && (ctx.totalResponses || ctx.n || ctx.N || ctx.count || ctx.sampleSize || ctx.size))
+          || null;
       } catch(_) {}
       setText('cohortN', (n != null ? String(n) : '--'));
       // Fallbacks for quality metrics
