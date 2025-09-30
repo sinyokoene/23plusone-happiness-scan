@@ -1692,7 +1692,7 @@
     const statusEl = document.getElementById('reportStatus');
     const sentBlock = document.getElementById('reportSentBlock');
     const formBlock = document.getElementById('reportFormBlock');
-    const tryAgainBtn = document.getElementById('reportTryAgainBtn');
+        const tryAgainBtn = document.getElementById('reportTryAgainBtn');
     const shareBtn = document.getElementById('reportShareBtn');
     if (!openBtn || !overlay) return;
 
@@ -1705,7 +1705,7 @@
     openBtn.addEventListener('click', () => { try { showOverlay(); showForm(); errorEl.style.display='none'; statusEl.style.display='none'; } catch(_){ } });
     if (backBtn) backBtn.addEventListener('click', hideOverlay);
     if (overlay) overlay.addEventListener('click', function(e){ if (e.target === overlay) hideOverlay(); });
-    if (tryAgainBtn) tryAgainBtn.addEventListener('click', showForm);
+    if (tryAgainBtn) tryAgainBtn.addEventListener('click', () => { try { location.reload(); } catch(_) { showForm(); } });
     if (shareBtn) shareBtn.addEventListener('click', function(){ try { document.getElementById('nativeShareBtn')?.click(); } catch(_){} });
 
     async function sendRequest(){
