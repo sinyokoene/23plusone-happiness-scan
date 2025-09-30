@@ -72,8 +72,14 @@
     body.no-scroll { overflow: hidden; height: calc(var(--vh, 1vh) * 100); }
     /* Ensure each app section cannot create its own scrollbars */
     .section { overflow: hidden; }
+      /* Ensure intro fills viewport minus footer so flex centering works on large screens */
+      #intro { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); }
     /* Remove double-tap-to-zoom on interactive elements */
     button, .share-button, .link-like { touch-action: manipulation; }
+
+      /* Practice typography sizes */
+      #practiceIntroText { font-size: 20px; }
+      #practice-heading { font-size: 30px; }
 
     /* Mobile typography tweaks */
     @media (max-width: 480px) {

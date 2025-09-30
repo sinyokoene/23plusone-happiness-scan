@@ -1223,15 +1223,24 @@
   }
   
   function showValidationError(reason) {
+    // Hide the game prompt text on invalid state
+    try {
+      const promptEl = document.getElementById('gamePrompt');
+      if (promptEl) promptEl.style.display = 'none';
+    } catch(_) {}
+
+    // Render invalid message with a button using the shared btn-pill style
     cardDiv.innerHTML = `
       <div style="text-align: center; color: #F44336; padding: 20px;">
         <h3 style="color: #F44336; margin-bottom: 15px;">⚠️ Invalid Scan</h3>
         <p style="margin-bottom: 20px;">${reason}</p>
-        <button onclick="location.reload()" style="background: #e91e63; color: white; border: none; padding: 12px 24px; border-radius: 20px; cursor: pointer;">
-          Retake Scan
-        </button>
+        <button id="retakeScanBtn" type="button" class="btn-pill" style="color: var(--brand-pink, #e91e63);">Retake Scan</button>
       </div>
     `;
+    try {
+      const btn = document.getElementById('retakeScanBtn');
+      if (btn) btn.addEventListener('click', () => { location.reload(); });
+    } catch(_) {}
     
     // Hide timer and buttons
     timerContainer.style.display = 'none';
