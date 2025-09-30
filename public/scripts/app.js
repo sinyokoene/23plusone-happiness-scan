@@ -266,9 +266,9 @@
         // Only switch the last line based on device; leave the semibold line in HTML
         const controls = document.getElementById('practiceControlsText');
         if (controls) {
-          controls.textContent = isDesktop
-            ? 'Use the buttons or arrow keys. You have 4 seconds per card.'
-            : 'Use the buttons or swipe. You have 4 seconds per card.';
+          controls.innerHTML = isDesktop
+            ? 'Use the buttons or arrow keys.<br>You have 4 seconds per card.'
+            : 'Use the buttons or swipe.<br>You have 4 seconds per card.';
         }
       }
     } catch(_) {}
