@@ -280,10 +280,11 @@
       #reportOverlay #reportEmailInput { font-size: 16px; padding: 14px 12px; }
       #reportOverlay #reportSendBtn { height: 44px; min-height: 44px; max-height: 44px; }
       /* Force results action buttons to one line on small screens */
-      #resultsActions { display: grid !important; grid-template-columns: 1fr auto 1fr; gap: 8px !important; align-items: center; }
-      #resultsActions > * { min-width: 0; }
-      #retakeBtn, #nativeShareBtn { justify-self: center; }
-      #fullReportBtn { justify-self: center; }
+      #resultsActions { display: flex !important; align-items: center; justify-content: space-between; gap: 8px !important; width: 100%; }
+      #resultsActions .btn-pill { width: auto !important; min-width: 0 !important; height: 36px; min-height: 36px; max-height: 36px; padding: 0 12px; font-size: 0.95rem; }
+      #fullReportBtn { order: 2; }
+      #retakeBtn { order: 1; }
+      #nativeShareBtn { order: 3; }
       #retakeBtn, #nativeShareBtn { white-space: nowrap; }
       #fullReportBtn { justify-self: center; }
     }
