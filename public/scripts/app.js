@@ -1905,12 +1905,11 @@
     // Convert percentile to "top X%" format
     const topPercentage = 100 - benchmark.ihsPercentile;
     let performanceMessage = '';
-    
-    performanceMessage = `You're in the top ${topPercentage}%!`;
+    performanceMessage = `You're in the <span class="accent">top ${topPercentage}%!</span>`;
     
     // Update the main benchmark message
     const messageEl = document.getElementById('benchmarkMessage');
-    messageEl.textContent = performanceMessage;
+    messageEl.innerHTML = performanceMessage;
     
     // Removed 'Your Score' row from UI; keep average/participants only
     document.getElementById('benchmarkTotal').textContent = benchmark.totalResponses.toLocaleString();
