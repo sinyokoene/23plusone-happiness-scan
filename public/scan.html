@@ -291,6 +291,10 @@
       #nativeShareBtn { order: 3; }
       #retakeBtn, #nativeShareBtn { white-space: nowrap; }
       #fullReportBtn { justify-self: center; }
+      /* Avoid clipped sides: use white background and remove shadow on mobile */
+      #resultsContent { background: #ffffff; box-shadow: none; margin-left: 6px; margin-right: 6px; }
+      /* Tighten spacing around large score on mobile */
+      #totalScore { margin-top: 2px; margin-bottom: 6px; }
     }
   </style>
   

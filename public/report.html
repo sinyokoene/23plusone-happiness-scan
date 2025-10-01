@@ -21,7 +21,7 @@
     .section { margin-bottom: 0; }
     .aside { background:#f6f6f6; border-radius:10px; padding:10px; font-size:12px; line-height:1.45; text-align:left; }
     /* Domain narratives under bars to 12px */
-    #basicsText, #growthText, #ambitionText, #vitalityText, #attractionText { font-size:10px; line-height:1.5; margin-top:8px; }
+    #basicsText, #growthText, #ambitionText, #vitalityText, #attractionText { font-size:8px; line-height:1.5; margin-top:8px; }
     .coach-section .aside { height: 100%; }
     .coach-section { margin-bottom: 12px; }
     h2 { font-size: 14px; margin: 0 0 6px; }
@@ -58,6 +58,8 @@
     /* Benchmarks inline row */
     .bench-inline { display:grid; grid-template-columns:auto auto auto; column-gap:14px; align-items:baseline; }
     .bench-inline p { margin: 0 0 6px; }
+    /* Right column: Benchmarks next to Confidence */
+    .right-top-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; align-items:start; }
     #whatInside + ul, #confidenceSection + ul { margin-left: 0; padding-left: 0; text-align:left; list-style-position: inside; }
     /* On-screen A4 preview mode */
     body.preview { background:#f3f4f6; }
@@ -101,19 +103,25 @@
         <p class="small" id="overallNote">&nbsp;</p>
       </section>
       <section class="section" id="row1-right">
-        <h2 id="benchmarksSection">Benchmarks</h2>
-        <div class="bench-inline">
-          <p class="small muted">Percentile: <span id="percentile">--</span></p>
-          <p class="small muted">Cohort average: <span id="cohortAvg">--</span></p>
-          <p class="small muted">n = <span id="cohortN">--</span></p>
+        <div class="right-top-grid">
+          <div>
+            <h2 id="benchmarksSection">Benchmarks</h2>
+            <div class="bench-inline">
+              <p class="small muted">Percentile: <span id="percentile">--</span></p>
+              <p class="small muted">Cohort average: <span id="cohortAvg">--</span></p>
+              <p class="small muted">n = <span id="cohortN">--</span></p>
+            </div>
+          </div>
+          <div>
+            <h2 id="confidenceSection">Confidence & Quality</h2>
+            <ul class="small" style="margin:6px 0 0 18px; color:#555; text-align:left;">
+              <li>Responses: 24/24</li>
+              <li>Timeouts: <span id="timeouts">--</span></li>
+              <li>Total time: <span id="totalTime">--</span></li>
+              <li>Quality flag: <span id="qualityFlag">Pass</span></li>
+            </ul>
+          </div>
         </div>
-        <h2 id="confidenceSection">Confidence & Quality</h2>
-        <ul class="small" style="margin:6px 0 0 18px; color:#555; text-align:left;">
-          <li>Responses: 24/24</li>
-          <li>Timeouts: <span id="timeouts">--</span></li>
-          <li>Total time: <span id="totalTime">--</span></li>
-          <li>Quality flag: <span id="qualityFlag">Pass</span></li>
-        </ul>
       </section>
 
       <!-- Row 1: Basics -->
