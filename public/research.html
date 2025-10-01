@@ -78,6 +78,20 @@
     /* Primary buttons to match scan.html */
     button { -webkit-tap-highlight-color: transparent; transition: background-color 120ms ease, transform 60ms ease; }
     #toSwlsIntro:active, #toWho5:active, #toScan:active { background-color: var(--btn-active-pink); transform: translateY(1px); }
+    /* Unified pill button styling (match scan) */
+    .btn-pill {
+      height: 40px;
+      min-height: 40px;
+      max-height: 40px;
+      background: #ffffff !important;
+      border: 1px solid #E8E8EA;
+      border-radius: 12px;
+      box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25);
+      padding: 0 18px;
+      white-space: nowrap;
+      color: #2c1f1c;
+      font-weight: 600;
+    }
     /* Slightly reduce shrink on small screens so content remains comfortable */
     @media (max-width: 768px) { :root { --box-shrink: 36px; } }
     @media (max-width: 480px) { :root { --box-shrink: 24px; } }
@@ -226,7 +240,7 @@
             <div class="font-semibold text-pink-600">4. Life ladder</div>
           </div>
         </div>
-        <button id="toSwlsIntro" class="bg-pink-600 rounded-md text-white text-sm font-semibold shadow-sm mt-16 self-center" style="margin-top:160px; width:131px; height:41px;">Continue</button>
+        <button id="toSwlsIntro" class="btn-pill mt-16 self-center" style="margin-top:160px;">Continue</button>
       </div>
     </section>
 
@@ -246,7 +260,7 @@
             <div class="cell-h text-right">Strongly<br>agree</div>
           </div>
         </div>
-        <button id="toWho5" class="bg-pink-600 rounded-md text-white text-sm font-semibold shadow-sm" style="width:131px; height:41px;">Submit</button>
+        <button id="toWho5" class="btn-pill">Submit</button>
       </div>
     </section>
 
@@ -264,7 +278,7 @@
             <div class="cell-h text-right">All the<br>time</div>
           </div>
         </div>
-        <button id="toScan" class="bg-pink-600 rounded-md text-white text-sm font-semibold shadow-sm" style="width:131px; height:41px;">Submit</button>
+        <button id="toScan" class="btn-pill">Submit</button>
       </div>
     </section>
 
@@ -308,7 +322,7 @@
             <div class="text-xs text-[#9c8078]">Best<br>possible life.</div>
           </div>
         </div>
-        <button id="toThanks" class="bg-pink-600 rounded-md text-white text-sm font-semibold shadow-sm" style="width:131px; height:41px;">Submit</button>
+        <button id="toThanks" class="btn-pill">Submit</button>
       </div>
     </section>
 
