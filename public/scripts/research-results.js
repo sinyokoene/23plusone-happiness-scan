@@ -503,6 +503,17 @@
       const sorted = cards.slice().sort((a,b)=> score(b) - score(a));
       const top = sorted.slice(0, 12);
       const bottom = sorted.slice(-12);
+      function colorBadge(r) {
+        const v = Number(r||0);
+        const t = v.toFixed(2);
+        let bg = '#e5e7eb', fg = '#111827';
+        const av = Math.abs(v);
+        if (av >= 0.6) { bg = 'rgba(16,185,129,.18)'; fg = '#065f46'; }
+        else if (av >= 0.4) { bg = 'rgba(59,130,246,.18)'; fg = '#1e3a8a'; }
+        else if (av >= 0.2) { bg = 'rgba(234,179,8,.18)'; fg = '#78350f'; }
+        return `<span style="display:inline-block;min-width:40px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${t}</span>`;
+      }
+
       function renderCardRows(tbody, rows){
         if (!tbody) return;
         tbody.replaceChildren();
@@ -516,9 +527,9 @@
           const rCanSource = (c.r_yes_can!=null ? Number(c.r_yes_can) : (cantrilByCard.get(cid) && cantrilByCard.get(cid).r));
           const rCan = (rCanSource==null || Number.isNaN(rCanSource)) ? 0 : rCanSource;
           tr.innerHTML = `<td>${dot}${name}</td>
-            <td>${Number(c.r_yes_who5||0).toFixed(2)}</td>
-            <td>${Number(c.r_yes_swls||0).toFixed(2)}</td>
-            <td>${Number(rCan||0).toFixed(2)}</td>
+            <td>${colorBadge(c.r_yes_who5)}</td>
+            <td>${colorBadge(c.r_yes_swls)}</td>
+            <td>${colorBadge(rCan)}</td>
             <td>${c.n_yes_who5||0}</td>`;
           tbody.appendChild(tr);
         });
