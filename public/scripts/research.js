@@ -186,9 +186,17 @@
       try { submitResearch(); } catch (_) {}
       hide(cantrilSection);
       show(document.getElementById('thanks'));
-      // Auto-redirect to Prolific completion URL if a completion code is provided in the query string
+      // Auto-redirect to Prolific completion URL if provided; also show a visible fallback button
       if (COMPLETION_URL) {
-        setTimeout(() => { window.location.href = COMPLETION_URL; }, 600);
+        const link = document.getElementById('prolificCompleteLink');
+        const wrap = document.getElementById('prolificComplete');
+        const codeNote = document.getElementById('prolificCodeNote');
+        if (link) link.href = COMPLETION_URL;
+        if (codeNote && COMPLETION_CODE) codeNote.textContent = `Completion code: ${COMPLETION_CODE}`;
+        if (wrap) wrap.style.display = 'flex';
+        setTimeout(() => {
+          try { window.location.assign(COMPLETION_URL); } catch (_) { /* ignore */ }
+        }, 800);
       }
     });
   }

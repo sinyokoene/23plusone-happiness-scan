@@ -345,6 +345,12 @@
       <div class="qcard flex flex-col items-center gap-6 text-left">
         <h2 class="text-2xl font-semibold text-center">Thank you for participating!</h2>
         <p class="text-base opacity-80 text-center" style="max-width:640px;">Your responses have been recorded. You can close this window.</p>
+        <!-- Prolific completion fallback (shown if ?cc=... present) -->
+        <div id="prolificComplete" class="flex flex-col items-center gap-3" style="display:none;">
+          <p class="text-sm opacity-80 text-center">If you are not redirected, tap the button below to complete in Prolific.</p>
+          <a id="prolificCompleteLink" class="btn-pill" href="#" rel="noopener" target="_blank">Complete on Prolific</a>
+          <div id="prolificCodeNote" class="text-xs opacity-70 text-center"></div>
+        </div>
       </div>
     </section>
   </main>
