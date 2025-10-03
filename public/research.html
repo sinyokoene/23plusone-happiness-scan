@@ -228,9 +228,11 @@
       #swls .qcard > div.w-full, #who5 .qcard > div.w-full { overflow: hidden; }
 
       /* Cantril ladder: vertical layout on mobile */
-      #cantrilGrid { grid-template-columns: 1fr; gap: 8px; }
-      #cantrilGrid > :first-child { order: 2; text-align: center; }
-      #cantrilGrid > :last-child { order: 3; text-align: center; }
+      #cantrilGrid { grid-template-columns: 1fr !important; gap: 8px; }
+      /* Order: top label = Best (original 3rd child), then choices, then Worst (original 1st child) */
+      #cantrilGrid > :nth-child(3) { order: 1; text-align: center; }
+      #cantrilGrid > :nth-child(2) { order: 2; }
+      #cantrilGrid > :nth-child(1) { order: 3; text-align: center; }
       .cantril-choices { flex-direction: column-reverse; align-items: center; gap: 10px; }
       .cantril-choices .choice { width: 18px; height: 18px; }
       .cantril-choices span { font-size: 12px; }
