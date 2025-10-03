@@ -160,52 +160,7 @@ async function syncViaSubmissions(base, studyId, token, client){
   }
   return upsertCount;
 }
-// Upsert Prolific demographics manually (CSV or API sync can call this)
-app.post('/api/prolific/upsert', async (req, res) => {
-  try {
-    const rows = Array.isArray(req.body) ? req.body : (Array.isArray(req.body?.rows) ? req.body.rows : [req.body]);
-    if (!rows || rows.length === 0) return res.status(400).json({ error: 'No rows provided' });
-    const client = await pool.connect();
-    try {
-      await client.query(
-        `CREATE TABLE IF NOT EXISTS prolific_participants (
-          prolific_pid TEXT PRIMARY KEY,
-          study_id TEXT,
-          sex TEXT,
-          country_of_residence TEXT,
-          age INTEGER,
-          student_status TEXT,
-          employment_status TEXT,
-          raw JSONB,
-          updated_at TIMESTAMPTZ DEFAULT now()
-        )`
-      );
-      const text = `INSERT INTO prolific_participants (prolific_pid, study_id, sex, country_of_residence, age, student_status, employment_status, raw, updated_at)
-                    VALUES ($1,$2,$3,$4,$5,$6,$7,$8, now())
-                    ON CONFLICT (prolific_pid)
-                    DO UPDATE SET study_id=EXCLUDED.study_id, sex=EXCLUDED.sex, country_of_residence=EXCLUDED.country_of_residence, age=EXCLUDED.age, student_status=EXCLUDED.student_status, employment_status=EXCLUDED.employment_status, raw=EXCLUDED.raw, updated_at=now()`;
-      for (const r of rows) {
-        const pid = r.prolific_pid || r.PROLIFIC_PID || r.participant_id;
-        if (!pid) continue;
-        const vals = [
-          pid,
-          r.study_id || r.STUDY_ID || null,
-          r.sex || r.gender || null,
-          r.country_of_residence || r.country || null,
-          (r.age==null?null:Number(r.age)),
-          r.student_status || r.student || null,
-          r.employment_status || r.employment || null,
-          r
-        ];
-        await client.query(text, vals);
-      }
-      res.json({ ok: true, upserted: rows.length });
-    } finally { client.release(); }
-  } catch (e) {
-    console.error('Error upserting prolific participants', e);
-    res.status(500).json({ error: 'Failed to upsert' });
-  }
-});
+// Removed demographics upsert endpoint per request - we'll handle CSV offline and import differently
 
 // Database connection pool with robust env detection
 function resolveDatabaseUrl() {
@@ -711,7 +666,6 @@ app.get('/api/research-results', async (req, res) => {
     const { limit = 200, from, to, includeNoIhs, includeScanDetails } = req.query;
     const client = await researchPool.connect();
     const mainClient = await pool.connect();
-    const metaClient = await pool.connect();
     try {
       await client.query(
         `CREATE TABLE IF NOT EXISTS research_entries (
@@ -736,27 +690,10 @@ app.get('/api/research-results', async (req, res) => {
       query += ` ORDER BY created_at DESC LIMIT $${params.length}`;
       const result = await client.query(query, params);
 
-      // Ensure demographics table exists and fetch by prolific_pid
-      await metaClient.query(
-        `CREATE TABLE IF NOT EXISTS prolific_participants (
-          prolific_pid TEXT PRIMARY KEY,
-          study_id TEXT,
-          sex TEXT,
-          country_of_residence TEXT,
-          age INTEGER,
-          student_status TEXT,
-          employment_status TEXT,
-          raw JSONB,
-          updated_at TIMESTAMPTZ DEFAULT now()
-        )`
-      );
-      
       // Fetch IHS per session_id from main DB and merge
       const entries = result.rows || [];
       const sessionIds = entries.map(e => e.session_id).filter(Boolean);
-      const pids = entries.map(e => e.prolific_pid).filter(Boolean);
       let ihsMap = new Map();
-      let pidMap = new Map();
       if (sessionIds.length) {
         // Use ANY(array) to avoid overly large IN clause
         const ihsRows = await mainClient.query(
@@ -774,16 +711,8 @@ app.get('/api/research-results', async (req, res) => {
           completion_time: r.completion_time == null ? null : Number(r.completion_time)
         }]));
       }
-      if (pids.length) {
-        const pidRows = (await metaClient.query(
-          `SELECT prolific_pid, study_id, sex, country_of_residence, age, student_status, employment_status FROM prolific_participants WHERE prolific_pid = ANY($1::text[])`,
-          [pids]
-        )).rows || [];
-        pidMap = new Map(pidRows.map(r => [r.prolific_pid, r]));
-      }
       let merged = entries.map(e => {
         const s = ihsMap.get(e.session_id) || {};
-        const d = e.prolific_pid ? (pidMap.get(e.prolific_pid) || {}) : {};
         const base = {
           ...e,
           ihs: s.ihs ?? null,
@@ -791,11 +720,6 @@ app.get('/api/research-results', async (req, res) => {
           n2: s.n2 ?? null,
           n3: s.n3 ?? null
         };
-        base.sex = d.sex || null;
-        base.country_of_residence = d.country_of_residence || null;
-        base.age = d.age == null ? null : Number(d.age);
-        base.student_status = d.student_status || null;
-        base.employment_status = d.employment_status || null;
         // Include heavy scan details only when requested
         const wantScan = String(includeScanDetails).toLowerCase() === 'true';
         if (wantScan) {
@@ -814,7 +738,6 @@ app.get('/api/research-results', async (req, res) => {
     } finally {
       client.release();
       mainClient.release();
-      metaClient.release();
     }
   } catch (e) {
     console.error('Error fetching research results:', e);
