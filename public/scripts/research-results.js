@@ -450,8 +450,9 @@
         });
       }
 
-      // Card top/bottom by r_yes_who5
-      const sorted = cards.slice().sort((a,b)=> (b.r_yes_who5||0) - (a.r_yes_who5||0));
+      // Card top/bottom by composite of WHO-5/SWLS/Cantril
+      const score = (c) => 0.4*(c.r_yes_who5||0) + 0.4*(c.r_yes_swls||0) + 0.2*( (c.r_yes_can!=null?c.r_yes_can: (cantrilByCard.get(Number(c.cardId)) && cantrilByCard.get(Number(c.cardId)).r) ) || 0 );
+      const sorted = cards.slice().sort((a,b)=> score(b) - score(a));
       const top = sorted.slice(0, 12);
       const bottom = sorted.slice(-12);
       function renderCardRows(tbody, rows){
