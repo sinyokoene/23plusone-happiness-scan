@@ -141,12 +141,15 @@
       .choice { width: 16px; height: 16px; }
       .choice.active::after { inset: 3px; }
       .cantril-choices .choice { width: 16px; height: 16px; }
+      /* Allow middle content to scroll so Submit stays reachable */
+      #swls .qcard > div.w-full, #who5 .qcard > div.w-full { overflow: auto; -webkit-overflow-scrolling: touch; }
     }
     @media (max-height: 500px) {
       :root { --title-top: 32px; --box-shrink: 220px; }
       .qgrid { row-gap: 8px; }
       #who5 .swls-sep, #swls .swls-sep { margin: 10px 0 6px; }
       #toWho5, #toScan { margin-top: 6px; }
+      #swls .qcard > div.w-full, #who5 .qcard > div.w-full { overflow: auto; -webkit-overflow-scrolling: touch; }
     }
     @media (max-height: 460px) {
       :root { --title-top: 28px; --box-shrink: 240px; }
