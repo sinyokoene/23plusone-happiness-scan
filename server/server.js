@@ -697,7 +697,7 @@ app.get('/api/research-results', async (req, res) => {
       if (sessionIds.length) {
         // Use ANY(array) to avoid overly large IN clause
         const ihsRows = await mainClient.query(
-          `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, user_agent, card_selections, completion_time
+          `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, user_agent, card_selections, completion_time, selected_count, rejected_count
            FROM scan_responses WHERE session_id = ANY($1::text[])`,
           [sessionIds]
         );
@@ -708,7 +708,9 @@ app.get('/api/research-results', async (req, res) => {
           n3: r.n3_score,
           scan_user_agent: r.user_agent || null,
           selections: r.card_selections || null,
-          completion_time: r.completion_time == null ? null : Number(r.completion_time)
+          completion_time: r.completion_time == null ? null : Number(r.completion_time),
+          selected_count: r.selected_count == null ? null : Number(r.selected_count),
+          rejected_count: r.rejected_count == null ? null : Number(r.rejected_count)
         }]));
       }
       let merged = entries.map(e => {

@@ -10,6 +10,8 @@
   const swlsVsIhsCanvas = document.getElementById('swlsVsIhs');
   const cantrilVsIhsCanvas = document.getElementById('cantrilVsIhs');
   const n123Canvas = document.getElementById('n123VsWho5');
+  const n123MetricSel = document.getElementById('n123Metric');
+  const n123MetricLabel = document.getElementById('n123MetricLabel');
   const statsWho5El = document.getElementById('statsWho5');
   const statsSwlsEl = document.getElementById('statsSwls');
   const domainCorrTbody = document.querySelector('#domainCorrTable tbody');
@@ -317,7 +319,7 @@
   async function load(){
     const limit = parseInt(limitInput.value, 10) || 200;
     // Fetch entries with scan details for filtering (device/modality)
-    const res = await fetch(`/api/research-results?limit=${limit}&includeNoIhs=true&includeScanDetails=true`);
+    const res = await fetch(`/api/research-results?limit=${limit}&includeNoIhs=false&includeScanDetails=true`);
     const json = await res.json();
     let entries = json.entries || [];
     // Apply client-side filters (device, modality, exclusivity, threshold)
@@ -401,10 +403,13 @@
       });
     }
 
-    // N1/N2/N3 vs WHO-5 scatter (overlay)
+    // N1/N2/N3 vs selected questionnaire scatter (overlay)
     if (n123Scatter) n123Scatter.destroy();
     if (n123Canvas) {
-      const mkPairs = (yArr) => who5TotalsAll.map((x,i)=>({x, y: yArr[i]})).filter(p=>xIsNumber(p.x) && xIsNumber(p.y));
+      const metric = (n123MetricSel && n123MetricSel.value) || 'who5';
+      if (n123MetricLabel) { n123MetricLabel.textContent = metric.toUpperCase(); }
+      const Xs = metric === 'swls' ? swlsTotalsAll : (metric === 'cantril' ? cantrilAll : who5TotalsAll);
+      const mkPairs = (yArr) => Xs.map((x,i)=>({x, y: yArr[i]})).filter(p=>xIsNumber(p.x) && xIsNumber(p.y));
       const p1 = mkPairs(n1All), p2 = mkPairs(n2All), p3 = mkPairs(n3All);
       const xs1 = p1.map(p=>p.x), ys1 = p1.map(p=>p.y);
       const xs2 = p2.map(p=>p.x), ys2 = p2.map(p=>p.y);
@@ -413,18 +418,19 @@
       const r1 = xs1.length ? corr(xs1, ys1) : 0;
       const r2 = xs2.length ? corr(xs2, ys2) : 0;
       const r3 = xs3.length ? corr(xs3, ys3) : 0;
-      const xMin = 0, xMax = 100;
+      const xMin = metric === 'swls' ? 5 : 0;
+      const xMax = metric === 'swls' ? 35 : (metric === 'cantril' ? 10 : 100);
       const line1 = [{x:xMin, y: t1.slope*xMin+t1.intercept}, {x:xMax, y: t1.slope*xMax+t1.intercept}];
       const line2 = [{x:xMin, y: t2.slope*xMin+t2.intercept}, {x:xMax, y: t2.slope*xMax+t2.intercept}];
       const line3 = [{x:xMin, y: t3.slope*xMin+t3.intercept}, {x:xMax, y: t3.slope*xMax+t3.intercept}];
       n123Scatter = new Chart(n123Canvas, {
         ...scatterCommon,
         data: { datasets: [
-          { label: `N1 vs WHO‑5 (r=${r1.toFixed(2)})`, data: p1, backgroundColor: 'rgba(99,102,241,.5)' },
+          { label: `N1 vs ${metric.toUpperCase()} (r=${r1.toFixed(2)})`, data: p1, backgroundColor: 'rgba(99,102,241,.5)' },
           { type: 'line', label: 'N1 trend', data: line1, borderColor: 'rgba(99,102,241,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 },
-          { label: `N2 vs WHO‑5 (r=${r2.toFixed(2)})`, data: p2, backgroundColor: 'rgba(16,185,129,.5)' },
+          { label: `N2 vs ${metric.toUpperCase()} (r=${r2.toFixed(2)})`, data: p2, backgroundColor: 'rgba(16,185,129,.5)' },
           { type: 'line', label: 'N2 trend', data: line2, borderColor: 'rgba(16,185,129,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 },
-          { label: `N3 vs WHO‑5 (r=${r3.toFixed(2)})`, data: p3, backgroundColor: 'rgba(236,72,153,.4)' },
+          { label: `N3 vs ${metric.toUpperCase()} (r=${r3.toFixed(2)})`, data: p3, backgroundColor: 'rgba(236,72,153,.4)' },
           { type: 'line', label: 'N3 trend', data: line3, borderColor: 'rgba(236,72,153,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 }
         ] }
       });
@@ -517,6 +523,7 @@
 
   limitInput.addEventListener('change', load);
   if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', load);
+  if (n123MetricSel) n123MetricSel.addEventListener('change', load);
   load();
 })();
 
