@@ -932,7 +932,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
       const domainNames = ['Basics', 'Self-development', 'Ambition', 'Vitality', 'Attraction'];
       const domains = [];
       for (const domain of domainNames) {
-        const xAff = [], xYes = [], yWho = [], ySwls = [];
+        const xAff = [], xYes = [], yWho = [], ySwls = [], yCan = [];
         for (const j of joined) {
           const all = j.selections?.allResponses;
           if (!Array.isArray(all)) continue;
@@ -952,25 +952,32 @@ app.get('/api/analytics/correlations', async (req, res) => {
             xYes.push(yesRate);
             yWho.push(j.who5Percent);
             ySwls.push(j.swlsScaled);
+            yCan.push(j.cantril);
           }
           // For affirmation, allow zero if no positive values
           xAff.push(sumAff);
         }
-        // Align for affirmation vs who/swls
+        // Align for affirmation vs who/swls/cantril
         const affWho = pearson(xAff.filter((_,i)=>!Number.isNaN(yWho[i])), yWho.filter(v=>!Number.isNaN(v)));
         const affSwl = pearson(xAff.filter((_,i)=>!Number.isNaN(ySwls[i])), ySwls.filter(v=>!Number.isNaN(v)));
+        const affCan = pearson(xAff.filter((_,i)=>!Number.isNaN(yCan[i])), yCan.filter(v=>v!=null && !Number.isNaN(v)));
         const yesWho = pearson(xYes, yWho);
         const yesSwl = pearson(xYes, ySwls);
+        const yesCan = pearson(xYes.filter((_,i)=>yCan[i]!=null && !Number.isNaN(yCan[i])), yCan.filter(v=>v!=null && !Number.isNaN(v)));
         domains.push({
           domain,
           r_affirm_who5: affWho.r,
           r_affirm_swls: affSwl.r,
+          r_affirm_cantril: affCan.r,
           r_yesrate_who5: yesWho.r,
           r_yesrate_swls: yesSwl.r,
+          r_yesrate_cantril: yesCan.r,
           n_affirm_who5: affWho.n,
           n_affirm_swls: affSwl.n,
+          n_affirm_cantril: affCan.n,
           n_yesrate_who5: yesWho.n,
-          n_yesrate_swls: yesSwl.n
+          n_yesrate_swls: yesSwl.n,
+          n_yesrate_cantril: yesCan.n
         });
       }
 

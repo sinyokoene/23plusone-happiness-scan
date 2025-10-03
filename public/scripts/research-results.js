@@ -469,19 +469,29 @@
       const domains = corrJson.domains || [];
       const cards = corrJson.cards || [];
 
-      // Domain table
+      // Domain table with color-coded r values
       if (domainCorrTbody) {
         domainCorrTbody.replaceChildren();
         domains.forEach(d => {
           const tr = document.createElement('tr');
+          const colorBadge = (r) => {
+            const v = Number(r||0);
+            const t = v.toFixed(2);
+            let bg = '#e5e7eb', fg = '#111827';
+            const av = Math.abs(v);
+            if (av >= 0.6) { bg = 'rgba(16,185,129,.18)'; fg = '#065f46'; }
+            else if (av >= 0.4) { bg = 'rgba(59,130,246,.18)'; fg = '#1e3a8a'; }
+            else if (av >= 0.2) { bg = 'rgba(234,179,8,.18)'; fg = '#78350f'; }
+            return `<span style="display:inline-block;min-width:40px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${t}</span>`;
+          };
           tr.innerHTML = `
             <td>${d.domain}</td>
-            <td>${Number(d.r_affirm_who5||0).toFixed(2)}</td>
-            <td>${Number(d.r_affirm_swls||0).toFixed(2)}</td>
-            <td>${Number(d.r_affirm_cantril||0).toFixed(2)}</td>
-            <td>${Number(d.r_yesrate_who5||0).toFixed(2)}</td>
-            <td>${Number(d.r_yesrate_swls||0).toFixed(2)}</td>
-            <td>${Number(d.r_yesrate_cantril||0).toFixed(2)}</td>
+            <td>${colorBadge(d.r_affirm_who5)}</td>
+            <td>${colorBadge(d.r_affirm_swls)}</td>
+            <td>${colorBadge(d.r_affirm_cantril)}</td>
+            <td>${colorBadge(d.r_yesrate_who5)}</td>
+            <td>${colorBadge(d.r_yesrate_swls)}</td>
+            <td>${colorBadge(d.r_yesrate_cantril)}</td>
             <td>${Math.max(d.n_affirm_who5||0, d.n_yesrate_who5||0)}</td>
           `;
           domainCorrTbody.appendChild(tr);
