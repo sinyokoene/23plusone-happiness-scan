@@ -22,6 +22,21 @@
   
   <!-- Dynamic viewport height script - early execution for mobile browser support -->
   <script src="scripts/viewport.js"></script>
+  <script>
+    // Detect embed mode (research iframe) to keep parent footer stable
+    (function(){
+      try {
+        const url = new URL(window.location.href);
+        const mode = url.searchParams.get('mode');
+        if (mode === 'research' || window !== window.parent) {
+          // In embed: set footer height to 0 so internal sections fill available height
+          document.documentElement.style.setProperty('--footer-h', '0px');
+          // Notify parent that we are in embed mode (optional)
+          try { window.parent.postMessage({ type: 'scan_embed_ready' }, '*'); } catch(_) {}
+        }
+      } catch (_) {}
+    })();
+  </script>
   
   <!-- Minimal CSS variables needed after removing legacy CSS -->
   <style>
@@ -104,8 +119,8 @@
       /* Reduce game prompt size on mobile by 4px */
       #game #gamePrompt { font-size: 20px; }
 
-      /* Smaller footer on mobile */
-      :root { --footer-h: 48px; }
+    /* Smaller footer on mobile (overridden to 0 in embed) */
+    :root { --footer-h: 48px; }
       #globalFooter .grid { font-size: 10px; }
 
       /* Results */

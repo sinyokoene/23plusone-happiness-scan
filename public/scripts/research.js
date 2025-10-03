@@ -127,13 +127,9 @@
     _origShow(el);
     const footer = document.getElementById('globalFooter');
     const main = document.querySelector('main');
-    if (!el || el.id === 'scanHost') {
-      if (footer) footer.style.display = 'none';
-      if (main) main.style.paddingBottom = '0';
-    } else {
-      if (footer) footer.style.display = '';
-      if (main) main.style.paddingBottom = 'var(--footer-h)';
-    }
+    // Always keep footer visible in research, including during scan iframe
+    if (footer) footer.style.display = '';
+    if (main) main.style.paddingBottom = 'var(--footer-h)';
   }
   // Override local helper for the rest of this file
   show = showWithFooter;
