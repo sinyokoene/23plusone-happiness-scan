@@ -191,8 +191,12 @@
         const link = document.getElementById('prolificCompleteLink');
         const wrap = document.getElementById('prolificComplete');
         const codeNote = document.getElementById('prolificCodeNote');
+        const codeDisplay = document.getElementById('completionCodeDisplay');
+        const codeText = document.getElementById('completionCodeText');
         if (link) link.href = COMPLETION_URL;
         if (codeNote && COMPLETION_CODE) codeNote.textContent = `Completion code: ${COMPLETION_CODE}`;
+        if (codeDisplay) codeDisplay.style.display = 'block';
+        if (codeText) codeText.textContent = COMPLETION_CODE;
         if (wrap) wrap.style.display = 'flex';
         setTimeout(() => {
           try { window.location.assign(COMPLETION_URL); } catch (_) { /* ignore */ }
