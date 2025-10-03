@@ -418,8 +418,8 @@
 
       // Card top/bottom by r_yes_who5
       const sorted = cards.slice().sort((a,b)=> (b.r_yes_who5||0) - (a.r_yes_who5||0));
-      const top = sorted.slice(0, 10);
-      const bottom = sorted.slice(-10);
+      const top = sorted.slice(0, 12);
+      const bottom = sorted.slice(-12);
       function renderCardRows(tbody, rows){
         if (!tbody) return;
         tbody.replaceChildren();
