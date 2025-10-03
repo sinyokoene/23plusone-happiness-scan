@@ -80,10 +80,14 @@
     #toSwlsIntro:active, #toWho5:active, #toScan:active { background-color: var(--btn-active-pink); transform: translateY(1px); }
     /* Cantril ladder: vertical by default (desktop and mobile) */
     #cantrilGrid { grid-template-columns: 1fr !important; gap: 12px; align-items: center; }
+    /* Order: Best label on top, then choices, Worst label at bottom */
+    #cantrilGrid > :nth-child(3) { order: 1; text-align: center; }
+    #cantrilGrid > :nth-child(2) { order: 2; }
+    #cantrilGrid > :nth-child(1) { order: 3; text-align: center; }
     .cantril-choices { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .cantril-choices .can-row { display: grid; grid-template-columns: auto 18px; align-items: center; gap: 10px; }
+    .cantril-choices .can-row { display: grid; grid-template-columns: 22px 18px; align-items: center; gap: 10px; }
     .cantril-choices .choice { width: 18px; height: 18px; }
-    .cantril-choices span { font-size: 14px; color: #2c1f1c; }
+    .cantril-choices span { font-size: 14px; color: #2c1f1c; display: inline-block; width: 22px; text-align: right; }
     /* Unified pill button styling (match scan) */
     .btn-pill {
       height: 40px;
