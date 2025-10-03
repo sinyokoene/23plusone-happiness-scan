@@ -40,6 +40,9 @@
   const SESSION_ID = url.searchParams.get('SESSION_ID') || url.searchParams.get('session_id') || null;
   const prolific = { PROLIFIC_PID, STUDY_ID, SESSION_ID };
   try { sessionStorage.setItem('prolific_meta', JSON.stringify(prolific)); } catch(_) {}
+  // Optional: Prolific completion redirect support via URL param ?cc=CODE (or PROLIFIC_CC / COMPLETION_CODE)
+  const COMPLETION_CODE = url.searchParams.get('cc') || url.searchParams.get('PROLIFIC_CC') || url.searchParams.get('COMPLETION_CODE') || null;
+  const COMPLETION_URL = COMPLETION_CODE ? `https://app.prolific.com/submissions/complete?cc=${encodeURIComponent(COMPLETION_CODE)}` : null;
 
   const who5RowTpl = document.getElementById('who5Row');
   const swlsRowTpl = document.getElementById('swlsRow');
@@ -183,6 +186,10 @@
       try { submitResearch(); } catch (_) {}
       hide(cantrilSection);
       show(document.getElementById('thanks'));
+      // Auto-redirect to Prolific completion URL if a completion code is provided in the query string
+      if (COMPLETION_URL) {
+        setTimeout(() => { window.location.href = COMPLETION_URL; }, 600);
+      }
     });
   }
 })();
