@@ -478,7 +478,7 @@ app.post('/api/research', async (req, res) => {
     if (typeof payload === 'string') {
       try { payload = JSON.parse(payload); } catch (_) { payload = {}; }
     }
-    const { sessionId, who5, swls, cantril, userAgent } = payload || {};
+    const { sessionId, who5, swls, cantril, userAgent, prolific } = payload || {};
     if (!sessionId || !Array.isArray(who5) || !Array.isArray(swls)) {
       return res.status(400).json({ error: 'Invalid research payload' });
     }
@@ -496,14 +496,21 @@ app.post('/api/research', async (req, res) => {
           swls INTEGER[] NOT NULL,
           cantril INTEGER,
           user_agent TEXT,
+          prolific_pid TEXT,
+          prolific_study_id TEXT,
+          prolific_session_id TEXT,
           created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
         )`
       );
       // Ensure cantril column exists for older tables
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
+      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_pid TEXT');
+      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_study_id TEXT');
+      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_session_id TEXT');
       const inserted = await client.query(
-        `INSERT INTO research_entries (session_id, who5, swls, cantril, user_agent) VALUES ($1,$2,$3,$4,$5) RETURNING id, cantril`,
-        [sessionId, who5, swls, cantrilValue, userAgent || null]
+        `INSERT INTO research_entries (session_id, who5, swls, cantril, user_agent, prolific_pid, prolific_study_id, prolific_session_id)
+         VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id, cantril`,
+        [sessionId, who5, swls, cantrilValue, userAgent || null, prolific?.PROLIFIC_PID || null, prolific?.STUDY_ID || null, prolific?.SESSION_ID || null]
       );
       console.log('✅ Research saved', inserted.rows[0]);
       res.status(201).json({ message: 'Research saved', cantril: inserted.rows[0]?.cantril ?? cantrilValue });
@@ -536,7 +543,7 @@ app.get('/api/research-results', async (req, res) => {
       );
       // Ensure cantril column exists for older tables
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
-      let query = 'SELECT id, session_id, who5, swls, cantril, user_agent, created_at FROM research_entries';
+      let query = 'SELECT id, session_id, who5, swls, cantril, user_agent, created_at, prolific_pid, prolific_study_id, prolific_session_id FROM research_entries';
       const params = [];
       const clauses = [];
       if (from) { params.push(from); clauses.push(`created_at >= $${params.length}`); }

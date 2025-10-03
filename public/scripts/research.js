@@ -33,6 +33,14 @@
   const swlsForm = document.getElementById('swlsForm');
   let cantril = null;
 
+  // Prolific integration: capture params from URL and persist for this session
+  const url = new URL(window.location.href);
+  const PROLIFIC_PID = url.searchParams.get('PROLIFIC_PID') || url.searchParams.get('prolific_pid') || null;
+  const STUDY_ID = url.searchParams.get('STUDY_ID') || url.searchParams.get('study_id') || null;
+  const SESSION_ID = url.searchParams.get('SESSION_ID') || url.searchParams.get('session_id') || null;
+  const prolific = { PROLIFIC_PID, STUDY_ID, SESSION_ID };
+  try { sessionStorage.setItem('prolific_meta', JSON.stringify(prolific)); } catch(_) {}
+
   const who5RowTpl = document.getElementById('who5Row');
   const swlsRowTpl = document.getElementById('swlsRow');
 
@@ -75,7 +83,8 @@
       swls: swlsAnswers,
       // Ensure numeric string is sent as number
       cantril: (cantril === null || cantril === undefined) ? null : Number(cantril),
-      userAgent: navigator.userAgent
+      userAgent: navigator.userAgent,
+      prolific
     };
     try {
       // Force fetch: some browsers drop JSON body with sendBeacon to serverless
@@ -140,6 +149,10 @@
     const url = new URL(base, window.location.href);
     url.searchParams.set('mode', 'research');
     url.searchParams.set('pid', participantId);
+    // Forward Prolific parameters into the embedded scan for analytics if needed
+    if (PROLIFIC_PID) url.searchParams.set('PROLIFIC_PID', PROLIFIC_PID);
+    if (STUDY_ID) url.searchParams.set('STUDY_ID', STUDY_ID);
+    if (SESSION_ID) url.searchParams.set('SESSION_ID', SESSION_ID);
     scanFrame.src = url.toString();
   }
 

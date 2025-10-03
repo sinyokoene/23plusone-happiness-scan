@@ -140,6 +140,9 @@
         <td>${e.id}</td>
         <td>${new Date(e.created_at).toLocaleString()}</td>
         <td>${e.session_id}</td>
+        <td>${e.prolific_pid || ''}</td>
+        <td>${e.prolific_study_id || ''}</td>
+        <td>${e.prolific_session_id || ''}</td>
         <td>${(e.who5||[]).join(', ')}</td>
         <td>${(e.swls||[]).join(', ')}</td>
         <td>${e.cantril ?? ''}</td>
