@@ -82,6 +82,8 @@
       #practice-heading { font-size: 24px; margin-bottom: 10px; }
       /* Intro title */
       #introTitle { font-size: 24px; margin-bottom: 10px; }
+      /* Intro buttons spacing (default) */
+      #introButtons { margin-top: 12px; }
       /* Game prompt size */
       #gamePrompt { font-size: 24px; }
 
@@ -92,6 +94,10 @@
       #intro p { font-size: 0.95rem; }
       #intro { padding-top: 30px; height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); }
       #intro > div { padding-top: 8px !important; padding-bottom: 8px !important; gap: 10px; }
+      /* Keep headline on one line on mobile */
+      #introTitle { font-size: 20px; white-space: nowrap; }
+      /* More space between GIF and Continue on mobile */
+      #introButtons { margin-top: 20px; }
       /* Match practice typography to intro on mobile */
       #practice-heading { font-size: 1.375rem; line-height: 1.6; }
       #practiceIntroText { font-size: 0.95rem; }
@@ -331,7 +337,7 @@
             <img id="introGifImage" src="23plusone_humanvaluesvisualized.gif" alt="Human values visualized" class="w-auto h-auto max-w-full max-h-full object-contain block rounded-[16px]" loading="lazy">
           </div>
         </div>
-        <div class="w-full flex flex-col items-center gap-4">
+        <div id="introButtons" class="w-full flex flex-col items-center gap-4">
           <button id="startBtn" type="button" class="btn-pill w-[200px] text-lg font-semibold" onclick="startPractice()">Continue</button>
         </div>
       </div>
