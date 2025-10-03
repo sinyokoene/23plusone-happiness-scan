@@ -198,7 +198,7 @@
       .cell-h { white-space: nowrap; }
     }
     @media (max-width: 480px) {
-      :root { --footer-h: 48px; }
+      :root { --footer-h: 48px; --box-shrink: 0px; }
       .qcard { max-width: 560px; padding-left: 12px; padding-right: 12px; gap: 10px !important; }
       .title-inner { max-width: 560px; padding-left: 12px; padding-right: 12px; }
       /* Tighten headings and copy for readability and to fit one screen */
@@ -218,12 +218,12 @@
       /* Reduce internal margins that were set inline in markup */
       .qcard .w-full.text-left { margin-top: 8px !important; }
       .qgrid.mb-4 { margin-bottom: 6px !important; }
-      /* Compress WHO‑5 row spacing further so 5 questions fit without scroll */
-      #who5 .swls-sep { margin: 12px 0 8px; }
-      #who5 .swls-q { margin-bottom: 8px; }
-      #who5 .qgrid.likert-6-only.mt-6 { margin-top: 10px !important; }
-      /* Allow inner content to scroll if needed so 5th item and Submit are reachable */
-      #swls .qcard > div.w-full, #who5 .qcard > div.w-full { overflow: auto; -webkit-overflow-scrolling: touch; }
+      /* Compress WHO‑5 spacing so all 5 questions and Submit fit without scroll */
+      #who5 .swls-sep { margin: 10px 0 6px; }
+      #who5 .swls-q { margin-bottom: 6px; font-size: 14px; }
+      #who5 .qgrid.likert-6-only.mt-6 { margin-top: 6px !important; }
+      /* Keep form area non-scrollable */
+      #swls .qcard > div.w-full, #who5 .qcard > div.w-full { overflow: hidden; }
     }
   </style>
 </head>
