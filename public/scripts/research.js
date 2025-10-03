@@ -200,7 +200,7 @@
       if (wrap) wrap.style.display = 'flex';
       setTimeout(() => {
         try { window.location.assign(COMPLETION_URL); } catch (_) { /* ignore */ }
-      }, 800);
+      }, 5000);
     });
   }
 })();
