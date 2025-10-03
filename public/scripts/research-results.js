@@ -136,6 +136,10 @@
     entries.forEach(e => {
       const tr = document.createElement('tr');
       const ihs = (e.ihs !== undefined && e.ihs !== null) ? Number(e.ihs).toFixed(1) : '';
+      const timeSec = (e.completion_time==null? (e.selections && Array.isArray(e.selections.allResponses) ? Math.round((e.selections.allResponses.reduce((s,r)=>s+(Number(r&&r.responseTime)||0),0))/1000) : '') : Number(e.completion_time));
+      const selected = (e.selections && Array.isArray(e.selections.allResponses)) ? e.selections.allResponses.filter(r=>r && r.response===true).length : (e.selected_count || '');
+      const rejected = (e.selections && Array.isArray(e.selections.allResponses)) ? e.selections.allResponses.filter(r=>r && r.response===false).length : (e.rejected_count || '');
+      const timeouts = (e.selections && Array.isArray(e.selections.allResponses)) ? e.selections.allResponses.filter(r=>r && r.response===null).length : '';
       tr.innerHTML = `
         <td>${e.id}</td>
         <td>${new Date(e.created_at).toLocaleString()}</td>
@@ -144,6 +148,10 @@
         <td>${e.prolific_study_id || ''}</td>
         <td>${e.prolific_session_id || ''}</td>
         <td>${deviceLabel(e)}</td>
+        <td>${timeSec}</td>
+        <td>${selected}</td>
+        <td>${rejected}</td>
+        <td>${timeouts}</td>
         <td>${(e.who5||[]).join(', ')}</td>
         <td>${(e.swls||[]).join(', ')}</td>
         <td>${e.cantril ?? ''}</td>
