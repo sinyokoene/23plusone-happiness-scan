@@ -52,44 +52,26 @@ app.post('/api/prolific/sync', async (req, res) => {
         )`
       );
 
-      let page = 1;
       let totalUpserted = 0;
-      const pageSize = 200; // Prolific typically supports pagination
-      while (true) {
-        const url = `${base}/studies/${encodeURIComponent(studyId)}/participants/?page=${page}&page_size=${pageSize}`;
-        const r = await httpFetch(url, {
-          headers: {
-            'Accept': 'application/json',
-            // Prolific v1 uses 'Token <token>'; v2 uses 'Bearer <token>'. Try both headers for compatibility
-            'Authorization': `Token ${token}`
-          }
-        });
-        if (!r.ok) {
-          // Retry once with Bearer header if Token fails
-          if (r.status === 401 || r.status === 403) {
-            const r2 = await httpFetch(url, {
-              headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
-            });
-            if (!r2.ok) {
-              const text = await r2.text().catch(()=> '');
-              return res.status(r2.status).json({ error: 'Prolific API error', status: r2.status, body: text.slice(0, 500) });
-            }
-            const data2 = await r2.json();
-            const count = await upsertProlificParticipants(client, data2, studyId);
-            totalUpserted += count;
-            if (!hasNextPage(data2)) break;
-            page += 1;
-            continue;
-          } else {
-            const text = await r.text().catch(()=> '');
-            return res.status(r.status).json({ error: 'Prolific API error', status: r.status, body: text.slice(0, 500) });
-          }
+      // Try primary endpoint
+      try {
+        let page = 1; const pageSize = 200;
+        while (true) {
+          const url = `${base}/studies/${encodeURIComponent(studyId)}/participants/?page=${page}&page_size=${pageSize}`;
+          const data = await fetchJsonWithAuth(url, token);
+          const count = await upsertProlificParticipants(client, data, studyId);
+          totalUpserted += count;
+          if (!hasNextPage(data)) break;
+          page += 1;
         }
-        const data = await r.json();
-        const count = await upsertProlificParticipants(client, data, studyId);
-        totalUpserted += count;
-        if (!hasNextPage(data)) break;
-        page += 1;
+      } catch (e) {
+        if (e.status === 404) {
+          // Fallback to submissions + per-participant fetch for private/inactive studies
+          const extra = await syncViaSubmissions(base, studyId, token, client);
+          totalUpserted += extra;
+        } else {
+          throw e;
+        }
       }
       res.json({ ok: true, study_id: studyId, upserted: totalUpserted });
     } finally { client.release(); }
@@ -132,6 +114,51 @@ async function upsertProlificParticipants(client, apiResponse, studyId){
     n++;
   }
   return n;
+}
+
+async function fetchJsonWithAuth(url, token){
+  let r = await httpFetch(url, { headers: { 'Accept': 'application/json', 'Authorization': `Token ${token}` } });
+  if (!r.ok && (r.status === 401 || r.status === 403)) {
+    r = await httpFetch(url, { headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` } });
+  }
+  if (!r.ok) {
+    const text = await r.text().catch(()=> '');
+    const err = new Error(`HTTP ${r.status}`);
+    err.status = r.status; err.body = text; throw err;
+  }
+  return r.json();
+}
+
+async function syncViaSubmissions(base, studyId, token, client){
+  let page = 1; const pageSize = 100; let allPids = new Set();
+  while (true) {
+    const url = `${base}/studies/${encodeURIComponent(studyId)}/submissions/?page=${page}&page_size=${pageSize}`;
+    let data;
+    try { data = await fetchJsonWithAuth(url, token); } catch (e) {
+      if (e.status === 404) break; else throw e;
+    }
+    const items = Array.isArray(data?.results) ? data.results : (Array.isArray(data) ? data : []);
+    for (const it of items) {
+      const pid = it.participant_id || it.participant || it.prolific_id || (it.participant_details && it.participant_details.id);
+      if (pid) allPids.add(pid);
+    }
+    if (!data || !data.next) break;
+    page += 1;
+  }
+  // Fetch demographics per participant id (best-effort)
+  let upsertCount = 0;
+  for (const pid of allPids) {
+    try {
+      const pUrl = `${base}/participants/${encodeURIComponent(pid)}/`;
+      const pJson = await fetchJsonWithAuth(pUrl, token);
+      // Shape into a generic item the upserter understands
+      const item = { participant_id: pid, study_id: studyId, demographics: pJson || {} };
+      upsertCount += await upsertProlificParticipants(client, { results: [item] }, studyId);
+    } catch (_) {
+      // ignore missing participants
+    }
+  }
+  return upsertCount;
 }
 // Upsert Prolific demographics manually (CSV or API sync can call this)
 app.post('/api/prolific/upsert', async (req, res) => {
