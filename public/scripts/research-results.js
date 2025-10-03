@@ -143,11 +143,6 @@
         <td>${e.prolific_pid || ''}</td>
         <td>${e.prolific_study_id || ''}</td>
         <td>${e.prolific_session_id || ''}</td>
-        <td>${e.sex || ''}</td>
-        <td>${e.country_of_residence || ''}</td>
-        <td>${(e.age==null?'':e.age)}</td>
-        <td>${e.student_status || ''}</td>
-        <td>${e.employment_status || ''}</td>
         <td>${(e.who5||[]).join(', ')}</td>
         <td>${(e.swls||[]).join(', ')}</td>
         <td>${e.cantril ?? ''}</td>
