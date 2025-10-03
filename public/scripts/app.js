@@ -1896,8 +1896,15 @@
     })
     .catch(err => {
       console.warn('Error fetching benchmark:', err);
-      // Hide benchmark section if there's an error
-      benchmarkSection.style.display = 'none';
+      // Keep section visible with fallback text/placeholders
+      try {
+        const msg = document.getElementById('benchmarkMessage');
+        if (msg) { msg.textContent = 'Ranking unavailable.'; }
+        const avg = document.getElementById('benchmarkAverage');
+        if (avg && !avg.textContent) { avg.textContent = '--'; }
+        const tot = document.getElementById('benchmarkTotal');
+        if (tot && !tot.textContent) { tot.textContent = '--'; }
+      } catch(_) {}
     });
   }
   
