@@ -266,11 +266,13 @@
         // Only switch the last line based on device; leave the semibold line in HTML
         const controls = document.getElementById('practiceControlsText');
         if (controls) {
-          controls.textContent = isDesktop ? 'Use your arrow keys or buttons' : 'Use swipe or buttons';
+          controls.textContent = isDesktop ? 'Use your arrow keys or buttons' : 'Swipe or use buttons';
         }
-        // On mobile, remove the line break before the timing sentence to save one line
+        // On mobile, keep text on one line and inject a space instead of the <br>
         const br = document.getElementById('practiceTimingBr');
+        const space = document.getElementById('practiceTimingSpace');
         if (br) { br.style.display = isDesktop ? '' : 'none'; }
+        if (space) { space.style.display = isDesktop ? 'none' : 'inline'; }
       }
     } catch(_) {}
 
