@@ -267,8 +267,8 @@
         const controls = document.getElementById('practiceControlsText');
         if (controls) {
           controls.innerHTML = isDesktop
-            ? 'Use the buttons or arrow keys.<br>You have 4 seconds per card.'
-            : 'Use the buttons or swipe.<br>You have 4 seconds per card.';
+            ? 'Use your arrow keys or buttons.<br>You only have 4 seconds per card, so go with your instinct!'
+            : 'Use swipe or buttons.<br>You only have 4 seconds per card, so go with your instinct!';
         }
       }
     } catch(_) {}
