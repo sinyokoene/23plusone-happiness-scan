@@ -72,6 +72,36 @@
     return { who5Scaled, swlsScaled, cantrilVals };
   }
 
+  // Compute per-card correlation between Cantril (0–10) and binary Yes (1) / No (0)
+  function computeCardYesVsCantril(entries){
+    const acc = new Map(); // cardId -> { yes:[], can:[] }
+    entries.forEach(e => {
+      const can = (e.cantril==null?null:Number(e.cantril));
+      if (can==null || Number.isNaN(can)) return;
+      const sel = e.selections && e.selections.allResponses;
+      if (!Array.isArray(sel)) return;
+      sel.forEach(r => {
+        const cid = Number(r && r.cardId);
+        if (!Number.isFinite(cid)) return;
+        if (r && (r.response === true || r.response === false)){
+          let slot = acc.get(cid);
+          if (!slot){ slot = { yes: [], can: [] }; acc.set(cid, slot); }
+          slot.yes.push(r.response === true ? 1 : 0);
+          slot.can.push(can);
+        }
+      });
+    });
+    const out = new Map();
+    acc.forEach((v, cid) => {
+      const n = Math.min(v.yes.length, v.can.length);
+      if (n >= 3){
+        const r = corr(v.yes, v.can);
+        out.set(cid, { r, n });
+      }
+    });
+    return out;
+  }
+
   function corr(x, y){
     const n = Math.min(x.length, y.length);
     if (!n) return 0;
@@ -383,6 +413,8 @@
 
     // Fetch server-side correlations for domains and cards
     try {
+      // Pre-compute client-side Cantril correlations per card from raw entries
+      const cantrilByCard = computeCardYesVsCantril(entries);
       await ensureCardDomains();
       const dev = (filterDevice && filterDevice.value) || '';
       const q = new URLSearchParams({ limit: String(limit) });
@@ -431,10 +463,13 @@
           const color = domainColors[domain] || '#9ca3af';
           const dot = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>`;
           const name = c.label ? `${c.cardId} · ${c.label}` : c.cardId;
+          const cid = Number(c.cardId);
+          const rCanSource = (c.r_yes_can!=null ? Number(c.r_yes_can) : (cantrilByCard.get(cid) && cantrilByCard.get(cid).r));
+          const rCan = (rCanSource==null || Number.isNaN(rCanSource)) ? 0 : rCanSource;
           tr.innerHTML = `<td>${dot}${name}</td>
             <td>${Number(c.r_yes_who5||0).toFixed(2)}</td>
             <td>${Number(c.r_yes_swls||0).toFixed(2)}</td>
-            <td>${Number(c.r_yes_can||0).toFixed(2)}</td>
+            <td>${Number(rCan||0).toFixed(2)}</td>
             <td>${c.n_yes_who5||0}</td>`;
           tbody.appendChild(tr);
         });
