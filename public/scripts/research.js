@@ -40,9 +40,10 @@
   const SESSION_ID = url.searchParams.get('SESSION_ID') || url.searchParams.get('session_id') || null;
   const prolific = { PROLIFIC_PID, STUDY_ID, SESSION_ID };
   try { sessionStorage.setItem('prolific_meta', JSON.stringify(prolific)); } catch(_) {}
-  // Optional: Prolific completion redirect support via URL param ?cc=CODE (or PROLIFIC_CC / COMPLETION_CODE)
-  const COMPLETION_CODE = url.searchParams.get('cc') || url.searchParams.get('PROLIFIC_CC') || url.searchParams.get('COMPLETION_CODE') || null;
-  const COMPLETION_URL = COMPLETION_CODE ? `https://app.prolific.com/submissions/complete?cc=${encodeURIComponent(COMPLETION_CODE)}` : null;
+  // Prolific completion support. If no code in URL, fall back to a default so all flows show a code.
+  const DEFAULT_COMPLETION_CODE = 'C1BV3CGL';
+  const COMPLETION_CODE = url.searchParams.get('cc') || url.searchParams.get('PROLIFIC_CC') || url.searchParams.get('COMPLETION_CODE') || DEFAULT_COMPLETION_CODE;
+  const COMPLETION_URL = `https://app.prolific.com/submissions/complete?cc=${encodeURIComponent(COMPLETION_CODE)}`;
 
   const who5RowTpl = document.getElementById('who5Row');
   const swlsRowTpl = document.getElementById('swlsRow');
@@ -186,22 +187,20 @@
       try { submitResearch(); } catch (_) {}
       hide(cantrilSection);
       show(document.getElementById('thanks'));
-      // Auto-redirect to Prolific completion URL if provided; also show a visible fallback button
-      if (COMPLETION_URL) {
-        const link = document.getElementById('prolificCompleteLink');
-        const wrap = document.getElementById('prolificComplete');
-        const codeNote = document.getElementById('prolificCodeNote');
-        const codeDisplay = document.getElementById('completionCodeDisplay');
-        const codeText = document.getElementById('completionCodeText');
-        if (link) link.href = COMPLETION_URL;
-        if (codeNote && COMPLETION_CODE) codeNote.textContent = `Completion code: ${COMPLETION_CODE}`;
-        if (codeDisplay) codeDisplay.style.display = 'block';
-        if (codeText) codeText.textContent = COMPLETION_CODE;
-        if (wrap) wrap.style.display = 'flex';
-        setTimeout(() => {
-          try { window.location.assign(COMPLETION_URL); } catch (_) { /* ignore */ }
-        }, 800);
-      }
+      // Always show code + fallback button; attempt redirect
+      const link = document.getElementById('prolificCompleteLink');
+      const wrap = document.getElementById('prolificComplete');
+      const codeNote = document.getElementById('prolificCodeNote');
+      const codeDisplay = document.getElementById('completionCodeDisplay');
+      const codeText = document.getElementById('completionCodeText');
+      if (link) link.href = COMPLETION_URL;
+      if (codeNote) codeNote.textContent = `Completion code: ${COMPLETION_CODE}`;
+      if (codeDisplay) codeDisplay.style.display = 'block';
+      if (codeText) codeText.textContent = COMPLETION_CODE;
+      if (wrap) wrap.style.display = 'flex';
+      setTimeout(() => {
+        try { window.location.assign(COMPLETION_URL); } catch (_) { /* ignore */ }
+      }, 800);
     });
   }
 })();
