@@ -488,10 +488,10 @@ function validateScanQuality(cardSelections, completionTime) {
     return { isValid: false, reason: 'All responses were "No" - likely not engaging properly' };
   }
   
-  // Reject all "Yes" responses (24 selected) - clearly clicking through
+  // Accept all "Yes" responses (24 selected). Retain as a soft signal only.
   if (selectedCount === 24) {
-    console.log('❌ All Yes responses');
-    return { isValid: false, reason: 'All responses were "Yes" - likely clicking through' };
+    console.log('ℹ️ All Yes responses: accepted');
+    // Do not reject; allow storing this case for analysis
   }
   
   // Too many unanswered (NULL) responses
