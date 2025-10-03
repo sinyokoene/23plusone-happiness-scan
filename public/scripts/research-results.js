@@ -479,10 +479,13 @@
             const t = v.toFixed(2);
             let bg = '#e5e7eb', fg = '#111827';
             const av = Math.abs(v);
-            if (av >= 0.6) { bg = 'rgba(16,185,129,.18)'; fg = '#065f46'; }
-            else if (av >= 0.4) { bg = 'rgba(59,130,246,.18)'; fg = '#1e3a8a'; }
-            else if (av >= 0.2) { bg = 'rgba(234,179,8,.18)'; fg = '#78350f'; }
-            return `<span style="display:inline-block;min-width:40px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${t}</span>`;
+            if (av < 0.10) { bg = '#e5e7eb'; fg = '#111827'; }
+            else if (av < 0.30) { bg = 'rgba(250,204,21,.20)'; fg = '#854d0e'; }
+            else if (av < 0.50) { bg = 'rgba(59,130,246,.18)'; fg = '#1e3a8a'; }
+            else if (av < 0.70) { bg = 'rgba(16,185,129,.18)'; fg = '#065f46'; }
+            else if (av < 0.90) { bg = 'rgba(168,85,247,.20)'; fg = '#581c87'; }
+            else { bg = 'rgba(0,0,0,.12)'; fg = '#111827'; }
+            return `<span style="display:inline-block;min-width:44px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${t}</span>`;
           };
           tr.innerHTML = `
             <td>${d.domain}</td>
@@ -508,10 +511,13 @@
         const t = v.toFixed(2);
         let bg = '#e5e7eb', fg = '#111827';
         const av = Math.abs(v);
-        if (av >= 0.6) { bg = 'rgba(16,185,129,.18)'; fg = '#065f46'; }
-        else if (av >= 0.4) { bg = 'rgba(59,130,246,.18)'; fg = '#1e3a8a'; }
-        else if (av >= 0.2) { bg = 'rgba(234,179,8,.18)'; fg = '#78350f'; }
-        return `<span style="display:inline-block;min-width:40px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${t}</span>`;
+        if (av < 0.10) { bg = '#e5e7eb'; fg = '#111827'; }
+        else if (av < 0.30) { bg = 'rgba(250,204,21,.20)'; fg = '#854d0e'; }
+        else if (av < 0.50) { bg = 'rgba(59,130,246,.18)'; fg = '#1e3a8a'; }
+        else if (av < 0.70) { bg = 'rgba(16,185,129,.18)'; fg = '#065f46'; }
+        else if (av < 0.90) { bg = 'rgba(168,85,247,.20)'; fg = '#581c87'; }
+        else { bg = 'rgba(0,0,0,.12)'; fg = '#111827'; }
+        return `<span style="display:inline-block;min-width:44px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${t}</span>`;
       }
 
       function renderCardRows(tbody, rows){
