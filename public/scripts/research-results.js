@@ -553,31 +553,78 @@
   limitInput.addEventListener('change', load);
   if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', load);
   if (n123MetricSel) n123MetricSel.addEventListener('change', load);
-  // Sorting: click on Selected header to sort by most selected to least (toggle)
+  // Sorting: make multiple headers clickable with arrows and toggling
   (function attachSorting(){
     const table = document.getElementById('resultsTable');
     if (!table) return;
-    const selectedHeader = table.querySelector('thead th:nth-child(9)');
-    if (!selectedHeader) return;
-    let desc = true;
-    selectedHeader.style.cursor = 'pointer';
-    selectedHeader.title = 'Click to sort by Selected';
-    function selectedCountOf(e){
+
+    // Value getters
+    const selectedCountOf = (e) => {
       if (e && e.selections && Array.isArray(e.selections.allResponses)) {
         return e.selections.allResponses.filter(r=>r && r.response===true).length;
       }
       return Number(e && e.selected_count ? e.selected_count : 0) || 0;
-    }
-    selectedHeader.addEventListener('click', () => {
-      if (!Array.isArray(currentEntries) || currentEntries.length === 0) return;
-      currentEntries.sort((a,b)=>{
-        const da = selectedCountOf(a);
-        const db = selectedCountOf(b);
-        return desc ? (db - da) : (da - db);
+    };
+    const rejectedCountOf = (e) => {
+      if (e && e.selections && Array.isArray(e.selections.allResponses)) {
+        return e.selections.allResponses.filter(r=>r && r.response===false).length;
+      }
+      return Number(e && e.rejected_count ? e.rejected_count : 0) || 0;
+    };
+    const timeoutsCountOf = (e) => {
+      if (e && e.selections && Array.isArray(e.selections.allResponses)) {
+        return e.selections.allResponses.filter(r=>r && r.response===null).length;
+      }
+      return 0;
+    };
+    const timeSecOf = (e) => {
+      if (e && e.completion_time != null) return Number(e.completion_time) || 0;
+      if (e && e.selections && Array.isArray(e.selections.allResponses)) {
+        const ms = e.selections.allResponses.reduce((s,r)=> s + (Number(r && r.responseTime)||0), 0);
+        return Math.round(ms/1000);
+      }
+      return 0;
+    };
+    const who5Of = (e) => (sum(e && e.who5 || []) * 4);
+    const swlsOf = (e) => (sum(e && e.swls || []) * (5/3));
+    const cantrilOf = (e) => Number(e && e.cantril != null ? e.cantril : NaN);
+    const ihsOf = (e) => Number(e && e.ihs != null ? e.ihs : NaN);
+
+    function makeSortable(colIndex, title, getter) {
+      const th = table.querySelector(`thead th:nth-child(${colIndex})`);
+      if (!th) return;
+      let desc = true;
+      const indicator = document.createElement('span');
+      indicator.textContent = '↕';
+      indicator.style.marginLeft = '4px';
+      indicator.style.opacity = '0.6';
+      th.appendChild(indicator);
+      th.style.cursor = 'pointer';
+      th.title = `Click to sort by ${title}`;
+      th.addEventListener('click', () => {
+        if (!Array.isArray(currentEntries) || currentEntries.length === 0) return;
+        currentEntries.sort((a,b)=>{
+          const va = getter(a);
+          const vb = getter(b);
+          const na = (va==null || Number.isNaN(va)) ? -Infinity : Number(va);
+          const nb = (vb==null || Number.isNaN(vb)) ? -Infinity : Number(vb);
+          return desc ? (nb - na) : (na - nb);
+        });
+        indicator.textContent = desc ? '↓' : '↑';
+        desc = !desc;
+        renderTable(currentEntries);
       });
-      desc = !desc;
-      renderTable(currentEntries);
-    });
+    }
+
+    // Map required columns
+    makeSortable(8, 'Time (s)', timeSecOf);
+    makeSortable(9, 'Selected', selectedCountOf);
+    makeSortable(10, 'Rejected', rejectedCountOf);
+    makeSortable(11, 'Timeouts', timeoutsCountOf);
+    makeSortable(12, 'WHO-5', who5Of);
+    makeSortable(13, 'SWLS', swlsOf);
+    makeSortable(14, 'Cantril', cantrilOf);
+    makeSortable(15, 'IHS', ihsOf);
   })();
   load();
 })();
