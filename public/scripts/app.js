@@ -1277,7 +1277,7 @@
       }
     } catch(_) {}
     // Update main score
-    document.getElementById('totalScore').textContent = results.ihs;
+    document.getElementById('totalScore').textContent = `${results.ihs}%`;
     
     // Get domain data for visualization
     const domainData = getDomainAnalysis(results.domainCounts);
@@ -1901,11 +1901,21 @@
     });
   }
   
-  function displayBenchmarkResults(benchmark, results) {
-    // Convert percentile to "top X%" format
-    const topPercentage = 100 - benchmark.ihsPercentile;
+function displayBenchmarkResults(benchmark, results) {
+    // Compute "top" as previously (topPct = 100 - percentile)
+    const p = Number(benchmark && benchmark.ihsPercentile);
+    const topPct = Number.isFinite(p) ? (100 - p) : NaN;
     let performanceMessage = '';
-    performanceMessage = `You're in the <span class="accent">top ${topPercentage}%!</span>`;
+    if (Number.isFinite(topPct)) {
+      // If "Top X%" would exceed 50%, show as "Bottom (100 - X)%" instead
+      if (topPct > 50) {
+        performanceMessage = `You're in the <span class="accent">bottom ${Math.round(100 - topPct)}%!</span>`;
+      } else {
+        performanceMessage = `You're in the <span class="accent">top ${Math.round(topPct)}%!</span>`;
+      }
+    } else {
+      performanceMessage = 'Ranking unavailable.';
+    }
     
     // Update the main benchmark message
     const messageEl = document.getElementById('benchmarkMessage');

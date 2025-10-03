@@ -70,9 +70,9 @@
 <body>
   <div class="page">
     <div class="header">
-      <img src="/Br-ndLogo.webp" class="logo-left" alt="BR-ND">
+      <a href="https://www.br-ndpeople.com/home" target="_blank" rel="noopener"><img src="/Br-ndLogo.webp" class="logo-left" alt="BR-ND"></a>
       <div class="title">Your Drive Profile Report</div>
-      <img src="/23plusone.png" class="logo-right" alt="23plusone">
+      <a href="https://23plusone.org/" target="_blank" rel="noopener"><img src="/23plusone.png" class="logo-right" alt="23plusone"></a>
     </div>
 
     <!-- Removed duplicate title for cleaner header -->
@@ -202,7 +202,19 @@
       function bandLabel(v){ if (v >= 66) return 'High'; if (v >= 34) return 'Mid'; return 'Low'; }
       setText('overallScoreLabel', ihs ? (ihs + ' | ' + bandLabel(ihs)) : '-- | --');
       setWidth('overallBar', Math.max(0, Math.min(100, ihs)));
-      setText('percentile', percentile == null ? '--' : ('Top ' + (100 - percentile) + '%'));
+      // Dynamic Top/Bottom rendering based on computed top percentage
+      try {
+        if (percentile == null || Number.isNaN(Number(percentile))) {
+          setText('percentile', '--');
+        } else {
+          var topPct = 100 - Number(percentile);
+          if (topPct > 50) {
+            setText('percentile', 'Bottom ' + Math.round(100 - topPct) + '%');
+          } else {
+            setText('percentile', 'Top ' + Math.round(topPct) + '%');
+          }
+        }
+      } catch(_) { setText('percentile', '--'); }
       setText('cohortAvg', avg ? String(avg) : '--');
       // Benchmarks sample size (n). Prefer explicit participants count if provided.
       var n = null;
