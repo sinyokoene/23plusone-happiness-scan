@@ -23,7 +23,7 @@
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
 
-  let who5Chart, swlsChart, cantrilChart, who5Scatter, swlsScatter, cantrilScatter, n123Scatter;
+  let who5Chart, swlsChart, cantrilChart, ihsChart, who5Scatter, swlsScatter, cantrilScatter, n123Scatter;
 
   // Card/domain mapping for colored dots
   const domainColors = {
@@ -163,6 +163,7 @@
 
   function renderCharts(entries){
     const { who5Scaled, swlsScaled, cantrilVals } = computeDistributions(entries);
+    const ihsVals = entries.map(e => (e.ihs==null?null:Number(e.ihs))).filter(v=>v!=null && !Number.isNaN(v));
     // WHO-5 percent bins 0..100 step 4 (26 bins)
     const who5Bins = new Array(26).fill(0);
     const who5Labels = Array.from({length:26}, (_,i)=>i*4);
@@ -211,6 +212,21 @@
       cantrilChart = new Chart(cantrilCanvas, {
         ...common,
         data: { labels: canLabels, datasets: [{ label: 'Cantril (0–10)', data: canBins, backgroundColor: 'rgba(16,185,129,.5)' }] }
+      });
+    }
+
+    // IHS distribution 0..100 step 5 (21 bins)
+    const ihsCanvas = document.getElementById('ihsChart');
+    if (ihsCanvas) {
+      const binSize = 5;
+      const bins = new Array(21).fill(0);
+      const labels = Array.from({length:21}, (_,i)=>i*binSize);
+      ihsVals.forEach(v => { const i = Math.max(0, Math.min(20, Math.round(v/binSize))); bins[i]++; });
+      if (ihsChart) ihsChart.destroy();
+      ihsChart = new Chart(ihsCanvas, {
+        type: 'bar',
+        data: { labels, datasets: [{ label: 'IHS (0–100)', data: bins, backgroundColor: 'rgba(59,130,246,.5)' }] },
+        options: { responsive: true, scales: { x: { ticks: { maxRotation: 0 } }, y: { beginAtZero: true } } }
       });
     }
   }
