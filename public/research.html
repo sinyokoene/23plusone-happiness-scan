@@ -64,7 +64,7 @@
       height: calc(100% - 16px - var(--box-shrink));
       width: 100%;
     }
-    /* Ensure the middle content stretches fully (no scroll) */
+    /* Ensure the middle content stretches fully */
     #swls .qcard > div.w-full, #who5 .qcard > div.w-full {
       align-self: stretch;
       overflow: hidden;
@@ -222,6 +222,8 @@
       #who5 .swls-sep { margin: 12px 0 8px; }
       #who5 .swls-q { margin-bottom: 8px; }
       #who5 .qgrid.likert-6-only.mt-6 { margin-top: 10px !important; }
+      /* Allow inner content to scroll if needed so 5th item and Submit are reachable */
+      #swls .qcard > div.w-full, #who5 .qcard > div.w-full { overflow: auto; -webkit-overflow-scrolling: touch; }
     }
   </style>
 </head>
@@ -232,7 +234,7 @@
       <div class="qcard flex flex-col items-center gap-8 text-left">
         <div class="max-w-[760px] self-center">
           <h2 class="text-2xl md:text-3xl font-semibold">This research is about<br> happiness. Please help us out!</h2>
-          <p class="text-base opacity-80" style="margin-top:160px;">This test is anonymous and consists of three parts:</p>
+          <p class="text-base opacity-80" style="margin-top:160px;">This test is anonymous and consists of four parts:</p>
           <div class="text-base" style="margin-top:30px;">
             <div class="font-semibold text-pink-600">1. Human drives</div>
             <div class="font-semibold text-pink-600">2. Well‑being</div>
