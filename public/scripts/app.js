@@ -266,9 +266,10 @@
         // Only switch the last line based on device; leave the semibold line in HTML
         const controls = document.getElementById('practiceControlsText');
         if (controls) {
-          controls.innerHTML = isDesktop
-            ? 'Use your arrow keys or buttons.<br>You only have 4 seconds per card, so go with your instinct!'
-            : 'Use swipe or buttons.<br>You only have 4 seconds per card, so go with your instinct!';
+          controls.textContent = isDesktop
+            ? 'Use your arrow keys or buttons'
+            : 'Use swipe or buttons';
+          // Main sentence includes the rest of the copy around this span
         }
       }
     } catch(_) {}
