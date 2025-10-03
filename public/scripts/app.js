@@ -1394,8 +1394,8 @@
     };
     const domainSentence = domainInsights[topDomain.name] || '';
 
-    // Bold fueled-by sentence first
-    const fueledBy = `<strong>You're fueled by ${topDomain.name}.</strong>`;
+    // Plain fueled-by sentence (no bold)
+    const fueledBy = `You're fueled by ${topDomain.name}.`;
     return `${fueledBy} ${insightText} ${domainSentence}`.trim();
   }
   
