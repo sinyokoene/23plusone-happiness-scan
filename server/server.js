@@ -4,6 +4,8 @@ const { Pool } = require('pg');
 const path = require('path');
 const cors = require('cors');
 const nodemailer = require('nodemailer');
+// Use global fetch if available (Node 18+); otherwise lazy-load node-fetch
+const httpFetch = (typeof fetch !== 'undefined') ? fetch : (url, opts) => import('node-fetch').then(m => m.default(url, opts));
 
 // Force deployment update - Complete data structure fix
 const app = express();
@@ -24,6 +26,113 @@ app.use((req, res, next) => {
 // Middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
+// Sync demographics from Prolific API for a given study
+// ENV required: PROLIFIC_API_TOKEN; optional: PROLIFIC_API_BASE (defaults to v1)
+app.post('/api/prolific/sync', async (req, res) => {
+  try {
+    const studyId = String(req.body?.study_id || req.query.study_id || '').trim();
+    if (!studyId) return res.status(400).json({ error: 'study_id required' });
+    const token = process.env.PROLIFIC_API_TOKEN;
+    if (!token) return res.status(400).json({ error: 'PROLIFIC_API_TOKEN not set' });
+    const base = (process.env.PROLIFIC_API_BASE || 'https://api.prolific.com/api/v1').replace(/\/$/, '');
+
+    const client = await pool.connect();
+    try {
+      await client.query(
+        `CREATE TABLE IF NOT EXISTS prolific_participants (
+          prolific_pid TEXT PRIMARY KEY,
+          study_id TEXT,
+          sex TEXT,
+          country_of_residence TEXT,
+          age INTEGER,
+          student_status TEXT,
+          employment_status TEXT,
+          raw JSONB,
+          updated_at TIMESTAMPTZ DEFAULT now()
+        )`
+      );
+
+      let page = 1;
+      let totalUpserted = 0;
+      const pageSize = 200; // Prolific typically supports pagination
+      while (true) {
+        const url = `${base}/studies/${encodeURIComponent(studyId)}/participants/?page=${page}&page_size=${pageSize}`;
+        const r = await httpFetch(url, {
+          headers: {
+            'Accept': 'application/json',
+            // Prolific v1 uses 'Token <token>'; v2 uses 'Bearer <token>'. Try both headers for compatibility
+            'Authorization': `Token ${token}`
+          }
+        });
+        if (!r.ok) {
+          // Retry once with Bearer header if Token fails
+          if (r.status === 401 || r.status === 403) {
+            const r2 = await httpFetch(url, {
+              headers: { 'Accept': 'application/json', 'Authorization': `Bearer ${token}` }
+            });
+            if (!r2.ok) {
+              const text = await r2.text().catch(()=> '');
+              return res.status(r2.status).json({ error: 'Prolific API error', status: r2.status, body: text.slice(0, 500) });
+            }
+            const data2 = await r2.json();
+            const count = await upsertProlificParticipants(client, data2, studyId);
+            totalUpserted += count;
+            if (!hasNextPage(data2)) break;
+            page += 1;
+            continue;
+          } else {
+            const text = await r.text().catch(()=> '');
+            return res.status(r.status).json({ error: 'Prolific API error', status: r.status, body: text.slice(0, 500) });
+          }
+        }
+        const data = await r.json();
+        const count = await upsertProlificParticipants(client, data, studyId);
+        totalUpserted += count;
+        if (!hasNextPage(data)) break;
+        page += 1;
+      }
+      res.json({ ok: true, study_id: studyId, upserted: totalUpserted });
+    } finally { client.release(); }
+  } catch (e) {
+    console.error('Error syncing Prolific participants', e);
+    res.status(500).json({ error: 'Failed to sync from Prolific' });
+  }
+});
+
+function hasNextPage(apiResponse){
+  // Support v1 pagination { results:[], next: url|null } or array fallback
+  if (!apiResponse) return false;
+  if (Array.isArray(apiResponse)) return false;
+  if (typeof apiResponse.next !== 'undefined') return !!apiResponse.next;
+  // Some APIs use count/results with page; if fewer than page size, assume no next
+  if (Array.isArray(apiResponse.results)) return false; // we handle via explicit 'next'
+  return false;
+}
+
+async function upsertProlificParticipants(client, apiResponse, studyId){
+  const items = Array.isArray(apiResponse) ? apiResponse : (Array.isArray(apiResponse?.results) ? apiResponse.results : []);
+  if (!items.length) return 0;
+  const text = `INSERT INTO prolific_participants (prolific_pid, study_id, sex, country_of_residence, age, student_status, employment_status, raw, updated_at)
+                VALUES ($1,$2,$3,$4,$5,$6,$7,$8, now())
+                ON CONFLICT (prolific_pid)
+                DO UPDATE SET study_id=EXCLUDED.study_id, sex=EXCLUDED.sex, country_of_residence=EXCLUDED.country_of_residence, age=EXCLUDED.age, student_status=EXCLUDED.student_status, employment_status=EXCLUDED.employment_status, raw=EXCLUDED.raw, updated_at=now()`;
+  let n = 0;
+  for (const it of items) {
+    // Try common shapes
+    const pid = it.prolific_id || it.participant_id || it.id || it.PROLIFIC_PID;
+    if (!pid) continue;
+    const demographics = it.demographics || it || {};
+    const sex = demographics.sex || demographics.gender || null;
+    const country = demographics.country_of_residence || demographics.country || null;
+    const ageRaw = demographics.age;
+    const age = (ageRaw==null ? null : Number(ageRaw));
+    const student = demographics.student_status || demographics.student || null;
+    const employment = demographics.employment_status || demographics.employment || null;
+    await client.query(text, [pid, studyId || it.study_id || null, sex || null, country || null, (Number.isFinite(age)?age:null), student || null, employment || null, it]);
+    n++;
+  }
+  return n;
+}
 // Upsert Prolific demographics manually (CSV or API sync can call this)
 app.post('/api/prolific/upsert', async (req, res) => {
   try {
