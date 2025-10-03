@@ -26,6 +26,7 @@
   const applyFiltersBtn = document.getElementById('applyFilters');
 
   let who5Chart, swlsChart, cantrilChart, ihsChart, who5Scatter, swlsScatter, cantrilScatter, n123Scatter;
+  let currentEntries = [];
 
   // Card/domain mapping for colored dots
   const domainColors = {
@@ -324,8 +325,9 @@
     let entries = json.entries || [];
     // Apply client-side filters (device, modality, exclusivity, threshold)
     entries = entries.filter(entryMatchesFilters);
-    renderTable(entries);
-    renderCharts(entries);
+    currentEntries = entries.slice();
+    renderTable(currentEntries);
+    renderCharts(currentEntries);
 
     // Build arrays for scatter plots from the same dataset, keeping only rows with IHS
     const who5TotalsAll = entries.map(e => SCALE.who5(sum(e.who5||[]))); // percent
@@ -484,7 +486,7 @@
             else if (av < 0.50) { bg = 'rgba(59,130,246,.18)'; fg = '#1e3a8a'; }
             else if (av < 0.70) { bg = 'rgba(16,185,129,.18)'; fg = '#065f46'; }
             else if (av < 0.90) { bg = 'rgba(168,85,247,.20)'; fg = '#581c87'; }
-            else { bg = 'rgba(0,0,0,.12)'; fg = '#111827'; }
+            else { bg = 'rgba(236,72,153,.20)'; fg = '#831843'; }
             return `<span style="display:inline-block;min-width:44px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${t}</span>`;
           };
           tr.innerHTML = `
@@ -516,7 +518,7 @@
         else if (av < 0.50) { bg = 'rgba(59,130,246,.18)'; fg = '#1e3a8a'; }
         else if (av < 0.70) { bg = 'rgba(16,185,129,.18)'; fg = '#065f46'; }
         else if (av < 0.90) { bg = 'rgba(168,85,247,.20)'; fg = '#581c87'; }
-        else { bg = 'rgba(0,0,0,.12)'; fg = '#111827'; }
+        else { bg = 'rgba(236,72,153,.20)'; fg = '#831843'; }
         return `<span style="display:inline-block;min-width:44px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${t}</span>`;
       }
 
@@ -551,6 +553,32 @@
   limitInput.addEventListener('change', load);
   if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', load);
   if (n123MetricSel) n123MetricSel.addEventListener('change', load);
+  // Sorting: click on Selected header to sort by most selected to least (toggle)
+  (function attachSorting(){
+    const table = document.getElementById('resultsTable');
+    if (!table) return;
+    const selectedHeader = table.querySelector('thead th:nth-child(9)');
+    if (!selectedHeader) return;
+    let desc = true;
+    selectedHeader.style.cursor = 'pointer';
+    selectedHeader.title = 'Click to sort by Selected';
+    function selectedCountOf(e){
+      if (e && e.selections && Array.isArray(e.selections.allResponses)) {
+        return e.selections.allResponses.filter(r=>r && r.response===true).length;
+      }
+      return Number(e && e.selected_count ? e.selected_count : 0) || 0;
+    }
+    selectedHeader.addEventListener('click', () => {
+      if (!Array.isArray(currentEntries) || currentEntries.length === 0) return;
+      currentEntries.sort((a,b)=>{
+        const da = selectedCountOf(a);
+        const db = selectedCountOf(b);
+        return desc ? (db - da) : (da - db);
+      });
+      desc = !desc;
+      renderTable(currentEntries);
+    });
+  })();
   load();
 })();
 
