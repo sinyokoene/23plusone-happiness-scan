@@ -1913,8 +1913,6 @@ function displayBenchmarkResults(benchmark, results) {
       // Compute "top" as previously (topPct = 100 - percentile)
       const p = Number(benchmark && benchmark.ihsPercentile);
       const topPct = Number.isFinite(p) ? (100 - p) : NaN;
-      // Compat alias to avoid ReferenceError in any stray usage
-      const topPercentage = topPct;
       let performanceMessage = '';
       if (Number.isFinite(topPct)) {
         // If "Top X%" would exceed 50%, show as "Bottom (100 - X)%" instead
@@ -1939,7 +1937,7 @@ function displayBenchmarkResults(benchmark, results) {
       if (totalEl) totalEl.textContent = total != null ? String(total).toLocaleString() : '--';
       if (avgEl) avgEl.textContent = (avg != null ? avg : '--');
 
-      console.log('Benchmark display updated with top percentage:', topPercentage);
+      console.log('Benchmark display updated with top percentage:', topPct);
     } catch (e) {
       console.warn('displayBenchmarkResults failed', e);
       try {
