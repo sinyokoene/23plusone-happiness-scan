@@ -15,6 +15,8 @@
   const domainCorrTbody = document.querySelector('#domainCorrTable tbody');
   const cardTopWhoTbody = document.querySelector('#cardTopWho tbody');
   const cardBottomWhoTbody = document.querySelector('#cardBottomWho tbody');
+  const cardTopCanTbody = document.querySelector('#cardTopCan tbody');
+  const cardBottomCanTbody = document.querySelector('#cardBottomCan tbody');
   const filterDevice = document.getElementById('filterDevice');
   const modClick = document.getElementById('modClick');
   const modSwipe = document.getElementById('modSwipe');
@@ -408,8 +410,10 @@
             <td>${d.domain}</td>
             <td>${Number(d.r_affirm_who5||0).toFixed(2)}</td>
             <td>${Number(d.r_affirm_swls||0).toFixed(2)}</td>
+            <td>${Number(d.r_affirm_cantril||0).toFixed(2)}</td>
             <td>${Number(d.r_yesrate_who5||0).toFixed(2)}</td>
             <td>${Number(d.r_yesrate_swls||0).toFixed(2)}</td>
+            <td>${Number(d.r_yesrate_cantril||0).toFixed(2)}</td>
             <td>${Math.max(d.n_affirm_who5||0, d.n_yesrate_who5||0)}</td>
           `;
           domainCorrTbody.appendChild(tr);
@@ -438,6 +442,28 @@
       }
       renderCardRows(cardTopWhoTbody, top);
       renderCardRows(cardBottomWhoTbody, bottom);
+
+      // Cantril top/bottom by r_yes_can
+      const sortedCan = cards.slice().sort((a,b)=> (b.r_yes_can||0) - (a.r_yes_can||0));
+      const topCan = sortedCan.slice(0, 12);
+      const bottomCan = sortedCan.slice(-12);
+      function renderCardRowsCan(tbody, rows){
+        if (!tbody) return;
+        tbody.replaceChildren();
+        rows.forEach(c => {
+          const tr = document.createElement('tr');
+          const domain = cardIdToDomain.get(Number(c.cardId)) || '';
+          const color = domainColors[domain] || '#9ca3af';
+          const dot = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>`;
+          const name = c.label ? `${c.cardId} · ${c.label}` : c.cardId;
+          tr.innerHTML = `<td>${dot}${name}</td>
+            <td>${Number(c.r_yes_can||0).toFixed(2)}</td>
+            <td>${c.n_yes_can||0}</td>`;
+          tbody.appendChild(tr);
+        });
+      }
+      renderCardRowsCan(cardTopCanTbody, topCan);
+      renderCardRowsCan(cardBottomCanTbody, bottomCan);
     } catch (e) {
       // Non-fatal if analytics endpoint is unavailable
       console.warn('Correlation analytics failed', e);

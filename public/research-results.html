@@ -136,7 +136,7 @@
       </div>
       <div class="col-12">
         <div class="card">
-          <h2 class="text-lg font-semibold mb-2">Domain Correlations (WHO‑5/SWLS)</h2>
+          <h2 class="text-lg font-semibold mb-2">Domain Correlations (WHO‑5/SWLS/Cantril)</h2>
           <p class="text-xs opacity-80 mb-2">
             <strong>r(affirm, WHO‑5/SWLS)</strong>: time‑weighted “Yes” strength in a domain. Higher r = stronger alignment with well‑being. 
             <strong>r(yes‑rate, WHO‑5/SWLS)</strong>: percent “Yes” per domain (no timing); similar meaning, simpler measure.
@@ -148,8 +148,10 @@
                   <th>Domain</th>
                   <th>r(affirm, WHO‑5)</th>
                   <th>r(affirm, SWLS)</th>
+                  <th>r(affirm, Cantril)</th>
                   <th>r(yes‑rate, WHO‑5)</th>
                   <th>r(yes‑rate, SWLS)</th>
+                  <th>r(yes‑rate, Cantril)</th>
                   <th>n</th>
                 </tr>
               </thead>
@@ -161,7 +163,7 @@
       <div class="col-12">
         <div class="card">
           <h2 class="text-lg font-semibold mb-2">Top/Bottom Cards by Correlation</h2>
-          <p class="text-xs opacity-80 mb-2">Cards ranked by how their Yes/No answers align with WHO‑5. Top = cards more often endorsed by higher‑well‑being people; Bottom = the opposite (or neutral). <span class="opacity-70">n = number of participants with a valid Yes/No for that card and a matching questionnaire entry; it can be lower when a response timed out or data is missing.</span></p>
+          <p class="text-xs opacity-80 mb-2">Cards ranked by how their Yes/No answers align with WHO‑5/SWLS/Cantril. Top = cards more often endorsed by higher well‑being; Bottom = the opposite (or neutral). <span class="opacity-70">n = number of participants with a valid Yes/No for that card and a matching questionnaire entry; it can be lower when a response timed out or data is missing.</span></p>
           <div class="grid">
             <div class="col-6">
               <h3 class="font-medium mb-1">Top 12 (WHO‑5)</h3>
@@ -170,6 +172,14 @@
             <div class="col-6">
               <h3 class="font-medium mb-1">Bottom 12 (WHO‑5)</h3>
               <table id="cardBottomWho"><thead><tr><th>Card</th><th>r yes (WHO‑5)</th><th>r yes (SWLS)</th><th>n</th></tr></thead><tbody></tbody></table>
+            </div>
+            <div class="col-6">
+              <h3 class="font-medium mb-1 mt-3">Top 12 (Cantril)</h3>
+              <table id="cardTopCan"><thead><tr><th>Card</th><th>r yes (Cantril)</th><th>n</th></tr></thead><tbody></tbody></table>
+            </div>
+            <div class="col-6">
+              <h3 class="font-medium mb-1 mt-3">Bottom 12 (Cantril)</h3>
+              <table id="cardBottomCan"><thead><tr><th>Card</th><th>r yes (Cantril)</th><th>n</th></tr></thead><tbody></tbody></table>
             </div>
           </div>
         </div>
