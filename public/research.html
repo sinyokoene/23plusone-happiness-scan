@@ -85,9 +85,11 @@
     #cantrilGrid > :nth-child(2) { order: 2; }
     #cantrilGrid > :nth-child(1) { order: 3; text-align: center; }
     .cantril-choices { display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .cantril-choices .can-row { display: grid; grid-template-columns: 22px 18px; align-items: center; gap: 10px; }
-    .cantril-choices .choice { width: 18px; height: 18px; }
-    .cantril-choices span { font-size: 14px; color: #2c1f1c; display: inline-block; width: 22px; text-align: right; }
+    .cantril-choices .can-row { display: grid; grid-template-columns: 22px 22px; align-items: center; gap: 10px; }
+    /* Match WHO-5/SWLS dot size by default */
+    .cantril-choices .choice { width: 22px; height: 22px; }
+    /* Match label size with SWLS question text */
+    .cantril-choices span { font-size: 16px; color: #2c1f1c; display: inline-block; width: 22px; text-align: right; }
     /* Unified pill button styling (match scan) */
     .btn-pill {
       height: 40px;
@@ -120,6 +122,7 @@
       .cell-l { font-size: 14px; }
       .cell-h { font-size: 11px; line-height: 1.15; }
       .choice { width: 18px; height: 18px; }
+      .cantril-choices .choice { width: 18px; height: 18px; }
       .choice.active::after { inset: 3px; }
       #toWho5, #toScan { margin-top: 10px; }
     }
@@ -137,6 +140,7 @@
       .cell-h { font-size: 10px; line-height: 1.1; }
       .choice { width: 16px; height: 16px; }
       .choice.active::after { inset: 3px; }
+      .cantril-choices .choice { width: 16px; height: 16px; }
     }
     @media (max-height: 500px) {
       :root { --title-top: 32px; --box-shrink: 220px; }
@@ -149,6 +153,7 @@
       .cell-l { font-size: 12px; }
       .choice { width: 14px; height: 14px; }
       .choice.active::after { inset: 2.5px; }
+      .cantril-choices .choice { width: 14px; height: 14px; }
     }
     /* Compact layout for small tablets/large phones in landscape (481–660px) */
     @media (min-width: 481px) and (max-width: 660px) {
@@ -225,6 +230,9 @@
       .cell-h { font-size: 10px; line-height: 1.05; }
       .choice { width: 14px; height: 14px; }
       .choice.active::after { inset: 2.5px; }
+      .cantril-choices .choice { width: 14px; height: 14px; }
+      .cantril-choices .can-row { grid-template-columns: 22px 14px; }
+      .cantril-choices span { font-size: 12px; }
       /* Reduce internal margins that were set inline in markup */
       .qcard .w-full.text-left { margin-top: 8px !important; }
       .qgrid.mb-4 { margin-bottom: 6px !important; }
