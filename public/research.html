@@ -222,8 +222,15 @@
       #who5 .swls-sep { margin: 10px 0 6px; }
       #who5 .swls-q { margin-bottom: 6px; font-size: 14px; }
       #who5 .qgrid.likert-6-only.mt-6 { margin-top: 6px !important; }
+      /* Vertically center forms on mobile */
+      #swls .qcard, #who5 .qcard { display: flex; flex-direction: column; justify-content: center; height: calc(100% - 16px); }
       /* Keep form area non-scrollable */
       #swls .qcard > div.w-full, #who5 .qcard > div.w-full { overflow: hidden; }
+
+      /* Cantril ladder: wrap choices so all 0–10 are visible */
+      .cantril-choices { flex-wrap: wrap; gap: 8px; max-width: 360px; }
+      .cantril-choices .choice { width: 16px; height: 16px; }
+      .cantril-choices span { font-size: 11px; }
     }
   </style>
 </head>
@@ -297,7 +304,7 @@
           <div class="text-center text-pink-600" style="margin-bottom:12px;">Considering your life as a whole, how happy are you?</div>
           <div class="w-full grid items-center" style="grid-template-columns: 1fr auto 1fr; gap: 12px; align-items: center;">
             <div class="text-xs text-[#9c8078] text-right">Worst<br>possible life.</div>
-            <div class="flex items-center justify-center gap-3">
+            <div class="flex items-center justify-center gap-3 cantril-choices">
               <span class="text-xs">0</span>
               <button type="button" class="choice cantril-choice" data-val="0" aria-label="0"></button>
               <span class="text-xs">1</span>
