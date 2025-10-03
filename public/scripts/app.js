@@ -266,11 +266,11 @@
         // Only switch the last line based on device; leave the semibold line in HTML
         const controls = document.getElementById('practiceControlsText');
         if (controls) {
-          controls.textContent = isDesktop
-            ? 'Use your arrow keys or buttons'
-            : 'Use swipe or buttons';
-          // Main sentence includes the rest of the copy around this span
+          controls.textContent = isDesktop ? 'Use your arrow keys or buttons' : 'Use swipe or buttons';
         }
+        // On mobile, remove the line break before the timing sentence to save one line
+        const br = document.getElementById('practiceTimingBr');
+        if (br) { br.style.display = isDesktop ? '' : 'none'; }
       }
     } catch(_) {}
 
