@@ -64,10 +64,16 @@
       height: calc(100% - 16px - var(--box-shrink));
       width: 100%;
     }
+    /* Ensure the qcard itself can shrink within section so inner scroll appears */
+    @media (max-height: 780px) and (min-width: 481px) {
+      #swls .qcard, #who5 .qcard { min-height: 0; }
+    }
     /* Ensure the middle content stretches fully */
     #swls .qcard > div.w-full, #who5 .qcard > div.w-full {
       align-self: stretch;
       overflow: hidden;
+      /* Allow grid middle row to shrink so inner scroll can work */
+      min-height: 0;
     }
     /* Prevent double-tap zoom and make taps feel instant */
     html, body, button, .choice { touch-action: manipulation; }
@@ -115,6 +121,10 @@
       #who5 .swls-q { margin-bottom: 8px; }
       #who5 .qgrid.likert-6-only.mt-6 { margin-top: 8px !important; }
       #toWho5, #toScan { margin-top: 12px; }
+    }
+    /* Short desktop heights: allow inner content to scroll so submit stays visible */
+    @media (max-height: 780px) and (min-width: 481px) {
+      #swls .qcard > div.w-full, #who5 .qcard > div.w-full { overflow: auto; -webkit-overflow-scrolling: touch; }
     }
     @media (max-height: 700px) {
       :root { --title-top: 56px; --box-shrink: 156px; }
