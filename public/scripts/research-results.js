@@ -143,6 +143,7 @@
         <td>${e.prolific_pid || ''}</td>
         <td>${e.prolific_study_id || ''}</td>
         <td>${e.prolific_session_id || ''}</td>
+        <td>${deviceLabel(e)}</td>
         <td>${(e.who5||[]).join(', ')}</td>
         <td>${(e.swls||[]).join(', ')}</td>
         <td>${e.cantril ?? ''}</td>
@@ -209,6 +210,10 @@
   function isMobileUA(ua){
     if (!ua || typeof ua !== 'string') return false;
     return /(Mobi|Android|iPhone|iPad|iPod)/i.test(ua);
+  }
+  function deviceLabel(entry){
+    const ua = entry.scan_user_agent || entry.user_agent || '';
+    return isMobileUA(ua) ? 'Mobile' : 'Desktop';
   }
 
   function entryMatchesFilters(entry){
