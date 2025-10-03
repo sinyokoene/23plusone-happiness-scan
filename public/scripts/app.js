@@ -1909,30 +1909,44 @@
   }
   
 function displayBenchmarkResults(benchmark, results) {
-    // Compute "top" as previously (topPct = 100 - percentile)
-    const p = Number(benchmark && benchmark.ihsPercentile);
-    const topPct = Number.isFinite(p) ? (100 - p) : NaN;
-    let performanceMessage = '';
-    if (Number.isFinite(topPct)) {
-      // If "Top X%" would exceed 50%, show as "Bottom (100 - X)%" instead
-      if (topPct > 50) {
-        performanceMessage = `You're in the <span class="accent">bottom ${Math.round(100 - topPct)}%!</span>`;
+    try {
+      // Compute "top" as previously (topPct = 100 - percentile)
+      const p = Number(benchmark && benchmark.ihsPercentile);
+      const topPct = Number.isFinite(p) ? (100 - p) : NaN;
+      // Compat alias to avoid ReferenceError in any stray usage
+      const topPercentage = topPct;
+      let performanceMessage = '';
+      if (Number.isFinite(topPct)) {
+        // If "Top X%" would exceed 50%, show as "Bottom (100 - X)%" instead
+        if (topPct > 50) {
+          performanceMessage = `You're in the <span class=\"accent\">bottom ${Math.round(100 - topPct)}%!</span>`;
+        } else {
+          performanceMessage = `You're in the <span class=\"accent\">top ${Math.round(topPct)}%!</span>`;
+        }
       } else {
-        performanceMessage = `You're in the <span class="accent">top ${Math.round(topPct)}%!</span>`;
+        performanceMessage = 'Ranking unavailable.';
       }
-    } else {
-      performanceMessage = 'Ranking unavailable.';
+
+      // Update the main benchmark message
+      const messageEl = document.getElementById('benchmarkMessage');
+      if (messageEl) messageEl.innerHTML = performanceMessage;
+
+      // Keep average/participants visible
+      const total = (benchmark && benchmark.totalResponses) != null ? benchmark.totalResponses : null;
+      const avg = benchmark && benchmark.context && benchmark.context.averageScore;
+      const totalEl = document.getElementById('benchmarkTotal');
+      const avgEl = document.getElementById('benchmarkAverage');
+      if (totalEl) totalEl.textContent = total != null ? String(total).toLocaleString() : '--';
+      if (avgEl) avgEl.textContent = (avg != null ? avg : '--');
+
+      console.log('Benchmark display updated with top percentage:', topPercentage);
+    } catch (e) {
+      console.warn('displayBenchmarkResults failed', e);
+      try {
+        const messageEl = document.getElementById('benchmarkMessage');
+        if (messageEl) messageEl.textContent = 'Ranking unavailable.';
+      } catch(_) {}
     }
-    
-    // Update the main benchmark message
-    const messageEl = document.getElementById('benchmarkMessage');
-    messageEl.innerHTML = performanceMessage;
-    
-    // Removed 'Your Score' row from UI; keep average/participants only
-    document.getElementById('benchmarkTotal').textContent = benchmark.totalResponses.toLocaleString();
-    document.getElementById('benchmarkAverage').textContent = benchmark.context.averageScore || '--';
-    
-    console.log('Benchmark display updated with top percentage:', topPercentage);
   }
   
   // Button event listeners - immediate record; visual feedback handled via :active CSS
