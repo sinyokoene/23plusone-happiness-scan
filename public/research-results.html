@@ -50,6 +50,9 @@
         <label class="inline-flex items-center gap-2">
           <input id="filterExclusive" type="checkbox" class="align-middle"> <span>Exclusive only</span>
         </label>
+        <label class="inline-flex items-center gap-2">
+          <input id="filterNoTimeouts" type="checkbox" class="align-middle"> <span>No timeouts</span>
+        </label>
         <label class="inline-flex items-center gap-1">
           <span>Threshold ≥</span>
           <input id="filterThreshold" type="number" min="0" max="100" step="5" placeholder="50" class="border rounded px-2 py-1 w-16">
@@ -147,13 +150,14 @@
                   <th>Measure</th>
                   <th>n</th>
                   <th>r</th>
+                  <th>ρ</th>
                   <th>p</th>
                 </tr>
               </thead>
               <tbody></tbody>
             </table>
           </div>
-          <p class="text-[11px] opacity-80 mt-2">p: the p‑value for the correlation’s significance. Smaller means less likely by chance.</p>
+          <p class="text-[11px] opacity-80 mt-2">p: the p‑value for the correlation’s significance. Smaller means less likely by chance. ρ: Spearman’s rho (rank‑based), useful for monotonic but non‑linear relationships and reducing outlier influence.</p>
         </div>
       </div>
       <div class="col-12">
