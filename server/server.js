@@ -822,7 +822,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
 
       // Fetch scan data for those sessions
       const { rows: scanRows } = await mainClient.query(
-        `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, card_selections
+        `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, card_selections, user_agent
          FROM scan_responses
          WHERE session_id = ANY($1::text[])`, [sessionIds]
       );
