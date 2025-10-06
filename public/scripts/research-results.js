@@ -426,6 +426,7 @@
       const line1 = [{x:xMin, y: t1.slope*xMin+t1.intercept}, {x:xMax, y: t1.slope*xMax+t1.intercept}];
       const line2 = [{x:xMin, y: t2.slope*xMin+t2.intercept}, {x:xMax, y: t2.slope*xMax+t2.intercept}];
       const line3 = [{x:xMin, y: t3.slope*xMin+t3.intercept}, {x:xMax, y: t3.slope*xMax+t3.intercept}];
+      const xTitle = (metric === 'swls') ? 'SWLS (5–35)' : (metric === 'cantril' ? 'Cantril (0–10)' : 'WHO‑5 %');
       n123Scatter = new Chart(n123Canvas, {
         ...scatterCommon,
         data: { datasets: [
@@ -435,7 +436,14 @@
           { type: 'line', label: 'N2 trend', data: line2, borderColor: 'rgba(16,185,129,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 },
           { label: `N3 vs ${metric.toUpperCase()} (r=${r3.toFixed(2)})`, data: p3, backgroundColor: 'rgba(236,72,153,.4)' },
           { type: 'line', label: 'N3 trend', data: line3, borderColor: 'rgba(236,72,153,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 }
-        ] }
+        ] },
+        options: {
+          ...scatterCommon.options,
+          scales: {
+            x: { beginAtZero: true, title: { display: true, text: xTitle } },
+            y: { beginAtZero: true, title: { display: true, text: 'IHS (0–100)' } }
+          }
+        }
       });
     }
 
