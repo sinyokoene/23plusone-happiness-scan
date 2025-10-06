@@ -461,9 +461,9 @@
     if (overallCorrTbody) {
       overallCorrTbody.replaceChildren();
       const rows = [
-        { m: 'WHO‑5 %', n: xsWho5.length, r: rWho5 },
-        { m: 'SWLS (5–35)', n: xsSwls.length, r: rSwls },
-        { m: 'Cantril (0–10)', n: xsCan.length, r: rCan }
+        { m: 'WHO‑5 %', n: xsWho5.length, r: rWho5, p: pWho5 },
+        { m: 'SWLS (5–35)', n: xsSwls.length, r: rSwls, p: pSwls },
+        { m: 'Cantril (0–10)', n: xsCan.length, r: rCan, p: pCan }
       ];
       const colorBadge = (v) => {
         const av = Math.abs(Number(v||0));
@@ -477,7 +477,7 @@
       };
       rows.forEach(rw => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${rw.m}</td><td>${rw.n}</td><td>${colorBadge(rw.r)}</td>`;
+        tr.innerHTML = `<td>${rw.m}</td><td>${rw.n}</td><td>${colorBadge(rw.r)}</td><td>${rw.p===null?'—':rw.p.toExponential(2)}</td>`;
         overallCorrTbody.appendChild(tr);
       });
     }
