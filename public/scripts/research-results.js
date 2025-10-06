@@ -461,9 +461,9 @@
     if (overallCorrTbody) {
       overallCorrTbody.replaceChildren();
       const rows = [
-        { m: 'WHO‑5 %', n: xsWho5.length, r: rWho5, p: pWho5, slope: ols(xsWho5, ysWho5).slope, note: 'cutoff 50 shown' },
-        { m: 'SWLS (5–35)', n: xsSwls.length, r: rSwls, p: pSwls, slope: ols(xsSwls, ysSwls).slope, note: 'category lines shown' },
-        { m: 'Cantril (0–10)', n: xsCan.length, r: rCan, p: pCan, slope: ols(xsCan, ysCan).slope, note: '' }
+        { m: 'WHO‑5 %', n: xsWho5.length, r: rWho5 },
+        { m: 'SWLS (5–35)', n: xsSwls.length, r: rSwls },
+        { m: 'Cantril (0–10)', n: xsCan.length, r: rCan }
       ];
       const colorBadge = (v) => {
         const av = Math.abs(Number(v||0));
@@ -477,7 +477,7 @@
       };
       rows.forEach(rw => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${rw.m}</td><td>${rw.n}</td><td>${colorBadge(rw.r)}</td><td>${rw.p===null?'—':rw.p.toExponential(2)}</td><td>${Number(rw.slope||0).toFixed(2)}</td><td>${rw.note}</td>`;
+        tr.innerHTML = `<td>${rw.m}</td><td>${rw.n}</td><td>${colorBadge(rw.r)}</td>`;
         overallCorrTbody.appendChild(tr);
       });
     }
