@@ -204,6 +204,18 @@
       </div>
       <div class="col-12">
         <div class="card">
+          <h2 class="text-lg font-semibold mb-2">Card Selection Ranking (Yes counts)</h2>
+          <p class="text-xs opacity-80 mb-2">Ranked by how many times each card was selected “Yes” across the filtered dataset.</p>
+          <div style="overflow:auto;">
+            <table id="cardYesRankingTable">
+              <thead><tr><th>Rank</th><th>Card</th><th>Yes count</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card">
           <div class="flex items-center justify-between mb-2">
             <h2 class="text-lg font-semibold">Latest Entries</h2>
             <label class="text-sm opacity-80">Limit <input id="limitInput" type="number" value="200" class="border rounded px-2 py-1 w-20"></label>

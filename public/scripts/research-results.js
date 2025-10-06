@@ -17,6 +17,7 @@
   const domainCorrTbody = document.querySelector('#domainCorrTable tbody');
   const cardTopWhoTbody = document.querySelector('#cardTopWho tbody');
   const cardBottomWhoTbody = document.querySelector('#cardBottomWho tbody');
+  const cardYesRankingTbody = document.querySelector('#cardYesRankingTable tbody');
   const filterDevice = document.getElementById('filterDevice');
   const modClick = document.getElementById('modClick');
   const modSwipe = document.getElementById('modSwipe');
@@ -544,6 +545,36 @@
       }
       renderCardRows(cardTopWhoTbody, top);
       renderCardRows(cardBottomWhoTbody, bottom);
+
+      // Card Yes frequency ranking (from raw entries)
+      if (cardYesRankingTbody) {
+        const yesCounts = new Map(); // cardId -> { count, label }
+        entries.forEach(e => {
+          const sel = e && e.selections && e.selections.allResponses;
+          if (!Array.isArray(sel)) return;
+          sel.forEach(r => {
+            if (!r || r.response !== true) return;
+            const cid = Number(r.cardId);
+            if (!Number.isFinite(cid)) return;
+            const prev = yesCounts.get(cid) || { count: 0, label: r.label || '' };
+            yesCounts.set(cid, { count: prev.count + 1, label: prev.label || r.label || '' });
+          });
+        });
+        // Combine domain color and label from mapping where available
+        const rows = Array.from(yesCounts.entries()).map(([cid, v]) => {
+          const domain = cardIdToDomain.get(cid) || '';
+          const color = domainColors[domain] || '#9ca3af';
+          const dot = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>`;
+          const name = v.label ? `${cid} · ${v.label}` : String(cid);
+          return { cid, name: `${dot}${name}`, count: v.count };
+        }).sort((a,b)=> b.count - a.count);
+        cardYesRankingTbody.replaceChildren();
+        rows.forEach((row, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${idx+1}</td><td>${row.name}</td><td>${row.count}</td>`;
+          cardYesRankingTbody.appendChild(tr);
+        });
+      }
     } catch (e) {
       // Non-fatal if analytics endpoint is unavailable
       console.warn('Correlation analytics failed', e);
