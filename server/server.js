@@ -776,8 +776,8 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const device = String(req.query.device || '').toLowerCase(); // 'mobile' | 'desktop' | ''
     const modality = String(req.query.modality || '').toLowerCase(); // 'click' | 'swipe' | 'arrow' | ''
     const exclusive = String(req.query.exclusive || '').toLowerCase() === 'true';
+    const excludeTimeouts = String(req.query.excludeTimeouts || '').toLowerCase() === 'true';
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
-    const noTimeouts = String(req.query.noTimeouts || '').toLowerCase() === 'true';
     const researchClient = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -858,7 +858,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
       } else if (device === 'desktop') {
         joined = joined.filter(j => !isMobileUA(j.scan_user_agent));
       }
-      if (modality || exclusive || (threshold != null) || noTimeouts) {
+      if (modality || exclusive || excludeTimeouts || (threshold != null)) {
         const matchers = {
           click: (m) => m === 'click',
           swipe: (m) => m === 'swipe-touch' || m === 'swipe-mouse',
@@ -868,14 +868,14 @@ app.get('/api/analytics/correlations', async (req, res) => {
           const all = j.selections?.allResponses;
           if (!Array.isArray(all)) return false;
           let counts = { click:0, swipe:0, arrow:0, other:0, total:0 };
-          let hasTimeout = false;
           for (const e of all) {
             const v = String(e?.inputModality || '').toLowerCase();
             if (matchers.click(v)) counts.click++; else if (matchers.swipe(v)) counts.swipe++; else if (matchers.arrow(v)) counts.arrow++; else counts.other++;
             counts.total++;
-            if (e && e.response === null) hasTimeout = true;
           }
-          if (noTimeouts && hasTimeout) return false;
+          if (excludeTimeouts) {
+            if (all.some(e => e && e.response === null)) return false;
+          }
           // modality presence (any)
           if (modality) {
             if (modality === 'click' && counts.click === 0) return false;

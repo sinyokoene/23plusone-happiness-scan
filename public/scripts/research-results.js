@@ -118,32 +118,6 @@
     return (dx && dy) ? (num/Math.sqrt(dx*dy)) : 0;
   }
 
-  function rankArray(values){
-    const n = values.length;
-    if (n === 0) return [];
-    // Pair values with indices and sort by value
-    const pairs = values.map((v,i)=>({ v: Number(v), i })).sort((a,b)=>a.v-b.v);
-    const ranks = new Array(n);
-    let i = 0;
-    while (i < n) {
-      let j = i + 1;
-      while (j < n && pairs[j].v === pairs[i].v) j++;
-      // average rank for ties (1-based ranks)
-      const avgRank = (i + 1 + j) / 2;
-      for (let k = i; k < j; k++) ranks[pairs[k].i] = avgRank;
-      i = j;
-    }
-    return ranks;
-  }
-
-  function spearman(x, y){
-    const n = Math.min(x.length, y.length);
-    if (n < 2) return 0;
-    const xr = rankArray(x.slice(0, n));
-    const yr = rankArray(y.slice(0, n));
-    return corr(xr, yr);
-  }
-
   function ols(x, y){
     const n = Math.min(x.length, y.length);
     if (n < 2) return { slope: 0, intercept: 0 };
@@ -481,25 +455,22 @@
       });
     }
 
-    // Correlations (Pearson r and Spearman rho)
+    // Correlations
     const xsWho5 = who5Pairs.map(p=>p.x), ysWho5 = who5Pairs.map(p=>p.y);
     const xsSwls = swlsPairs.map(p=>p.x), ysSwls = swlsPairs.map(p=>p.y);
     const xsCan = cantrilPairs.map(p=>p.x), ysCan = cantrilPairs.map(p=>p.y);
     const rWho5 = xsWho5.length ? corr(xsWho5, ysWho5) : 0;
     const rSwls = xsSwls.length ? corr(xsSwls, ysSwls) : 0;
     const rCan = xsCan.length ? corr(xsCan, ysCan) : 0;
-    const rhoWho5 = xsWho5.length ? spearman(xsWho5, ysWho5) : 0;
-    const rhoSwls = xsSwls.length ? spearman(xsSwls, ysSwls) : 0;
-    const rhoCan = xsCan.length ? spearman(xsCan, ysCan) : 0;
     const pWho5 = pValuePearson(rWho5, xsWho5.length);
     const pSwls = pValuePearson(rSwls, xsSwls.length);
     const pCan = xsCan.length ? pValuePearson(rCan, xsCan.length) : null;
     if (overallCorrTbody) {
       overallCorrTbody.replaceChildren();
       const rows = [
-        { m: 'WHO‑5 %', n: xsWho5.length, r: rWho5, rho: rhoWho5 },
-        { m: 'SWLS (5–35)', n: xsSwls.length, r: rSwls, rho: rhoSwls },
-        { m: 'Cantril (0–10)', n: xsCan.length, r: rCan, rho: rhoCan }
+        { m: 'WHO‑5 %', n: xsWho5.length, r: rWho5, p: pWho5 },
+        { m: 'SWLS (5–35)', n: xsSwls.length, r: rSwls, p: pSwls },
+        { m: 'Cantril (0–10)', n: xsCan.length, r: rCan, p: pCan }
       ];
       const colorBadge = (v) => {
         const av = Math.abs(Number(v||0));
@@ -513,7 +484,7 @@
       };
       rows.forEach(rw => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${rw.m}</td><td>${rw.n}</td><td>${colorBadge(rw.r)}</td><td>${colorBadge(rw.rho)}</td><td>${(rw.n>=3? (pValuePearson(rw.r, rw.n)?.toExponential(2) || '—') : '—')}</td>`;
+        tr.innerHTML = `<td>${rw.m}</td><td>${rw.n}</td><td>${colorBadge(rw.r)}</td><td>${rw.p===null?'—':rw.p.toExponential(2)}</td>`;
         overallCorrTbody.appendChild(tr);
       });
     }
@@ -526,7 +497,6 @@
       const dev = (filterDevice && filterDevice.value) || '';
       const q = new URLSearchParams({ limit: String(limit) });
       if (dev) q.set('device', dev);
-      if (noTimeoutsOnly) q.set('noTimeouts', 'true');
       // Server correlations allow a single modality value; if multiple are checked, omit and rely on client-side distributions
       const selectedMods = [
         modClick && modClick.checked ? 'click' : null,
@@ -534,6 +504,10 @@
         modArrow && modArrow.checked ? 'arrow' : null
       ].filter(Boolean);
       if (selectedMods.length === 1) q.set('modality', selectedMods[0]);
+      if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
+      if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
+      const thresholdPct = Number(filterThreshold && filterThreshold.value ? filterThreshold.value : NaN);
+      if (!Number.isNaN(thresholdPct) && selectedMods.length === 1) q.set('threshold', String(thresholdPct));
       const corrRes = await fetch(`/api/analytics/correlations?${q.toString()}`);
       const corrJson = await corrRes.json();
       const domains = corrJson.domains || [];
