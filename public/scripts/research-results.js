@@ -14,6 +14,7 @@
   const n123MetricLabel = document.getElementById('n123MetricLabel');
   const statsWho5El = document.getElementById('statsWho5');
   const statsSwlsEl = document.getElementById('statsSwls');
+  const overallCorrTbody = document.querySelector('#overallCorrTable tbody');
   const domainCorrTbody = document.querySelector('#domainCorrTable tbody');
   const cardTopWhoTbody = document.querySelector('#cardTopWho tbody');
   const cardBottomWhoTbody = document.querySelector('#cardBottomWho tbody');
@@ -457,8 +458,29 @@
     const pWho5 = pValuePearson(rWho5, xsWho5.length);
     const pSwls = pValuePearson(rSwls, xsSwls.length);
     const pCan = xsCan.length ? pValuePearson(rCan, xsCan.length) : null;
-    if (statsWho5El) statsWho5El.textContent = `n=${xsWho5.length}  r(WHO‑5%, IHS)=${rWho5.toFixed(2)}  p=${pWho5===null?'—':pWho5.toExponential(2)}  slope=${ols(xsWho5, ysWho5).slope.toFixed(2)}  (cutoff 50 shown)`;
-    if (statsSwlsEl) statsSwlsEl.textContent = `n=${xsSwls.length}  r(SWLS[5–35], IHS)=${rSwls.toFixed(2)}  p=${pSwls===null?'—':pSwls.toExponential(2)}  slope=${ols(xsSwls, ysSwls).slope.toFixed(2)}  (category lines shown)  |  n_can=${xsCan.length} r(Cantril, IHS)=${rCan.toFixed(2)} ${pCan===null?'':`p=${pCan.toExponential(2)}`}`;
+    if (overallCorrTbody) {
+      overallCorrTbody.replaceChildren();
+      const rows = [
+        { m: 'WHO‑5 %', n: xsWho5.length, r: rWho5, p: pWho5, slope: ols(xsWho5, ysWho5).slope, note: 'cutoff 50 shown' },
+        { m: 'SWLS (5–35)', n: xsSwls.length, r: rSwls, p: pSwls, slope: ols(xsSwls, ysSwls).slope, note: 'category lines shown' },
+        { m: 'Cantril (0–10)', n: xsCan.length, r: rCan, p: pCan, slope: ols(xsCan, ysCan).slope, note: '' }
+      ];
+      const colorBadge = (v) => {
+        const av = Math.abs(Number(v||0));
+        let bg = '#e5e7eb', fg = '#111827';
+        if (av >= 0.9) { bg = 'rgba(236,72,153,.20)'; fg = '#831843'; }
+        else if (av >= 0.7) { bg = 'rgba(168,85,247,.20)'; fg = '#581c87'; }
+        else if (av >= 0.5) { bg = 'rgba(16,185,129,.18)'; fg = '#065f46'; }
+        else if (av >= 0.3) { bg = 'rgba(59,130,246,.18)'; fg = '#1e3a8a'; }
+        else if (av >= 0.1) { bg = 'rgba(250,204,21,.20)'; fg = '#854d0e'; }
+        return `<span style="display:inline-block;min-width:44px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${Number(v||0).toFixed(2)}</span>`;
+      };
+      rows.forEach(rw => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${rw.m}</td><td>${rw.n}</td><td>${colorBadge(rw.r)}</td><td>${rw.p===null?'—':rw.p.toExponential(2)}</td><td>${Number(rw.slope||0).toFixed(2)}</td><td>${rw.note}</td>`;
+        overallCorrTbody.appendChild(tr);
+      });
+    }
 
     // Fetch server-side correlations for domains and cards
     try {
