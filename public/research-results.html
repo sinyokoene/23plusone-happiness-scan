@@ -97,6 +97,18 @@
       </div>
       <div class="col-12">
         <div class="card">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-lg font-semibold">Response Time by Card</h2>
+            <label class="text-sm opacity-80">Card
+              <select id="cardTimeSelector" class="border rounded px-2 py-1 text-sm" style="min-width:220px"></select>
+            </label>
+          </div>
+          <p class="text-xs opacity-80 mb-2">Histogram of response times for the selected card (0–4000 ms). Timeouts are excluded.</p>
+          <canvas id="cardTimeChart"></canvas>
+        </div>
+      </div>
+      <div class="col-12">
+        <div class="card">
           <h2 class="text-xl font-semibold">Vs IHS</h2>
           <p class="text-xs opacity-80 mt-1">Correlation (<em>r</em>) shows whether two things move together: near +1 = higher X with higher Y; near 0 = no clear link; near −1 = higher X with lower Y. Correlation is not causation.</p>
         </div>

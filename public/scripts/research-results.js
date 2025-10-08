@@ -27,8 +27,11 @@
   const filterNoTimeouts = document.getElementById('filterNoTimeouts');
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
+  const cardTimeSelector = document.getElementById('cardTimeSelector');
+  const cardTimeCanvas = document.getElementById('cardTimeChart');
 
   let who5Chart, swlsChart, cantrilChart, ihsChart, who5Scatter, swlsScatter, cantrilScatter, n123Scatter;
+  let cardTimeChart;
   let currentEntries = [];
 
   // Card/domain mapping for colored dots
@@ -338,6 +341,31 @@
     renderTable(currentEntries);
     renderCharts(currentEntries);
 
+    // Build card selector options once we have entries and mapping
+    await ensureCardDomains();
+    if (cardTimeSelector && cardTimeSelector.options.length === 0) {
+      // Derive card list from data (with labels if present)
+      const cardLabels = new Map();
+      currentEntries.forEach(e => {
+        const sel = e && e.selections && e.selections.allResponses;
+        if (!Array.isArray(sel)) return;
+        sel.forEach(r => {
+          const cid = Number(r && r.cardId);
+          if (!Number.isFinite(cid)) return;
+          if (!cardLabels.has(cid)) cardLabels.set(cid, r && r.label ? r.label : '');
+        });
+      });
+      const sorted = Array.from(cardLabels.entries()).sort((a,b)=>a[0]-b[0]);
+      cardTimeSelector.innerHTML = '';
+      sorted.forEach(([cid, label]) => {
+        const opt = document.createElement('option');
+        opt.value = String(cid);
+        opt.textContent = label ? `${cid} · ${label}` : String(cid);
+        cardTimeSelector.appendChild(opt);
+      });
+    }
+    renderCardTimeHistogram();
+
     // Build arrays for scatter plots from the same dataset, keeping only rows with IHS
     const who5TotalsAll = entries.map(e => SCALE.who5(sum(e.who5||[]))); // percent
     const swlsTotalsAll = entries.map(e => SCALE.swls(sum(e.swls||[]))); // 5–35
@@ -622,9 +650,46 @@
     }
   }
 
+  function renderCardTimeHistogram(){
+    if (!cardTimeCanvas || !cardTimeSelector) return;
+    const selectedCid = Number(cardTimeSelector.value || NaN);
+    if (!Number.isFinite(selectedCid)) return;
+    // Collect response times (ms) for the selected card, excluding null timeouts
+    const times = [];
+    currentEntries.forEach(e => {
+      const sel = e && e.selections && e.selections.allResponses;
+      if (!Array.isArray(sel)) return;
+      sel.forEach(r => {
+        const cid = Number(r && r.cardId);
+        if (!Number.isFinite(cid) || cid !== selectedCid) return;
+        const resp = r && r.response;
+        if (resp === null || r.responseTime == null) return; // exclude timeouts
+        const t = Number(r.responseTime);
+        if (!Number.isFinite(t)) return;
+        const clamped = Math.max(0, Math.min(4000, t));
+        times.push(clamped);
+      });
+    });
+    // 0..4000 ms in 250 ms bins => 16 bins
+    const binSize = 250;
+    const bins = new Array(17).fill(0);
+    const labels = Array.from({length:17}, (_,i)=> i*binSize);
+    times.forEach(t => {
+      const idx = Math.max(0, Math.min(16, Math.floor(t / binSize)));
+      bins[idx]++;
+    });
+    if (cardTimeChart) cardTimeChart.destroy();
+    cardTimeChart = new Chart(cardTimeCanvas, {
+      type: 'bar',
+      data: { labels, datasets: [{ label: `Response time (ms) for card ${selectedCid}`, data: bins, backgroundColor: 'rgba(234,88,12,.5)' }] },
+      options: { responsive: true, scales: { x: { ticks: { callback: (v)=>labels[v] } }, y: { beginAtZero: true } } }
+    });
+  }
+
   limitInput.addEventListener('change', load);
   if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', load);
   if (n123MetricSel) n123MetricSel.addEventListener('change', load);
+  if (cardTimeSelector) cardTimeSelector.addEventListener('change', renderCardTimeHistogram);
   // Sorting: make multiple headers clickable with arrows and toggling
   (function attachSorting(){
     const table = document.getElementById('resultsTable');
