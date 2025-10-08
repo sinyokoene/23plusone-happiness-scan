@@ -195,26 +195,23 @@ const researchPool = new Pool({
 
 console.log('🔌 DB URL source resolved:', resolvedDbUrl ? 'set' : 'missing');
 
-// Runtime schema feature detection (local vs Supabase differences)
-let hasIpAddressColumn = null; // lazily detected
-async function detectSchemaFeatures(client) {
-  if (hasIpAddressColumn !== null) return;
+// One-time startup migration: drop deprecated ip_address column if present
+async function dropIpAddressColumnIfExists() {
   try {
-    const res = await client.query(
-      `SELECT 1 FROM information_schema.columns
-       WHERE table_schema='public' AND table_name='scan_responses' AND column_name='ip_address'`
-    );
-    hasIpAddressColumn = res.rowCount > 0;
-    console.log(`🧭 Schema detection: ip_address ${hasIpAddressColumn ? 'present' : 'absent'}`);
+    const client = await pool.connect();
+    try {
+      await client.query('ALTER TABLE scan_responses DROP COLUMN IF EXISTS ip_address');
+      console.log('🧹 Dropped ip_address column if it existed');
+    } finally {
+      client.release();
+    }
   } catch (e) {
-    hasIpAddressColumn = false;
-    console.warn('Schema detection failed; assuming no ip_address column');
+    console.warn('Startup migration: could not drop ip_address column', e?.message || e);
   }
 }
+dropIpAddressColumnIfExists();
 
 // Basic abuse controls (configurable via env)
-const RATE_LIMIT_WINDOW_MIN = parseInt(process.env.RATE_LIMIT_WINDOW_MIN || '10', 10);
-const RATE_LIMIT_MAX_PER_IP = parseInt(process.env.RATE_LIMIT_MAX_PER_IP || '40', 10);
 // 0 means "ever" (reject any duplicate session_id)
 const DUPLICATE_SESSION_WINDOW_MIN = process.env.DUPLICATE_SESSION_WINDOW_MIN === undefined
   ? 0
@@ -232,16 +229,7 @@ async function isDuplicateSession(client, sessionId) {
   return rows.length > 0;
 }
 
-async function isRateLimitedByIp(client, ip) {
-  if (!ip) return false;
-  if (!hasIpAddressColumn) return false;
-  const { rows } = await client.query(
-    `SELECT COUNT(*)::int AS cnt FROM scan_responses WHERE ip_address = $1 AND created_at > now() - interval '${RATE_LIMIT_WINDOW_MIN} minutes'`,
-    [ip]
-  );
-  const cnt = rows?.[0]?.cnt || 0;
-  return cnt >= RATE_LIMIT_MAX_PER_IP;
-}
+// Removed IP-based rate limiting and storage
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -535,60 +523,29 @@ app.post('/api/responses', async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Detect schema once and insert accordingly
-      await detectSchemaFeatures(client);
-
       // Duplicate session protection
       if (await isDuplicateSession(client, sessionId)) {
         return res.status(409).json({ error: 'Duplicate submission', reason: 'Session already submitted' });
       }
-
-      // Per-IP rate limit (if ip column is present)
-      const requestIp = req.ip || null;
-      if (await isRateLimitedByIp(client, requestIp)) {
-        return res.status(429).json({ error: 'Rate limit exceeded', reason: `Max ${RATE_LIMIT_MAX_PER_IP} per ${RATE_LIMIT_WINDOW_MIN} min` });
-      }
-      let result;
-      if (hasIpAddressColumn) {
-        result = await client.query(
-          `INSERT INTO scan_responses 
-           (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, ip_address, selected_count, rejected_count)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-           RETURNING id`,
-          [
-            sessionId, 
-            JSON.stringify(cardSelections), 
-            ihsScore,
-            n1Score || 0,
-            n2Score || 0, 
-            n3Score || 0,
-            completionTime || 0,
-            userAgent || null,
-            requestIp || null,
-            cardSelections?.selected?.length || 0,
-            cardSelections?.rejected?.length || 0
-          ]
-        );
-      } else {
-        result = await client.query(
-          `INSERT INTO scan_responses 
-           (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, selected_count, rejected_count)
-           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-           RETURNING id`,
-          [
-            sessionId, 
-            JSON.stringify(cardSelections), 
-            ihsScore,
-            n1Score || 0,
-            n2Score || 0, 
-            n3Score || 0,
-            completionTime || 0,
-            userAgent || null,
-            cardSelections?.selected?.length || 0,
-            cardSelections?.rejected?.length || 0
-          ]
-        );
-      }
+      // Insert scan response (IP column removed)
+      const result = await client.query(
+        `INSERT INTO scan_responses 
+         (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, selected_count, rejected_count)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         RETURNING id`,
+        [
+          sessionId, 
+          JSON.stringify(cardSelections), 
+          ihsScore,
+          n1Score || 0,
+          n2Score || 0, 
+          n3Score || 0,
+          completionTime || 0,
+          userAgent || null,
+          cardSelections?.selected?.length || 0,
+          cardSelections?.rejected?.length || 0
+        ]
+      );
       
       console.log(`✅ Valid scan saved: ${sessionId} (${cardSelections.selected?.length || 0} selected)`);
       
