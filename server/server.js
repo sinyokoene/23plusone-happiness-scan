@@ -620,7 +620,7 @@ app.post('/api/research', async (req, res) => {
 // Query research results (latest N, or by date range)
 app.get('/api/research-results', async (req, res) => {
   try {
-    const { limit = 500, from, to, includeNoIhs, includeScanDetails } = req.query;
+    const { limit = 700, from, to, includeNoIhs, includeScanDetails } = req.query;
     const client = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -643,7 +643,7 @@ app.get('/api/research-results', async (req, res) => {
       if (from) { params.push(from); clauses.push(`created_at >= $${params.length}`); }
       if (to) { params.push(to); clauses.push(`created_at <= $${params.length}`); }
       if (clauses.length) query += ' WHERE ' + clauses.join(' AND ');
-      params.push(Math.min(parseInt(limit, 10) || 500, 1000));
+      params.push(Math.min(parseInt(limit, 10) || 700, 1000));
       query += ` ORDER BY created_at DESC LIMIT $${params.length}`;
       const result = await client.query(query, params);
 
