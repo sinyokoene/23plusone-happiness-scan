@@ -643,7 +643,7 @@ app.get('/api/research-results', async (req, res) => {
       if (from) { params.push(from); clauses.push(`created_at >= $${params.length}`); }
       if (to) { params.push(to); clauses.push(`created_at <= $${params.length}`); }
       if (clauses.length) query += ' WHERE ' + clauses.join(' AND ');
-      params.push(Math.min(parseInt(limit, 10) || 700, 1000));
+      params.push(Math.min(parseInt(limit, 10) || 700, 1500));
       query += ` ORDER BY created_at DESC LIMIT $${params.length}`;
       const result = await client.query(query, params);
 
