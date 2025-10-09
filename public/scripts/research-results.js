@@ -330,7 +330,7 @@
   }
 
   async function load(){
-    const limit = parseInt(limitInput.value, 10) || 700;
+    const limit = parseInt(limitInput.value, 10) || 1500;
     // Fetch entries with scan details for filtering (device/modality)
     const res = await fetch(`/api/research-results?limit=${limit}&includeNoIhs=false&includeScanDetails=true`);
     const json = await res.json();
