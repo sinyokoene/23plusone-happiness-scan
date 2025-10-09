@@ -27,6 +27,7 @@
   const filterNoTimeouts = document.getElementById('filterNoTimeouts');
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
+  const cardCorrMetric = document.getElementById('cardCorrMetric');
   const cardTimeSelector = document.getElementById('cardTimeSelector');
   const cardTimeCanvas = document.getElementById('cardTimeChart');
 
@@ -105,6 +106,37 @@
       const n = Math.min(v.yes.length, v.can.length);
       if (n >= 3){
         const r = corr(v.yes, v.can);
+        out.set(cid, { r, n });
+      }
+    });
+    return out;
+  }
+
+  // Compute per-card correlation between Cantril and time-weighted affirmation (positive Yes strength)
+  function computeCardAffirmVsCantril(entries){
+    const acc = new Map(); // cardId -> { affirm:[], can:[] }
+    const timeMultiplier = (ms) => { const t = Math.max(0, Math.min(4000, Number(ms)||0)); const lin=(4000 - t)/4000; return Math.sqrt(Math.max(0, lin)); };
+    entries.forEach(e => {
+      const can = (e.cantril==null?null:Number(e.cantril));
+      if (can==null || Number.isNaN(can)) return;
+      const sel = e.selections && e.selections.allResponses;
+      if (!Array.isArray(sel)) return;
+      sel.forEach(r => {
+        const cid = Number(r && r.cardId);
+        if (!Number.isFinite(cid)) return;
+        let slot = acc.get(cid); if (!slot){ slot = { affirm: [], can: [] }; acc.set(cid, slot); }
+        // Only count positive Yes strength; No/timeout contribute 0
+        const isYes = r && r.response === true;
+        const aff = isYes ? (4 * timeMultiplier(r && r.responseTime)) : 0;
+        slot.affirm.push(aff);
+        slot.can.push(can);
+      });
+    });
+    const out = new Map();
+    acc.forEach((v, cid) => {
+      const n = Math.min(v.affirm.length, v.can.length);
+      if (n >= 3){
+        const r = corr(v.affirm, v.can);
         out.set(cid, { r, n });
       }
     });
@@ -519,8 +551,9 @@
 
     // Fetch server-side correlations for domains and cards
     try {
-      // Pre-compute client-side Cantril correlations per card from raw entries
-      const cantrilByCard = computeCardYesVsCantril(entries);
+      // Pre-compute client-side Cantril correlations per card from raw entries (Yes or Affirm per metric)
+      const metricIsAffirm = (cardCorrMetric && cardCorrMetric.value === 'affirm');
+      const cantrilByCard = metricIsAffirm ? computeCardAffirmVsCantril(entries) : computeCardYesVsCantril(entries);
       await ensureCardDomains();
       const dev = (filterDevice && filterDevice.value) || '';
       const q = new URLSearchParams({ limit: String(limit) });
@@ -690,6 +723,7 @@
   if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', load);
   if (n123MetricSel) n123MetricSel.addEventListener('change', load);
   if (cardTimeSelector) cardTimeSelector.addEventListener('change', renderCardTimeHistogram);
+  if (cardCorrMetric) cardCorrMetric.addEventListener('change', load);
   // Sorting: make multiple headers clickable with arrows and toggling
   (function attachSorting(){
     const table = document.getElementById('resultsTable');
