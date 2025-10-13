@@ -45,12 +45,12 @@
             </select>
           </label>
           <label>Country
-            <select id="filterCountry" class="border rounded px-2 py-1 w-56">
+            <select id="filterCountry" class="border rounded px-2 py-1 w-56" style="position:relative; z-index:30; background:#fff; pointer-events:auto;">
               <option value="">Any</option>
             </select>
           </label>
-          <label>Exclude Countries
-            <select id="excludeCountries" multiple size="8" class="border rounded px-2 py-1 w-64" title="Hold Cmd/Ctrl to select multiple"></select>
+          <label>Exclude Countries <span id="excludeCount" class="opacity-70 text-xs"></span>
+            <select id="excludeCountries" multiple size="8" class="border rounded px-2 py-1 w-64" title="Hold Cmd/Ctrl to select multiple" style="position:relative; z-index:30; background:#fff; pointer-events:auto;"></select>
           </label>
           <label>Age ≥
             <input id="filterAgeMin" type="number" min="0" max="120" class="border rounded px-2 py-1 w-16" />

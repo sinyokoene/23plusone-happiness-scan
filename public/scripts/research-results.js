@@ -23,6 +23,7 @@
   const filterSex = document.getElementById('filterSex');
   const filterCountry = document.getElementById('filterCountry');
   const excludeCountries = document.getElementById('excludeCountries');
+  const excludeCountEl = document.getElementById('excludeCount');
   const filterAgeMin = document.getElementById('filterAgeMin');
   const filterAgeMax = document.getElementById('filterAgeMax');
   const modClick = document.getElementById('modClick');
@@ -378,6 +379,9 @@
     if (excludeCountries && excludeCountries.selectedOptions && excludeCountries.selectedOptions.length > 0) {
       const ex = Array.from(excludeCountries.selectedOptions).map(o=>o.value).filter(Boolean);
       if (ex.length) params.set('excludeCountries', ex.join(','));
+      if (excludeCountEl) excludeCountEl.textContent = `(${ex.length} selected)`;
+    } else {
+      if (excludeCountEl) excludeCountEl.textContent = '';
     }
     if (filterAgeMin && filterAgeMin.value) params.set('ageMin', filterAgeMin.value);
     if (filterAgeMax && filterAgeMax.value) params.set('ageMax', filterAgeMax.value);
@@ -412,6 +416,8 @@
           excludeCountries.appendChild(opt);
           if (prevEx.has(name)) opt.selected = true;
         });
+        const current = Array.from(excludeCountries.selectedOptions).length;
+        if (excludeCountEl) excludeCountEl.textContent = current ? `(${current} selected)` : '';
       }
     }
     // Apply client-side filters (device, modality, exclusivity, threshold)
