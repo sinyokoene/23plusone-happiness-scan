@@ -667,7 +667,7 @@ app.post('/api/research', async (req, res) => {
 // Query research results (latest N, or by date range)
 app.get('/api/research-results', async (req, res) => {
   try {
-    const { limit = 700, from, to, includeNoIhs, includeScanDetails, sex, country, ageMin, ageMax } = req.query;
+    const { limit = 700, from, to, includeNoIhs, includeScanDetails, sex, country, ageMin, ageMax, excludeCountries } = req.query;
     const client = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -697,6 +697,14 @@ app.get('/api/research-results', async (req, res) => {
       if (to) { params.push(to); clauses.push(`created_at <= $${params.length}`); }
       if (demo && sex) { params.push(String(sex)); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
       if (demo && country) { params.push(String(country)); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
+      if (demo && excludeCountries) {
+        const ex = String(excludeCountries).split(',').map(s=>s.trim()).filter(Boolean);
+        if (ex.length) {
+          const placeholders = ex.map((_,i)=>`$${params.length + i + 1}`).join(',');
+          params.push(...ex);
+          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${placeholders})`);
+        }
+      }
       if (demo && ageMin) { params.push(Number(ageMin)); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
       if (demo && ageMax) { params.push(Number(ageMax)); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
       if (clauses.length) query += ' WHERE ' + clauses.join(' AND ');

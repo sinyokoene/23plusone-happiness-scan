@@ -22,6 +22,7 @@
   const filterDevice = document.getElementById('filterDevice');
   const filterSex = document.getElementById('filterSex');
   const filterCountry = document.getElementById('filterCountry');
+  const excludeCountries = document.getElementById('excludeCountries');
   const filterAgeMin = document.getElementById('filterAgeMin');
   const filterAgeMax = document.getElementById('filterAgeMax');
   const modClick = document.getElementById('modClick');
@@ -374,13 +375,17 @@
     const params = new URLSearchParams({ limit: String(limit), includeNoIhs: 'false', includeScanDetails: 'true' });
     if (filterSex && filterSex.value) params.set('sex', filterSex.value);
     if (filterCountry && filterCountry.value) params.set('country', filterCountry.value);
+    if (excludeCountries && excludeCountries.selectedOptions && excludeCountries.selectedOptions.length > 0) {
+      const ex = Array.from(excludeCountries.selectedOptions).map(o=>o.value).filter(Boolean);
+      if (ex.length) params.set('excludeCountries', ex.join(','));
+    }
     if (filterAgeMin && filterAgeMin.value) params.set('ageMin', filterAgeMin.value);
     if (filterAgeMax && filterAgeMax.value) params.set('ageMax', filterAgeMax.value);
     const res = await fetch(`/api/research-results?${params.toString()}`);
     const json = await res.json();
     let entries = json.entries || [];
     // Populate country dropdown from returned entries (distinct, sorted)
-    if (filterCountry && filterCountry.tagName === 'SELECT') {
+    if ((filterCountry && filterCountry.tagName === 'SELECT') || (excludeCountries && excludeCountries.tagName === 'SELECT')) {
       const set = new Map(); // country -> count
       entries.forEach(e => {
         const c = (e.demo_country || '').trim();
@@ -397,6 +402,17 @@
         filterCountry.appendChild(opt);
       });
       if (arr.some(([n])=>n===prev)) filterCountry.value = prev;
+      // Populate exclude multi-select
+      if (excludeCountries) {
+        const prevEx = new Set(Array.from(excludeCountries.selectedOptions).map(o=>o.value));
+        excludeCountries.innerHTML = '';
+        arr.forEach(([name, count]) => {
+          const opt = document.createElement('option');
+          opt.value = name; opt.textContent = `${name} (${count})`;
+          excludeCountries.appendChild(opt);
+          if (prevEx.has(name)) opt.selected = true;
+        });
+      }
     }
     // Apply client-side filters (device, modality, exclusivity, threshold)
     entries = entries.filter(entryMatchesFilters);
