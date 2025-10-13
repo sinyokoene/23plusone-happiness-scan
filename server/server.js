@@ -213,6 +213,7 @@ dropIpAddressColumnIfExists();
 
 // Detect demographics table/columns once per process
 let detectedDemographics = null; // { table, pidCol, sexCol, ageCol, countryCol }
+function qIdent(name){ return '"' + String(name).replace(/"/g, '""') + '"'; }
 async function detectDemographics(client) {
   if (detectedDemographics !== null) return detectedDemographics;
   const tableCandidates = ['prolific_participants', 'prolific_demographic', 'prolofic_demographic'];
@@ -222,16 +223,24 @@ async function detectDemographics(client) {
       [table]
     );
     if (!rows || rows.length === 0) return null;
-    const cols = rows.map(r => String(r.column_name).toLowerCase());
-    const pick = (cands) => cands.find(c => cols.includes(c));
-    const pidCol = pick(['prolific_pid', 'prolific_id', 'participant_id']);
+    const colsExact = rows.map(r => String(r.column_name));
+    const colsNorm = colsExact.map(c => c.toLowerCase().replace(/[\s_]+/g, ''));
+    const pick = (cands) => {
+      for (const cand of cands) {
+        const norm = cand.toLowerCase().replace(/[\s_]+/g, '');
+        const idx = colsNorm.indexOf(norm);
+        if (idx !== -1) return colsExact[idx];
+      }
+      return null;
+    };
+    const pidCol = pick(['prolific_pid','prolific id','prolific_id','participant id','participant_id','prolificid']);
     if (!pidCol) return null;
     return {
       table,
       pidCol,
-      sexCol: pick(['sex', 'gender']) || null,
-      ageCol: pick(['age', 'age_years']) || null,
-      countryCol: pick(['country_of_residence', 'country', 'residence_country']) || null
+      sexCol: pick(['sex','gender']) || null,
+      ageCol: pick(['age','age years','age_years']) || null,
+      countryCol: pick(['country of residence','country_of_residence','country','residence country','residence_country']) || null
     };
   };
   for (const t of tableCandidates) {
@@ -677,8 +686,8 @@ app.get('/api/research-results', async (req, res) => {
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
       // Demographics join (dynamic table/column detection)
       const demo = await detectDemographics(mainClient);
-      const demoSelect = demo ? `, d.${demo.sexCol || 'sex'} AS demo_sex, d.${demo.ageCol || 'age'} AS demo_age, d.${demo.countryCol || 'country_of_residence'} AS demo_country` : '';
-      const demoJoin = demo ? ` LEFT JOIN ${demo.table} d ON d.${demo.pidCol} = re.prolific_pid` : '';
+      const demoSelect = demo ? `, d.${qIdent(demo.sexCol || 'sex')} AS demo_sex, d.${qIdent(demo.ageCol || 'age')} AS demo_age, d.${qIdent(demo.countryCol || 'country_of_residence')} AS demo_country` : '';
+      const demoJoin = demo ? ` LEFT JOIN ${qIdent(demo.table)} d ON d.${qIdent(demo.pidCol)} = re.prolific_pid` : '';
       let query = `SELECT re.id, re.session_id, re.who5, re.swls, re.cantril, re.user_agent, re.created_at,
                           re.prolific_pid, re.prolific_study_id, re.prolific_session_id${demoSelect}
                    FROM research_entries re${demoJoin}`;
@@ -686,10 +695,10 @@ app.get('/api/research-results', async (req, res) => {
       const clauses = [];
       if (from) { params.push(from); clauses.push(`created_at >= $${params.length}`); }
       if (to) { params.push(to); clauses.push(`created_at <= $${params.length}`); }
-      if (demo && sex) { params.push(sex); clauses.push(`d.${demo.sexCol || 'sex'} = $${params.length}`); }
-      if (demo && country) { params.push(country); clauses.push(`d.${demo.countryCol || 'country_of_residence'} = $${params.length}`); }
-      if (demo && ageMin) { params.push(Number(ageMin)); clauses.push(`d.${demo.ageCol || 'age'} >= $${params.length}`); }
-      if (demo && ageMax) { params.push(Number(ageMax)); clauses.push(`d.${demo.ageCol || 'age'} <= $${params.length}`); }
+      if (demo && sex) { params.push(sex); clauses.push(`d.${qIdent(demo.sexCol || 'sex')} = $${params.length}`); }
+      if (demo && country) { params.push(country); clauses.push(`d.${qIdent(demo.countryCol || 'country_of_residence')} = $${params.length}`); }
+      if (demo && ageMin) { params.push(Number(ageMin)); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
+      if (demo && ageMax) { params.push(Number(ageMax)); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
       if (clauses.length) query += ' WHERE ' + clauses.join(' AND ');
       params.push(Math.min(parseInt(limit, 10) || 700, 1500));
       query += ` ORDER BY re.created_at DESC LIMIT $${params.length}`;
