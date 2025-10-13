@@ -800,6 +800,12 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const exclusive = String(req.query.exclusive || '').toLowerCase() === 'true';
     const excludeTimeouts = String(req.query.excludeTimeouts || '').toLowerCase() === 'true';
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
+    // Demographics filters
+    const sex = req.query.sex ? String(req.query.sex) : '';
+    const country = req.query.country ? String(req.query.country) : '';
+    const ageMin = Number.isFinite(Number(req.query.ageMin)) ? Number(req.query.ageMin) : null;
+    const ageMax = Number.isFinite(Number(req.query.ageMax)) ? Number(req.query.ageMax) : null;
+    const excludeCountries = req.query.excludeCountries ? String(req.query.excludeCountries) : '';
     const researchClient = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -816,12 +822,32 @@ app.get('/api/analytics/correlations', async (req, res) => {
         )`
       );
 
-      // Pull latest research rows
+      // Pull latest research rows with optional demographics filtering
+      const demo = await detectDemographics(researchClient);
+      const demoJoin = demo ? ` LEFT JOIN ${qIdent(demo.table)} d ON d.${qIdent(demo.pidCol)} = re.prolific_pid` : '';
+      const clauses = [];
+      const params = [];
+      if (demo && sex) { params.push(sex); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
+      if (demo && country) { params.push(country); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
+      if (demo && ageMin != null) { params.push(ageMin); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
+      if (demo && ageMax != null) { params.push(ageMax); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
+      if (demo && excludeCountries) {
+        const ex = excludeCountries.split(',').map(s=>s.trim()).filter(Boolean);
+        if (ex.length) {
+          const placeholders = ex.map((_,i)=>`$${params.length + i + 1}`).join(',');
+          params.push(...ex);
+          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${placeholders})`);
+        }
+      }
+      params.push(limit);
+      const whereSql = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
       const { rows: researchRows } = await researchClient.query(
-        `SELECT session_id, who5, swls, cantril, created_at
-         FROM research_entries
-         ORDER BY created_at DESC
-         LIMIT $1`, [limit]
+        `SELECT re.session_id, re.who5, re.swls, re.cantril, re.created_at
+         FROM research_entries re${demoJoin}
+         ${whereSql}
+         ORDER BY re.created_at DESC
+         LIMIT $${params.length}`,
+        params
       );
       const rBySession = new Map();
       for (const r of researchRows) {
