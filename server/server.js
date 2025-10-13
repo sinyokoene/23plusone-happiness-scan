@@ -667,7 +667,7 @@ app.post('/api/research', async (req, res) => {
 // Query research results (latest N, or by date range)
 app.get('/api/research-results', async (req, res) => {
   try {
-    const { limit = 700, from, to, includeNoIhs, includeScanDetails, sex, country, ageMin, ageMax, excludeCountries } = req.query;
+    const { limit = 700, from, to, includeNoIhs, includeScanDetails, sex, country, countries, ageMin, ageMax, excludeCountries } = req.query;
     const client = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -697,6 +697,14 @@ app.get('/api/research-results', async (req, res) => {
       if (to) { params.push(to); clauses.push(`created_at <= $${params.length}`); }
       if (demo && sex) { params.push(String(sex)); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
       if (demo && country) { params.push(String(country)); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
+      if (demo && countries) {
+        const inc = String(countries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+        if (inc.length) {
+          const placeholders = inc.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
+          params.push(...inc);
+          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) IN (${placeholders})`);
+        }
+      }
       if (demo && excludeCountries) {
         const ex = String(excludeCountries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
         if (ex.length) {
@@ -803,6 +811,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
     // Demographics filters
     const sex = req.query.sex ? String(req.query.sex) : '';
     const country = req.query.country ? String(req.query.country) : '';
+    const countries = req.query.countries ? String(req.query.countries) : '';
     const ageMin = Number.isFinite(Number(req.query.ageMin)) ? Number(req.query.ageMin) : null;
     const ageMax = Number.isFinite(Number(req.query.ageMax)) ? Number(req.query.ageMax) : null;
     const excludeCountries = req.query.excludeCountries ? String(req.query.excludeCountries) : '';
@@ -829,6 +838,14 @@ app.get('/api/analytics/correlations', async (req, res) => {
       const params = [];
       if (demo && sex) { params.push(sex); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
       if (demo && country) { params.push(country); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
+      if (demo && countries) {
+        const inc = countries.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+        if (inc.length) {
+          const placeholders = inc.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
+          params.push(...inc);
+          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) IN (${placeholders})`);
+        }
+      }
       if (demo && ageMin != null) { params.push(ageMin); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
       if (demo && ageMax != null) { params.push(ageMax); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
       if (demo && excludeCountries) {

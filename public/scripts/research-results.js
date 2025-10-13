@@ -24,6 +24,9 @@
   const filterCountry = document.getElementById('filterCountry');
   const excludeCountries = document.getElementById('excludeCountries');
   const excludeCountEl = document.getElementById('excludeCount');
+  const includeCountEl = document.getElementById('includeCount');
+  const includeList = document.getElementById('includeList');
+  const excludeList = document.getElementById('excludeList');
   const filterAgeMin = document.getElementById('filterAgeMin');
   const filterAgeMax = document.getElementById('filterAgeMax');
   const modClick = document.getElementById('modClick');
@@ -375,7 +378,14 @@
     // Fetch entries with scan details for filtering (device/modality)
     const params = new URLSearchParams({ limit: String(limit), includeNoIhs: 'false', includeScanDetails: 'true' });
     if (filterSex && filterSex.value) params.set('sex', filterSex.value);
-    if (filterCountry && filterCountry.value) params.set('country', filterCountry.value);
+    if (filterCountry && filterCountry.selectedOptions && filterCountry.selectedOptions.length > 0) {
+      const inc = Array.from(filterCountry.selectedOptions).map(o=>o.value).filter(Boolean);
+      if (inc.length === 1) params.set('country', inc[0]);
+      if (inc.length > 1) params.set('countries', inc.join(','));
+      if (includeCountEl) includeCountEl.textContent = inc.length ? `(${inc.length} selected)` : '';
+    } else if (includeCountEl) {
+      includeCountEl.textContent = '';
+    }
     if (excludeCountries && excludeCountries.selectedOptions && excludeCountries.selectedOptions.length > 0) {
       const ex = Array.from(excludeCountries.selectedOptions).map(o=>o.value).filter(Boolean);
       if (ex.length) params.set('excludeCountries', ex.join(','));
@@ -397,15 +407,45 @@
       });
       const arr = Array.from(set.entries()).sort((a,b)=> a[0].localeCompare(b[0]));
       // Rebuild options each load to keep counts accurate
-      const prev = filterCountry.value;
+      const prevInc = new Set(Array.from(filterCountry.selectedOptions || []).map(o=>o.value));
       filterCountry.innerHTML = '';
       const any = document.createElement('option'); any.value = ''; any.textContent = 'Any'; filterCountry.appendChild(any);
       arr.forEach(([name, count]) => {
         const opt = document.createElement('option');
         opt.value = name; opt.textContent = `${name} (${count})`;
+        if (prevInc.has(name)) opt.selected = true;
         filterCountry.appendChild(opt);
       });
-      if (arr.some(([n])=>n===prev)) filterCountry.value = prev;
+      // Build include checkbox dropdown list
+      if (includeList) {
+        const prevSet = new Set(Array.from(filterCountry.selectedOptions || []).map(o=>o.value));
+        includeList.innerHTML = '';
+        arr.forEach(([name, count]) => {
+          const id = 'inc_' + name.replace(/\W+/g,'_');
+          const wrapper = document.createElement('label');
+          wrapper.className = 'flex items-center gap-2 text-sm mb-1';
+          const cb = document.createElement('input');
+          cb.type = 'checkbox'; cb.id = id; cb.value = name; cb.checked = prevSet.has(name);
+          cb.addEventListener('change', () => {
+            // sync to hidden select
+            const opt = Array.from(filterCountry.options).find(o=>o.value===name);
+            if (opt) opt.selected = cb.checked;
+            if (includeCountEl) {
+              const inc = Array.from(filterCountry.selectedOptions || []).map(o=>o.value).filter(Boolean);
+              includeCountEl.textContent = inc.length ? `(${inc.length} selected)` : '';
+            }
+            load();
+          });
+          const span = document.createElement('span');
+          span.textContent = `${name} (${count})`;
+          wrapper.appendChild(cb); wrapper.appendChild(span);
+          includeList.appendChild(wrapper);
+        });
+        if (includeCountEl) {
+          const inc = Array.from(filterCountry.selectedOptions || []).map(o=>o.value).filter(Boolean);
+          includeCountEl.textContent = inc.length ? `(${inc.length} selected)` : '';
+        }
+      }
       // Populate exclude multi-select
       if (excludeCountries) {
         const prevEx = new Set(Array.from(excludeCountries.selectedOptions).map(o=>o.value));
@@ -418,6 +458,28 @@
         });
         const current = Array.from(excludeCountries.selectedOptions).length;
         if (excludeCountEl) excludeCountEl.textContent = current ? `(${current} selected)` : '';
+        // Build exclude checkbox dropdown list
+        if (excludeList) {
+          excludeList.innerHTML = '';
+          arr.forEach(([name, count]) => {
+            const id = 'exc_' + name.replace(/\W+/g,'_');
+            const wrapper = document.createElement('label');
+            wrapper.className = 'flex items-center gap-2 text-sm mb-1';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox'; cb.id = id; cb.value = name; cb.checked = prevEx.has(name);
+            cb.addEventListener('change', () => {
+              const opt = Array.from(excludeCountries.options).find(o=>o.value===name);
+              if (opt) opt.selected = cb.checked;
+              const ex = Array.from(excludeCountries.selectedOptions).map(o=>o.value).filter(Boolean);
+              if (excludeCountEl) excludeCountEl.textContent = ex.length ? `(${ex.length} selected)` : '';
+              load();
+            });
+            const span = document.createElement('span');
+            span.textContent = `${name} (${count})`;
+            wrapper.appendChild(cb); wrapper.appendChild(span);
+            excludeList.appendChild(wrapper);
+          });
+        }
       }
     }
     // Apply client-side filters (device, modality, exclusivity, threshold)
@@ -622,7 +684,11 @@
       if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
       // Pass demographics filters through to correlations so n matches
       if (filterSex && filterSex.value) q.set('sex', filterSex.value);
-      if (filterCountry && filterCountry.value) q.set('country', filterCountry.value);
+      if (filterCountry && filterCountry.selectedOptions && filterCountry.selectedOptions.length > 0) {
+        const inc = Array.from(filterCountry.selectedOptions).map(o=>o.value).filter(Boolean);
+        if (inc.length === 1) q.set('country', inc[0]);
+        if (inc.length > 1) q.set('countries', inc.join(','));
+      }
       if (excludeCountries && excludeCountries.selectedOptions && excludeCountries.selectedOptions.length > 0) {
         const ex = Array.from(excludeCountries.selectedOptions).map(o=>o.value).filter(Boolean);
         if (ex.length) q.set('excludeCountries', ex.join(','));

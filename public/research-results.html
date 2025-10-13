@@ -45,12 +45,20 @@
             </select>
           </label>
           <label>Country
-            <select id="filterCountry" class="border rounded px-2 py-1 w-56" style="position:relative; z-index:30; background:#fff; pointer-events:auto;">
+            <details id="includeDropdown" class="inline-block relative">
+              <summary class="border rounded px-2 py-1 w-56 cursor-pointer select-none">Select countries <span id="includeCount" class="opacity-70 text-xs"></span></summary>
+              <div id="includeList" class="absolute z-40 bg-white border rounded mt-1 p-2 max-h-64 overflow-auto w-64"></div>
+            </details>
+            <select id="filterCountry" multiple class="border rounded px-2 py-1 w-56" style="display:none;">
               <option value="">Any</option>
             </select>
           </label>
           <label>Exclude Countries <span id="excludeCount" class="opacity-70 text-xs"></span>
-            <select id="excludeCountries" multiple size="8" class="border rounded px-2 py-1 w-64" title="Hold Cmd/Ctrl to select multiple" style="position:relative; z-index:30; background:#fff; pointer-events:auto;"></select>
+            <details id="excludeDropdown" class="inline-block relative">
+              <summary class="border rounded px-2 py-1 w-64 cursor-pointer select-none">Select to exclude</summary>
+              <div id="excludeList" class="absolute z-40 bg-white border rounded mt-1 p-2 max-h-64 overflow-auto w-64"></div>
+            </details>
+            <select id="excludeCountries" multiple class="border rounded px-2 py-1 w-64" title="Hold Cmd/Ctrl to select multiple" style="display:none;"></select>
           </label>
           <label>Age ≥
             <input id="filterAgeMin" type="number" min="0" max="120" class="border rounded px-2 py-1 w-16" />
