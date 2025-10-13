@@ -698,11 +698,11 @@ app.get('/api/research-results', async (req, res) => {
       if (demo && sex) { params.push(String(sex)); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
       if (demo && country) { params.push(String(country)); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
       if (demo && excludeCountries) {
-        const ex = String(excludeCountries).split(',').map(s=>s.trim()).filter(Boolean);
+        const ex = String(excludeCountries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
         if (ex.length) {
-          const placeholders = ex.map((_,i)=>`$${params.length + i + 1}`).join(',');
+          const loweredPlaceholders = ex.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
           params.push(...ex);
-          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${placeholders})`);
+          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${loweredPlaceholders})`);
         }
       }
       if (demo && ageMin) { params.push(Number(ageMin)); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
@@ -832,11 +832,11 @@ app.get('/api/analytics/correlations', async (req, res) => {
       if (demo && ageMin != null) { params.push(ageMin); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
       if (demo && ageMax != null) { params.push(ageMax); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
       if (demo && excludeCountries) {
-        const ex = excludeCountries.split(',').map(s=>s.trim()).filter(Boolean);
+        const ex = excludeCountries.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
         if (ex.length) {
-          const placeholders = ex.map((_,i)=>`$${params.length + i + 1}`).join(',');
+          const loweredPlaceholders = ex.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
           params.push(...ex);
-          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${placeholders})`);
+          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${loweredPlaceholders})`);
         }
       }
       params.push(limit);
