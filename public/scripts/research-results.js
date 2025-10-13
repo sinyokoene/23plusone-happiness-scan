@@ -631,6 +631,7 @@
       if (filterAgeMax && filterAgeMax.value) q.set('ageMax', filterAgeMax.value);
       const thresholdPct = Number(filterThreshold && filterThreshold.value ? filterThreshold.value : NaN);
       if (!Number.isNaN(thresholdPct) && selectedMods.length === 1) q.set('threshold', String(thresholdPct));
+      q.set('limit', String(limit));
       const corrRes = await fetch(`/api/analytics/correlations?${q.toString()}`);
       const corrJson = await corrRes.json();
       const domains = corrJson.domains || [];
