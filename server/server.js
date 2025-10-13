@@ -620,7 +620,7 @@ app.post('/api/research', async (req, res) => {
 // Query research results (latest N, or by date range)
 app.get('/api/research-results', async (req, res) => {
   try {
-    const { limit = 700, from, to, includeNoIhs, includeScanDetails } = req.query;
+    const { limit = 700, from, to, includeNoIhs, includeScanDetails, sex, country, ageMin, ageMax } = req.query;
     const client = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -637,14 +637,22 @@ app.get('/api/research-results', async (req, res) => {
       );
       // Ensure cantril column exists for older tables
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
-      let query = 'SELECT id, session_id, who5, swls, cantril, user_agent, created_at, prolific_pid, prolific_study_id, prolific_session_id FROM research_entries';
+      let query = `SELECT re.id, re.session_id, re.who5, re.swls, re.cantril, re.user_agent, re.created_at,
+                          re.prolific_pid, re.prolific_study_id, re.prolific_session_id,
+                          pp.sex AS demo_sex, pp.age AS demo_age, pp.country_of_residence AS demo_country
+                   FROM research_entries re
+                   LEFT JOIN prolific_participants pp ON pp.prolific_pid = re.prolific_pid`;
       const params = [];
       const clauses = [];
       if (from) { params.push(from); clauses.push(`created_at >= $${params.length}`); }
       if (to) { params.push(to); clauses.push(`created_at <= $${params.length}`); }
+      if (sex) { params.push(sex); clauses.push(`pp.sex = $${params.length}`); }
+      if (country) { params.push(country); clauses.push(`pp.country_of_residence = $${params.length}`); }
+      if (ageMin) { params.push(Number(ageMin)); clauses.push(`pp.age >= $${params.length}`); }
+      if (ageMax) { params.push(Number(ageMax)); clauses.push(`pp.age <= $${params.length}`); }
       if (clauses.length) query += ' WHERE ' + clauses.join(' AND ');
       params.push(Math.min(parseInt(limit, 10) || 700, 1500));
-      query += ` ORDER BY created_at DESC LIMIT $${params.length}`;
+      query += ` ORDER BY re.created_at DESC LIMIT $${params.length}`;
       const result = await client.query(query, params);
 
       // Fetch IHS per session_id from main DB and merge

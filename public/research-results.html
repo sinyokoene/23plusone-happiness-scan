@@ -35,6 +35,24 @@
             <option value="desktop">Desktop</option>
           </select>
         </label>
+          <div class="h-5 w-px bg-gray-300"></div>
+          <label>Sex
+            <select id="filterSex" class="border rounded px-2 py-1">
+              <option value="">Any</option>
+              <option value="female">Female</option>
+              <option value="male">Male</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <label>Country
+            <input id="filterCountry" type="text" placeholder="e.g., United Kingdom" class="border rounded px-2 py-1 w-48" />
+          </label>
+          <label>Age ≥
+            <input id="filterAgeMin" type="number" min="0" max="120" class="border rounded px-2 py-1 w-16" />
+          </label>
+          <label>≤
+            <input id="filterAgeMax" type="number" min="0" max="120" class="border rounded px-2 py-1 w-16" />
+          </label>
         <div class="flex items-center gap-2">
           <span>Input:</span>
           <label class="inline-flex items-center gap-1">
@@ -256,7 +274,7 @@
           </div>
           <div style="overflow:auto; max-height: 420px;">
             <table id="resultsTable">
-              <thead><tr><th>ID</th><th>Created</th><th>Session</th><th>PROLIFIC_PID</th><th>STUDY_ID</th><th>SESSION_ID</th><th>Device</th><th>Time (s)</th><th>Selected</th><th>Rejected</th><th>Timeouts</th><th>WHO‑5</th><th>SWLS</th><th>Cantril</th><th>IHS</th></tr></thead>
+              <thead><tr><th>ID</th><th>Created</th><th>Session</th><th>PROLIFIC_PID</th><th>STUDY_ID</th><th>SESSION_ID</th><th>Sex</th><th>Age</th><th>Country</th><th>Device</th><th>Time (s)</th><th>Selected</th><th>Rejected</th><th>Timeouts</th><th>WHO‑5</th><th>SWLS</th><th>Cantril</th><th>IHS</th></tr></thead>
               <tbody></tbody>
             </table>
           </div>

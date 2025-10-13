@@ -20,6 +20,10 @@
   const cardBottomWhoTbody = document.querySelector('#cardBottomWho tbody');
   const cardYesRankingTbody = document.querySelector('#cardYesRankingTable tbody');
   const filterDevice = document.getElementById('filterDevice');
+  const filterSex = document.getElementById('filterSex');
+  const filterCountry = document.getElementById('filterCountry');
+  const filterAgeMin = document.getElementById('filterAgeMin');
+  const filterAgeMax = document.getElementById('filterAgeMax');
   const modClick = document.getElementById('modClick');
   const modSwipe = document.getElementById('modSwipe');
   const modArrow = document.getElementById('modArrow');
@@ -188,6 +192,9 @@
         <td>${e.prolific_pid || ''}</td>
         <td>${e.prolific_study_id || ''}</td>
         <td>${e.prolific_session_id || ''}</td>
+        <td>${e.demo_sex || ''}</td>
+        <td>${e.demo_age == null ? '' : e.demo_age}</td>
+        <td>${e.demo_country || ''}</td>
         <td>${deviceLabel(e)}</td>
         <td>${timeSec}</td>
         <td>${selected}</td>
@@ -364,7 +371,12 @@
   async function load(){
     const limit = parseInt(limitInput.value, 10) || 1500;
     // Fetch entries with scan details for filtering (device/modality)
-    const res = await fetch(`/api/research-results?limit=${limit}&includeNoIhs=false&includeScanDetails=true`);
+    const params = new URLSearchParams({ limit: String(limit), includeNoIhs: 'false', includeScanDetails: 'true' });
+    if (filterSex && filterSex.value) params.set('sex', filterSex.value);
+    if (filterCountry && filterCountry.value) params.set('country', filterCountry.value);
+    if (filterAgeMin && filterAgeMin.value) params.set('ageMin', filterAgeMin.value);
+    if (filterAgeMax && filterAgeMax.value) params.set('ageMax', filterAgeMax.value);
+    const res = await fetch(`/api/research-results?${params.toString()}`);
     const json = await res.json();
     let entries = json.entries || [];
     // Apply client-side filters (device, modality, exclusivity, threshold)
