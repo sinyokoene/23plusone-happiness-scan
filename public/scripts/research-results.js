@@ -620,6 +620,15 @@
       if (selectedMods.length === 1) q.set('modality', selectedMods[0]);
       if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
       if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
+      // Pass demographics filters through to correlations so n matches
+      if (filterSex && filterSex.value) q.set('sex', filterSex.value);
+      if (filterCountry && filterCountry.value) q.set('country', filterCountry.value);
+      if (excludeCountries && excludeCountries.selectedOptions && excludeCountries.selectedOptions.length > 0) {
+        const ex = Array.from(excludeCountries.selectedOptions).map(o=>o.value).filter(Boolean);
+        if (ex.length) q.set('excludeCountries', ex.join(','));
+      }
+      if (filterAgeMin && filterAgeMin.value) q.set('ageMin', filterAgeMin.value);
+      if (filterAgeMax && filterAgeMax.value) q.set('ageMax', filterAgeMax.value);
       const thresholdPct = Number(filterThreshold && filterThreshold.value ? filterThreshold.value : NaN);
       if (!Number.isNaN(thresholdPct) && selectedMods.length === 1) q.set('threshold', String(thresholdPct));
       const corrRes = await fetch(`/api/analytics/correlations?${q.toString()}`);
