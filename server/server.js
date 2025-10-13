@@ -211,6 +211,44 @@ async function dropIpAddressColumnIfExists() {
 }
 dropIpAddressColumnIfExists();
 
+// Detect demographics table/columns once per process
+let detectedDemographics = null; // { table, pidCol, sexCol, ageCol, countryCol }
+async function detectDemographics(client) {
+  if (detectedDemographics !== null) return detectedDemographics;
+  const tableCandidates = ['prolific_participants', 'prolific_demographic', 'prolofic_demographic'];
+  const pickFirstPresent = async (table) => {
+    const { rows } = await client.query(
+      `SELECT column_name FROM information_schema.columns WHERE table_schema='public' AND table_name=$1`,
+      [table]
+    );
+    if (!rows || rows.length === 0) return null;
+    const cols = rows.map(r => String(r.column_name).toLowerCase());
+    const pick = (cands) => cands.find(c => cols.includes(c));
+    const pidCol = pick(['prolific_pid', 'prolific_id', 'participant_id']);
+    if (!pidCol) return null;
+    return {
+      table,
+      pidCol,
+      sexCol: pick(['sex', 'gender']) || null,
+      ageCol: pick(['age', 'age_years']) || null,
+      countryCol: pick(['country_of_residence', 'country', 'residence_country']) || null
+    };
+  };
+  for (const t of tableCandidates) {
+    try {
+      const found = await pickFirstPresent(t);
+      if (found) {
+        detectedDemographics = found;
+        console.log('🧭 Detected demographics source:', found);
+        return detectedDemographics;
+      }
+    } catch (_) {}
+  }
+  detectedDemographics = null;
+  console.log('🧭 No demographics source detected');
+  return null;
+}
+
 // Basic abuse controls (configurable via env)
 // 0 means "ever" (reject any duplicate session_id)
 const DUPLICATE_SESSION_WINDOW_MIN = process.env.DUPLICATE_SESSION_WINDOW_MIN === undefined
@@ -637,19 +675,21 @@ app.get('/api/research-results', async (req, res) => {
       );
       // Ensure cantril column exists for older tables
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
+      // Demographics join (dynamic table/column detection)
+      const demo = await detectDemographics(mainClient);
+      const demoSelect = demo ? `, d.${demo.sexCol || 'sex'} AS demo_sex, d.${demo.ageCol || 'age'} AS demo_age, d.${demo.countryCol || 'country_of_residence'} AS demo_country` : '';
+      const demoJoin = demo ? ` LEFT JOIN ${demo.table} d ON d.${demo.pidCol} = re.prolific_pid` : '';
       let query = `SELECT re.id, re.session_id, re.who5, re.swls, re.cantril, re.user_agent, re.created_at,
-                          re.prolific_pid, re.prolific_study_id, re.prolific_session_id,
-                          pp.sex AS demo_sex, pp.age AS demo_age, pp.country_of_residence AS demo_country
-                   FROM research_entries re
-                   LEFT JOIN prolific_participants pp ON pp.prolific_pid = re.prolific_pid`;
+                          re.prolific_pid, re.prolific_study_id, re.prolific_session_id${demoSelect}
+                   FROM research_entries re${demoJoin}`;
       const params = [];
       const clauses = [];
       if (from) { params.push(from); clauses.push(`created_at >= $${params.length}`); }
       if (to) { params.push(to); clauses.push(`created_at <= $${params.length}`); }
-      if (sex) { params.push(sex); clauses.push(`pp.sex = $${params.length}`); }
-      if (country) { params.push(country); clauses.push(`pp.country_of_residence = $${params.length}`); }
-      if (ageMin) { params.push(Number(ageMin)); clauses.push(`pp.age >= $${params.length}`); }
-      if (ageMax) { params.push(Number(ageMax)); clauses.push(`pp.age <= $${params.length}`); }
+      if (demo && sex) { params.push(sex); clauses.push(`d.${demo.sexCol || 'sex'} = $${params.length}`); }
+      if (demo && country) { params.push(country); clauses.push(`d.${demo.countryCol || 'country_of_residence'} = $${params.length}`); }
+      if (demo && ageMin) { params.push(Number(ageMin)); clauses.push(`d.${demo.ageCol || 'age'} >= $${params.length}`); }
+      if (demo && ageMax) { params.push(Number(ageMax)); clauses.push(`d.${demo.ageCol || 'age'} <= $${params.length}`); }
       if (clauses.length) query += ' WHERE ' + clauses.join(' AND ');
       params.push(Math.min(parseInt(limit, 10) || 700, 1500));
       query += ` ORDER BY re.created_at DESC LIMIT $${params.length}`;
