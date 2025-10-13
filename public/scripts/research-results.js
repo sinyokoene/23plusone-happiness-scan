@@ -777,6 +777,11 @@
   if (n123MetricSel) n123MetricSel.addEventListener('change', load);
   if (cardTimeSelector) cardTimeSelector.addEventListener('change', renderCardTimeHistogram);
   if (cardCorrMetric) cardCorrMetric.addEventListener('change', load);
+  if (filterSex) filterSex.addEventListener('change', load);
+  if (filterCountry) filterCountry.addEventListener('change', load);
+  if (excludeCountries) excludeCountries.addEventListener('change', load);
+  if (filterAgeMin) filterAgeMin.addEventListener('change', load);
+  if (filterAgeMax) filterAgeMax.addEventListener('change', load);
   // Sorting: make multiple headers clickable with arrows and toggling
   (function attachSorting(){
     const table = document.getElementById('resultsTable');
