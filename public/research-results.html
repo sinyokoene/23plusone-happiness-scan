@@ -16,6 +16,19 @@
     canvas { width: 100%; height: 320px; }
     table { width: 100%; border-collapse: collapse; }
     th, td { border-bottom: 1px solid #eee; padding: 8px; text-align: left; font-size: 12px; }
+    /* Clean filter UI */
+    .filter-bar { display: flex; flex-wrap: wrap; gap: 10px 12px; align-items: center; }
+    .filter-bar label { display: inline-flex; align-items: center; gap: 6px; }
+    details.dropdown { position: relative; display: inline-block; }
+    summary.filter-summary { list-style: none; border: 1px solid #e5e7eb; border-radius: 8px; padding: 6px 10px; background: #fff; min-width: 180px; padding-right: 28px; cursor: pointer; }
+    summary.filter-summary::-webkit-details-marker { display: none; }
+    summary.filter-summary:after { content: '▾'; position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #6b7280; }
+    details[open] > summary.filter-summary { border-color: #f472b6; box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+    .dropdown-menu { position: absolute; top: calc(100% + 6px); left: 0; width: 280px; max-height: 300px; overflow: auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; box-shadow: 0 12px 24px rgba(0,0,0,.12); padding: 8px; z-index: 50; }
+    .dropdown-header { position: sticky; top: 0; background: #fff; padding-bottom: 6px; margin-bottom: 6px; border-bottom: 1px solid #f3f4f6; }
+    .dropdown-header input { width: 100%; border: 1px solid #e5e7eb; border-radius: 6px; padding: 6px 8px; font-size: 13px; }
+    .menu-item { display: flex; align-items: center; gap: 8px; padding: 4px 2px; font-size: 13px; }
+    .counter { opacity: .7; font-size: 11px; }
   </style>
   <script>window.RESEARCH_RESULTS = true;</script>
 </head>
@@ -27,7 +40,7 @@
       <img src="23plusone.png" alt="23plusone" style="height:22px; width:auto;" />
     </div>
     <div class="card mb-4">
-      <div class="flex items-center gap-3 mb-2 text-sm">
+      <div class="filter-bar mb-2 text-sm">
         <label>Device
           <select id="filterDevice" class="border rounded px-2 py-1">
             <option value="">All</option>
@@ -45,18 +58,28 @@
             </select>
           </label>
           <label>Country
-            <details id="includeDropdown" class="inline-block relative">
-              <summary class="border rounded px-2 py-1 w-56 cursor-pointer select-none">Select countries <span id="includeCount" class="opacity-70 text-xs"></span></summary>
-              <div id="includeList" class="absolute z-40 bg-white border rounded mt-1 p-2 max-h-64 overflow-auto w-64"></div>
+            <details id="includeDropdown" class="dropdown">
+              <summary class="filter-summary">Select countries <span id="includeCount" class="counter"></span></summary>
+              <div class="dropdown-menu">
+                <div class="dropdown-header">
+                  <input id="includeSearch" type="text" placeholder="Search countries...">
+                </div>
+                <div id="includeList"></div>
+              </div>
             </details>
             <select id="filterCountry" multiple class="border rounded px-2 py-1 w-56" style="display:none;">
               <option value="">Any</option>
             </select>
           </label>
-          <label>Exclude Countries <span id="excludeCount" class="opacity-70 text-xs"></span>
-            <details id="excludeDropdown" class="inline-block relative">
-              <summary class="border rounded px-2 py-1 w-64 cursor-pointer select-none">Select to exclude</summary>
-              <div id="excludeList" class="absolute z-40 bg-white border rounded mt-1 p-2 max-h-64 overflow-auto w-64"></div>
+          <label>Exclude Countries <span id="excludeCount" class="counter"></span>
+            <details id="excludeDropdown" class="dropdown">
+              <summary class="filter-summary" style="min-width:220px">Select to exclude</summary>
+              <div class="dropdown-menu">
+                <div class="dropdown-header">
+                  <input id="excludeSearch" type="text" placeholder="Search countries...">
+                </div>
+                <div id="excludeList"></div>
+              </div>
             </details>
             <select id="excludeCountries" multiple class="border rounded px-2 py-1 w-64" title="Hold Cmd/Ctrl to select multiple" style="display:none;"></select>
           </label>

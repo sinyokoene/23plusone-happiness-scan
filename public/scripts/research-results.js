@@ -27,6 +27,10 @@
   const includeCountEl = document.getElementById('includeCount');
   const includeList = document.getElementById('includeList');
   const excludeList = document.getElementById('excludeList');
+  const includeSearch = document.getElementById('includeSearch');
+  const excludeSearch = document.getElementById('excludeSearch');
+  const includeDropdown = document.getElementById('includeDropdown');
+  const excludeDropdown = document.getElementById('excludeDropdown');
   const filterAgeMin = document.getElementById('filterAgeMin');
   const filterAgeMax = document.getElementById('filterAgeMax');
   const modClick = document.getElementById('modClick');
@@ -416,31 +420,41 @@
         if (prevInc.has(name)) opt.selected = true;
         filterCountry.appendChild(opt);
       });
-      // Build include checkbox dropdown list
+      // Build include checkbox dropdown list (with search)
       if (includeList) {
         const prevSet = new Set(Array.from(filterCountry.selectedOptions || []).map(o=>o.value));
-        includeList.innerHTML = '';
-        arr.forEach(([name, count]) => {
-          const id = 'inc_' + name.replace(/\W+/g,'_');
-          const wrapper = document.createElement('label');
-          wrapper.className = 'flex items-center gap-2 text-sm mb-1';
-          const cb = document.createElement('input');
-          cb.type = 'checkbox'; cb.id = id; cb.value = name; cb.checked = prevSet.has(name);
-          cb.addEventListener('change', () => {
-            // sync to hidden select
-            const opt = Array.from(filterCountry.options).find(o=>o.value===name);
-            if (opt) opt.selected = cb.checked;
-            if (includeCountEl) {
-              const inc = Array.from(filterCountry.selectedOptions || []).map(o=>o.value).filter(Boolean);
-              includeCountEl.textContent = inc.length ? `(${inc.length} selected)` : '';
-            }
-            load();
+        const renderInclude = (source) => {
+          includeList.innerHTML = '';
+          source.forEach(([name, count]) => {
+            const id = 'inc_' + name.replace(/\W+/g,'_');
+            const wrapper = document.createElement('label');
+            wrapper.className = 'menu-item';
+            const cb = document.createElement('input');
+            cb.type = 'checkbox'; cb.id = id; cb.value = name; cb.checked = prevSet.has(name);
+            cb.addEventListener('change', () => {
+              // sync to hidden select
+              const opt = Array.from(filterCountry.options).find(o=>o.value===name);
+              if (opt) opt.selected = cb.checked;
+              if (includeCountEl) {
+                const inc = Array.from(filterCountry.selectedOptions || []).map(o=>o.value).filter(Boolean);
+                includeCountEl.textContent = inc.length ? `(${inc.length} selected)` : '';
+              }
+              load();
+            });
+            const span = document.createElement('span');
+            span.textContent = `${name} (${count})`;
+            wrapper.appendChild(cb); wrapper.appendChild(span);
+            includeList.appendChild(wrapper);
           });
-          const span = document.createElement('span');
-          span.textContent = `${name} (${count})`;
-          wrapper.appendChild(cb); wrapper.appendChild(span);
-          includeList.appendChild(wrapper);
-        });
+        };
+        renderInclude(arr);
+        if (includeSearch) {
+          includeSearch.oninput = () => {
+            const q = includeSearch.value.trim().toLowerCase();
+            if (!q) { renderInclude(arr); return; }
+            renderInclude(arr.filter(([n]) => n.toLowerCase().includes(q)));
+          };
+        }
         if (includeCountEl) {
           const inc = Array.from(filterCountry.selectedOptions || []).map(o=>o.value).filter(Boolean);
           includeCountEl.textContent = inc.length ? `(${inc.length} selected)` : '';
@@ -458,27 +472,37 @@
         });
         const current = Array.from(excludeCountries.selectedOptions).length;
         if (excludeCountEl) excludeCountEl.textContent = current ? `(${current} selected)` : '';
-        // Build exclude checkbox dropdown list
+        // Build exclude checkbox dropdown list (with search)
         if (excludeList) {
-          excludeList.innerHTML = '';
-          arr.forEach(([name, count]) => {
-            const id = 'exc_' + name.replace(/\W+/g,'_');
-            const wrapper = document.createElement('label');
-            wrapper.className = 'flex items-center gap-2 text-sm mb-1';
-            const cb = document.createElement('input');
-            cb.type = 'checkbox'; cb.id = id; cb.value = name; cb.checked = prevEx.has(name);
-            cb.addEventListener('change', () => {
-              const opt = Array.from(excludeCountries.options).find(o=>o.value===name);
-              if (opt) opt.selected = cb.checked;
-              const ex = Array.from(excludeCountries.selectedOptions).map(o=>o.value).filter(Boolean);
-              if (excludeCountEl) excludeCountEl.textContent = ex.length ? `(${ex.length} selected)` : '';
-              load();
+          const renderExclude = (source) => {
+            excludeList.innerHTML = '';
+            source.forEach(([name, count]) => {
+              const id = 'exc_' + name.replace(/\W+/g,'_');
+              const wrapper = document.createElement('label');
+              wrapper.className = 'menu-item';
+              const cb = document.createElement('input');
+              cb.type = 'checkbox'; cb.id = id; cb.value = name; cb.checked = prevEx.has(name);
+              cb.addEventListener('change', () => {
+                const opt = Array.from(excludeCountries.options).find(o=>o.value===name);
+                if (opt) opt.selected = cb.checked;
+                const ex = Array.from(excludeCountries.selectedOptions).map(o=>o.value).filter(Boolean);
+                if (excludeCountEl) excludeCountEl.textContent = ex.length ? `(${ex.length} selected)` : '';
+                load();
+              });
+              const span = document.createElement('span');
+              span.textContent = `${name} (${count})`;
+              wrapper.appendChild(cb); wrapper.appendChild(span);
+              excludeList.appendChild(wrapper);
             });
-            const span = document.createElement('span');
-            span.textContent = `${name} (${count})`;
-            wrapper.appendChild(cb); wrapper.appendChild(span);
-            excludeList.appendChild(wrapper);
-          });
+          };
+          renderExclude(arr);
+          if (excludeSearch) {
+            excludeSearch.oninput = () => {
+              const q = excludeSearch.value.trim().toLowerCase();
+              if (!q) { renderExclude(arr); return; }
+              renderExclude(arr.filter(([n]) => n.toLowerCase().includes(q)));
+            };
+          }
         }
       }
     }
@@ -858,6 +882,20 @@
   if (excludeCountries) excludeCountries.addEventListener('change', load);
   if (filterAgeMin) filterAgeMin.addEventListener('change', load);
   if (filterAgeMax) filterAgeMax.addEventListener('change', load);
+  // Close dropdowns on outside click
+  (function setupDropdownClose(){
+    function closeIfOutside(e, detailsEl){
+      if (!detailsEl) return;
+      if (!detailsEl.open) return;
+      if (!detailsEl.contains(e.target)) {
+        detailsEl.open = false;
+      }
+    }
+    document.addEventListener('click', (e)=>{
+      closeIfOutside(e, document.getElementById('includeDropdown'));
+      closeIfOutside(e, document.getElementById('excludeDropdown'));
+    });
+  })();
   // Sorting: make multiple headers clickable with arrows and toggling
   (function attachSorting(){
     const table = document.getElementById('resultsTable');
