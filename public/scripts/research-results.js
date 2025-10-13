@@ -379,6 +379,12 @@
     const res = await fetch(`/api/research-results?${params.toString()}`);
     const json = await res.json();
     let entries = json.entries || [];
+    // Populate country dropdown from returned entries (distinct, sorted)
+    if (filterCountry && filterCountry.tagName === 'SELECT' && filterCountry.options.length <= 1) {
+      const set = new Set(entries.map(e => (e.demo_country || '').trim()).filter(Boolean));
+      const arr = Array.from(set).sort((a,b)=> a.localeCompare(b));
+      arr.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = c; filterCountry.appendChild(opt); });
+    }
     // Apply client-side filters (device, modality, exclusivity, threshold)
     entries = entries.filter(entryMatchesFilters);
     currentEntries = entries.slice();
@@ -799,15 +805,16 @@
       });
     }
 
-    // Map required columns
-    makeSortable(8, 'Time (s)', timeSecOf);
-    makeSortable(9, 'Selected', selectedCountOf);
-    makeSortable(10, 'Rejected', rejectedCountOf);
-    makeSortable(11, 'Timeouts', timeoutsCountOf);
-    makeSortable(12, 'WHO-5', who5Of);
-    makeSortable(13, 'SWLS', swlsOf);
-    makeSortable(14, 'Cantril', cantrilOf);
-    makeSortable(15, 'IHS', ihsOf);
+    // Map required columns (adjust indices after adding Sex/Age/Country)
+    // Columns: 1 ID, 2 Created, 3 Session, 4 PID, 5 STUDY_ID, 6 SESSION_ID, 7 Sex, 8 Age, 9 Country, 10 Device, 11 Time, 12 Selected, 13 Rejected, 14 Timeouts, 15 WHO-5, 16 SWLS, 17 Cantril, 18 IHS
+    makeSortable(11, 'Time (s)', timeSecOf);
+    makeSortable(12, 'Selected', selectedCountOf);
+    makeSortable(13, 'Rejected', rejectedCountOf);
+    makeSortable(14, 'Timeouts', timeoutsCountOf);
+    makeSortable(15, 'WHO-5', who5Of);
+    makeSortable(16, 'SWLS', swlsOf);
+    makeSortable(17, 'Cantril', cantrilOf);
+    makeSortable(18, 'IHS', ihsOf);
   })();
   load();
 })();
