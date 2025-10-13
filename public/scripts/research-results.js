@@ -380,10 +380,23 @@
     const json = await res.json();
     let entries = json.entries || [];
     // Populate country dropdown from returned entries (distinct, sorted)
-    if (filterCountry && filterCountry.tagName === 'SELECT' && filterCountry.options.length <= 1) {
-      const set = new Set(entries.map(e => (e.demo_country || '').trim()).filter(Boolean));
-      const arr = Array.from(set).sort((a,b)=> a.localeCompare(b));
-      arr.forEach(c => { const opt = document.createElement('option'); opt.value = c; opt.textContent = c; filterCountry.appendChild(opt); });
+    if (filterCountry && filterCountry.tagName === 'SELECT') {
+      const set = new Map(); // country -> count
+      entries.forEach(e => {
+        const c = (e.demo_country || '').trim();
+        if (!c) return; set.set(c, (set.get(c)||0)+1);
+      });
+      const arr = Array.from(set.entries()).sort((a,b)=> a[0].localeCompare(b[0]));
+      // Rebuild options each load to keep counts accurate
+      const prev = filterCountry.value;
+      filterCountry.innerHTML = '';
+      const any = document.createElement('option'); any.value = ''; any.textContent = 'Any'; filterCountry.appendChild(any);
+      arr.forEach(([name, count]) => {
+        const opt = document.createElement('option');
+        opt.value = name; opt.textContent = `${name} (${count})`;
+        filterCountry.appendChild(opt);
+      });
+      if (arr.some(([n])=>n===prev)) filterCountry.value = prev;
     }
     // Apply client-side filters (device, modality, exclusivity, threshold)
     entries = entries.filter(entryMatchesFilters);
