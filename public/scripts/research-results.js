@@ -683,7 +683,7 @@
       const xMax = metric === 'swls' ? 35 : (metric === 'cantril' ? 10 : 100);
       const line1 = [{x:xMin, y: t1.slope*xMin+t1.intercept}, {x:xMax, y: t1.slope*xMax+t1.intercept}];
       const line2 = [{x:xMin, y: t2.slope*xMin+t2.intercept}, {x:xMax, y: t2.slope*xMax+t2.intercept}];
-      const line3 = [{x:xMin, y: t3.slope*xMin+t3.intercept}, {x:xMax, y: t3.slope*xMax+t3.intercept}];
+      const line3 = [{x:xMin, y: t3.slope*xMin+t3.intercept} , {x:xMax, y: t3.slope*xMax+t3.intercept}];
       const xTitle = (metric === 'swls') ? 'SWLS (5–35)' : (metric === 'cantril' ? 'Cantril (0–10)' : 'WHO‑5 %');
       n123Scatter = new Chart(n123Canvas, {
         ...scatterCommon,
