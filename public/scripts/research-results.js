@@ -38,6 +38,7 @@
   const modArrow = document.getElementById('modArrow');
   const filterExclusive = document.getElementById('filterExclusive');
   const filterNoTimeouts = document.getElementById('filterNoTimeouts');
+  const filterIat = document.getElementById('filterIat');
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
   const cardCorrMetric = document.getElementById('cardCorrMetric');
@@ -306,6 +307,7 @@
     ].filter(Boolean);
     const exclusiveOnly = !!(filterExclusive && filterExclusive.checked);
     const noTimeoutsOnly = !!(filterNoTimeouts && filterNoTimeouts.checked);
+    const iatOnly = !!(filterIat && filterIat.checked);
     const thresholdPct = Number(filterThreshold && filterThreshold.value ? filterThreshold.value : NaN);
 
     if (!wantDevice && wantMods.length === 0 && !exclusiveOnly && !noTimeoutsOnly && (Number.isNaN(thresholdPct))) return true;
@@ -315,7 +317,7 @@
     if (wantDevice === 'desktop' && isMobileUA(ua)) return false;
 
     const sel = entry.selections && entry.selections.allResponses;
-    if ((wantMods.length > 0 || exclusiveOnly || noTimeoutsOnly || !Number.isNaN(thresholdPct)) && !Array.isArray(sel)) return false;
+    if ((wantMods.length > 0 || exclusiveOnly || noTimeoutsOnly || iatOnly || !Number.isNaN(thresholdPct)) && !Array.isArray(sel)) return false;
 
     if (Array.isArray(sel)) {
       const counts = sel.reduce((acc, r) => {
@@ -350,6 +352,21 @@
       if (noTimeoutsOnly) {
         const hasTimeout = sel.some(r => r && r.response === null);
         if (hasTimeout) return false;
+      }
+
+      if (iatOnly) {
+        const total = sel.length;
+        if (total < 24) return false;
+        let invalid = 0;
+        for (const r of sel) {
+          if (!r) { invalid++; continue; }
+          if (r.response === null) { invalid++; continue; }
+          const t = Number(r.responseTime);
+          if (!Number.isFinite(t)) { invalid++; continue; }
+          if (!(t > 300 && t < 2000)) invalid++;
+        }
+        const fracInvalid = total > 0 ? (invalid / total) : 1;
+        if (fracInvalid > 0.10) return false;
       }
 
       if (!Number.isNaN(thresholdPct) && counts.total > 0) {
@@ -706,6 +723,7 @@
       if (selectedMods.length === 1) q.set('modality', selectedMods[0]);
       if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
       if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
+      if (filterIat && filterIat.checked) q.set('iat', 'true');
       // Pass demographics filters through to correlations so n matches
       if (filterSex && filterSex.value) q.set('sex', filterSex.value);
       if (filterCountry && filterCountry.selectedOptions && filterCountry.selectedOptions.length > 0) {
@@ -882,6 +900,7 @@
   if (excludeCountries) excludeCountries.addEventListener('change', load);
   if (filterAgeMin) filterAgeMin.addEventListener('change', load);
   if (filterAgeMax) filterAgeMax.addEventListener('change', load);
+  if (filterIat) filterIat.addEventListener('change', load);
   // Close dropdowns on outside click
   (function setupDropdownClose(){
     function closeIfOutside(e, detailsEl){

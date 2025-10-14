@@ -807,6 +807,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const modality = String(req.query.modality || '').toLowerCase(); // 'click' | 'swipe' | 'arrow' | ''
     const exclusive = String(req.query.exclusive || '').toLowerCase() === 'true';
     const excludeTimeouts = String(req.query.excludeTimeouts || '').toLowerCase() === 'true';
+    const iat = String(req.query.iat || '').toLowerCase() === 'true';
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
     // Demographics filters
     const sex = req.query.sex ? String(req.query.sex) : '';
@@ -923,7 +924,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
       } else if (device === 'desktop') {
         joined = joined.filter(j => !isMobileUA(j.scan_user_agent));
       }
-      if (modality || exclusive || excludeTimeouts || (threshold != null)) {
+      if (modality || exclusive || excludeTimeouts || iat || (threshold != null)) {
         const matchers = {
           click: (m) => m === 'click',
           swipe: (m) => m === 'swipe-touch' || m === 'swipe-mouse',
@@ -940,6 +941,20 @@ app.get('/api/analytics/correlations', async (req, res) => {
           }
           if (excludeTimeouts) {
             if (all.some(e => e && e.response === null)) return false;
+          }
+          if (iat) {
+            const total = all.length;
+            if (total < 24) return false;
+            let invalid = 0;
+            for (const e of all) {
+              if (!e) { invalid++; continue; }
+              if (e.response === null) { invalid++; continue; }
+              const t = Number(e.responseTime);
+              if (!Number.isFinite(t)) { invalid++; continue; }
+              if (!(t > 300 && t < 2000)) invalid++;
+            }
+            const fracInvalid = total > 0 ? (invalid / total) : 1;
+            if (fracInvalid > 0.10) return false;
           }
           // modality presence (any)
           if (modality) {
