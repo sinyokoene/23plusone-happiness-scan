@@ -191,7 +191,16 @@
       </div>
       <div class="col-12">
         <div class="card">
-          <h2 class="text-xl font-semibold">Vs IHS</h2>
+          <div class="flex items-center justify-between">
+            <h2 class="text-xl font-semibold">Vs IHS</h2>
+            <label class="text-xs opacity-80 inline-flex items-center gap-1" title="Correlation method">
+              <span>Correlation</span>
+              <select id="corrMethod" class="border rounded px-2 py-1 w-28">
+                <option value="pearson" selected>Pearson r</option>
+                <option value="spearman">Spearman ρ</option>
+              </select>
+            </label>
+          </div>
           <p class="text-xs opacity-80 mt-1">Correlation (<em>r</em>) shows whether two things move together: near +1 = higher X with higher Y; near 0 = no clear link; near −1 = higher X with lower Y. Correlation is not causation.</p>
         </div>
       </div>
@@ -224,6 +233,7 @@
                   <th>Measure</th>
                   <th>n</th>
                   <th>r</th>
+                  <th>95% CI</th>
                   <th>p</th>
                 </tr>
               </thead>

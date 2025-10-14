@@ -45,6 +45,7 @@
   const cardCorrMetric = document.getElementById('cardCorrMetric');
   const cardTimeSelector = document.getElementById('cardTimeSelector');
   const cardTimeCanvas = document.getElementById('cardTimeChart');
+  const corrMethodSel = document.getElementById('corrMethod');
   const who5ScaleSel = document.getElementById('who5Scale');
   const swlsScaleSel = document.getElementById('swlsScale');
   const who5NEl = document.getElementById('who5N');
@@ -180,15 +181,35 @@
     return (dx && dy) ? (num/Math.sqrt(dx*dy)) : 0;
   }
 
-  function ols(x, y){
+  function rankArray(arr){
+    const ord = arr.map((v,i)=>({v: Number(v), i})).sort((a,b)=>a.v-b.v);
+    const ranks = new Array(arr.length);
+    for (let k=0;k<ord.length;){
+      let j=k; while (j<ord.length && ord[j].v===ord[k].v) j++;
+      const avg = (k + j - 1) / 2 + 1; // average rank (1-based)
+      for (let t=k;t<j;t++) ranks[ord[t].i] = avg;
+      k=j;
+    }
+    return ranks;
+  }
+
+  function spearman(x, y){
     const n = Math.min(x.length, y.length);
-    if (n < 2) return { slope: 0, intercept: 0 };
-    const xm = x.reduce((a,b)=>a+b,0)/n;
-    const ym = y.reduce((a,b)=>a+b,0)/n;
-    let num = 0, den = 0;
-    for (let i=0;i<n;i++) { const xv=x[i]-xm; num += xv*(y[i]-ym); den += xv*xv; }
-    const slope = den ? num/den : 0;
-    return { slope, intercept: ym - slope*xm };
+    if (n < 3) return 0;
+    const xr = rankArray(x.slice(0,n));
+    const yr = rankArray(y.slice(0,n));
+    return corr(xr, yr);
+  }
+
+  function fisherCIZ(r, n){
+    if (!Number.isFinite(r) || n < 4) return null;
+    const z = 0.5 * Math.log((1+r)/(1-r));
+    const se = 1 / Math.sqrt(n - 3);
+    const zLo = z - 1.96*se;
+    const zHi = z + 1.96*se;
+    const rLo = (Math.exp(2*zLo)-1)/(Math.exp(2*zLo)+1);
+    const rHi = (Math.exp(2*zHi)-1)/(Math.exp(2*zHi)+1);
+    return [rLo, rHi];
   }
 
   function pValuePearson(r, n){
@@ -718,9 +739,11 @@
     const xsWho5 = who5Pairs.map(p=>p.x), ysWho5 = who5Pairs.map(p=>p.y);
     const xsSwls = swlsPairs.map(p=>p.x), ysSwls = swlsPairs.map(p=>p.y);
     const xsCan = cantrilPairs.map(p=>p.x), ysCan = cantrilPairs.map(p=>p.y);
-    const rWho5 = xsWho5.length ? corr(xsWho5, ysWho5) : 0;
-    const rSwls = xsSwls.length ? corr(xsSwls, ysSwls) : 0;
-    const rCan = xsCan.length ? corr(xsCan, ysCan) : 0;
+    const method = (corrMethodSel && corrMethodSel.value) || 'pearson';
+    const rFn = method === 'spearman' ? spearman : corr;
+    const rWho5 = xsWho5.length ? rFn(xsWho5, ysWho5) : 0;
+    const rSwls = xsSwls.length ? rFn(xsSwls, ysSwls) : 0;
+    const rCan = xsCan.length ? rFn(xsCan, ysCan) : 0;
     const pWho5 = pValuePearson(rWho5, xsWho5.length);
     const pSwls = pValuePearson(rSwls, xsSwls.length);
     const pCan = xsCan.length ? pValuePearson(rCan, xsCan.length) : null;
@@ -742,8 +765,10 @@
         return `<span style="display:inline-block;min-width:44px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${Number(v||0).toFixed(2)}</span>`;
       };
       rows.forEach(rw => {
+        const ci = fisherCIZ(rw.r, rw.n);
+        const ciText = ci ? `[${ci[0].toFixed(2)}, ${ci[1].toFixed(2)}]` : '—';
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${rw.m}</td><td>${rw.n}</td><td>${colorBadge(rw.r)}</td><td>${rw.p===null?'—':rw.p.toExponential(2)}</td>`;
+        tr.innerHTML = `<td>${rw.m}</td><td>${rw.n}</td><td>${colorBadge(rw.r)}</td><td>${ciText}</td><td>${rw.p===null?'—':rw.p.toExponential(2)}</td>`;
         overallCorrTbody.appendChild(tr);
       });
     }
@@ -941,6 +966,7 @@
   if (n123MetricSel) n123MetricSel.addEventListener('change', load);
   if (cardTimeSelector) cardTimeSelector.addEventListener('change', renderCardTimeHistogram);
   if (cardCorrMetric) cardCorrMetric.addEventListener('change', load);
+  if (corrMethodSel) corrMethodSel.addEventListener('change', load);
   if (filterSex) filterSex.addEventListener('change', load);
   if (filterCountry) filterCountry.addEventListener('change', load);
   if (excludeCountries) excludeCountries.addEventListener('change', load);
