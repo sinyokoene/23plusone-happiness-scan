@@ -403,11 +403,10 @@
       }
 
       if (sensitivityAllMax) {
-        // Exclude if WHO‑5 max (25), SWLS max (21), or Cantril max (10)
+        // Exclude if WHO‑5 max (25) or SWLS max (21)
         const who5Total = sum(entry.who5 || []);
         const swlsTotal = sum(entry.swls || []);
-        const can = (entry.cantril==null?null:Number(entry.cantril));
-        if (who5Total >= 25 || swlsTotal >= 21 || (can != null && can >= 10)) return false;
+        if (who5Total >= 25 || swlsTotal >= 21) return false;
       }
 
       if (!Number.isNaN(thresholdPct) && counts.total > 0) {

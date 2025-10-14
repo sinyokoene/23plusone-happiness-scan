@@ -958,12 +958,11 @@ app.get('/api/analytics/correlations', async (req, res) => {
             if (fracInvalid > 0.10) return false;
           }
           if (sensitivityAllMax) {
-            // Exclude all‑max questionnaire totals
+            // Exclude all‑max questionnaire totals (WHO‑5 and SWLS)
             const who5Total = Number.isFinite(Number(j?.who5Percent)) ? (Number(j.who5Percent) / 4) : null; // reverse to 0..25
             const swlsScaled = Number(j?.swlsScaled);
             const swlsTotal = Number.isFinite(swlsScaled) ? Math.round(swlsScaled * (3/5)) : null; // approx back to 3..21
-            const can = (j?.cantril==null?null:Number(j.cantril));
-            if ((who5Total != null && who5Total >= 25) || (swlsTotal != null && swlsTotal >= 21) || (can != null && can >= 10)) return false;
+            if ((who5Total != null && who5Total >= 25) || (swlsTotal != null && swlsTotal >= 21)) return false;
           }
           // modality presence (any)
           if (modality) {
