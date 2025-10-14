@@ -310,7 +310,7 @@
     const iatOnly = !!(filterIat && filterIat.checked);
     const thresholdPct = Number(filterThreshold && filterThreshold.value ? filterThreshold.value : NaN);
 
-    if (!wantDevice && wantMods.length === 0 && !exclusiveOnly && !noTimeoutsOnly && (Number.isNaN(thresholdPct))) return true;
+    if (!wantDevice && wantMods.length === 0 && !exclusiveOnly && !noTimeoutsOnly && !iatOnly && (Number.isNaN(thresholdPct))) return true;
     // device by user agents: prefer scan_user_agent (from scan), fallback to research user_agent
     const ua = entry.scan_user_agent || entry.user_agent || '';
     if (wantDevice === 'mobile' && !isMobileUA(ua)) return false;
