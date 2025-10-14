@@ -140,14 +140,32 @@
       </div>
       <div class="col-6">
         <div class="card">
-          <h2 class="text-lg font-semibold mb-2">WHO‑5 Distribution</h2>
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-lg font-semibold">WHO‑5 Distribution</h2>
+            <label class="text-xs opacity-80 inline-flex items-center gap-1" title="WHO‑5 as % or raw total">
+              <span>Scale</span>
+              <select id="who5Scale" class="border rounded px-2 py-1 w-28">
+                <option value="percent" selected>% (0–100)</option>
+                <option value="raw">Raw (0–25)</option>
+              </select>
+            </label>
+          </div>
           <canvas id="who5Chart"></canvas>
           <div id="who5N" class="text-xs opacity-70 mt-1"></div>
         </div>
       </div>
       <div class="col-6">
         <div class="card">
-          <h2 class="text-lg font-semibold mb-2">SWLS Distribution</h2>
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-lg font-semibold">SWLS Distribution</h2>
+            <label class="text-xs opacity-80 inline-flex items-center gap-1" title="SWLS scale 3–21 or rescaled 5–35">
+              <span>Scale</span>
+              <select id="swlsScale" class="border rounded px-2 py-1 w-28">
+                <option value="35" selected>5–35</option>
+                <option value="21">3–21</option>
+              </select>
+            </label>
+          </div>
           <canvas id="swlsChart"></canvas>
           <div id="swlsN" class="text-xs opacity-70 mt-1"></div>
         </div>

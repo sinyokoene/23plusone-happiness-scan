@@ -45,6 +45,7 @@
   const cardTimeSelector = document.getElementById('cardTimeSelector');
   const cardTimeCanvas = document.getElementById('cardTimeChart');
   const who5ScaleSel = document.getElementById('who5Scale');
+  const swlsScaleSel = document.getElementById('swlsScale');
   const who5NEl = document.getElementById('who5N');
   const swlsNEl = document.getElementById('swlsN');
   const ihsNEl = document.getElementById('ihsN');
@@ -99,7 +100,11 @@
     const cantrilVals = entries.map(e => (e.cantril==null?null:Number(e.cantril))).filter(v=>v!=null && !Number.isNaN(v));
     const usePercent = (who5ScaleSel && who5ScaleSel.value === 'percent');
     const who5Scaled = who5TotalsRaw.map(usePercent ? SCALE.who5Percent : SCALE.who5Raw);
-    const swlsScaled = swlsTotalsRaw.map(SCALE.swls);
+    // SWLS: either raw 3–21 or rescaled 5–35
+    const swlsScaled = swlsTotalsRaw.map(v => {
+      if (swlsScaleSel && swlsScaleSel.value === '21') return Number(v)||0; // raw total 3–21
+      return SCALE.swls(v); // 5–35
+    });
     return { who5Scaled, swlsScaled, cantrilVals, usePercent };
   }
 
@@ -903,6 +908,8 @@
 
   limitInput.addEventListener('change', load);
   if (applyFiltersBtn) applyFiltersBtn.addEventListener('click', load);
+  if (who5ScaleSel) who5ScaleSel.addEventListener('change', load);
+  if (swlsScaleSel) swlsScaleSel.addEventListener('change', load);
   if (n123MetricSel) n123MetricSel.addEventListener('change', load);
   if (cardTimeSelector) cardTimeSelector.addEventListener('change', renderCardTimeHistogram);
   if (cardCorrMetric) cardCorrMetric.addEventListener('change', load);
