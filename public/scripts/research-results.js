@@ -201,6 +201,29 @@
     return corr(xr, yr);
   }
 
+  // Ordinary Least Squares: returns slope and intercept for trend line
+  function ols(x, y){
+    const n = Math.min(x.length, y.length);
+    const xs = [], ys = [];
+    for (let i=0;i<n;i++){
+      const xv = Number(x[i]);
+      const yv = Number(y[i]);
+      if (Number.isFinite(xv) && Number.isFinite(yv)) { xs.push(xv); ys.push(yv); }
+    }
+    const m = xs.length;
+    if (m < 2) {
+      const intercept = Number.isFinite(ys[0]) ? ys[0] : 0;
+      return { slope: 0, intercept };
+    }
+    const xbar = xs.reduce((a,b)=>a+b,0) / m;
+    const ybar = ys.reduce((a,b)=>a+b,0) / m;
+    let num = 0, den = 0;
+    for (let i=0;i<m;i++){ const dx = xs[i]-xbar; num += dx*(ys[i]-ybar); den += dx*dx; }
+    const slope = den ? (num/den) : 0;
+    const intercept = ybar - slope * xbar;
+    return { slope, intercept };
+  }
+
   function fisherCIZ(r, n){
     if (!Number.isFinite(r) || n < 4) return null;
     const z = 0.5 * Math.log((1+r)/(1-r));
