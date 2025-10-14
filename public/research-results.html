@@ -193,13 +193,6 @@
         <div class="card">
           <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold">Vs IHS</h2>
-            <label class="text-xs opacity-80 inline-flex items-center gap-1" title="Correlation method">
-              <span>Correlation</span>
-              <select id="corrMethod" class="border rounded px-2 py-1 w-28">
-                <option value="pearson" selected>Pearson r</option>
-                <option value="spearman">Spearman ρ</option>
-              </select>
-            </label>
           </div>
           <p class="text-xs opacity-80 mt-1">Correlation (<em>r</em>) shows whether two things move together: near +1 = higher X with higher Y; near 0 = no clear link; near −1 = higher X with lower Y. Choose <strong>Pearson</strong> for linear relationships on numeric scales; choose <strong>Spearman</strong> to measure monotonic rank association (robust to outliers and non‑linear monotone shapes). Correlation is not causation.</p>
         </div>
@@ -225,7 +218,16 @@
       
       <div class="col-12">
         <div class="card">
-          <h2 class="text-lg font-semibold mb-2">Overall correlations vs IHS</h2>
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-lg font-semibold">Overall correlations vs IHS</h2>
+            <label class="text-xs opacity-80 inline-flex items-center gap-1" title="Correlation method (applies to all tables and charts)">
+              <span>Correlation</span>
+              <select id="corrMethod" class="border rounded px-2 py-1 w-28">
+                <option value="pearson" selected>Pearson r</option>
+                <option value="spearman">Spearman ρ</option>
+              </select>
+            </label>
+          </div>
           <div style="overflow:auto;">
             <table id="overallCorrTable">
               <thead>
@@ -240,6 +242,7 @@
               <tbody></tbody>
             </table>
           </div>
+          <p class="text-[11px] opacity-80 mt-2">Selected method applies to <strong>all</strong> correlations below.</p>
           <p class="text-[11px] opacity-80 mt-2">p: the p‑value for the correlation’s significance. Smaller means less likely by chance.</p>
         </div>
       </div>
