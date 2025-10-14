@@ -100,11 +100,11 @@
     const who5TotalsRaw = entries.map(e => sum(e.who5||[]));
     const swlsTotalsRaw = entries.map(e => sum(e.swls||[]));
     const cantrilVals = entries.map(e => (e.cantril==null?null:Number(e.cantril))).filter(v=>v!=null && !Number.isNaN(v));
-    const usePercent = (who5ScaleSel && who5ScaleSel.value === 'percent');
+    const usePercent = (who5ScaleSel ? (who5ScaleSel.value === 'percent') : false);
     const who5Scaled = who5TotalsRaw.map(usePercent ? SCALE.who5Percent : SCALE.who5Raw);
     // SWLS: either raw 3–21 or rescaled 5–35
     const swlsScaled = swlsTotalsRaw.map(v => {
-      if (swlsScaleSel && swlsScaleSel.value === '21') return Number(v)||0; // raw total 3–21
+      if (!swlsScaleSel || swlsScaleSel.value === '21') return Number(v)||0; // default to 3–21
       return SCALE.swls(v); // 5–35
     });
     return { who5Scaled, swlsScaled, cantrilVals, usePercent };
@@ -292,7 +292,7 @@
       who5Scaled.forEach(v => { const idx = Math.max(0, Math.min(25, Math.round(v))); who5Bins[idx]++; });
     }
     // SWLS bins: 5..35 or 3..21
-    const useSwls35 = !(swlsScaleSel && swlsScaleSel.value === '21');
+    const useSwls35 = !!(swlsScaleSel && swlsScaleSel.value !== '21');
     let swlsBins, swlsLabels;
     if (useSwls35) {
       swlsBins = new Array(31).fill(0);
@@ -641,7 +641,7 @@
 
     // Build arrays for scatter plots from the same dataset, keeping only rows with IHS
     const who5TotalsAll = entries.map(e => (who5ScaleSel && who5ScaleSel.value === 'percent') ? SCALE.who5Percent(sum(e.who5||[])) : SCALE.who5Raw(sum(e.who5||[])));
-    const swlsTotalsAll = entries.map(e => (swlsScaleSel && swlsScaleSel.value === '21') ? (sum(e.swls||[])) : SCALE.swls(sum(e.swls||[])));
+    const swlsTotalsAll = entries.map(e => (!swlsScaleSel || swlsScaleSel.value === '21') ? (sum(e.swls||[])) : SCALE.swls(sum(e.swls||[])));
     const ihsAll = entries.map(e => (e.ihs==null?null:Number(e.ihs)));
     const cantrilAll = entries.map(e => (e.cantril==null?null:Number(e.cantril)));
     const n1All = entries.map(e => (e.n1==null?null:Number(e.n1)));
@@ -688,7 +688,7 @@
       const pts = swlsPairs.map(p=>({x:p.x, y:p.y}));
       const xs = swlsPairs.map(p=>p.x), ys = swlsPairs.map(p=>p.y);
       const { slope, intercept } = ols(xs, ys);
-      const swls21 = (swlsScaleSel && swlsScaleSel.value === '21');
+      const swls21 = (!swlsScaleSel || swlsScaleSel.value === '21');
       const xMin = swls21 ? Math.min(...xs, 3) : Math.min(...xs, 5);
       const xMax = swls21 ? Math.max(...xs, 21) : Math.max(...xs, 35);
       const line = [{x:xMin, y: slope*xMin+intercept}, {x:xMax, y: slope*xMax+intercept}];
