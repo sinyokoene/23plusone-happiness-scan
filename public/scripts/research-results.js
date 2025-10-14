@@ -232,16 +232,31 @@
   }
 
   function renderCharts(entries){
-    const { who5Scaled, swlsScaled, cantrilVals } = computeDistributions(entries);
+    const { who5Scaled, swlsScaled, cantrilVals, usePercent } = computeDistributions(entries);
     const ihsVals = entries.map(e => (e.ihs==null?null:Number(e.ihs))).filter(v=>v!=null && !Number.isNaN(v));
-    // WHO-5 percent bins 0..100 step 4 (26 bins)
-    const who5Bins = new Array(26).fill(0);
-    const who5Labels = Array.from({length:26}, (_,i)=>i*4);
-    who5Scaled.forEach(v => { const i=Math.max(0, Math.min(25, Math.round((v)/4))); who5Bins[i]++; });
-    // SWLS scaled bins 5..35 (31 bins at integers)
-    const swlsBins = new Array(31).fill(0);
-    const swlsLabels = Array.from({length:31}, (_,i)=>i+5);
-    swlsScaled.forEach(v => { const i=Math.max(0, Math.min(30, Math.round(v) - 5)); swlsBins[i]++; });
+    // WHO‑5 bins: percent (0..100 step 4) or raw (0..25 step 1)
+    let who5Bins, who5Labels;
+    if (usePercent) {
+      who5Bins = new Array(26).fill(0);
+      who5Labels = Array.from({length:26}, (_,i)=>i*4);
+      who5Scaled.forEach(v => { const idx = Math.max(0, Math.min(25, Math.round(v/4))); who5Bins[idx]++; });
+    } else {
+      who5Bins = new Array(26).fill(0);
+      who5Labels = Array.from({length:26}, (_,i)=>i);
+      who5Scaled.forEach(v => { const idx = Math.max(0, Math.min(25, Math.round(v))); who5Bins[idx]++; });
+    }
+    // SWLS bins: 5..35 or 3..21
+    const useSwls35 = !(swlsScaleSel && swlsScaleSel.value === '21');
+    let swlsBins, swlsLabels;
+    if (useSwls35) {
+      swlsBins = new Array(31).fill(0);
+      swlsLabels = Array.from({length:31}, (_,i)=>i+5);
+      swlsScaled.forEach(v => { const idx = Math.max(0, Math.min(30, Math.round(v) - 5)); swlsBins[idx]++; });
+    } else {
+      swlsBins = new Array(19).fill(0);
+      swlsLabels = Array.from({length:19}, (_,i)=>i+3);
+      swlsScaled.forEach(v => { const idx = Math.max(0, Math.min(18, Math.round(v) - 3)); swlsBins[idx]++; });
+    }
 
     const common = {
       type: 'bar',
@@ -571,8 +586,8 @@
     renderCardTimeHistogram();
 
     // Build arrays for scatter plots from the same dataset, keeping only rows with IHS
-    const who5TotalsAll = entries.map(e => SCALE.who5(sum(e.who5||[]))); // percent
-    const swlsTotalsAll = entries.map(e => SCALE.swls(sum(e.swls||[]))); // 5–35
+    const who5TotalsAll = entries.map(e => (who5ScaleSel && who5ScaleSel.value === 'percent') ? SCALE.who5Percent(sum(e.who5||[])) : SCALE.who5Raw(sum(e.who5||[])));
+    const swlsTotalsAll = entries.map(e => (swlsScaleSel && swlsScaleSel.value === '21') ? (sum(e.swls||[])) : SCALE.swls(sum(e.swls||[])));
     const ihsAll = entries.map(e => (e.ihs==null?null:Number(e.ihs)));
     const cantrilAll = entries.map(e => (e.cantril==null?null:Number(e.cantril)));
     const n1All = entries.map(e => (e.n1==null?null:Number(e.n1)));
@@ -591,7 +606,7 @@
       options: {
         responsive: true,
         scales: {
-          x: { beginAtZero: true, title: { display: true, text: 'Questionnaire total (WHO‑5 % or SWLS 5–35)' } },
+          x: { beginAtZero: true, title: { display: true, text: 'Questionnaire total' } },
           y: { beginAtZero: true, title: { display: true, text: 'IHS (0–100)' } }
         },
         plugins: { legend: { display: true } }
@@ -602,12 +617,13 @@
       const pts = who5Pairs.map(p=>({x:p.x, y:p.y}));
       const xs = who5Pairs.map(p=>p.x), ys = who5Pairs.map(p=>p.y);
       const { slope, intercept } = ols(xs, ys);
-      const xMin = Math.min(...xs, 0), xMax = Math.max(...xs, 100);
+      const xMin = (who5ScaleSel && who5ScaleSel.value === 'percent') ? Math.min(...xs, 0) : Math.min(...xs, 0);
+      const xMax = (who5ScaleSel && who5ScaleSel.value === 'percent') ? Math.max(...xs, 100) : Math.max(...xs, 25);
       const line = [{x:xMin, y: slope*xMin+intercept}, {x:xMax, y: slope*xMax+intercept}];
       who5Scatter = new Chart(who5VsIhsCanvas, {
         ...scatterCommon,
         data: { datasets: [
-          { label: 'WHO‑5% vs IHS', data: pts, backgroundColor: 'rgba(236,72,153,.5)' },
+          { label: (who5ScaleSel && who5ScaleSel.value === 'percent') ? 'WHO‑5% vs IHS' : 'WHO‑5 (raw) vs IHS', data: pts, backgroundColor: 'rgba(236,72,153,.5)' },
           { type: 'line', label: 'Trend', data: line, borderColor: 'rgba(236,72,153,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 }
         ] },
         plugins: [({id:'vlineWho5', afterDraw(c){ const {ctx, chartArea:{top,bottom}, scales:{x}}=c; ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle='rgba(236,72,153,.6)'; const xp=x.getPixelForValue(50); ctx.beginPath(); ctx.moveTo(xp, top); ctx.lineTo(xp, bottom); ctx.stroke(); ctx.restore(); }})]
@@ -618,15 +634,17 @@
       const pts = swlsPairs.map(p=>({x:p.x, y:p.y}));
       const xs = swlsPairs.map(p=>p.x), ys = swlsPairs.map(p=>p.y);
       const { slope, intercept } = ols(xs, ys);
-      const xMin = Math.min(...xs, 5), xMax = Math.max(...xs, 35);
+      const swls21 = (swlsScaleSel && swlsScaleSel.value === '21');
+      const xMin = swls21 ? Math.min(...xs, 3) : Math.min(...xs, 5);
+      const xMax = swls21 ? Math.max(...xs, 21) : Math.max(...xs, 35);
       const line = [{x:xMin, y: slope*xMin+intercept}, {x:xMax, y: slope*xMax+intercept}];
       swlsScatter = new Chart(swlsVsIhsCanvas, {
         ...scatterCommon,
         data: { datasets: [
-          { label: 'SWLS(5–35) vs IHS', data: pts, backgroundColor: 'rgba(99,102,241,.5)' },
+          { label: swls21 ? 'SWLS(3–21) vs IHS' : 'SWLS(5–35) vs IHS', data: pts, backgroundColor: 'rgba(99,102,241,.5)' },
           { type: 'line', label: 'Trend', data: line, borderColor: 'rgba(99,102,241,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 }
         ] },
-        plugins: [({id:'vlineSwls', afterDraw(c){ const {ctx, chartArea:{top,bottom}, scales:{x}}=c; ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle='rgba(99,102,241,.5)'; [9,14,19,20,25,30].forEach(v=>{ const xp=x.getPixelForValue(v); ctx.beginPath(); ctx.moveTo(xp, top); ctx.lineTo(xp, bottom); ctx.stroke(); }); ctx.restore(); }})]
+        plugins: [({id:'vlineSwls', afterDraw(c){ const {ctx, chartArea:{top,bottom}, scales:{x}}=c; ctx.save(); ctx.setLineDash([4,4]); ctx.strokeStyle='rgba(99,102,241,.5)'; ctx.restore(); }})]
       });
     }
 
