@@ -800,10 +800,29 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const denom = Math.sqrt(dx * dy);
     return { r: denom ? (num / denom) : 0, n };
   }
+  function rankArray(arr) {
+    const ord = arr.map((v, i) => ({ v: Number(v), i })).sort((a, b) => a.v - b.v);
+    const ranks = new Array(arr.length);
+    for (let k = 0; k < ord.length;) {
+      let j = k; while (j < ord.length && ord[j].v === ord[k].v) j++;
+      const avg = (k + j - 1) / 2 + 1; // average rank (1-based)
+      for (let t = k; t < j; t++) ranks[ord[t].i] = avg;
+      k = j;
+    }
+    return ranks;
+  }
+  function spearman(x, y) {
+    const n = Math.min(x.length, y.length);
+    if (n < 2) return { r: 0, n };
+    const xr = rankArray(x.slice(0, n));
+    const yr = rankArray(y.slice(0, n));
+    return pearson(xr, yr);
+  }
 
   try {
     const limit = Math.min(parseInt(req.query.limit, 10) || 500, 2000);
     const device = String(req.query.device || '').toLowerCase(); // 'mobile' | 'desktop' | ''
+    const method = String(req.query.method || 'pearson').toLowerCase(); // 'pearson' | 'spearman'
     const modality = String(req.query.modality || '').toLowerCase(); // 'click' | 'swipe' | 'arrow' | ''
     const exclusive = String(req.query.exclusive || '').toLowerCase() === 'true';
     const excludeTimeouts = String(req.query.excludeTimeouts || '').toLowerCase() === 'true';
@@ -1014,10 +1033,11 @@ app.get('/api/analytics/correlations', async (req, res) => {
         { xKey: 'n2', yKey: 'cantril' },
         { xKey: 'n3', yKey: 'cantril' }
       ];
+      const corrFn = (xs, ys) => (method === 'spearman' ? spearman(xs, ys) : pearson(xs, ys));
       for (const c of combos) {
         const { xs, ys } = pair(j => j[c.xKey], j => j[c.yKey]);
-        const { r, n } = pearson(xs, ys);
-        overall.push({ x: c.xKey, y: c.yKey, r, n });
+        const { r, n } = corrFn(xs, ys);
+        overall.push({ x: c.xKey, y: c.yKey, r, n, method });
       }
 
       // Domain-level correlations
@@ -1050,12 +1070,12 @@ app.get('/api/analytics/correlations', async (req, res) => {
           xAff.push(sumAff);
         }
         // Align for affirmation vs who/swls/cantril
-        const affWho = pearson(xAff.filter((_,i)=>!Number.isNaN(yWho[i])), yWho.filter(v=>!Number.isNaN(v)));
-        const affSwl = pearson(xAff.filter((_,i)=>!Number.isNaN(ySwls[i])), ySwls.filter(v=>!Number.isNaN(v)));
-        const affCan = pearson(xAff.filter((_,i)=>!Number.isNaN(yCan[i])), yCan.filter(v=>v!=null && !Number.isNaN(v)));
-        const yesWho = pearson(xYes, yWho);
-        const yesSwl = pearson(xYes, ySwls);
-        const yesCan = pearson(xYes.filter((_,i)=>yCan[i]!=null && !Number.isNaN(yCan[i])), yCan.filter(v=>v!=null && !Number.isNaN(v)));
+        const affWho = corrFn(xAff.filter((_,i)=>!Number.isNaN(yWho[i])), yWho.filter(v=>!Number.isNaN(v)));
+        const affSwl = corrFn(xAff.filter((_,i)=>!Number.isNaN(ySwls[i])), ySwls.filter(v=>!Number.isNaN(v)));
+        const affCan = corrFn(xAff.filter((_,i)=>!Number.isNaN(yCan[i])), yCan.filter(v=>v!=null && !Number.isNaN(v)));
+        const yesWho = corrFn(xYes, yWho);
+        const yesSwl = corrFn(xYes, ySwls);
+        const yesCan = corrFn(xYes.filter((_,i)=>yCan[i]!=null && !Number.isNaN(yCan[i])), yCan.filter(v=>v!=null && !Number.isNaN(v)));
         domains.push({
           domain,
           r_affirm_who5: affWho.r,
@@ -1069,7 +1089,8 @@ app.get('/api/analytics/correlations', async (req, res) => {
           n_affirm_cantril: affCan.n,
           n_yesrate_who5: yesWho.n,
           n_yesrate_swls: yesSwl.n,
-          n_yesrate_cantril: yesCan.n
+          n_yesrate_cantril: yesCan.n,
+          method
         });
       }
 
@@ -1098,10 +1119,10 @@ app.get('/api/analytics/correlations', async (req, res) => {
       }
       const cards = [];
       for (const [cardId, b] of cardStats.entries()) {
-        const rYesWho = pearson(b.yes, b.who);
-        const rYesSwl = pearson(b.yes, b.swls);
-        const rAffWho = pearson(b.affirm, b.who.slice(0, b.affirm.length));
-        const rAffSwl = pearson(b.affirm, b.swls.slice(0, b.affirm.length));
+        const rYesWho = corrFn(b.yes, b.who);
+        const rYesSwl = corrFn(b.yes, b.swls);
+        const rAffWho = corrFn(b.affirm, b.who.slice(0, b.affirm.length));
+        const rAffSwl = corrFn(b.affirm, b.swls.slice(0, b.affirm.length));
         cards.push({
           cardId,
           label: b.label,
@@ -1112,11 +1133,12 @@ app.get('/api/analytics/correlations', async (req, res) => {
           n_yes_who5: rYesWho.n,
           n_yes_swls: rYesSwl.n,
           n_affirm_who5: rAffWho.n,
-          n_affirm_swls: rAffSwl.n
+          n_affirm_swls: rAffSwl.n,
+          method
         });
       }
 
-      res.json({ overall, domains, cards, usedSessions: joined.length });
+      res.json({ overall, domains, cards, usedSessions: joined.length, method });
     } finally {
       researchClient.release();
       mainClient.release();

@@ -111,7 +111,7 @@
   }
 
   // Compute per-card correlation between Cantril (0–10) and binary Yes (1) / No (0)
-  function computeCardYesVsCantril(entries){
+  function computeCardYesVsCantril(entries, rFunc){
     const acc = new Map(); // cardId -> { yes:[], can:[] }
     entries.forEach(e => {
       const can = (e.cantril==null?null:Number(e.cantril));
@@ -133,7 +133,7 @@
     acc.forEach((v, cid) => {
       const n = Math.min(v.yes.length, v.can.length);
       if (n >= 3){
-        const r = corr(v.yes, v.can);
+        const r = (typeof rFunc === 'function' ? rFunc : corr)(v.yes, v.can);
         out.set(cid, { r, n });
       }
     });
@@ -141,7 +141,7 @@
   }
 
   // Compute per-card correlation between Cantril and time-weighted affirmation (positive Yes strength)
-  function computeCardAffirmVsCantril(entries){
+  function computeCardAffirmVsCantril(entries, rFunc){
     const acc = new Map(); // cardId -> { affirm:[], can:[] }
     const timeMultiplier = (ms) => { const t = Math.max(0, Math.min(4000, Number(ms)||0)); const lin=(4000 - t)/4000; return Math.sqrt(Math.max(0, lin)); };
     entries.forEach(e => {
@@ -164,7 +164,7 @@
     acc.forEach((v, cid) => {
       const n = Math.min(v.affirm.length, v.can.length);
       if (n >= 3){
-        const r = corr(v.affirm, v.can);
+        const r = (typeof rFunc === 'function' ? rFunc : corr)(v.affirm, v.can);
         out.set(cid, { r, n });
       }
     });
@@ -211,13 +211,14 @@
     const rHi = (Math.exp(2*zHi)-1)/(Math.exp(2*zHi)+1);
     return [rLo, rHi];
   }
-
-  function pValuePearson(r, n){
+  
+  // Two-sided p-value using t approximation. For Spearman (n>10), this is a common approximation.
+  function pValueFor(r, n){
     if (typeof jStat === 'undefined' || n < 3) return null;
-    const t = r * Math.sqrt((n-2)/(1-Math.min(0.999999, r*r)));
+    const safeR = Math.max(-0.999999, Math.min(0.999999, Number(r)||0));
+    const t = safeR * Math.sqrt((n-2)/(1 - safeR*safeR));
     const df = n - 2;
-    const p = 2 * (1 - jStat.studentt.cdf(Math.abs(t), df));
-    return p;
+    return 2 * (1 - jStat.studentt.cdf(Math.abs(t), df));
   }
 
   function renderTable(entries){
@@ -744,9 +745,9 @@
     const rWho5 = xsWho5.length ? rFn(xsWho5, ysWho5) : 0;
     const rSwls = xsSwls.length ? rFn(xsSwls, ysSwls) : 0;
     const rCan = xsCan.length ? rFn(xsCan, ysCan) : 0;
-    const pWho5 = pValuePearson(rWho5, xsWho5.length);
-    const pSwls = pValuePearson(rSwls, xsSwls.length);
-    const pCan = xsCan.length ? pValuePearson(rCan, xsCan.length) : null;
+    const pWho5 = pValueFor(rWho5, xsWho5.length);
+    const pSwls = pValueFor(rSwls, xsSwls.length);
+    const pCan = xsCan.length ? pValueFor(rCan, xsCan.length) : null;
     if (overallCorrTbody) {
       overallCorrTbody.replaceChildren();
       const rows = [
@@ -765,7 +766,7 @@
         return `<span style="display:inline-block;min-width:44px;text-align:center;padding:2px 6px;border-radius:6px;background:${bg};color:${fg};font-variant-numeric: tabular-nums;">${Number(v||0).toFixed(2)}</span>`;
       };
       rows.forEach(rw => {
-        const ci = fisherCIZ(rw.r, rw.n);
+        const ci = (method === 'pearson') ? fisherCIZ(rw.r, rw.n) : null;
         const ciText = ci ? `[${ci[0].toFixed(2)}, ${ci[1].toFixed(2)}]` : '—';
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${rw.m}</td><td>${rw.n}</td><td>${colorBadge(rw.r)}</td><td>${ciText}</td><td>${rw.p===null?'—':rw.p.toExponential(2)}</td>`;
@@ -777,10 +778,11 @@
     try {
       // Pre-compute client-side Cantril correlations per card from raw entries (Yes or Affirm per metric)
       const metricIsAffirm = (cardCorrMetric && cardCorrMetric.value === 'affirm');
-      const cantrilByCard = metricIsAffirm ? computeCardAffirmVsCantril(entries) : computeCardYesVsCantril(entries);
+      const cantrilByCard = metricIsAffirm ? computeCardAffirmVsCantril(entries, rFn) : computeCardYesVsCantril(entries, rFn);
       await ensureCardDomains();
       const dev = (filterDevice && filterDevice.value) || '';
       const q = new URLSearchParams({ limit: String(limit) });
+      if (method) q.set('method', method);
       if (dev) q.set('device', dev);
       // Server correlations allow a single modality value; if multiple are checked, omit and rely on client-side distributions
       const selectedMods = [
