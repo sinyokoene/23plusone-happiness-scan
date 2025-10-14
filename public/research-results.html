@@ -194,7 +194,7 @@
           <div class="flex items-center justify-between">
             <h2 class="text-xl font-semibold">Vs IHS</h2>
           </div>
-          <p class="text-xs opacity-80 mt-1">Correlation (<em>r</em>) shows whether two things move together: near +1 = higher X with higher Y; near 0 = no clear link; near −1 = higher X with lower Y. Choose <strong>Pearson</strong> for linear relationships on numeric scales; choose <strong>Spearman</strong> to measure monotonic rank association (robust to outliers and non‑linear monotone shapes). Correlation is not causation.</p>
+          
         </div>
       </div>
       <div class="col-6">
@@ -228,7 +228,8 @@
               </select>
             </label>
           </div>
-          <div style="overflow:auto;">
+          <p class="text-xs opacity-80 mt-1">Correlation (<em>r</em>) shows whether two things move together: near +1 = higher X with higher Y; near 0 = no clear link; near −1 = higher X with lower Y. Choose <strong>Pearson</strong> for linear relationships on numeric scales; choose <strong>Spearman</strong> to measure monotonic rank association (robust to outliers and non‑linear monotone shapes). Correlation is not causation.</p>
+          <div style="overflow:auto;" class="mt-2">
             <table id="overallCorrTable">
               <thead>
                 <tr>
@@ -243,7 +244,8 @@
             </table>
           </div>
           <p class="text-[11px] opacity-80 mt-2">Selected method applies to <strong>all</strong> correlations below.</p>
-          <p class="text-[11px] opacity-80 mt-2">p: the p‑value for the correlation’s significance. Smaller means less likely by chance.</p>
+          <p class="text-[11px] opacity-80 mt-1">95% CI: confidence interval for <em>r</em> (shown for Pearson; Spearman CI omitted).</p>
+          <p class="text-[11px] opacity-80 mt-1">p: the p‑value for the correlation’s significance. Smaller means less likely by chance.</p>
         </div>
       </div>
       <div class="col-12">
