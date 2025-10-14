@@ -110,6 +110,9 @@
         <label class="inline-flex items-center gap-2" title=">300ms & <2000ms, no timeouts, ≤10% outside">
           <input id="filterIat" type="checkbox" class="align-middle"> <span>IAT filter</span>
         </label>
+        <label class="inline-flex items-center gap-2" title="Exclude respondents with max scores on WHO‑5, SWLS or Cantril">
+          <input id="filterSensitivity" type="checkbox" class="align-middle"> <span>Sensitivity: exclude all‑max</span>
+        </label>
         <label class="inline-flex items-center gap-1">
           <span>Threshold ≥</span>
           <input id="filterThreshold" type="number" min="0" max="100" step="5" placeholder="50" class="border rounded px-2 py-1 w-16">

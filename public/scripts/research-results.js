@@ -39,6 +39,7 @@
   const filterExclusive = document.getElementById('filterExclusive');
   const filterNoTimeouts = document.getElementById('filterNoTimeouts');
   const filterIat = document.getElementById('filterIat');
+  const filterSensitivity = document.getElementById('filterSensitivity');
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
   const cardCorrMetric = document.getElementById('cardCorrMetric');
@@ -339,16 +340,17 @@
     const exclusiveOnly = !!(filterExclusive && filterExclusive.checked);
     const noTimeoutsOnly = !!(filterNoTimeouts && filterNoTimeouts.checked);
     const iatOnly = !!(filterIat && filterIat.checked);
+    const sensitivityAllMax = !!(filterSensitivity && filterSensitivity.checked);
     const thresholdPct = Number(filterThreshold && filterThreshold.value ? filterThreshold.value : NaN);
 
-    if (!wantDevice && wantMods.length === 0 && !exclusiveOnly && !noTimeoutsOnly && !iatOnly && (Number.isNaN(thresholdPct))) return true;
+    if (!wantDevice && wantMods.length === 0 && !exclusiveOnly && !noTimeoutsOnly && !iatOnly && !sensitivityAllMax && (Number.isNaN(thresholdPct))) return true;
     // device by user agents: prefer scan_user_agent (from scan), fallback to research user_agent
     const ua = entry.scan_user_agent || entry.user_agent || '';
     if (wantDevice === 'mobile' && !isMobileUA(ua)) return false;
     if (wantDevice === 'desktop' && isMobileUA(ua)) return false;
 
     const sel = entry.selections && entry.selections.allResponses;
-    if ((wantMods.length > 0 || exclusiveOnly || noTimeoutsOnly || iatOnly || !Number.isNaN(thresholdPct)) && !Array.isArray(sel)) return false;
+    if ((wantMods.length > 0 || exclusiveOnly || noTimeoutsOnly || iatOnly || sensitivityAllMax || !Number.isNaN(thresholdPct)) && !Array.isArray(sel)) return false;
 
     if (Array.isArray(sel)) {
       const counts = sel.reduce((acc, r) => {
@@ -398,6 +400,14 @@
         }
         const fracInvalid = total > 0 ? (invalid / total) : 1;
         if (fracInvalid > 0.10) return false;
+      }
+
+      if (sensitivityAllMax) {
+        // Exclude if WHO‑5 max (25), SWLS max (21), or Cantril max (10)
+        const who5Total = sum(entry.who5 || []);
+        const swlsTotal = sum(entry.swls || []);
+        const can = (entry.cantril==null?null:Number(entry.cantril));
+        if (who5Total >= 25 || swlsTotal >= 21 || (can != null && can >= 10)) return false;
       }
 
       if (!Number.isNaN(thresholdPct) && counts.total > 0) {
@@ -758,6 +768,7 @@
       if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
       if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
       if (filterIat && filterIat.checked) q.set('iat', 'true');
+      if (filterSensitivity && filterSensitivity.checked) q.set('sensitivityAllMax', 'true');
       // Pass demographics filters through to correlations so n matches
       if (filterSex && filterSex.value) q.set('sex', filterSex.value);
       if (filterCountry && filterCountry.selectedOptions && filterCountry.selectedOptions.length > 0) {
@@ -937,6 +948,7 @@
   if (filterAgeMin) filterAgeMin.addEventListener('change', load);
   if (filterAgeMax) filterAgeMax.addEventListener('change', load);
   if (filterIat) filterIat.addEventListener('change', load);
+  if (filterSensitivity) filterSensitivity.addEventListener('change', load);
   // Close dropdowns on outside click
   (function setupDropdownClose(){
     function closeIfOutside(e, detailsEl){

@@ -808,6 +808,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const exclusive = String(req.query.exclusive || '').toLowerCase() === 'true';
     const excludeTimeouts = String(req.query.excludeTimeouts || '').toLowerCase() === 'true';
     const iat = String(req.query.iat || '').toLowerCase() === 'true';
+    const sensitivityAllMax = String(req.query.sensitivityAllMax || '').toLowerCase() === 'true';
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
     // Demographics filters
     const sex = req.query.sex ? String(req.query.sex) : '';
@@ -924,7 +925,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
       } else if (device === 'desktop') {
         joined = joined.filter(j => !isMobileUA(j.scan_user_agent));
       }
-      if (modality || exclusive || excludeTimeouts || iat || (threshold != null)) {
+      if (modality || exclusive || excludeTimeouts || iat || sensitivityAllMax || (threshold != null)) {
         const matchers = {
           click: (m) => m === 'click',
           swipe: (m) => m === 'swipe-touch' || m === 'swipe-mouse',
@@ -955,6 +956,14 @@ app.get('/api/analytics/correlations', async (req, res) => {
             }
             const fracInvalid = total > 0 ? (invalid / total) : 1;
             if (fracInvalid > 0.10) return false;
+          }
+          if (sensitivityAllMax) {
+            // Exclude all‑max questionnaire totals
+            const who5Total = Number.isFinite(Number(j?.who5Percent)) ? (Number(j.who5Percent) / 4) : null; // reverse to 0..25
+            const swlsScaled = Number(j?.swlsScaled);
+            const swlsTotal = Number.isFinite(swlsScaled) ? Math.round(swlsScaled * (3/5)) : null; // approx back to 3..21
+            const can = (j?.cantril==null?null:Number(j.cantril));
+            if ((who5Total != null && who5Total >= 25) || (swlsTotal != null && swlsTotal >= 21) || (can != null && can >= 10)) return false;
           }
           // modality presence (any)
           if (modality) {
