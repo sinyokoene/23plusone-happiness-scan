@@ -44,6 +44,11 @@
   const cardCorrMetric = document.getElementById('cardCorrMetric');
   const cardTimeSelector = document.getElementById('cardTimeSelector');
   const cardTimeCanvas = document.getElementById('cardTimeChart');
+  const who5ScaleSel = document.getElementById('who5Scale');
+  const who5NEl = document.getElementById('who5N');
+  const swlsNEl = document.getElementById('swlsN');
+  const ihsNEl = document.getElementById('ihsN');
+  const cantrilNEl = document.getElementById('cantrilN');
 
   let who5Chart, swlsChart, cantrilChart, ihsChart, who5Scatter, swlsScatter, cantrilScatter, n123Scatter;
   let cardTimeChart;
@@ -83,7 +88,8 @@
   function sum(arr){ return arr.reduce((a,b)=>a+(Number(b)||0),0); }
 
   const SCALE = {
-    who5: (raw) => (Number(raw)||0) * 4,           // 0-25 -> 0-100
+    who5Percent: (raw) => (Number(raw)||0) * 4,    // 0-25 -> 0-100
+    who5Raw: (raw) => (Number(raw)||0),            // 0-25
     swls: (raw) => (Number(raw)||0) * (5/3)        // 3-21 -> 5-35
   };
 
@@ -91,9 +97,10 @@
     const who5TotalsRaw = entries.map(e => sum(e.who5||[]));
     const swlsTotalsRaw = entries.map(e => sum(e.swls||[]));
     const cantrilVals = entries.map(e => (e.cantril==null?null:Number(e.cantril))).filter(v=>v!=null && !Number.isNaN(v));
-    const who5Scaled = who5TotalsRaw.map(SCALE.who5);
+    const usePercent = (who5ScaleSel && who5ScaleSel.value === 'percent');
+    const who5Scaled = who5TotalsRaw.map(usePercent ? SCALE.who5Percent : SCALE.who5Raw);
     const swlsScaled = swlsTotalsRaw.map(SCALE.swls);
-    return { who5Scaled, swlsScaled, cantrilVals };
+    return { who5Scaled, swlsScaled, cantrilVals, usePercent };
   }
 
   // Compute per-card correlation between Cantril (0–10) and binary Yes (1) / No (0)
@@ -250,16 +257,18 @@
 
     who5Chart = new Chart(who5Canvas, {
       ...common,
-      data: { labels: who5Labels, datasets: [{ label: 'WHO‑5 %', data: who5Bins, backgroundColor: 'rgba(236, 72, 153, .5)' }] },
-      plugins: [vline([50], 'rgba(236,72,153,.6)')]
+      data: { labels: who5Labels, datasets: [{ label: (who5ScaleSel && who5ScaleSel.value === 'percent') ? 'WHO‑5 %' : 'WHO‑5 (raw 0–25)', data: who5Bins, backgroundColor: 'rgba(236, 72, 153, .5)' }] },
+      plugins: [vline((who5ScaleSel && who5ScaleSel.value === 'percent') ? [50] : [], 'rgba(236,72,153,.6)')]
     });
+    if (who5NEl) who5NEl.textContent = `N = ${who5Scaled.length}`;
 
     if (swlsChart) swlsChart.destroy();
     swlsChart = new Chart(swlsCanvas, {
       ...common,
       data: { labels: swlsLabels, datasets: [{ label: 'SWLS (5–35)', data: swlsBins, backgroundColor: 'rgba(99, 102, 241, .5)' }] },
-      plugins: [vline([9,14,19,20,25,30], 'rgba(99,102,241,.5)')]
+      plugins: [vline([], 'rgba(99,102,241,.5)')]
     });
+    if (swlsNEl) swlsNEl.textContent = `N = ${swlsScaled.length}`;
 
     // Cantril bins 0..10 (11 bins)
     if (cantrilCanvas) {
@@ -271,6 +280,7 @@
         ...common,
         data: { labels: canLabels, datasets: [{ label: 'Cantril (0–10)', data: canBins, backgroundColor: 'rgba(16,185,129,.5)' }] }
       });
+      if (cantrilNEl) cantrilNEl.textContent = `N = ${cantrilVals.length}`;
     }
 
     // IHS distribution 0..100 step 5 (21 bins)
@@ -286,6 +296,7 @@
         data: { labels, datasets: [{ label: 'IHS (0–100)', data: bins, backgroundColor: 'rgba(59,130,246,.5)' }] },
         options: { responsive: true, scales: { x: { ticks: { maxRotation: 0 } }, y: { beginAtZero: true } } }
       });
+      if (ihsNEl) ihsNEl.textContent = `N = ${ihsVals.length}`;
     }
   }
 
