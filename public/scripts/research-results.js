@@ -673,9 +673,10 @@
           const rIhsTxt = (typeof ni.r_ihs === 'number') ? ni.r_ihs.toFixed(3) : '—';
           const ciIhsTxt = (Array.isArray(ni.ci_ihs) && ni.ci_ihs.length===2 && ni.ci_ihs[0]!=null && ni.ci_ihs[1]!=null) ? `[${(ni.ci_ihs[0]??NaN).toFixed(3)}, ${(ni.ci_ihs[1]??NaN).toFixed(3)}]` : '';
           const deltaTxt = (typeof ni.delta_r === 'number') ? ni.delta_r.toFixed(3) : '—';
+          const dr2Pair = (typeof ni.delta_r2_pairwise === 'number') ? ni.delta_r2_pairwise.toFixed(3) : null;
           const passTxt = ni.pass ? 'PASS' : 'FAIL';
           const zpTxt = (methodUsed === 'pearson' && typeof ni.z === 'number' && typeof ni.p === 'number') ? ` (z=${(ni.z??NaN).toFixed(2)}, p=${ni.p.toExponential(2)})` : '';
-          niText = `Best (${bestName}) r=${rBestTxt}${ciBestTxt?` ${ciBestTxt}`:''}; IHS r=${rIhsTxt}${ciIhsTxt?` ${ciIhsTxt}`:''}; Δr=${deltaTxt} • ${passTxt}${zpTxt}`;
+          niText = `Best (${bestName}) r=${rBestTxt}${ciBestTxt?` ${ciBestTxt}`:''}; IHS r=${rIhsTxt}${ciIhsTxt?` ${ciIhsTxt}`:''}; Δr=${deltaTxt}${dr2Pair?` · ΔR²=${dr2Pair}`:''} • ${passTxt}${zpTxt}${ni.benchmark_type==='loo'?` · <span class="opacity-70">LOO benchmark</span>`:''}`;
         }
         const reg = json && json.regression;
         const dR2Text = (reg && typeof reg.delta_r2 === 'number') ? `ΔR²=${reg.delta_r2.toFixed(3)}${(typeof reg.p==='number') ? `, p=${reg.p.toExponential(2)}` : ''}` : 'ΔR² —';

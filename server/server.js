@@ -1764,39 +1764,51 @@ app.get('/api/analytics/validity', async (req, res) => {
       const baseForRobustness = (typeof joinedBase !== 'undefined') ? joinedBase : joined.slice();
       const robustness = { base: summarize(baseForRobustness), filtered: summarize(joined) };
 
-      // Non-inferiority vs best single (match selected method; Fisher z test only for Pearson)
+      // Non-inferiority vs best single using Leave-One-Out (LOO) benchmarks for fairness
+      // Each questionnaire is compared to a benchmark that excludes itself to avoid part–whole inflation
       let nonInferiority = null;
       let compsVsB = null;
       if (benchVals.length >= 2) {
-        const bx = benchVals.map(b=>b.z);
-        function corrWith(fn){
-          const xs = benchVals.map(b=>fn(b));
-          const valid = [];
-          for (let i=0;i<xs.length;i++) {
-            const x = xs[i]; const y = bx[i];
-            if (x!=null && Number.isFinite(x) && y!=null && Number.isFinite(y)) valid.push([x,y]);
+        // Build LOO benchmarks per questionnaire
+        const benchLOO = { who5: [], swls: [], cantril: [] };
+        const bySession = new Map(joined.map(j => [j.sessionId, j]));
+        for (const j of joined) {
+          const hasWho = j.who5Total!=null && Number.isFinite(j.who5Total) && Number.isFinite(whoSd) && whoSd > 0;
+          const hasSwl = j.swlsTotal!=null && Number.isFinite(j.swlsTotal) && Number.isFinite(swlSd) && swlSd > 0;
+          const hasCan = j.cantril!=null && Number.isFinite(j.cantril) && Number.isFinite(canSd) && canSd > 0;
+          const whoZ = hasWho ? (j.who5Total - whoMean)/whoSd : null;
+          const swlZ = hasSwl ? (j.swlsTotal - swlMean)/swlSd : null;
+          const canZ = hasCan ? (j.cantril - canMean)/canSd : null;
+          if (hasSwl && hasCan) benchLOO.who5.push({ sessionId: j.sessionId, z: (swlZ + canZ) / 2 });
+          if (hasWho && hasCan) benchLOO.swls.push({ sessionId: j.sessionId, z: (whoZ + canZ) / 2 });
+          if (hasWho && hasSwl) benchLOO.cantril.push({ sessionId: j.sessionId, z: (whoZ + swlZ) / 2 });
+        }
+
+        function corrAgainstLOO(qName, useIhs){
+          const arr = benchLOO[qName] || [];
+          const xs = []; const ys = [];
+          for (const b of arr) {
+            const jj = bySession.get(b.sessionId);
+            if (!jj) continue;
+            const criterion = b.z;
+            const predictor = useIhs ? Number(jj.ihs) : (qName==='who5' ? jj.who5Total : (qName==='swls' ? jj.swlsTotal : jj.cantril));
+            if (criterion!=null && Number.isFinite(criterion) && predictor!=null && Number.isFinite(predictor)) {
+              xs.push(predictor); ys.push(criterion);
+            }
           }
-          const vx = valid.map(p=>p[0]);
-          const vy = valid.map(p=>p[1]);
-          if (vx.length < 2) return { r: null, n: vx.length };
-          const out = (method === 'spearman') ? spearman(vx, vy) : pearson(vx, vy);
-          // CI only for Pearson
+          if (xs.length < 2) return { r: null, n: xs.length, ci95: null };
+          const out = (method === 'spearman') ? spearman(xs, ys) : pearson(xs, ys);
           const ci = (method === 'pearson' ? fisherCIZ(out.r, out.n) : null);
           return { r: out.r, n: out.n, ci95: ci };
         }
-        const rWho = corrWith(b=>b.who5);
-        const rSwl = corrWith(b=>b.swls);
-        const rCan = corrWith(b=>b.cantril);
-        compsVsB = { who5: rWho, swls: rSwl, cantril: rCan };
-        // r(IHS,B) using the selected method
-        let rIhsSelected = null, nIhsSelected = n, ciIhsSelected = null;
-        if (n >= 2) {
-          const o = (method === 'spearman') ? spearman(pairsIhs, pairsBench) : pearson(pairsIhs, pairsBench);
-          rIhsSelected = o.r; nIhsSelected = o.n;
-          if (method === 'pearson') ciIhsSelected = fisherCIZ(o.r, o.n);
-        }
-        // Choose best single by absolute r
-        const cand = [ ['who5', rWho], ['swls', rSwl], ['cantril', rCan] ].filter(([_,v])=>v && v.r!=null);
+
+        const rWhoLOO = corrAgainstLOO('who5', false);
+        const rSwlLOO = corrAgainstLOO('swls', false);
+        const rCanLOO = corrAgainstLOO('cantril', false);
+        compsVsB = { who5: rWhoLOO, swls: rSwlLOO, cantril: rCanLOO };
+
+        // Choose best questionnaire by absolute LOO correlation
+        const cand = [ ['who5', rWhoLOO], ['swls', rSwlLOO], ['cantril', rCanLOO] ].filter(([_,v])=>v && v.r!=null);
         if (cand.length) {
           cand.sort((a,b)=> Math.abs((b[1].r||0)) - Math.abs((a[1].r||0)) );
           const best = cand[0];
@@ -1804,10 +1816,16 @@ app.get('/api/analytics/validity', async (req, res) => {
           const rBest = best[1].r;
           const nBest = best[1].n;
           const ciBest = best[1].ci95 || null;
+
+          // r(IHS, same LOO benchmark as best)
+          const rIhsObj = corrAgainstLOO(bestName, true);
+          const rIhsSelected = rIhsObj.r;
+          const nIhsSelected = rIhsObj.n;
+          const ciIhsSelected = rIhsObj.ci95 || null;
+
           const margin = 0.05;
           let zstat = null, pval = null, pass = null, deltaR = null;
           if (rIhsSelected!=null && nIhsSelected>=4 && rBest!=null && nBest>=4) {
-            // Use Fisher z test only for Pearson; for Spearman we report delta without z/p
             if (method === 'pearson') {
               const clip = (v)=> Math.max(-0.999999, Math.min(0.999999, Number(v)||0));
               const z1 = 0.5 * Math.log((1+clip(rIhsSelected))/(1-clip(rIhsSelected)));
@@ -1827,11 +1845,15 @@ app.get('/api/analytics/validity', async (req, res) => {
             r_ihs: rIhsSelected,
             n_ihs: nIhsSelected,
             ci_ihs: ciIhsSelected,
+            r2_best: (Number.isFinite(rBest) ? rBest*rBest : null),
+            r2_ihs: (Number.isFinite(rIhsSelected) ? rIhsSelected*rIhsSelected : null),
+            delta_r2_pairwise: (Number.isFinite(rBest) && Number.isFinite(rIhsSelected)) ? ((rIhsSelected*rIhsSelected) - (rBest*rBest)) : null,
             delta_r: deltaR,
             z: zstat,
             p: pval,
             margin,
-            pass
+            pass,
+            benchmark_type: 'loo'
           };
         }
       }
