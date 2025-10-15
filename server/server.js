@@ -854,6 +854,10 @@ app.get('/api/analytics/correlations', async (req, res) => {
           created_at TIMESTAMPTZ DEFAULT now()
         )`
       );
+      // Ensure optional Prolific columns exist for demographics join
+      await researchClient.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_pid TEXT');
+      await researchClient.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_study_id TEXT');
+      await researchClient.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_session_id TEXT');
 
       // Pull latest research rows with optional demographics filtering
       const demo = await detectDemographics(researchClient);
