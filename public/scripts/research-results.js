@@ -46,6 +46,14 @@
   const cardTimeSelector = document.getElementById('cardTimeSelector');
   const cardTimeCanvas = document.getElementById('cardTimeChart');
   const corrMethodSel = document.getElementById('corrMethod');
+  const validityMethodSel = document.getElementById('validityMethod');
+  const validitySummaryEl = document.getElementById('validitySummary');
+  const validityGraderEl = document.getElementById('validityGrader');
+  const downloadValidityJsonBtn = document.getElementById('downloadValidityJson');
+  const downloadValidityCsvBtn = document.getElementById('downloadValidityCsv');
+  const validityRocCanvas = document.getElementById('validityRoc');
+  const validityCeilingTbody = document.querySelector('#validityCeiling tbody');
+  const validityRobustnessTbody = document.querySelector('#validityRobustness tbody');
   const who5ScaleSel = document.getElementById('who5Scale');
   const swlsScaleSel = document.getElementById('swlsScale');
   const who5NEl = document.getElementById('who5N');
@@ -613,6 +621,176 @@
     currentEntries = entries.slice();
     renderTable(currentEntries);
     renderCharts(currentEntries);
+    // Validity: IHS vs Benchmark (server-side)
+    try {
+      const method = (validityMethodSel && validityMethodSel.value) || 'pearson';
+      const limit = parseInt(limitInput.value, 10) || 1500;
+      const q = new URLSearchParams({ limit: String(limit), method });
+      const dev = (filterDevice && filterDevice.value) || '';
+      if (dev) q.set('device', dev);
+      const selectedMods = [
+        modClick && modClick.checked ? 'click' : null,
+        modSwipe && modSwipe.checked ? 'swipe' : null,
+        modArrow && modArrow.checked ? 'arrow' : null
+      ].filter(Boolean);
+      if (selectedMods.length === 1) q.set('modality', selectedMods[0]);
+      if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
+      if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
+      if (filterIat && filterIat.checked) q.set('iat', 'true');
+      if (filterSensitivity && filterSensitivity.checked) q.set('sensitivityAllMax', 'true');
+      if (filterSex && filterSex.value) q.set('sex', filterSex.value);
+      if (filterCountry && filterCountry.selectedOptions && filterCountry.selectedOptions.length > 0) {
+        const inc = Array.from(filterCountry.selectedOptions).map(o=>o.value).filter(Boolean);
+        if (inc.length === 1) q.set('country', inc[0]);
+        if (inc.length > 1) q.set('countries', inc.join(','));
+      }
+      if (excludeCountries && excludeCountries.selectedOptions && excludeCountries.selectedOptions.length > 0) {
+        const ex = Array.from(excludeCountries.selectedOptions).map(o=>o.value).filter(Boolean);
+        if (ex.length) q.set('excludeCountries', ex.join(','));
+      }
+      if (filterAgeMin && filterAgeMin.value) q.set('ageMin', filterAgeMin.value);
+      if (filterAgeMax && filterAgeMax.value) q.set('ageMax', filterAgeMax.value);
+      const thresholdPct = Number(filterThreshold && filterThreshold.value ? filterThreshold.value : NaN);
+      if (!Number.isNaN(thresholdPct) && selectedMods.length === 1) q.set('threshold', String(thresholdPct));
+      q.set('includePerSession', 'false');
+      const r = await fetch(`/api/analytics/validity?${q.toString()}`);
+      const json = await r.json();
+      if (validitySummaryEl) {
+        const n = json && json.n_used || 0;
+        const rVal = json && json.correlation && json.correlation.r;
+        const ci = json && json.correlation && json.correlation.ci95;
+        const methodUsed = (json && json.method) || method;
+        const rText = (typeof rVal === 'number') ? rVal.toFixed(3) : '—';
+        const ciText = (Array.isArray(ci) && ci.length===2 && ci[0]!=null && ci[1]!=null) ? `[${ci[0].toFixed(3)}, ${ci[1].toFixed(3)}]` : '—';
+        const comp = json && json.benchmark && json.benchmark.components;
+        const compTxt = comp ? `WHO‑5 mean=${(comp.who5.mean??NaN).toFixed(2)} sd=${(comp.who5.sd??NaN).toFixed(2)}; SWLS mean=${(comp.swls.mean??NaN).toFixed(2)} sd=${(comp.swls.sd??NaN).toFixed(2)}; Cantril mean=${(comp.cantril.mean??NaN).toFixed(2)} sd=${(comp.cantril.sd??NaN).toFixed(2)}` : '';
+        const ni = json && json.non_inferiority;
+        const niText = (ni && typeof ni.delta_r === 'number') ? `Δr vs best (${ni.best_single}): ${(ni.delta_r).toFixed(3)} • ${ni.pass ? 'PASS' : 'FAIL'}${(typeof ni.p === 'number') ? ` (z=${(ni.z??NaN).toFixed(2)}, p=${ni.p.toExponential(2)})` : ''}` : '—';
+        const reg = json && json.regression;
+        const dR2Text = (reg && typeof reg.delta_r2 === 'number') ? `ΔR²=${reg.delta_r2.toFixed(3)}${(typeof reg.p==='number') ? `, p=${reg.p.toExponential(2)}` : ''}` : 'ΔR² —';
+        const rel = json && json.reliability;
+        const ihsSB = rel && rel.ihs_sb && typeof rel.ihs_sb.sb === 'number' ? `IHS SB=${rel.ihs_sb.sb.toFixed(2)}${(Array.isArray(rel.ihs_sb.ci95) ? ` [${(rel.ihs_sb.ci95[0]??NaN).toFixed(2)}, ${(rel.ihs_sb.ci95[1]??NaN).toFixed(2)}]` : '')}` : 'IHS SB —';
+        const omega = rel && rel.benchmark_omega && typeof rel.benchmark_omega.omega === 'number' ? `Ω=${rel.benchmark_omega.omega.toFixed(2)}${(Array.isArray(rel.benchmark_omega.ci95) ? ` [${(rel.benchmark_omega.ci95[0]??NaN).toFixed(2)}, ${(rel.benchmark_omega.ci95[1]??NaN).toFixed(2)}]` : '')}` : 'Ω —';
+        const att = json && json.attenuation;
+        const attText = (att && typeof att.r_true === 'number') ? `attenuation‑corrected r≈${att.r_true.toFixed(3)}` : '';
+        validitySummaryEl.innerHTML = `
+          <div class="grid" style="grid-template-columns: repeat(12, 1fr); gap: 8px;">
+            <div class="col-6">
+              <div class="text-sm"><span class="font-medium">Correlation</span> (${methodUsed}): <span class="inline-block px-2 py-0.5 rounded" style="background:rgba(59,130,246,.12)">${rText}</span> <span class="opacity-70">95% CI:</span> ${ciText} <span class="opacity-70">n=</span>${n}</div>
+              <div class="text-xs opacity-80 mt-1">${niText} · ${dR2Text}</div>
+              <div class="text-xs opacity-80 mt-1">Reliability: ${ihsSB}; Benchmark ${omega} ${attText ? '· '+attText : ''}</div>
+            </div>
+            <div class="col-6 text-xs opacity-80">
+              <div><span class="font-medium">Benchmark</span>: z‑mean of WHO‑5(0–25), SWLS(3–21), Cantril(0–10). ${compTxt}</div>
+            </div>
+          </div>`;
+      }
+      if (validityGraderEl) {
+        const g = json && json.grader;
+        if (g && g.label) {
+          const labelColors = {
+            'Clearly better': 'rgba(16,185,129,.15)',
+            'At least as good': 'rgba(59,130,246,.15)',
+            'Promising but needs more data': 'rgba(250,204,21,.20)',
+            'Not yet competitive': 'rgba(239,68,68,.15)',
+            'Inconclusive (data quality)': 'rgba(156,163,175,.2)'
+          };
+          const color = labelColors[g.label] || 'rgba(156,163,175,.2)';
+          const reasons = (Array.isArray(g.reasons) ? g.reasons : []).map(r=>`<li>${r}</li>`).join('');
+          const warns = (Array.isArray(g.warnings) && g.warnings.length) ? `<div class="text-[11px] mt-1" style="color:#b45309;">Warnings: ${g.warnings.join('; ')}</div>` : '';
+          validityGraderEl.innerHTML = `
+            <div class="text-sm" style="background:${color};border:1px solid rgba(0,0,0,.06);border-radius:8px;padding:8px 10px;">
+              <div><span class="font-medium">Grader:</span> ${g.label} — ${g.conclusion||''}</div>
+              <ul class="list-disc ml-5 mt-1 text-xs opacity-90">${reasons}</ul>
+              ${warns}
+            </div>`;
+        } else {
+          validityGraderEl.innerHTML = '';
+        }
+      }
+      // ROC mini chart
+      if (validityRocCanvas && json && json.roc && Array.isArray(json.roc.points)) {
+        const pts = json.roc.points.map(p=>({x: p.fpr, y: p.tpr})).sort((a,b)=> a.x - b.x);
+        if (window.validityRocChart) window.validityRocChart.destroy();
+        window.validityRocChart = new Chart(validityRocCanvas, {
+          type: 'line',
+          data: { datasets: [
+            { label: `ROC AUC=${(json.roc.auc??NaN).toFixed(3)}${Array.isArray(json.roc.ci95)?` [${(json.roc.ci95[0]??NaN).toFixed(3)}, ${(json.roc.ci95[1]??NaN).toFixed(3)}]`:''}`, data: pts, borderColor: 'rgba(59,130,246,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, tension: 0 },
+            { label: 'Chance', data: [{x:0,y:0},{x:1,y:1}], borderColor: 'rgba(156,163,175,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderDash: [4,4], tension: 0 }
+          ] },
+          options: { responsive: true, parsing: false, scales: { x: { min:0, max:1, title: { display: true, text: 'FPR' } }, y: { min:0, max:1, title: { display: true, text: 'TPR' } } }, plugins: { legend: { display: true } } }
+        });
+      }
+      // Ceiling table
+      if (validityCeilingTbody && json && json.ceiling) {
+        const rows = [
+          ['WHO‑5', json.ceiling.who5],
+          ['SWLS', json.ceiling.swls],
+          ['Cantril', json.ceiling.cantril],
+          ['IHS', json.ceiling.ihs]
+        ];
+        validityCeilingTbody.replaceChildren();
+        rows.forEach(([name, m]) => {
+          if (!m) return;
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${name}</td><td>${m.pct_max==null?'—':m.pct_max.toFixed(1)}%</td><td>${m.top10==null?'—':m.top10.toFixed(1)}%</td><td>${m.skew==null?'—':m.skew.toFixed(2)}</td><td>${m.kurtosis==null?'—':m.kurtosis.toFixed(2)}</td>`;
+          validityCeilingTbody.appendChild(tr);
+        });
+      }
+      // Robustness Base vs Filtered
+      if (validityRobustnessTbody && json && json.robustness) {
+        validityRobustnessTbody.replaceChildren();
+        const rows = [ ['Base', json.robustness.base], ['Filtered', json.robustness.filtered] ];
+        rows.forEach(([name, r]) => {
+          const tr = document.createElement('tr');
+          const rStr = (r && typeof r.r==='number') ? r.r.toFixed(3) : '—';
+          const aucStr = (r && typeof r.auc==='number') ? r.auc.toFixed(3) : '—';
+          tr.innerHTML = `<td>${name}</td><td>${(r && r.n) || 0}</td><td>${rStr}</td><td>${aucStr}</td>`;
+          validityRobustnessTbody.appendChild(tr);
+        });
+      }
+      if (downloadValidityJsonBtn) {
+        downloadValidityJsonBtn.onclick = () => {
+          const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(json, null, 2));
+          const a = document.createElement('a');
+          a.setAttribute('href', dataStr);
+          a.setAttribute('download', 'validity.json');
+          a.click();
+        };
+      }
+      if (downloadValidityCsvBtn) {
+        downloadValidityCsvBtn.onclick = () => {
+          // Flatten key metrics into a single CSV row
+          const ni = json && json.non_inferiority;
+          const reg = json && json.regression;
+          const rel = json && json.reliability;
+          const roc = json && json.roc;
+          const fields = [
+            ['n_used', json.n_used],
+            ['method', json.method],
+            ['r_obs', json.correlation && json.correlation.r],
+            ['ci_lo', json.correlation && json.correlation.ci95 ? json.correlation.ci95[0] : ''],
+            ['ci_hi', json.correlation && json.correlation.ci95 ? json.correlation.ci95[1] : ''],
+            ['ni_best', ni && ni.best_single], ['ni_delta_r', ni && ni.delta_r], ['ni_z', ni && ni.z], ['ni_p', ni && ni.p], ['ni_pass', ni && ni.pass],
+            ['dr2', reg && reg.delta_r2], ['f', reg && reg.f], ['df1', reg && reg.df1], ['df2', reg && reg.df2], ['p_f', reg && reg.p], ['beta_ihs', reg && reg.beta_ihs],
+            ['ihs_sb', rel && rel.ihs_sb && rel.ihs_sb.sb], ['ihs_sb_lo', rel && rel.ihs_sb && rel.ihs_sb.ci95 ? rel.ihs_sb.ci95[0] : ''], ['ihs_sb_hi', rel && rel.ihs_sb && rel.ihs_sb.ci95 ? rel.ihs_sb.ci95[1] : ''],
+            ['omega', rel && rel.benchmark_omega && rel.benchmark_omega.omega], ['omega_lo', rel && rel.benchmark_omega && rel.benchmark_omega.ci95 ? rel.benchmark_omega.ci95[0] : ''], ['omega_hi', rel && rel.benchmark_omega && rel.benchmark_omega.ci95 ? rel.benchmark_omega.ci95[1] : ''],
+            ['r_true', json.attenuation && json.attenuation.r_true],
+            ['auc', roc && roc.auc], ['auc_lo', roc && roc.ci95 ? roc.ci95[0] : ''], ['auc_hi', roc && roc.ci95 ? roc.ci95[1] : '']
+          ];
+          const header = fields.map(f=>f[0]).join(',');
+          const row = fields.map(f=> (f[1]==null?'':String(f[1]).replace(/,/g,';')) ).join(',');
+          const csv = header + '\n' + row + '\n';
+          const dataStr = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+          const a = document.createElement('a');
+          a.setAttribute('href', dataStr);
+          a.setAttribute('download', 'validity.csv');
+          a.click();
+        };
+      }
+    } catch (e) {
+      console.warn('Validity analytics failed', e);
+    }
 
     // Build card selector options once we have entries and mapping
     await ensureCardDomains();
@@ -999,6 +1177,7 @@
   if (filterAgeMax) filterAgeMax.addEventListener('change', load);
   if (filterIat) filterIat.addEventListener('change', load);
   if (filterSensitivity) filterSensitivity.addEventListener('change', load);
+  if (validityMethodSel) validityMethodSel.addEventListener('change', load);
   // Close dropdowns on outside click
   (function setupDropdownClose(){
     function closeIfOutside(e, detailsEl){

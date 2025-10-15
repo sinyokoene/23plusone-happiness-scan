@@ -197,6 +197,47 @@
           
         </div>
       </div>
+      <div class="col-12">
+        <div class="card">
+          <div class="flex items-center justify-between mb-2">
+            <h2 class="text-xl font-semibold">IHS vs Benchmark</h2>
+            <div class="flex items-center gap-3 text-xs">
+              <label class="inline-flex items-center gap-1" title="Correlation method for IHS vs Benchmark">
+                <span>Method</span>
+                <select id="validityMethod" class="border rounded px-2 py-1 w-28">
+                  <option value="pearson" selected>Pearson r</option>
+                  <option value="spearman">Spearman ρ</option>
+                </select>
+              </label>
+              <button id="downloadValidityJson" class="bg-gray-100 border rounded px-2 py-1">Download JSON</button>
+              <button id="downloadValidityCsv" class="bg-gray-100 border rounded px-2 py-1">Download CSV</button>
+            </div>
+          </div>
+          <div id="validitySummary" class="text-sm opacity-90"></div>
+          <div id="validityGrader" class="mt-2"></div>
+          <div class="grid mt-3" style="grid-template-columns: repeat(12, 1fr); gap: 16px;">
+            <div class="col-6">
+              <h3 class="font-medium mb-1 text-sm">ROC (IHS for top‑25% Benchmark)</h3>
+              <canvas id="validityRoc"></canvas>
+            </div>
+            <div class="col-6">
+              <h3 class="font-medium mb-1 text-sm">Ceiling / Compression</h3>
+              <table id="validityCeiling" class="text-xs">
+                <thead><tr><th>Measure</th><th>% max</th><th>% top10%</th><th>Skew</th><th>Kurtosis</th></tr></thead>
+                <tbody></tbody>
+              </table>
+              <div id="validityCeilingNote" class="text-[11px] opacity-70 mt-1">Top‑10% = share in highest decile; higher values suggest compression.</div>
+            </div>
+            <div class="col-12">
+              <h3 class="font-medium mb-1 text-sm">Robustness: Base vs Filtered</h3>
+              <table id="validityRobustness" class="text-xs">
+                <thead><tr><th>Condition</th><th>n</th><th>r(IHS,B)</th><th>AUC</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="col-6">
         <div class="card">
           <h2 class="text-lg font-semibold mb-2">WHO‑5 vs IHS (scatter)</h2>
