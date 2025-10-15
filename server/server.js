@@ -2048,7 +2048,12 @@ app.get('/api/analytics/validity', async (req, res) => {
     }
   } catch (e) {
     console.error('Error computing validity analytics:', e);
-    res.status(500).json({ error: 'Failed to compute validity analytics' });
+    const debug = String(req.query.debug || '').toLowerCase() === '1';
+    if (debug) {
+      res.status(500).json({ error: 'Failed to compute validity analytics', message: e?.message || null, stack: e?.stack || null });
+    } else {
+      res.status(500).json({ error: 'Failed to compute validity analytics' });
+    }
   }
 });
 
