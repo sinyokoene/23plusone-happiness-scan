@@ -1390,6 +1390,10 @@ app.get('/api/analytics/validity', async (req, res) => {
     const rtDenoise = String(req.query.rtDenoise || '').toLowerCase() === 'true';
     const domainList = req.query.domains ? String(req.query.domains) : '';
     const domainSet = new Set(domainList.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean));
+    // Modality/timeouts policy
+    const excludeSwipe = String(req.query.excludeSwipe || '').toLowerCase() === 'true';
+    const timeoutsMax = Number.isFinite(Number(req.query.timeoutsMax)) ? Number(req.query.timeoutsMax) : null;
+    const timeoutsFracMax = Number.isFinite(Number(req.query.timeoutsFracMax)) ? Number(req.query.timeoutsFracMax) : null;
     // Demographics filters
     const sex = req.query.sex ? String(req.query.sex) : '';
     const country = req.query.country ? String(req.query.country) : '';
@@ -1402,7 +1406,8 @@ app.get('/api/analytics/validity', async (req, res) => {
     const cacheKey = JSON.stringify({
       limit, device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold,
       includePerSession, sex, country, countries, ageMin, ageMax, excludeCountries,
-      scoreMode, isoCalibrate, rtDenoise, domains: Array.from(domainSet)
+      scoreMode, isoCalibrate, rtDenoise, domains: Array.from(domainSet),
+      excludeSwipe, timeoutsMax, timeoutsFracMax
     });
     const cached = __validityCache.get(cacheKey);
     if (cached && (Date.now() - cached.at) < (cached.ttlMs || 60000)) {
@@ -1509,7 +1514,7 @@ app.get('/api/analytics/validity', async (req, res) => {
       } else if (device === 'desktop') {
         joined = joined.filter(j => !isMobileUA(j.scan_user_agent));
       }
-      if (modality || exclusive || excludeTimeouts || iat || sensitivityAllMax || (threshold != null)) {
+      if (modality || exclusive || excludeTimeouts || iat || sensitivityAllMax || (threshold != null) || excludeSwipe || timeoutsMax!=null || timeoutsFracMax!=null) {
         const matchers = {
           click: (m) => m === 'click',
           swipe: (m) => m === 'swipe-touch' || m === 'swipe-mouse',
@@ -1524,8 +1529,15 @@ app.get('/api/analytics/validity', async (req, res) => {
             if (matchers.click(v)) counts.click++; else if (matchers.swipe(v)) counts.swipe++; else if (matchers.arrow(v)) counts.arrow++; else counts.other++;
             counts.total++;
           }
+          if (excludeSwipe && counts.swipe > 0) return false;
           if (excludeTimeouts) {
             if (all.some(e => e && e.response === null)) return false;
+          }
+          // allow limited timeouts if requested
+          if (timeoutsMax!=null || timeoutsFracMax!=null) {
+            const timeouts = all.filter(e => e && e.response === null).length;
+            if (timeoutsMax!=null && timeouts > timeoutsMax) return false;
+            if (timeoutsFracMax!=null && counts.total>0 && (timeouts / counts.total) > timeoutsFracMax) return false;
           }
           if (iat) {
             const total = all.length;
