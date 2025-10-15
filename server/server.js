@@ -843,24 +843,29 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const mainClient = await pool.connect();
     try {
       // Ensure table exists (for local dev safety)
-      await researchClient.query(
-        `CREATE TABLE IF NOT EXISTS research_entries (
-          id SERIAL PRIMARY KEY,
-          session_id TEXT NOT NULL,
-          who5 INTEGER[] NOT NULL,
-          swls INTEGER[] NOT NULL,
-          cantril INTEGER,
-          user_agent TEXT,
-          created_at TIMESTAMPTZ DEFAULT now()
-        )`
-      );
+      try {
+        await researchClient.query(
+          `CREATE TABLE IF NOT EXISTS research_entries (
+            id SERIAL PRIMARY KEY,
+            session_id TEXT NOT NULL,
+            who5 INTEGER[] NOT NULL,
+            swls INTEGER[] NOT NULL,
+            cantril INTEGER,
+            user_agent TEXT,
+            created_at TIMESTAMPTZ DEFAULT now()
+          )`
+        );
+      } catch (e) {
+        console.warn('validity: CREATE TABLE research_entries failed (continuing)', e?.message || e);
+      }
       // Ensure optional Prolific columns exist for demographics join
-      await researchClient.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_pid TEXT');
-      await researchClient.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_study_id TEXT');
-      await researchClient.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_session_id TEXT');
+      try { await researchClient.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_pid TEXT'); } catch(e){ console.warn('validity: add prolific_pid failed', e?.message || e); }
+      try { await researchClient.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_study_id TEXT'); } catch(e){ console.warn('validity: add prolific_study_id failed', e?.message || e); }
+      try { await researchClient.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_session_id TEXT'); } catch(e){ console.warn('validity: add prolific_session_id failed', e?.message || e); }
 
       // Pull latest research rows with optional demographics filtering
-      const demo = await detectDemographics(researchClient);
+      let demo = null;
+      try { demo = await detectDemographics(researchClient); } catch (e) { console.warn('validity: detectDemographics failed', e?.message || e); demo = null; }
       const demoJoin = demo ? ` LEFT JOIN ${qIdent(demo.table)} d ON d.${qIdent(demo.pidCol)} = re.prolific_pid` : '';
       const clauses = [];
       const params = [];
@@ -886,14 +891,21 @@ app.get('/api/analytics/correlations', async (req, res) => {
       }
       params.push(limit);
       const whereSql = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
-      const { rows: researchRows } = await researchClient.query(
-        `SELECT re.session_id, re.who5, re.swls, re.cantril, re.created_at
-         FROM research_entries re${demoJoin}
-         ${whereSql}
-         ORDER BY re.created_at DESC
-         LIMIT $${params.length}`,
-        params
-      );
+      let researchRows = [];
+      try {
+        const qres = await researchClient.query(
+          `SELECT re.session_id, re.who5, re.swls, re.cantril, re.created_at
+           FROM research_entries re${demoJoin}
+           ${whereSql}
+           ORDER BY re.created_at DESC
+           LIMIT $${params.length}`,
+          params
+        );
+        researchRows = qres.rows || [];
+      } catch (e) {
+        console.warn('validity: SELECT from research_entries failed (continuing with empty set)', e?.message || e);
+        researchRows = [];
+      }
       const rBySession = new Map();
       for (const r of researchRows) {
         const who5Total = sumArray(r.who5);
