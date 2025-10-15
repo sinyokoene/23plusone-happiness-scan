@@ -1584,13 +1584,37 @@ app.get('/api/analytics/validity', async (req, res) => {
           const zMean = zs.reduce((a,b)=>a+b,0) / zs.length;
           // choose predictor: raw IHS or tuned blend
           let ihsPred = Number(j.ihs);
+          // Optional per-person RT denoise for N1 component
+          let n1Denoised = null;
+          if (rtDenoise) {
+            const all = j.selections?.allResponses;
+            if (Array.isArray(all) && all.length >= 5) {
+              const validTs = all.map(e=>Number(e && e.responseTime)).filter(t=>Number.isFinite(t));
+              if (validTs.length >= 5) {
+                const loCut = quantile(validTs.slice(), 0.10);
+                const hiCut = quantile(validTs.slice(), 0.90);
+                // time multiplier similar to reliability block
+                const timeMultiplier = (ms) => { const x=Math.max(0, Math.min(4000, Number(ms)||0)); const lin=(4000-x)/4000; return Math.sqrt(Math.max(0, lin)); };
+                let sum = 0;
+                for (const e of all) {
+                  if (!e || e.response !== true) continue; // only yes add affirmation
+                  let t = Number(e.responseTime);
+                  if (!Number.isFinite(t)) continue;
+                  // per-person winsorize 10% and clamp to IAT window 300–2000 ms
+                  t = Math.max(300, Math.min(2000, Math.max(loCut, Math.min(hiCut, t))));
+                  sum += 4 * timeMultiplier(t);
+                }
+                n1Denoised = sum;
+              }
+            }
+          }
           if (scoreMode === 'tuned') {
             // z-scale N1/N2/N3 within-joined
-            const n1 = Number(j.n1); const n2 = Number(j.n2); const n3 = Number(j.n3);
+            const n1 = (n1Denoised!=null ? n1Denoised : Number(j.n1)); const n2 = Number(j.n2); const n3 = Number(j.n3);
             if (Number.isFinite(n1) || Number.isFinite(n2) || Number.isFinite(n3)) {
               // lazy compute means/sds
               if (!global.__tmpStats) {
-                const n1s = joined.map(r=>Number(r.n1)).filter(Number.isFinite);
+                const n1s = joined.map(r=> (rtDenoise && Array.isArray(r?.selections?.allResponses)) ? null : Number(r.n1)).filter(Number.isFinite);
                 const n2s = joined.map(r=>Number(r.n2)).filter(Number.isFinite);
                 const n3s = joined.map(r=>Number(r.n3)).filter(Number.isFinite);
                 global.__tmpStats = {
