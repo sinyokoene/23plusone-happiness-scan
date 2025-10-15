@@ -47,6 +47,8 @@
   const cardTimeCanvas = document.getElementById('cardTimeChart');
   const corrMethodSel = document.getElementById('corrMethod');
   const validityMethodSel = document.getElementById('validityMethod');
+  const scoreModeSel = document.getElementById('scoreMode');
+  const isoCalibrateChk = document.getElementById('isoCalibrate');
   const validitySummaryEl = document.getElementById('validitySummary');
   const validityGraderEl = document.getElementById('validityGrader');
   const downloadValidityJsonBtn = document.getElementById('downloadValidityJson');
@@ -1006,6 +1008,8 @@
       const dev = (filterDevice && filterDevice.value) || '';
       const q = new URLSearchParams({ limit: String(limit) });
       if (method) q.set('method', method);
+      if (scoreModeSel && scoreModeSel.value) q.set('score', scoreModeSel.value);
+      if (isoCalibrateChk && isoCalibrateChk.checked) q.set('iso', 'true');
       if (dev) q.set('device', dev);
       // Server correlations allow a single modality value; if multiple are checked, omit and rely on client-side distributions
       const selectedMods = [
@@ -1200,6 +1204,8 @@
   if (filterIat) filterIat.addEventListener('change', load);
   if (filterSensitivity) filterSensitivity.addEventListener('change', load);
   if (validityMethodSel) validityMethodSel.addEventListener('change', load);
+  if (scoreModeSel) scoreModeSel.addEventListener('change', load);
+  if (isoCalibrateChk) isoCalibrateChk.addEventListener('change', load);
   // Close dropdowns on outside click
   (function setupDropdownClose(){
     function closeIfOutside(e, detailsEl){

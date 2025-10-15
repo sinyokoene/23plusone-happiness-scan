@@ -209,11 +209,23 @@
                   <option value="spearman">Spearman ρ</option>
                 </select>
               </label>
+              <label class="inline-flex items-center gap-1" title="Score used for IHS vs Benchmark">
+                <span>Score</span>
+                <select id="scoreMode" class="border rounded px-2 py-1 w-28">
+                  <option value="raw" selected>Raw</option>
+                  <option value="tuned">Tuned</option>
+                </select>
+              </label>
+              <label class="inline-flex items-center gap-1" title="Isotonic calibration for AUC (does not change r)">
+                <input type="checkbox" id="isoCalibrate" />
+                <span>Isotonic</span>
+              </label>
               <button id="downloadValidityJson" class="bg-gray-100 border rounded px-2 py-1">Download JSON</button>
               <button id="downloadValidityCsv" class="bg-gray-100 border rounded px-2 py-1">Download CSV</button>
             </div>
           </div>
           <div id="validitySummary" class="text-sm opacity-90"></div>
+          <div class="text-[11px] opacity-80 mt-1">IHS is a behavioral score from rapid yes/no card choices; the Benchmark is a composite of WHO‑5, SWLS, and Cantril. Higher r = closer tracking; AUC measures how well IHS identifies the top‑25% on the Benchmark. LOO avoids part‑whole inflation.</div>
           <div id="validityGrader" class="mt-2"></div>
           <div class="grid mt-3" style="grid-template-columns: repeat(12, 1fr); gap: 16px;">
             <div class="col-6">
@@ -234,6 +246,7 @@
                 <thead><tr><th>Condition</th><th>n</th><th>r(IHS,B)</th><th>AUC</th></tr></thead>
                 <tbody></tbody>
               </table>
+              <div class="text-[11px] opacity-70 mt-1">Default analysis uses: Click input, no timeouts, and IAT window 300–2000 ms. Other settings shown as sensitivity.</div>
             </div>
           </div>
         </div>

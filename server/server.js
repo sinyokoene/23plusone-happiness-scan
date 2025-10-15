@@ -1384,6 +1384,12 @@ app.get('/api/analytics/validity', async (req, res) => {
     const sensitivityAllMax = String(req.query.sensitivityAllMax || '').toLowerCase() === 'true';
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
     const includePerSession = String(req.query.includePerSession || '').toLowerCase() === 'true';
+    // Scoring/tuning and RT denoise options
+    const scoreMode = String(req.query.score || 'raw').toLowerCase(); // 'raw' | 'tuned'
+    const isoCalibrate = String(req.query.iso || '').toLowerCase() === 'true';
+    const rtDenoise = String(req.query.rtDenoise || '').toLowerCase() === 'true';
+    const domainList = req.query.domains ? String(req.query.domains) : '';
+    const domainSet = new Set(domainList.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean));
     // Demographics filters
     const sex = req.query.sex ? String(req.query.sex) : '';
     const country = req.query.country ? String(req.query.country) : '';
@@ -1395,7 +1401,8 @@ app.get('/api/analytics/validity', async (req, res) => {
     // cache key includes all relevant params
     const cacheKey = JSON.stringify({
       limit, device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold,
-      includePerSession, sex, country, countries, ageMin, ageMax, excludeCountries
+      includePerSession, sex, country, countries, ageMin, ageMax, excludeCountries,
+      scoreMode, isoCalibrate, rtDenoise, domains: Array.from(domainSet)
     });
     const cached = __validityCache.get(cacheKey);
     if (cached && (Date.now() - cached.at) < (cached.ttlMs || 60000)) {
@@ -1575,7 +1582,32 @@ app.get('/api/analytics/validity', async (req, res) => {
         if (j.cantril != null && Number.isFinite(j.cantril) && Number.isFinite(canSd) && canSd > 0) zs.push((j.cantril - canMean)/canSd);
         if (zs.length >= 2 && j.ihs != null && Number.isFinite(j.ihs)) {
           const zMean = zs.reduce((a,b)=>a+b,0) / zs.length;
-          pairsIhs.push(Number(j.ihs));
+          // choose predictor: raw IHS or tuned blend
+          let ihsPred = Number(j.ihs);
+          if (scoreMode === 'tuned') {
+            // z-scale N1/N2/N3 within-joined
+            const n1 = Number(j.n1); const n2 = Number(j.n2); const n3 = Number(j.n3);
+            if (Number.isFinite(n1) || Number.isFinite(n2) || Number.isFinite(n3)) {
+              // lazy compute means/sds
+              if (!global.__tmpStats) {
+                const n1s = joined.map(r=>Number(r.n1)).filter(Number.isFinite);
+                const n2s = joined.map(r=>Number(r.n2)).filter(Number.isFinite);
+                const n3s = joined.map(r=>Number(r.n3)).filter(Number.isFinite);
+                global.__tmpStats = {
+                  m1: mean(n1s), s1: sd(n1s),
+                  m2: mean(n2s), s2: sd(n2s),
+                  m3: mean(n3s), s3: sd(n3s)
+                };
+              }
+              const { m1, s1, m2, s2, m3, s3 } = global.__tmpStats;
+              const z1 = Number.isFinite(n1) && s1>0 ? (n1 - m1)/s1 : 0;
+              const z2 = Number.isFinite(n2) && s2>0 ? (n2 - m2)/s2 : 0;
+              const z3 = Number.isFinite(n3) && s3>0 ? (n3 - m3)/s3 : 0;
+              // simple fixed weights for now (front-end can evolve to CV)
+              ihsPred = (0.5*z1 + 0.3*z2 + 0.2*z3);
+            }
+          }
+          pairsIhs.push(ihsPred);
           pairsBench.push(zMean);
           benchVals.push({ sessionId: j.sessionId, z: zMean, who5: j.who5Total, swls: j.swlsTotal, cantril: j.cantril });
           if (includePerSession) perSession.push({ sessionId: j.sessionId, ihs: Number(j.ihs), who5: j.who5Total, swls: j.swlsTotal, cantril: j.cantril, z_benchmark: zMean });
