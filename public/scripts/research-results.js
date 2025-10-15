@@ -49,7 +49,6 @@
   const validityMethodSel = document.getElementById('validityMethod');
   const scoreModeSel = document.getElementById('scoreMode');
   const isoCalibrateChk = document.getElementById('isoCalibrate');
-  const primaryCohortChk = document.getElementById('primaryCohort');
   const validitySummaryEl = document.getElementById('validitySummary');
   const validityGraderEl = document.getElementById('validityGrader');
   const downloadValidityJsonBtn = document.getElementById('downloadValidityJson');
@@ -1011,19 +1010,7 @@
       if (method) q.set('method', method);
       if (scoreModeSel && scoreModeSel.value) q.set('score', scoreModeSel.value);
       if (isoCalibrateChk && isoCalibrateChk.checked) q.set('iso', 'true');
-      if (primaryCohortChk && primaryCohortChk.checked) {
-        // Apply recommended defaults
-        if (modClick && modClick.checked && modArrow && !modArrow.checked) {
-          modArrow.checked = true;
-        }
-        q.delete('exclusive');
-        q.delete('iat');
-        q.delete('excludeTimeouts');
-        q.set('excludeSwipe', 'true');
-        q.set('timeoutsMax', '1');
-        q.set('timeoutsFracMax', '0.2');
-        q.set('rtDenoise', 'true');
-      }
+      // No auto defaults; use exactly what the user selected
       if (dev) q.set('device', dev);
       // Server correlations allow a single modality value; if multiple are checked, omit and rely on client-side distributions
       const selectedMods = [
@@ -1220,7 +1207,6 @@
   if (validityMethodSel) validityMethodSel.addEventListener('change', load);
   if (scoreModeSel) scoreModeSel.addEventListener('change', load);
   if (isoCalibrateChk) isoCalibrateChk.addEventListener('change', load);
-  if (primaryCohortChk) primaryCohortChk.addEventListener('change', load);
   // Close dropdowns on outside click
   (function setupDropdownClose(){
     function closeIfOutside(e, detailsEl){
