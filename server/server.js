@@ -1761,7 +1761,8 @@ app.get('/api/analytics/validity', async (req, res) => {
         let aucloc = null; if (nloc>=10) { const thr = quantile(bmkArr.slice(), 0.75); const labels = bmkArr.map(b => (b>=thr?1:0)); aucloc = aucFromScores(ihsArr, labels).auc; }
         return { n: nloc, r: rloc, auc: aucloc };
       }
-      const robustness = { base: summarize(joinedBase), filtered: summarize(joined) };
+      const baseForRobustness = (typeof joinedBase !== 'undefined') ? joinedBase : joined.slice();
+      const robustness = { base: summarize(baseForRobustness), filtered: summarize(joined) };
 
       // Non-inferiority vs best single (Pearson, Fisher z diff approximation)
       let nonInferiority = null;
