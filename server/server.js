@@ -1764,7 +1764,7 @@ app.get('/api/analytics/validity', async (req, res) => {
       const baseForRobustness = (typeof joinedBase !== 'undefined') ? joinedBase : joined.slice();
       const robustness = { base: summarize(baseForRobustness), filtered: summarize(joined) };
 
-      // Non-inferiority vs best single (Pearson, Fisher z diff approximation)
+      // Non-inferiority vs best single (match selected method; Fisher z test only for Pearson)
       let nonInferiority = null;
       let compsVsB = null;
       if (benchVals.length >= 2) {
@@ -1779,16 +1779,22 @@ app.get('/api/analytics/validity', async (req, res) => {
           const vx = valid.map(p=>p[0]);
           const vy = valid.map(p=>p[1]);
           if (vx.length < 2) return { r: null, n: vx.length };
-          const out = pearson(vx, vy);
-          return { r: out.r, n: out.n };
+          const out = (method === 'spearman') ? spearman(vx, vy) : pearson(vx, vy);
+          // CI only for Pearson
+          const ci = (method === 'pearson' ? fisherCIZ(out.r, out.n) : null);
+          return { r: out.r, n: out.n, ci95: ci };
         }
         const rWho = corrWith(b=>b.who5);
         const rSwl = corrWith(b=>b.swls);
         const rCan = corrWith(b=>b.cantril);
         compsVsB = { who5: rWho, swls: rSwl, cantril: rCan };
-        // r(IHS,B) using Pearson for this test
-        let rIhsPear = null, nIhsPear = n;
-        if (n >= 2) { const o = pearson(pairsIhs, pairsBench); rIhsPear = o.r; nIhsPear = o.n; }
+        // r(IHS,B) using the selected method
+        let rIhsSelected = null, nIhsSelected = n, ciIhsSelected = null;
+        if (n >= 2) {
+          const o = (method === 'spearman') ? spearman(pairsIhs, pairsBench) : pearson(pairsIhs, pairsBench);
+          rIhsSelected = o.r; nIhsSelected = o.n;
+          if (method === 'pearson') ciIhsSelected = fisherCIZ(o.r, o.n);
+        }
         // Choose best single by absolute r
         const cand = [ ['who5', rWho], ['swls', rSwl], ['cantril', rCan] ].filter(([_,v])=>v && v.r!=null);
         if (cand.length) {
@@ -1797,24 +1803,30 @@ app.get('/api/analytics/validity', async (req, res) => {
           const bestName = best[0];
           const rBest = best[1].r;
           const nBest = best[1].n;
+          const ciBest = best[1].ci95 || null;
           const margin = 0.05;
           let zstat = null, pval = null, pass = null, deltaR = null;
-          if (rIhsPear!=null && nIhsPear>=4 && rBest!=null && nBest>=4) {
-            const clip = (v)=> Math.max(-0.999999, Math.min(0.999999, Number(v)||0));
-            const z1 = 0.5 * Math.log((1+clip(rIhsPear))/(1-clip(rIhsPear)));
-            const z2 = 0.5 * Math.log((1+clip(rBest))/(1-clip(rBest)));
-            const se = Math.sqrt(1/(nIhsPear-3) + 1/(nBest-3));
-            zstat = (z1 - z2) / se;
-            pval = 2 * (1 - normCdf(Math.abs(zstat)));
-            deltaR = rIhsPear - rBest;
-            pass = (rBest - rIhsPear) <= margin;
+          if (rIhsSelected!=null && nIhsSelected>=4 && rBest!=null && nBest>=4) {
+            // Use Fisher z test only for Pearson; for Spearman we report delta without z/p
+            if (method === 'pearson') {
+              const clip = (v)=> Math.max(-0.999999, Math.min(0.999999, Number(v)||0));
+              const z1 = 0.5 * Math.log((1+clip(rIhsSelected))/(1-clip(rIhsSelected)));
+              const z2 = 0.5 * Math.log((1+clip(rBest))/(1-clip(rBest)));
+              const se = Math.sqrt(1/(nIhsSelected-3) + 1/(nBest-3));
+              zstat = (z1 - z2) / se;
+              pval = 2 * (1 - normCdf(Math.abs(zstat)));
+            }
+            deltaR = rIhsSelected - rBest;
+            pass = (rBest - rIhsSelected) <= margin;
           }
           nonInferiority = {
             best_single: bestName,
             r_best: rBest,
             n_best: nBest,
-            r_ihs: rIhsPear,
-            n_ihs: nIhsPear,
+            ci_best: ciBest,
+            r_ihs: rIhsSelected,
+            n_ihs: nIhsSelected,
+            ci_ihs: ciIhsSelected,
             delta_r: deltaR,
             z: zstat,
             p: pval,

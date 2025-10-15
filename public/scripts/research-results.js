@@ -665,7 +665,18 @@
         const comp = json && json.benchmark && json.benchmark.components;
         const compTxt = comp ? `WHO‑5 mean=${(comp.who5.mean??NaN).toFixed(2)} sd=${(comp.who5.sd??NaN).toFixed(2)}; SWLS mean=${(comp.swls.mean??NaN).toFixed(2)} sd=${(comp.swls.sd??NaN).toFixed(2)}; Cantril mean=${(comp.cantril.mean??NaN).toFixed(2)} sd=${(comp.cantril.sd??NaN).toFixed(2)}` : '';
         const ni = json && json.non_inferiority;
-        const niText = (ni && typeof ni.delta_r === 'number') ? `Δr vs best (${ni.best_single}): ${(ni.delta_r).toFixed(3)} • ${ni.pass ? 'PASS' : 'FAIL'}${(typeof ni.p === 'number') ? ` (z=${(ni.z??NaN).toFixed(2)}, p=${ni.p.toExponential(2)})` : ''}` : '—';
+        let niText = '—';
+        if (ni && (typeof ni.r_best === 'number' || typeof ni.r_ihs === 'number' || typeof ni.delta_r === 'number')) {
+          const bestName = ni.best_single || '—';
+          const rBestTxt = (typeof ni.r_best === 'number') ? ni.r_best.toFixed(3) : '—';
+          const ciBestTxt = (Array.isArray(ni.ci_best) && ni.ci_best.length===2 && ni.ci_best[0]!=null && ni.ci_best[1]!=null) ? `[${(ni.ci_best[0]??NaN).toFixed(3)}, ${(ni.ci_best[1]??NaN).toFixed(3)}]` : '';
+          const rIhsTxt = (typeof ni.r_ihs === 'number') ? ni.r_ihs.toFixed(3) : '—';
+          const ciIhsTxt = (Array.isArray(ni.ci_ihs) && ni.ci_ihs.length===2 && ni.ci_ihs[0]!=null && ni.ci_ihs[1]!=null) ? `[${(ni.ci_ihs[0]??NaN).toFixed(3)}, ${(ni.ci_ihs[1]??NaN).toFixed(3)}]` : '';
+          const deltaTxt = (typeof ni.delta_r === 'number') ? ni.delta_r.toFixed(3) : '—';
+          const passTxt = ni.pass ? 'PASS' : 'FAIL';
+          const zpTxt = (methodUsed === 'pearson' && typeof ni.z === 'number' && typeof ni.p === 'number') ? ` (z=${(ni.z??NaN).toFixed(2)}, p=${ni.p.toExponential(2)})` : '';
+          niText = `Best (${bestName}) r=${rBestTxt}${ciBestTxt?` ${ciBestTxt}`:''}; IHS r=${rIhsTxt}${ciIhsTxt?` ${ciIhsTxt}`:''}; Δr=${deltaTxt} • ${passTxt}${zpTxt}`;
+        }
         const reg = json && json.regression;
         const dR2Text = (reg && typeof reg.delta_r2 === 'number') ? `ΔR²=${reg.delta_r2.toFixed(3)}${(typeof reg.p==='number') ? `, p=${reg.p.toExponential(2)}` : ''}` : 'ΔR² —';
         const rel = json && json.reliability;
@@ -771,7 +782,17 @@
             ['r_obs', json.correlation && json.correlation.r],
             ['ci_lo', json.correlation && json.correlation.ci95 ? json.correlation.ci95[0] : ''],
             ['ci_hi', json.correlation && json.correlation.ci95 ? json.correlation.ci95[1] : ''],
-            ['ni_best', ni && ni.best_single], ['ni_delta_r', ni && ni.delta_r], ['ni_z', ni && ni.z], ['ni_p', ni && ni.p], ['ni_pass', ni && ni.pass],
+            ['ni_best', ni && ni.best_single],
+            ['ni_r_best', ni && ni.r_best],
+            ['ni_ci_best_lo', ni && Array.isArray(ni.ci_best) ? ni.ci_best[0] : ''],
+            ['ni_ci_best_hi', ni && Array.isArray(ni.ci_best) ? ni.ci_best[1] : ''],
+            ['ni_r_ihs', ni && ni.r_ihs],
+            ['ni_ci_ihs_lo', ni && Array.isArray(ni.ci_ihs) ? ni.ci_ihs[0] : ''],
+            ['ni_ci_ihs_hi', ni && Array.isArray(ni.ci_ihs) ? ni.ci_ihs[1] : ''],
+            ['ni_delta_r', ni && ni.delta_r],
+            ['ni_z', ni && ni.z],
+            ['ni_p', ni && ni.p],
+            ['ni_pass', ni && ni.pass],
             ['dr2', reg && reg.delta_r2], ['f', reg && reg.f], ['df1', reg && reg.df1], ['df2', reg && reg.df2], ['p_f', reg && reg.p], ['beta_ihs', reg && reg.beta_ihs],
             ['ihs_sb', rel && rel.ihs_sb && rel.ihs_sb.sb], ['ihs_sb_lo', rel && rel.ihs_sb && rel.ihs_sb.ci95 ? rel.ihs_sb.ci95[0] : ''], ['ihs_sb_hi', rel && rel.ihs_sb && rel.ihs_sb.ci95 ? rel.ihs_sb.ci95[1] : ''],
             ['omega', rel && rel.benchmark_omega && rel.benchmark_omega.omega], ['omega_lo', rel && rel.benchmark_omega && rel.benchmark_omega.ci95 ? rel.benchmark_omega.ci95[0] : ''], ['omega_hi', rel && rel.benchmark_omega && rel.benchmark_omega.ci95 ? rel.benchmark_omega.ci95[1] : ''],
