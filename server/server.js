@@ -1385,9 +1385,10 @@ app.get('/api/analytics/validity', async (req, res) => {
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
     const includePerSession = String(req.query.includePerSession || '').toLowerCase() === 'true';
     // Scoring/tuning and RT denoise options
-    const scoreMode = String(req.query.score || 'raw').toLowerCase(); // 'raw' | 'tuned'
+    const scoreMode = String(req.query.score || 'raw').toLowerCase(); // 'raw' | 'tuned' | 'cv'
     const isoCalibrate = String(req.query.iso || '').toLowerCase() === 'true';
     const rtDenoise = String(req.query.rtDenoise || '').toLowerCase() === 'true';
+    const rtLearn = String(req.query.rtLearn || '').toLowerCase() === 'true';
     const domainList = req.query.domains ? String(req.query.domains) : '';
     const domainSet = new Set(domainList.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean));
     // Modality/timeouts policy
@@ -1587,6 +1588,8 @@ app.get('/api/analytics/validity', async (req, res) => {
       const pairsIhs = [], pairsBench = [];
       const perSession = [];
       const benchVals = [];
+      // Keep data rows for potential CV scoring
+      const cvRows = [];
       for (const j of joined) {
         const zs = [];
         if (j.who5Total != null && Number.isFinite(j.who5Total) && Number.isFinite(whoSd) && whoSd > 0) zs.push((j.who5Total - whoMean)/whoSd);
@@ -1643,10 +1646,20 @@ app.get('/api/analytics/validity', async (req, res) => {
               ihsPred = (0.5*z1 + 0.3*z2 + 0.2*z3);
             }
           }
+          // Save for immediate modes
           pairsIhs.push(ihsPred);
           pairsBench.push(zMean);
           benchVals.push({ sessionId: j.sessionId, z: zMean, who5: j.who5Total, swls: j.swlsTotal, cantril: j.cantril });
           if (includePerSession) perSession.push({ sessionId: j.sessionId, ihs: Number(j.ihs), who5: j.who5Total, swls: j.swlsTotal, cantril: j.cantril, z_benchmark: zMean });
+          // Store row for CV mode
+          cvRows.push({
+            sessionId: j.sessionId,
+            label: zMean,
+            n1: (rtDenoise ? (typeof n1Denoised === 'number' ? n1Denoised : Number(j.n1)) : Number(j.n1)),
+            n2: Number(j.n2),
+            n3: Number(j.n3),
+            selections: j.selections
+          });
         }
       }
 
@@ -1656,6 +1669,143 @@ app.get('/api/analytics/validity', async (req, res) => {
         const out = (method === 'spearman') ? spearman(pairsIhs, pairsBench) : pearson(pairsIhs, pairsBench);
         r = out.r;
         if (method === 'pearson') ci95 = fisherCIZ(r, out.n);
+      }
+
+      // Optional CV scoring mode with learned weights (and optional RT exponent learning)
+      let cvInfo = null;
+      let predBySession = null;
+      if (scoreMode === 'cv' && Array.isArray(cvRows) && cvRows.length >= 20) {
+        // Helper: quantile
+        const qtile = (arr, q)=>{ if(!arr.length) return NaN; const a=arr.slice().sort((x,y)=>x-y); const pos=(a.length-1)*q; const base=Math.floor(pos); const rest=pos-base; return a[base+1]!==undefined ? a[base] + rest*(a[base+1]-a[base]) : a[base]; };
+        // Compute per-person N1 under exponent alpha
+        function n1WithAlpha(row, alpha){
+          if (!rtLearn) return Number(row.n1);
+          const all = row?.selections?.allResponses;
+          if (!Array.isArray(all) || all.length < 5) return Number(row.n1);
+          const validTs = all.map(e=>Number(e && e.responseTime)).filter(t=>Number.isFinite(t));
+          if (validTs.length < 5) return Number(row.n1);
+          const loCut = qtile(validTs, 0.10);
+          const hiCut = qtile(validTs, 0.90);
+          const toLin = (ms)=>{ const x=Math.max(0, Math.min(4000, Number(ms)||0)); return (4000 - x) / 4000; };
+          let sum = 0;
+          for (const e of all) {
+            if (!e || e.response !== true) continue;
+            let t = Number(e.responseTime); if (!Number.isFinite(t)) continue;
+            t = Math.max(300, Math.min(2000, Math.max(loCut, Math.min(hiCut, t))));
+            const lin = Math.max(0, toLin(t));
+            sum += 4 * Math.pow(lin, alpha);
+          }
+          return sum;
+        }
+        // Ridge regression with intercept (intercept not penalized)
+        function ridgeFit(X, y, lambda){
+          const n = X.length; if (!n) return null;
+          const p = X[0].length + 1; // + intercept
+          const XT = new Array(p).fill(0).map(()=>new Array(p).fill(0));
+          const Xy = new Array(p).fill(0);
+          for (let i=0;i<n;i++){
+            const row = [1, ...X[i]];
+            for (let a=0;a<p;a++){ Xy[a] += row[a] * y[i]; for (let b=0;b<p;b++){ XT[a][b] += row[a] * row[b]; } }
+          }
+          for (let a=1;a<p;a++) XT[a][a] += lambda; // no penalty on intercept
+          // Invert XT
+          function matInv(A){
+            const m = A.map(r=>r.slice()); const n=A.length; const I=new Array(n).fill(0).map((_,i)=>{const r=new Array(n).fill(0); r[i]=1; return r;});
+            for (let i=0;i<n;i++){
+              let maxR=i, maxV=Math.abs(m[i][i]);
+              for(let r=i+1;r<n;r++){ const v=Math.abs(m[r][i]); if(v>maxV){maxV=v; maxR=r;} }
+              if(maxR!==i){ const tmp=m[i]; m[i]=m[maxR]; m[maxR]=tmp; const t2=I[i]; I[i]=I[maxR]; I[maxR]=t2; }
+              let piv=m[i][i]; if (Math.abs(piv)<1e-12) return null;
+              for (let j=0;j<n;j++){ m[i][j]/=piv; I[i][j]/=piv; }
+              for (let r=0;r<n;r++) if(r!==i){ const f=m[r][i]; for (let j=0;j<n;j++){ m[r][j]-=f*m[i][j]; I[r][j]-=f*I[i][j]; } }
+            }
+            return I;
+          }
+        
+          function matVec(M, v){ return M.map(row => row.reduce((s,a,i)=> s + a*v[i], 0)); }
+          const inv = matInv(XT); if (!inv) return null;
+          const beta = matVec(inv, Xy);
+          return beta; // length p: [intercept, w1, w2, w3]
+        }
+        function predictRow(beta, z1, z2, z3){ return beta[0] + beta[1]*z1 + beta[2]*z2 + beta[3]*z3; }
+        // Build folds
+        const k = Math.min(5, Math.max(3, Math.floor(Math.sqrt(cvRows.length/10))));
+        const idx = cvRows.map((_,i)=>i);
+        for (let i=idx.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=idx[i]; idx[i]=idx[j]; idx[j]=t; }
+        const folds = Array.from({length:k}, (_,fi)=> idx.filter((_,i)=> i % k === fi));
+        const alphaGrid = rtLearn ? [0.35, 0.5, 0.65, 0.8, 1.0] : [0.5];
+        const lambda = 0.1;
+        const preds = []; const labels = [];
+        const foldSumm = [];
+        for (let fi=0; fi<k; fi++){
+          const testIdx = new Set(folds[fi]);
+          const train = cvRows.filter((_,i)=> !testIdx.has(i));
+          const test = cvRows.filter((_,i)=> testIdx.has(i));
+          if (train.length < 20 || test.length === 0) continue;
+          let best = { r: -Infinity, alpha: alphaGrid[0], beta: null, means: null, sds: null };
+          for (const alpha of alphaGrid){
+            const n1s = train.map(rw => n1WithAlpha(rw, alpha));
+            const n2s = train.map(rw => Number(rw.n2));
+            const n3s = train.map(rw => Number(rw.n3));
+            const y = train.map(rw => Number(rw.label));
+            const m1 = mean(n1s.filter(Number.isFinite)); const s1 = sd(n1s.filter(Number.isFinite));
+            const m2 = mean(n2s.filter(Number.isFinite)); const s2 = sd(n2s.filter(Number.isFinite));
+            const m3 = mean(n3s.filter(Number.isFinite)); const s3 = sd(n3s.filter(Number.isFinite));
+            const X = [];
+            for (let i=0;i<train.length;i++){
+              const z1 = Number.isFinite(n1s[i]) && s1>0 ? (n1s[i]-m1)/s1 : 0;
+              const z2 = Number.isFinite(n2s[i]) && s2>0 ? (n2s[i]-m2)/s2 : 0;
+              const z3 = Number.isFinite(n3s[i]) && s3>0 ? (n3s[i]-m3)/s3 : 0;
+              X.push([z1,z2,z3]);
+            }
+            const beta = ridgeFit(X, y, lambda);
+            if (!beta) continue;
+            const yhat = X.map(row => beta[0] + row[0]*beta[1] + row[1]*beta[2] + row[2]*beta[3]);
+            const rr = pearson(yhat, y).r;
+            if (Number.isFinite(rr) && rr > best.r){ best = { r: rr, alpha, beta, means: {m1,m2,m3}, sds: {s1,s2,s3} }; }
+          }
+          // Predict on test fold with best config
+          const { alpha, beta, means, sds } = best;
+          const n1t = test.map(rw => n1WithAlpha(rw, alpha));
+          const n2t = test.map(rw => Number(rw.n2));
+          const n3t = test.map(rw => Number(rw.n3));
+          for (let i=0;i<test.length;i++){
+            const z1 = Number.isFinite(n1t[i]) && sds.s1>0 ? (n1t[i]-means.m1)/sds.s1 : 0;
+            const z2 = Number.isFinite(n2t[i]) && sds.s2>0 ? (n2t[i]-means.m2)/sds.s2 : 0;
+            const z3 = Number.isFinite(n3t[i]) && sds.s3>0 ? (n3t[i]-means.m3)/sds.s3 : 0;
+            const pred = predictRow(beta, z1, z2, z3);
+            preds.push(pred);
+            labels.push(Number(test[i].label));
+          }
+          foldSumm.push({ alpha: best.alpha, beta: best.beta });
+        }
+        if (preds.length >= 2 && labels.length === preds.length){
+          const out = (method === 'spearman') ? spearman(preds, labels) : pearson(preds, labels);
+          r = out.r; if (method === 'pearson') ci95 = fisherCIZ(r, out.n);
+          // Replace pairs for downstream AUC/ROC
+          pairsIhs.length = 0; pairsBench.length = 0;
+          for (let i=0;i<preds.length;i++){ pairsIhs.push(preds[i]); pairsBench.push(labels[i]); }
+          // Build session prediction map (approximate by matching by label order to cvRows test accumulation)
+          predBySession = new Map();
+          // Re-run folds to fill session map deterministically
+          let pi = 0;
+          for (let fi=0; fi<k; fi++){
+            const testIdx = new Set(folds[fi]);
+            const test = cvRows.filter((_,i)=> testIdx.has(i));
+            // For simplicity we cannot reconstruct exact fold config here; store preds sequentially
+            for (let ti=0; ti<test.length; ti++){
+              const sid = test[ti].sessionId;
+              if (pi < preds.length) predBySession.set(sid, preds[pi]);
+              pi++;
+            }
+          }
+          // Summaries
+          const meanAlpha = foldSumm.length ? (foldSumm.reduce((s,a)=>s + (Number(a.alpha)||0),0) / foldSumm.length) : (rtLearn ? 0.5 : null);
+          const meanW = [0,0,0]; let countW = 0;
+          for (const f of foldSumm){ if (Array.isArray(f.beta) && f.beta.length>=4){ meanW[0]+=f.beta[1]; meanW[1]+=f.beta[2]; meanW[2]+=f.beta[3]; countW++; } }
+          if (countW>0){ meanW[0]/=countW; meanW[1]/=countW; meanW[2]/=countW; }
+          cvInfo = { k, lambda, mean_alpha: meanAlpha, mean_weights: { z1: meanW[0]||0, z2: meanW[1]||0, z3: meanW[2]||0 }, folds: foldSumm };
+        }
       }
 
       // Reliability: IHS split-half (deterministic alternating by card order) + Spearman–Brown
@@ -1822,7 +1972,10 @@ app.get('/api/analytics/validity', async (req, res) => {
           if (j.who5Total!=null && Number.isFinite(j.who5Total) && Number.isFinite(wS) && wS>0) zs.push((j.who5Total - wM)/wS);
           if (j.swlsTotal!=null && Number.isFinite(j.swlsTotal) && Number.isFinite(sS) && sS>0) zs.push((j.swlsTotal - sM)/sS);
           if (j.cantril!=null && Number.isFinite(j.cantril) && Number.isFinite(cS) && cS>0) zs.push((j.cantril - cM)/cS);
-          if (zs.length>=2 && j.ihs!=null && Number.isFinite(j.ihs)) { ihsArr.push(Number(j.ihs)); bmkArr.push(zs.reduce((a,b)=>a+b,0)/zs.length); }
+          if (zs.length>=2) {
+            const ihsVal = (predBySession && predBySession.has(j.sessionId)) ? Number(predBySession.get(j.sessionId)) : Number(j.ihs);
+            if (ihsVal!=null && Number.isFinite(ihsVal)) { ihsArr.push(ihsVal); bmkArr.push(zs.reduce((a,b)=>a+b,0)/zs.length); }
+          }
         }
         const nloc = Math.min(ihsArr.length, bmkArr.length);
         let rloc = null; if (nloc>=2) { const out = (method==='spearman'? spearman(ihsArr, bmkArr): pearson(ihsArr, bmkArr)); rloc = out.r; }
@@ -1859,7 +2012,7 @@ app.get('/api/analytics/validity', async (req, res) => {
             const jj = bySession.get(b.sessionId);
             if (!jj) continue;
             const criterion = b.z;
-            const predictor = useIhs ? Number(jj.ihs) : (qName==='who5' ? jj.who5Total : (qName==='swls' ? jj.swlsTotal : jj.cantril));
+            const predictor = useIhs ? ((predBySession && predBySession.has(jj.sessionId)) ? Number(predBySession.get(jj.sessionId)) : Number(jj.ihs)) : (qName==='who5' ? jj.who5Total : (qName==='swls' ? jj.swlsTotal : jj.cantril));
             if (criterion!=null && Number.isFinite(criterion) && predictor!=null && Number.isFinite(predictor)) {
               xs.push(predictor); ys.push(criterion);
             }
@@ -1929,7 +2082,7 @@ app.get('/api/analytics/validity', async (req, res) => {
       // Incremental validity: Benchmark ~ WHO5 + SWLS + Cantril; Step 2 add IHS
       let regression = null;
       try {
-        const ihsBySession = new Map(joined.map(j => [j.sessionId, Number(j.ihs)]));
+        const ihsBySession = new Map(joined.map(j => [j.sessionId, (predBySession && predBySession.has(j.sessionId)) ? Number(predBySession.get(j.sessionId)) : Number(j.ihs)]));
         const rows = benchVals.filter(b => b && Number.isFinite(b.z) && Number.isFinite(b.who5) && Number.isFinite(b.swls) && Number.isFinite(b.cantril));
         // standardize predictors for stability and beta reporting
         const zOf = {
@@ -2150,6 +2303,7 @@ app.get('/api/analytics/validity', async (req, res) => {
         roc,
         roc_aux: { who5: aucWho, swls: aucSwl, cantril: aucCan, best: aucBestQ, best_name: aucBestQName },
         robustness,
+        cv: cvInfo,
         filters_echo: { device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold, sex, country, countries, ageMin, ageMax, excludeCountries },
         grader
       };

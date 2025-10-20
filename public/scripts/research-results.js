@@ -654,6 +654,16 @@
       const thresholdPct = Number(filterThreshold && filterThreshold.value ? filterThreshold.value : NaN);
       if (!Number.isNaN(thresholdPct) && selectedMods.length === 1) q.set('threshold', String(thresholdPct));
       q.set('includePerSession', 'false');
+      // Pass score/rt flags
+      const scoreMode = (scoreModeSel && scoreModeSel.value) || 'raw';
+      if (scoreMode) {
+        if (scoreMode === 'cv_rtlearn') {
+          q.set('score', 'cv');
+          q.set('rtLearn', '1');
+        } else {
+          q.set('score', scoreMode);
+        }
+      }
       const r = await fetch(`/api/analytics/validity?${q.toString()}`);
       const json = await r.json();
       if (validitySummaryEl) {
@@ -686,10 +696,12 @@
         const omega = rel && rel.benchmark_omega && typeof rel.benchmark_omega.omega === 'number' ? `Ω=${rel.benchmark_omega.omega.toFixed(2)}${(Array.isArray(rel.benchmark_omega.ci95) ? ` [${(rel.benchmark_omega.ci95[0]??NaN).toFixed(2)}, ${(rel.benchmark_omega.ci95[1]??NaN).toFixed(2)}]` : '')}` : 'Ω —';
         const att = json && json.attenuation;
         const attText = (att && typeof att.r_true === 'number') ? `attenuation‑corrected r≈${att.r_true.toFixed(3)}` : '';
+        const cv = json && json.cv;
+        const cvTxt = (cv && typeof cv.mean_alpha === 'number') ? ` · CV weights (approx): w1=${(cv.mean_weights?.z1??0).toFixed(2)}, w2=${(cv.mean_weights?.z2??0).toFixed(2)}, w3=${(cv.mean_weights?.z3??0).toFixed(2)}${(typeof cv.mean_alpha==='number')?`, α≈${cv.mean_alpha.toFixed(2)}`:''}` : '';
         validitySummaryEl.innerHTML = `
           <div class="grid" style="grid-template-columns: repeat(12, 1fr); gap: 8px;">
             <div class="col-6">
-              <div class="text-sm"><span class="font-medium">Correlation</span> (${methodUsed}): <span class="inline-block px-2 py-0.5 rounded" style="background:rgba(59,130,246,.12)">${rText}</span> <span class="opacity-70">95% CI:</span> ${ciText} <span class="opacity-70">n=</span>${n}</div>
+              <div class="text-sm"><span class="font-medium">Correlation</span> (${methodUsed}): <span class="inline-block px-2 py-0.5 rounded" style="background:rgba(59,130,246,.12)">${rText}</span> <span class="opacity-70">95% CI:</span> ${ciText} <span class="opacity-70">n=</span>${n}${cvTxt}</div>
               <div class="text-xs opacity-80 mt-1">${niText} · ${dR2Text}</div>
               <div class="text-xs opacity-80 mt-1">Reliability: ${ihsSB}; Benchmark ${omega} ${attText ? '· '+attText : ''}</div>
             </div>
