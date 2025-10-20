@@ -723,11 +723,15 @@
           const color = labelColors[g.label] || 'rgba(156,163,175,.2)';
           const reasons = (Array.isArray(g.reasons) ? g.reasons : []).map(r=>`<li>${r}</li>`).join('');
           const warns = (Array.isArray(g.warnings) && g.warnings.length) ? `<div class="text-[11px] mt-1" style="color:#b45309;">Warnings: ${g.warnings.join('; ')}</div>` : '';
+          const gap = (g.inputs && typeof g.inputs.non_inferiority_gap === 'number') ? g.inputs.non_inferiority_gap : null;
+          const margin = (g.inputs && typeof g.inputs.non_inferiority_margin === 'number') ? g.inputs.non_inferiority_margin : null;
+          const gapInfo = (gap!=null && margin!=null) ? `<div class="text-[11px] mt-1">Non‑inferiority gap Δr=${gap.toFixed(3)} (margin ≤ ${margin.toFixed(3)})</div>` : '';
           validityGraderEl.innerHTML = `
             <div class="text-sm" style="background:${color};border:1px solid rgba(0,0,0,.06);border-radius:8px;padding:8px 10px;">
               <div><span class="font-medium">Grader:</span> ${g.label} — ${g.conclusion||''}</div>
               <ul class="list-disc ml-5 mt-1 text-xs opacity-90">${reasons}</ul>
               ${warns}
+              ${gapInfo}
             </div>`;
         } else {
           validityGraderEl.innerHTML = '';

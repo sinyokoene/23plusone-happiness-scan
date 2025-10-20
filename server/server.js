@@ -1385,7 +1385,7 @@ app.get('/api/analytics/validity', async (req, res) => {
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
     const includePerSession = String(req.query.includePerSession || '').toLowerCase() === 'true';
     // Scoring/tuning and RT denoise options
-    const scoreMode = String(req.query.score || 'raw').toLowerCase(); // 'raw' | 'tuned' | 'cv'
+    const scoreMode = String(req.query.score || 'raw').toLowerCase(); // 'raw' | 'tuned' | 'cv' | 'n1' | 'n12'
     const isoCalibrate = String(req.query.iso || '').toLowerCase() === 'true';
     const rtDenoise = String(req.query.rtDenoise || '').toLowerCase() === 'true';
     const rtLearn = String(req.query.rtLearn || '').toLowerCase() === 'true';
@@ -1590,6 +1590,8 @@ app.get('/api/analytics/validity', async (req, res) => {
       const benchVals = [];
       // Keep data rows for potential CV scoring
       const cvRows = [];
+      // For non-CV alternative score modes, capture predictions per session for downstream metrics
+      let predBySession = (scoreMode === 'tuned' || scoreMode === 'n1' || scoreMode === 'n12') ? new Map() : null;
       for (const j of joined) {
         const zs = [];
         if (j.who5Total != null && Number.isFinite(j.who5Total) && Number.isFinite(whoSd) && whoSd > 0) zs.push((j.who5Total - whoMean)/whoSd);
@@ -1623,7 +1625,7 @@ app.get('/api/analytics/validity', async (req, res) => {
               }
             }
           }
-          if (scoreMode === 'tuned') {
+          if (scoreMode === 'tuned' || scoreMode === 'n12') {
             // z-scale N1/N2/N3 within-joined
             const n1 = (n1Denoised!=null ? n1Denoised : Number(j.n1)); const n2 = Number(j.n2); const n3 = Number(j.n3);
             if (Number.isFinite(n1) || Number.isFinite(n2) || Number.isFinite(n3)) {
@@ -1642,15 +1644,26 @@ app.get('/api/analytics/validity', async (req, res) => {
               const z1 = Number.isFinite(n1) && s1>0 ? (n1 - m1)/s1 : 0;
               const z2 = Number.isFinite(n2) && s2>0 ? (n2 - m2)/s2 : 0;
               const z3 = Number.isFinite(n3) && s3>0 ? (n3 - m3)/s3 : 0;
-              // simple fixed weights for now (front-end can evolve to CV)
-              ihsPred = (0.5*z1 + 0.3*z2 + 0.2*z3);
+              if (scoreMode === 'tuned') {
+                // simple fixed weights for now (front-end can evolve to CV)
+                ihsPred = (0.5*z1 + 0.3*z2 + 0.2*z3);
+              } else {
+                // n12: equal blend of N1 and N2 only
+                ihsPred = (0.5*z1 + 0.5*z2);
+              }
             }
+          }
+          if (scoreMode === 'n1') {
+            // Use N1 component only (optionally RT-denoised)
+            const n1 = (n1Denoised!=null ? n1Denoised : Number(j.n1));
+            if (Number.isFinite(n1)) ihsPred = n1;
           }
           // Save for immediate modes
           pairsIhs.push(ihsPred);
           pairsBench.push(zMean);
           benchVals.push({ sessionId: j.sessionId, z: zMean, who5: j.who5Total, swls: j.swlsTotal, cantril: j.cantril });
           if (includePerSession) perSession.push({ sessionId: j.sessionId, ihs: Number(j.ihs), who5: j.who5Total, swls: j.swlsTotal, cantril: j.cantril, z_benchmark: zMean });
+          if (predBySession) predBySession.set(j.sessionId, ihsPred);
           // Store row for CV mode
           cvRows.push({
             sessionId: j.sessionId,
@@ -1673,7 +1686,6 @@ app.get('/api/analytics/validity', async (req, res) => {
 
       // Optional CV scoring mode with learned weights (and optional RT exponent learning)
       let cvInfo = null;
-      let predBySession = null;
       if (scoreMode === 'cv' && Array.isArray(cvRows) && cvRows.length >= 20) {
         // Helper: quantile
         const qtile = (arr, q)=>{ if(!arr.length) return NaN; const a=arr.slice().sort((x,y)=>x-y); const pos=(a.length-1)*q; const base=Math.floor(pos); const rest=pos-base; return a[base+1]!==undefined ? a[base] + rest*(a[base+1]-a[base]) : a[base]; };
@@ -2265,6 +2277,8 @@ app.get('/api/analytics/validity', async (req, res) => {
           conclusion = 'IHS trails the best questionnaire on core metrics.';
         }
 
+        // Compute explicit non-inferiority gap for UI convenience
+        const gap = (nonInferiority && typeof nonInferiority.r_best === 'number' && typeof nonInferiority.r_ihs === 'number') ? (nonInferiority.r_best - nonInferiority.r_ihs) : null;
         grader = {
           label,
           conclusion,
@@ -2276,7 +2290,9 @@ app.get('/api/analytics/validity', async (req, res) => {
             auc_ihs: aucIhs, auc_best_q: aucBest, auc_best_q_name: aucBestQName,
             ceil_ihs: ceilIhs, ceil_who5: ceilWho, ceil_swls: ceilSwl,
             rel_ihs: relIhs, rel_benchmark: relBench,
-            n_effective: nEff
+            n_effective: nEff,
+            non_inferiority_gap: gap,
+            non_inferiority_margin: thresholds.m_noninf
           },
           thresholds
         };
