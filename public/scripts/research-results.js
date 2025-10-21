@@ -697,12 +697,14 @@
         const att = json && json.attenuation;
         const attText = (att && typeof att.r_true === 'number') ? `attenuation‑corrected r≈${att.r_true.toFixed(3)}` : '';
         const cv = json && json.cv;
+        const yr = json && json.yesrate;
         const cvTxt = (cv && typeof cv.mean_alpha === 'number') ? ` · CV weights (approx): w1=${(cv.mean_weights?.z1??0).toFixed(2)}, w2=${(cv.mean_weights?.z2??0).toFixed(2)}, w3=${(cv.mean_weights?.z3??0).toFixed(2)}${(typeof cv.mean_alpha==='number')?`, α≈${cv.mean_alpha.toFixed(2)}`:''}` : '';
         validitySummaryEl.innerHTML = `
           <div class="grid" style="grid-template-columns: repeat(12, 1fr); gap: 8px;">
             <div class="col-6">
               <div class="text-sm"><span class="font-medium">Correlation</span> (${methodUsed}): <span class="inline-block px-2 py-0.5 rounded" style="background:rgba(59,130,246,.12)">${rText}</span> <span class="opacity-70">95% CI:</span> ${ciText} <span class="opacity-70">n=</span>${n}${cvTxt}</div>
               <div class="text-xs opacity-80 mt-1">${niText} · ${dR2Text}</div>
+              ${yr ? `<div class="text-xs opacity-80 mt-1">Yes‑rate: r=${(yr.r??NaN).toFixed(3)}${(Array.isArray(yr.ci95)?` [${(yr.ci95[0]??NaN).toFixed(3)}, ${(yr.ci95[1]??NaN).toFixed(3)}]`: '')}${(typeof yr.auc==='number'?`, AUC=${yr.auc.toFixed(3)}`:'')}${(yr.partial_given_n1 && typeof yr.partial_given_n1.r==='number'?`, partial r|N1=${yr.partial_given_n1.r.toFixed(3)}`:'')}</div>` : ''}
               <div class="text-xs opacity-80 mt-1">Reliability: ${ihsSB}; Benchmark ${omega} ${attText ? '· '+attText : ''}</div>
             </div>
             <div class="col-6 text-xs opacity-80">

@@ -1586,6 +1586,8 @@ app.get('/api/analytics/validity', async (req, res) => {
 
       // Per-session z-mean composite (require at least 2 present)
       const pairsIhs = [], pairsBench = [];
+      // For yes-rate analysis
+      const yesRates = [], benchForYes = [], n1ForYes = [];
       const perSession = [];
       const benchVals = [];
       // Keep data rows for potential CV scoring
@@ -1664,6 +1666,18 @@ app.get('/api/analytics/validity', async (req, res) => {
           benchVals.push({ sessionId: j.sessionId, z: zMean, who5: j.who5Total, swls: j.swlsTotal, cantril: j.cantril });
           if (includePerSession) perSession.push({ sessionId: j.sessionId, ihs: Number(j.ihs), who5: j.who5Total, swls: j.swlsTotal, cantril: j.cantril, z_benchmark: zMean });
           if (predBySession) predBySession.set(j.sessionId, ihsPred);
+          // Yes-rate for the same session (share of Yes among Yes/No; exclude null timeouts)
+          const all = j.selections?.allResponses;
+          if (Array.isArray(all) && all.length) {
+            let yes = 0, yn = 0;
+            for (const e of all) { if (!e) continue; if (e.response === true) { yes++; yn++; } else if (e.response === false) { yn++; } }
+            if (yn > 0) {
+              yesRates.push(yes / yn);
+              benchForYes.push(zMean);
+              const n1use = Number.isFinite(Number(j.n1)) ? Number(j.n1) : null;
+              n1ForYes.push(n1use);
+            }
+          }
           // Store row for CV mode
           cvRows.push({
             sessionId: j.sessionId,
@@ -1683,6 +1697,39 @@ app.get('/api/analytics/validity', async (req, res) => {
         r = out.r;
         if (method === 'pearson') ci95 = fisherCIZ(r, out.n);
       }
+
+      // Yes-rate analytics
+      let yesrate = null;
+      try {
+        const nY = Math.min(yesRates.length, benchForYes.length);
+        if (nY >= 2) {
+          const corrFn = (method === 'spearman') ? spearman : pearson;
+          const rY = corrFn(yesRates, benchForYes);
+          const ciY = (method === 'pearson') ? fisherCIZ(rY.r, rY.n) : null;
+          // AUC for top-25% benchmark using yes-rate
+          let aucY = null; if (nY >= 10) { const thr = quantile(benchForYes.slice(), 0.75); const labels = benchForYes.map(b => (b>=thr?1:0)); aucY = aucFromScores(yesRates, labels).auc; }
+          // Partial r controlling for N1 (Pearson on ranks if spearman)
+          let partial = null;
+          const validIdx = [];
+          for (let i=0;i<nY;i++) { if (Number.isFinite(yesRates[i]) && Number.isFinite(benchForYes[i]) && Number.isFinite(n1ForYes[i])) validIdx.push(i); }
+          if (validIdx.length >= 3) {
+            const x = validIdx.map(i=>yesRates[i]);
+            const y = validIdx.map(i=>benchForYes[i]);
+            const z = validIdx.map(i=>n1ForYes[i]);
+            const toRanks = (arr)=> rankArray(arr);
+            const X = (method==='spearman') ? toRanks(x) : x;
+            const Y = (method==='spearman') ? toRanks(y) : y;
+            const Z = (method==='spearman') ? toRanks(z) : z;
+            const rxy = pearson(X, Y).r;
+            const rxz = pearson(X, Z).r;
+            const ryz = pearson(Y, Z).r;
+            const denom = Math.sqrt(Math.max(0, (1 - rxz*rxz))) * Math.sqrt(Math.max(0, (1 - ryz*ryz)));
+            const rp = denom ? (rxy - rxz*ryz) / denom : null;
+            partial = { r: rp, n: validIdx.length };
+          }
+          yesrate = { r: rY.r, n: rY.n, ci95: ciY, auc: aucY, partial_given_n1: partial };
+        }
+      } catch (_) { yesrate = null; }
 
       // Optional CV scoring mode with learned weights (and optional RT exponent learning)
       let cvInfo = null;
@@ -2319,6 +2366,7 @@ app.get('/api/analytics/validity', async (req, res) => {
         roc,
         roc_aux: { who5: aucWho, swls: aucSwl, cantril: aucCan, best: aucBestQ, best_name: aucBestQName },
         robustness,
+        yesrate,
         cv: cvInfo,
         filters_echo: { device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold, sex, country, countries, ageMin, ageMax, excludeCountries },
         grader
