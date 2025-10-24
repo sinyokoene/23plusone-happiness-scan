@@ -2533,10 +2533,14 @@ app.get('/api/research-entries.csv', async (req, res) => {
         )`
       );
 
+      // Include demographics if available
+      const demo = await detectDemographics(researchClient);
+      const demoJoin = demo ? ` LEFT JOIN ${qIdent(demo.table)} d ON d.${qIdent(demo.pidCol)} = re.prolific_pid` : '';
+      const demoSelect = demo ? `, d.${qIdent(demo.sexCol || 'sex')} AS demo_sex, d.${qIdent(demo.ageCol || 'age')} AS demo_age, d.${qIdent(demo.countryCol || 'country_of_residence')} AS demo_country` : `, NULL::text AS demo_sex, NULL::int AS demo_age, NULL::text AS demo_country`;
       const { rows: researchRows } = await researchClient.query(
-        `SELECT session_id, who5, swls, cantril, user_agent, created_at
-         FROM research_entries
-         ORDER BY created_at DESC
+        `SELECT re.session_id, re.who5, re.swls, re.cantril, re.user_agent, re.created_at${demoSelect}
+         FROM research_entries re${demoJoin}
+         ORDER BY re.created_at DESC
          LIMIT $1`, [limit]
       );
 
@@ -2568,6 +2572,7 @@ app.get('/api/research-entries.csv', async (req, res) => {
 
       const header = [
         'session_id','research_created_at','who5_total','swls_total','cantril',
+        'sex','age','country',
         'ihs','n1','n2','n3','scan_created_at','device','scan_user_agent',
         'completion_time_ms','selected_count','rejected_count','yes_count','no_count','timeouts',
         'mod_click','mod_swipe','mod_arrow'
@@ -2591,6 +2596,9 @@ app.get('/api/research-entries.csv', async (req, res) => {
           sumArray(r.who5),
           sumArray(r.swls),
           (r.cantril==null? '': Number(r.cantril)),
+          (r.demo_sex==null?'':String(r.demo_sex)),
+          (r.demo_age==null?'':Number(r.demo_age)),
+          (r.demo_country==null?'':String(r.demo_country)),
           (s.ihs_score==null?'':Number(s.ihs_score)),
           (s.n1_score==null?'':Number(s.n1_score)),
           (s.n2_score==null?'':Number(s.n2_score)),
