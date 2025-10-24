@@ -1588,6 +1588,10 @@ app.get('/api/analytics/validity', async (req, res) => {
       const pairsIhs = [], pairsBench = [];
       // For yes-rate analysis
       const yesRates = [], benchForYes = [], n1ForYes = [];
+      // For hypotheses (H1, H2, H3)
+      const h1X = [], h1Y = [];
+      const domainListAll = ['Basics','Self-development','Ambition','Vitality','Attraction'];
+      const h2Data = domainListAll.reduce((m,d)=>{ m[d] = { x: [], y: [] }; return m; }, {});
       const perSession = [];
       const benchVals = [];
       // Keep data rows for potential CV scoring
@@ -1666,8 +1670,22 @@ app.get('/api/analytics/validity', async (req, res) => {
           benchVals.push({ sessionId: j.sessionId, z: zMean, who5: j.who5Total, swls: j.swlsTotal, cantril: j.cantril });
           if (includePerSession) perSession.push({ sessionId: j.sessionId, ihs: Number(j.ihs), who5: j.who5Total, swls: j.swlsTotal, cantril: j.cantril, z_benchmark: zMean });
           if (predBySession) predBySession.set(j.sessionId, ihsPred);
+          // H1 pairs: IHS predictor vs SWLS total
+          if (Number.isFinite(ihsPred) && Number.isFinite(j.swlsTotal)) { h1X.push(ihsPred); h1Y.push(Number(j.swlsTotal)); }
           // Yes-rate for the same session (share of Yes among Yes/No; exclude null timeouts)
           const all = j.selections?.allResponses;
+          // H2: per-domain affirmation vs SWLS
+          if (Array.isArray(all) && Number.isFinite(j.swlsTotal)) {
+            const timeMultiplier = (ms) => { const x=Math.max(0, Math.min(4000, Number(ms)||0)); const lin=(4000-x)/4000; return Math.sqrt(Math.max(0, lin)); };
+            const perDomain = domainListAll.reduce((m,d)=>{ m[d]=0; return m; }, {});
+            for (const e of all) {
+              if (!e || e.response !== true) continue;
+              const d = String(e.domain||''); if (!domainListAll.includes(d)) continue;
+              const t = Number(e.responseTime); if (!Number.isFinite(t)) continue;
+              perDomain[d] += 4 * timeMultiplier(t);
+            }
+            for (const d of domainListAll) { h2Data[d].x.push(perDomain[d]); h2Data[d].y.push(Number(j.swlsTotal)); }
+          }
           if (Array.isArray(all) && all.length) {
             let yes = 0, yn = 0;
             for (const e of all) { if (!e) continue; if (e.response === true) { yes++; yn++; } else if (e.response === false) { yn++; } }
@@ -1730,6 +1748,35 @@ app.get('/api/analytics/validity', async (req, res) => {
           yesrate = { r: rY.r, n: rY.n, ci95: ciY, auc: aucY, partial_given_n1: partial };
         }
       } catch (_) { yesrate = null; }
+
+      // Hypotheses H1, H2, H3
+      let hypotheses = null;
+      try {
+        const corrFn = (method === 'spearman') ? spearman : pearson;
+        // H1: IHS vs SWLS
+        let h1 = null; if (Math.min(h1X.length, h1Y.length) >= 2) { const out = corrFn(h1X, h1Y); const ci = (method==='pearson') ? fisherCIZ(out.r, out.n) : null; h1 = { r: out.r, n: out.n, ci95: ci, pass: (ci && ci[0] > 0) }; }
+        // H2: each domain vs SWLS
+        const domains = {}; let allPass = true; for (const d of domainListAll){ const xs=h2Data[d].x, ys=h2Data[d].y; const n=Math.min(xs.length, ys.length); if (n<2){ domains[d]={ r:null, n, ci95:null, pass:false }; allPass=false; } else { const out=corrFn(xs, ys); const ci=(method==='pearson')?fisherCIZ(out.r, out.n):null; const pass=(ci && ci[0] > 0); domains[d]={ r: out.r, n: out.n, ci95: ci, pass }; if (!pass) allPass=false; } }
+        // H3: combined five clusters better than best single (nested regression ΔR²)
+        let h3 = null; try {
+          const rows = []; const m={}, s={}; for (const d of domainListAll){ const arr=h2Data[d].x.map(Number).filter(Number.isFinite); m[d]=mean(arr); s[d]=sd(arr); }
+          const nRows = Math.min(...domainListAll.map(d=>h2Data[d].x.length), h1Y.length);
+          for (let i=0;i<nRows;i++){ let ok=true; const zRow=[]; for (const d of domainListAll){ const v=Number(h2Data[d].x[i]); if (!Number.isFinite(v) || !Number.isFinite(s[d]) || s[d]<=0){ ok=false; break; } zRow.push((v-m[d])/s[d]); } const y=Number(h2Data[domainListAll[0]].y[i]); if (!Number.isFinite(y)) ok=false; if (ok) rows.push({ z: zRow, y }); }
+          if (rows.length >= 12) {
+            const y = rows.map(rw=>rw.y);
+            const Xbest = rows.map(rw=> [rw.z[0]]);
+            const Xall = rows.map(rw=> rw.z);
+            function xtx(X){ const p=X[0].length+1; const M=new Array(p).fill(0).map(()=>new Array(p).fill(0)); for (let i=0;i<X.length;i++){ const row=[1,...X[i]]; for (let a=0;a<p;a++) for (let b=0;b<p;b++) M[a][b]+=row[a]*row[b]; } return M; }
+            function xty(X,y){ const p=X[0].length+1; const v=new Array(p).fill(0); for (let i=0;i<X.length;i++){ const row=[1,...X[i]]; for (let a=0;a<p;a++) v[a]+=row[a]*y[i]; } return v; }
+            function matInv(A){ const n=A.length; const M=A.map(r=>r.slice()); const I=new Array(n).fill(0).map((_,i)=>{const r=new Array(n).fill(0); r[i]=1; return r;}); for (let i=0;i<n;i++){ let maxR=i,maxV=Math.abs(M[i][i]); for(let r=i+1;r<n;r++){ const v=Math.abs(M[r][i]); if(v>maxV){maxV=v; maxR=r;} } if(maxR!==i){ const t=M[i]; M[i]=M[maxR]; M[maxR]=t; const t2=I[i]; I[i]=I[maxR]; I[maxR]=t2; } let piv=M[i][i]; if (Math.abs(piv)<1e-12) return null; for (let j=0;j<n;j++){ M[i][j]/=piv; I[i][j]/=piv; } for (let r=0;r<n;r++) if(r!==i){ const f=M[r][i]; for (let j=0;j<n;j++){ M[r][j]-=f*M[i][j]; I[r][j]-=f*I[i][j]; } } } return I; }
+            function matVec(M,v){ return M.map(row=> row.reduce((s,a,i)=> s + a*v[i], 0)); }
+            function r2For(X,y){ const XT=xtx(X); const Xy=xty(X,y); const inv=matInv(XT); if(!inv) return { r2:0 }; const beta=matVec(inv, Xy); let ssTot=0, ssRes=0; const yM=mean(y); for (let i=0;i<X.length;i++){ const row=[1,...X[i]]; const yhat=row.reduce((s,a,idx)=> s + a*beta[idx], 0); const err=y[i]-yhat; ssRes+=err*err; const d=y[i]-yM; ssTot+=d*d; } return { r2: (ssTot>0? 1 - ssRes/ssTot : 0) } }
+            const base=r2For(Xbest,y), full=r2For(Xall,y); const df1=4, df2=rows.length-5-1; let F=null,pF=null,dR2=null; if (df2>0){ dR2=Math.max(0, full.r2 - base.r2); F=(dR2/df1)/((1-full.r2)/df2); const cdf=fCdf(F, df1, df2); pF = (Number.isFinite(cdf)? (1 - cdf) : null); }
+            h3 = { delta_r2: dR2, f: F, df1, df2, p: pF, pass: (dR2!=null && dR2>0 && pF!=null && pF<0.05) };
+          }
+        } catch(_) { /* ignore */ }
+        hypotheses = { h1, h2: { domains, all_pass: allPass }, h3 };
+      } catch(_) { hypotheses = null; }
 
       // Optional CV scoring mode with learned weights (and optional RT exponent learning)
       let cvInfo = null;
@@ -2343,6 +2390,19 @@ app.get('/api/analytics/validity', async (req, res) => {
           },
           thresholds
         };
+        // Add hypothesis summaries to grader reasons
+        try {
+          if (hypotheses && hypotheses.h1) {
+            reasons.push(`H1 (IHS vs SWLS): r=${(hypotheses.h1.r??NaN).toFixed(3)} ${hypotheses.h1.pass?'PASS':'FAIL'}`);
+          }
+          if (hypotheses && hypotheses.h2 && hypotheses.h2.domains) {
+            const fails = Object.entries(hypotheses.h2.domains).filter(([_,v])=>v && v.pass===false).map(([k])=>k);
+            reasons.push(`H2 (clusters vs SWLS): ${fails.length?`FAIL ${fails.join(', ')}`:'PASS all'}`);
+          }
+          if (hypotheses && hypotheses.h3) {
+            reasons.push(`H3 (combined > best single): ΔR²=${(hypotheses.h3.delta_r2??0).toFixed(3)} p=${(hypotheses.h3.p==null?'—':hypotheses.h3.p.toExponential(2))} ${hypotheses.h3.pass?'PASS':'FAIL'}`);
+          }
+        } catch(_) {}
       } catch (_) { grader = null; }
 
       const payload = {
@@ -2366,6 +2426,7 @@ app.get('/api/analytics/validity', async (req, res) => {
         roc,
         roc_aux: { who5: aucWho, swls: aucSwl, cantril: aucCan, best: aucBestQ, best_name: aucBestQName },
         robustness,
+        hypotheses,
         yesrate,
         cv: cvInfo,
         filters_echo: { device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold, sex, country, countries, ageMin, ageMax, excludeCountries },
