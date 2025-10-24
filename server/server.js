@@ -2514,6 +2514,112 @@ app.get('/api/research-compare', async (req, res) => {
   }
 });
 
+// Export latest joined research+scan entries as CSV
+app.get('/api/research-entries.csv', async (req, res) => {
+  try {
+    const limit = Math.min(parseInt(String(req.query.limit||'1000'),10)||1000, 5000);
+    const researchClient = await researchPool.connect();
+    const mainClient = await pool.connect();
+    try {
+      await researchClient.query(
+        `CREATE TABLE IF NOT EXISTS research_entries (
+          id SERIAL PRIMARY KEY,
+          session_id TEXT NOT NULL,
+          who5 INTEGER[] NOT NULL,
+          swls INTEGER[] NOT NULL,
+          cantril INTEGER,
+          user_agent TEXT,
+          created_at TIMESTAMPTZ DEFAULT now()
+        )`
+      );
+
+      const { rows: researchRows } = await researchClient.query(
+        `SELECT session_id, who5, swls, cantril, user_agent, created_at
+         FROM research_entries
+         ORDER BY created_at DESC
+         LIMIT $1`, [limit]
+      );
+
+      const sessions = researchRows.map(r=>r.session_id).filter(Boolean);
+      let scanRows = [];
+      if (sessions.length) {
+        const chunks = [];
+        for (let i=0;i<sessions.length;i+=500) chunks.push(sessions.slice(i,i+500));
+        for (const chunk of chunks) {
+          const params = chunk.map((_,i)=>`$${i+1}`).join(',');
+          const { rows } = await mainClient.query(
+            `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, completion_time, selected_count, rejected_count, card_selections, user_agent, created_at
+             FROM scan_responses WHERE session_id IN (${params})`, chunk
+          );
+          scanRows = scanRows.concat(rows);
+        }
+      }
+
+      const bySessionScan = new Map(scanRows.map(r=>[r.session_id, r]));
+
+      function sumArray(arr){ return (arr||[]).reduce((a,b)=> a + (Number(b)||0), 0); }
+      function isMobileUA(ua){ return /(Mobi|Android|iPhone|iPad|iPod)/i.test(String(ua||'')); }
+      function csvEscape(v){
+        if (v==null) return '';
+        const s = String(v);
+        if (/[",\n]/.test(s)) return '"' + s.replace(/"/g,'""') + '"';
+        return s;
+      }
+
+      const header = [
+        'session_id','research_created_at','who5_total','swls_total','cantril',
+        'ihs','n1','n2','n3','scan_created_at','device','scan_user_agent',
+        'completion_time_ms','selected_count','rejected_count','yes_count','no_count','timeouts',
+        'mod_click','mod_swipe','mod_arrow'
+      ];
+      const lines = [header.join(',')];
+
+      for (const r of researchRows) {
+        const s = bySessionScan.get(r.session_id) || {};
+        const selections = s.card_selections || {};
+        const all = Array.isArray(selections.allResponses) ? selections.allResponses : [];
+        let yes=0, no=0, timeouts=0; let mc=0, ms=0, ma=0;
+        for (const e of all) {
+          if (!e) continue;
+          if (e.response === true) yes++; else if (e.response === false) no++; else if (e.response === null) timeouts++;
+          const m = String(e.inputModality||'').toLowerCase();
+          if (m==='click') mc++; else if (m==='swipe-touch' || m==='swipe-mouse') ms++; else if (m==='keyboard-arrow') ma++;
+        }
+        const row = [
+          r.session_id,
+          r.created_at?.toISOString?.() || r.created_at,
+          sumArray(r.who5),
+          sumArray(r.swls),
+          (r.cantril==null? '': Number(r.cantril)),
+          (s.ihs_score==null?'':Number(s.ihs_score)),
+          (s.n1_score==null?'':Number(s.n1_score)),
+          (s.n2_score==null?'':Number(s.n2_score)),
+          (s.n3_score==null?'':Number(s.n3_score)),
+          s.created_at?.toISOString?.() || s.created_at || '',
+          (isMobileUA(s.user_agent)?'Mobile':'Desktop'),
+          s.user_agent || '',
+          (s.completion_time==null?'':Number(s.completion_time)),
+          (s.selected_count==null?'':Number(s.selected_count)),
+          (s.rejected_count==null?'':Number(s.rejected_count)),
+          yes, no, timeouts,
+          mc, ms, ma
+        ].map(csvEscape).join(',');
+        lines.push(row);
+      }
+
+      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+      res.setHeader('Content-Disposition', 'attachment; filename="latest_entries.csv"');
+      res.send(lines.join('\n'));
+    } finally {
+      researchClient.release();
+      mainClient.release();
+    }
+  } catch (e) {
+    console.error('Error exporting research entries CSV:', e);
+    res.status(500).json({ error: 'Failed to export CSV' });
+  }
+});
+
 // Get benchmark percentiles
 app.get('/api/benchmarks', async (req, res) => {
   try {
