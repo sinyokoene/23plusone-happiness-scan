@@ -1384,6 +1384,8 @@ app.get('/api/analytics/validity', async (req, res) => {
     const sensitivityAllMax = String(req.query.sensitivityAllMax || '').toLowerCase() === 'true';
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
     const includePerSession = String(req.query.includePerSession || '').toLowerCase() === 'true';
+    // Optional trimming of correlation outliers (by largest absolute residuals)
+    const trimOutliersFrac = Number.isFinite(Number(req.query.trimOutliersFrac)) ? Math.max(0, Math.min(0.4, Number(req.query.trimOutliersFrac))) : 0;
     // Scoring/tuning and RT denoise options
     const scoreMode = String(req.query.score || 'raw').toLowerCase(); // 'raw' | 'tuned' | 'cv' | 'n1' | 'n12'
     const isoCalibrate = String(req.query.iso || '').toLowerCase() === 'true';
@@ -1706,6 +1708,25 @@ app.get('/api/analytics/validity', async (req, res) => {
             selections: j.selections
           });
         }
+      }
+
+      // Optionally trim outliers by residuals before computing r/AUC
+      if (trimOutliersFrac > 0 && pairsIhs.length >= 8) {
+        const xs = pairsIhs.slice();
+        const ys = pairsBench.slice();
+        const n0 = Math.min(xs.length, ys.length);
+        const mx = xs.reduce((a,b)=>a+b,0)/n0;
+        const my = ys.reduce((a,b)=>a+b,0)/n0;
+        let cov=0, vx=0; for (let i=0;i<n0;i++){ const dx=xs[i]-mx; const dy=ys[i]-my; cov+=dx*dy; vx+=dx*dx; }
+        const b = vx>0 ? (cov/vx) : 0; const a = my - b*mx;
+        const res = []; for (let i=0;i<n0;i++){ const yhat = a + b*xs[i]; res.push({ i, e: Math.abs(ys[i]-yhat) }); }
+        res.sort((p,q)=> q.e - p.e);
+        const k = Math.floor(n0 * trimOutliersFrac);
+        const drop = new Set(res.slice(0,k).map(r=>r.i));
+        const keptX = [], keptY = [];
+        for (let i=0;i<n0;i++){ if (!drop.has(i)) { keptX.push(xs[i]); keptY.push(ys[i]); } }
+        pairsIhs.length = 0; pairsBench.length = 0;
+        for (let i=0;i<keptX.length;i++){ pairsIhs.push(keptX[i]); pairsBench.push(keptY[i]); }
       }
 
       const n = Math.min(pairsIhs.length, pairsBench.length);
@@ -2429,7 +2450,7 @@ app.get('/api/analytics/validity', async (req, res) => {
         hypotheses,
         yesrate,
         cv: cvInfo,
-        filters_echo: { device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold, sex, country, countries, ageMin, ageMax, excludeCountries },
+        filters_echo: { device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold, sex, country, countries, ageMin, ageMax, excludeCountries, trimOutliersFrac },
         grader
       };
       if (includePerSession) payload.perSession = perSession;
