@@ -47,6 +47,7 @@
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
   const cardCorrMetric = document.getElementById('cardCorrMetric');
+  const cardTarget = document.getElementById('cardTarget');
   const cardTimeSelector = document.getElementById('cardTimeSelector');
   const cardTimeCanvas = document.getElementById('cardTimeChart');
   const corrMethodSel = document.getElementById('corrMethod');
@@ -1032,7 +1033,7 @@
     // Fetch server-side correlations for domains and cards
     try {
       // Pre-compute client-side Cantril correlations per card from raw entries (Yes or Affirm per metric)
-      const metricIsAffirm = (cardCorrMetric && cardCorrMetric.value === 'affirm');
+      const metricIsAffirmCards = (cardCorrMetric && cardCorrMetric.value === 'affirm');
       const cantrilByCard = metricIsAffirm ? computeCardAffirmVsCantril(entries, rFn) : computeCardYesVsCantril(entries, rFn);
       await ensureCardDomains();
       const dev = (filterDevice && filterDevice.value) || '';
@@ -1105,8 +1106,16 @@
         });
       }
 
-      // Card top/bottom by composite of WHO-5/SWLS/Cantril
-      const score = (c) => 0.4*(c.r_yes_who5||0) + 0.4*(c.r_yes_swls||0) + 0.2*( (c.r_yes_can!=null?c.r_yes_can: (cantrilByCard.get(Number(c.cardId)) && cantrilByCard.get(Number(c.cardId)).r) ) || 0 );
+      // Card top/bottom selectable target
+      const tgt = (cardTarget && cardTarget.value) || 'who5';
+      const metricIsAffirm = (cardCorrMetric && cardCorrMetric.value === 'affirm');
+      function getR(c){
+        if (tgt === 'ihs') return metricIsAffirm ? (c.r_affirm_ihs||0) : (c.r_yes_ihs||0);
+        if (tgt === 'swls') return metricIsAffirm ? (c.r_affirm_swls||0) : (c.r_yes_swls||0);
+        if (tgt === 'cantril') return (metricIsAffirm ? (c.r_affirm_cantril||0) : (c.r_yes_can!=null?c.r_yes_can: (cantrilByCard.get(Number(c.cardId)) && cantrilByCard.get(Number(c.cardId)).r) ) || 0);
+        return metricIsAffirm ? (c.r_affirm_who5||0) : (c.r_yes_who5||0);
+      }
+      const score = (c) => getR(c);
       const sorted = cards.slice().sort((a,b)=> score(b) - score(a));
       const top = sorted.slice(0, 12);
       const bottom = sorted.slice(-12);
@@ -1134,12 +1143,9 @@
           const dot = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>`;
           const name = c.label ? `${c.cardId} · ${c.label}` : c.cardId;
           const cid = Number(c.cardId);
-          const rCanSource = (c.r_yes_can!=null ? Number(c.r_yes_can) : (cantrilByCard.get(cid) && cantrilByCard.get(cid).r));
-          const rCan = (rCanSource==null || Number.isNaN(rCanSource)) ? 0 : rCanSource;
+          const rVal = getR(c);
           tr.innerHTML = `<td>${dot}${name}</td>
-            <td>${colorBadge(c.r_yes_who5)}</td>
-            <td>${colorBadge(c.r_yes_swls)}</td>
-            <td>${colorBadge(rCan)}</td>
+            <td>${colorBadge(rVal)}</td>
             <td>${c.n_yes_who5||0}</td>`;
           tbody.appendChild(tr);
         });

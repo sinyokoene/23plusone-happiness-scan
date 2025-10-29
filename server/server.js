@@ -1126,14 +1126,14 @@ app.get('/api/analytics/correlations', async (req, res) => {
       }
 
       // Card-level correlations
-      const cardStats = new Map(); // cardId -> { label, yes:[], affirm:[], who:[], swls:[], whoAff:[], swlsAff:[] }
+      const cardStats = new Map(); // cardId -> { label, yes:[], affirm:[], who:[], swls:[], ihs:[], whoAff:[], swlsAff:[], ihsAff:[] }
       for (const j of joined) {
         const all = j.selections?.allResponses;
         if (!Array.isArray(all)) continue;
         for (const e of all) {
           const cid = Number(e.cardId);
           if (!Number.isFinite(cid)) continue;
-          if (!cardStats.has(cid)) cardStats.set(cid, { label: e.label || null, yes: [], affirm: [], who: [], swls: [], whoAff: [], swlsAff: [] });
+          if (!cardStats.has(cid)) cardStats.set(cid, { label: e.label || null, yes: [], affirm: [], who: [], swls: [], ihs: [], whoAff: [], swlsAff: [], ihsAff: [] });
           const bucket = cardStats.get(cid);
           const yesBin = e.response === true ? 1 : (e.response === false ? 0 : null);
           const aff = (e.affirmationScore == null ? null : Number(e.affirmationScore));
@@ -1141,11 +1141,13 @@ app.get('/api/analytics/correlations', async (req, res) => {
             bucket.yes.push(yesBin);
             bucket.who.push(j.who5Percent);
             bucket.swls.push(j.swlsScaled);
+            bucket.ihs.push(Number(j.ihs));
           }
           if (aff != null && !Number.isNaN(aff)) {
             bucket.affirm.push(aff);
             bucket.whoAff.push(j.who5Percent);
             bucket.swlsAff.push(j.swlsScaled);
+            bucket.ihsAff.push(Number(j.ihs));
           }
         }
       }
@@ -1153,19 +1155,25 @@ app.get('/api/analytics/correlations', async (req, res) => {
       for (const [cardId, b] of cardStats.entries()) {
         const rYesWho = corrFn(b.yes, b.who);
         const rYesSwl = corrFn(b.yes, b.swls);
+        const rYesIhs = corrFn(b.yes, b.ihs);
         const rAffWho = corrFn(b.affirm, b.whoAff);
         const rAffSwl = corrFn(b.affirm, b.swlsAff);
+        const rAffIhs = corrFn(b.affirm, b.ihsAff);
         cards.push({
           cardId,
           label: b.label,
           r_yes_who5: rYesWho.r,
           r_yes_swls: rYesSwl.r,
+          r_yes_ihs: rYesIhs.r,
           r_affirm_who5: rAffWho.r,
           r_affirm_swls: rAffSwl.r,
+          r_affirm_ihs: rAffIhs.r,
           n_yes_who5: rYesWho.n,
           n_yes_swls: rYesSwl.n,
+          n_yes_ihs: rYesIhs.n,
           n_affirm_who5: rAffWho.n,
           n_affirm_swls: rAffSwl.n,
+          n_affirm_ihs: rAffIhs.n,
           method
         });
       }
@@ -1412,7 +1420,8 @@ app.get('/api/analytics/validity', async (req, res) => {
       limit, device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold,
       includePerSession, sex, country, countries, ageMin, ageMax, excludeCountries,
       scoreMode, isoCalibrate, rtDenoise, domains: Array.from(domainSet),
-      excludeSwipe, timeoutsMax, timeoutsFracMax
+      excludeSwipe, timeoutsMax, timeoutsFracMax,
+      trimOutliersFrac, trimPredictorFrac, trimBenchmarkFrac
     });
     const cached = __validityCache.get(cacheKey);
     if (cached && (Date.now() - cached.at) < (cached.ttlMs || 60000)) {
