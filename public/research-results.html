@@ -110,6 +110,13 @@
         <label class="inline-flex items-center gap-2" title=">300ms & <2000ms, no timeouts, ≤10% outside">
           <input id="filterIat" type="checkbox" class="align-middle"> <span>IAT filter</span>
         </label>
+        <label class="inline-flex items-center gap-2" title="Trim top-k% outliers by residuals before r/AUC">
+          <input id="filterTrimOutliers" type="checkbox" class="align-middle"> <span>Trim outliers</span>
+        </label>
+        <label class="inline-flex items-center gap-1" title="k% to drop (0–40), default 10%">
+          <input id="filterTrimPct" type="number" min="0" max="40" step="1" placeholder="10" class="border rounded px-2 py-1 w-16">
+          <span>%</span>
+        </label>
         <label class="inline-flex items-center gap-2" title="Sensitivity analysis">
           <input id="filterSensitivity" type="checkbox" class="align-middle"> <span>Sensitivity</span>
         </label>

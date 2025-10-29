@@ -39,6 +39,8 @@
   const filterExclusive = document.getElementById('filterExclusive');
   const filterNoTimeouts = document.getElementById('filterNoTimeouts');
   const filterIat = document.getElementById('filterIat');
+  const filterTrimOutliers = document.getElementById('filterTrimOutliers');
+  const filterTrimPct = document.getElementById('filterTrimPct');
   const filterSensitivity = document.getElementById('filterSensitivity');
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
@@ -638,6 +640,11 @@
       if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
       if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
       if (filterIat && filterIat.checked) q.set('iat', 'true');
+      if (filterTrimOutliers && filterTrimOutliers.checked) {
+        const pct = Number(filterTrimPct && filterTrimPct.value ? filterTrimPct.value : 10);
+        const frac = Math.max(0, Math.min(40, isNaN(pct)?10:pct)) / 100;
+        if (frac > 0) q.set('trimOutliersFrac', String(frac));
+      }
       if (filterSensitivity && filterSensitivity.checked) q.set('sensitivityAllMax', 'true');
       if (filterSex && filterSex.value) q.set('sex', filterSex.value);
       if (filterCountry && filterCountry.selectedOptions && filterCountry.selectedOptions.length > 0) {
