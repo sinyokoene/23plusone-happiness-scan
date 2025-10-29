@@ -1384,8 +1384,10 @@ app.get('/api/analytics/validity', async (req, res) => {
     const sensitivityAllMax = String(req.query.sensitivityAllMax || '').toLowerCase() === 'true';
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
     const includePerSession = String(req.query.includePerSession || '').toLowerCase() === 'true';
-    // Optional trimming of correlation outliers (by largest absolute residuals)
+    // Optional trimming: tails on predictor/benchmark or by residuals
     const trimOutliersFrac = Number.isFinite(Number(req.query.trimOutliersFrac)) ? Math.max(0, Math.min(0.4, Number(req.query.trimOutliersFrac))) : 0;
+    const trimPredictorFrac = Number.isFinite(Number(req.query.trimPredictorFrac)) ? Math.max(0, Math.min(0.4, Number(req.query.trimPredictorFrac))) : 0;
+    const trimBenchmarkFrac = Number.isFinite(Number(req.query.trimBenchmarkFrac)) ? Math.max(0, Math.min(0.4, Number(req.query.trimBenchmarkFrac))) : 0;
     // Scoring/tuning and RT denoise options
     const scoreMode = String(req.query.score || 'raw').toLowerCase(); // 'raw' | 'tuned' | 'cv' | 'n1' | 'n12'
     const isoCalibrate = String(req.query.iso || '').toLowerCase() === 'true';
@@ -1710,6 +1712,23 @@ app.get('/api/analytics/validity', async (req, res) => {
         }
       }
 
+      // Optionally trim tails on predictor and/or benchmark first
+      if ((trimPredictorFrac > 0 || trimBenchmarkFrac > 0) && pairsIhs.length >= 8) {
+        const xs = pairsIhs.slice();
+        const ys = pairsBench.slice();
+        const kept = new Array(xs.length).fill(true);
+        function applyTailTrim(arr, frac){
+          if (frac <= 0) return;
+          const n = arr.length; const k = Math.floor(n * (frac/2)); if (k <= 0) return;
+          const ord = arr.map((v,i)=>({v,i})).sort((a,b)=> a.v - b.v);
+          for (let i=0;i<k;i++){ kept[ord[i].i] = false; kept[ord[n-1-i].i] = false; }
+        }
+        applyTailTrim(xs, trimPredictorFrac);
+        applyTailTrim(ys, trimBenchmarkFrac);
+        const nx = []; const ny = [];
+        for (let i=0;i<xs.length;i++){ if (kept[i]) { nx.push(xs[i]); ny.push(ys[i]); } }
+        pairsIhs.length = 0; pairsBench.length = 0; for (let i=0;i<nx.length;i++){ pairsIhs.push(nx[i]); pairsBench.push(ny[i]); }
+      }
       // Optionally trim outliers by residuals before computing r/AUC
       if (trimOutliersFrac > 0 && pairsIhs.length >= 8) {
         const xs = pairsIhs.slice();
@@ -2450,7 +2469,7 @@ app.get('/api/analytics/validity', async (req, res) => {
         hypotheses,
         yesrate,
         cv: cvInfo,
-        filters_echo: { device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold, sex, country, countries, ageMin, ageMax, excludeCountries, trimOutliersFrac },
+        filters_echo: { device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold, sex, country, countries, ageMin, ageMax, excludeCountries, trimOutliersFrac, trimPredictorFrac, trimBenchmarkFrac },
         grader
       };
       if (includePerSession) payload.perSession = perSession;

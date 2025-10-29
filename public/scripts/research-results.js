@@ -41,6 +41,8 @@
   const filterIat = document.getElementById('filterIat');
   const filterTrimOutliers = document.getElementById('filterTrimOutliers');
   const filterTrimPct = document.getElementById('filterTrimPct');
+  const filterTrimIhsPct = document.getElementById('filterTrimIhsPct');
+  const filterTrimBenchPct = document.getElementById('filterTrimBenchPct');
   const filterSensitivity = document.getElementById('filterSensitivity');
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
@@ -646,6 +648,10 @@
         if (frac > 0) q.set('trimOutliersFrac', String(frac));
       }
       if (filterSensitivity && filterSensitivity.checked) q.set('sensitivityAllMax', 'true');
+      const trimIhsPct = Number(filterTrimIhsPct && filterTrimIhsPct.value ? filterTrimIhsPct.value : NaN);
+      const trimBenchPct = Number(filterTrimBenchPct && filterTrimBenchPct.value ? filterTrimBenchPct.value : NaN);
+      if (!Number.isNaN(trimIhsPct) && trimIhsPct > 0) q.set('trimPredictorFrac', String(Math.max(0, Math.min(40, trimIhsPct))/100));
+      if (!Number.isNaN(trimBenchPct) && trimBenchPct > 0) q.set('trimBenchmarkFrac', String(Math.max(0, Math.min(40, trimBenchPct))/100));
       if (filterSex && filterSex.value) q.set('sex', filterSex.value);
       if (filterCountry && filterCountry.selectedOptions && filterCountry.selectedOptions.length > 0) {
         const inc = Array.from(filterCountry.selectedOptions).map(o=>o.value).filter(Boolean);

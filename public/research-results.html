@@ -110,11 +110,21 @@
         <label class="inline-flex items-center gap-2" title=">300ms & <2000ms, no timeouts, ≤10% outside">
           <input id="filterIat" type="checkbox" class="align-middle"> <span>IAT filter</span>
         </label>
-        <label class="inline-flex items-center gap-2" title="Trim top-k% outliers by residuals before r/AUC">
-          <input id="filterTrimOutliers" type="checkbox" class="align-middle"> <span>Trim outliers</span>
+        <label class="inline-flex items-center gap-2" title="Trim top-k% residual outliers before r/AUC">
+          <input id="filterTrimOutliers" type="checkbox" class="align-middle"> <span>Trim residuals</span>
         </label>
-        <label class="inline-flex items-center gap-1" title="k% to drop (0–40), default 10%">
+        <label class="inline-flex items-center gap-1" title="Residual k% (0–40), default 10%">
           <input id="filterTrimPct" type="number" min="0" max="40" step="1" placeholder="10" class="border rounded px-2 py-1 w-16">
+          <span>%</span>
+        </label>
+        <label class="inline-flex items-center gap-1" title="Trim IHS predictor tails (each side)">
+          <span>IHS tails</span>
+          <input id="filterTrimIhsPct" type="number" min="0" max="40" step="1" placeholder="0" class="border rounded px-2 py-1 w-16">
+          <span>%</span>
+        </label>
+        <label class="inline-flex items-center gap-1" title="Trim Benchmark tails (each side)">
+          <span>Benchmark tails</span>
+          <input id="filterTrimBenchPct" type="number" min="0" max="40" step="1" placeholder="0" class="border rounded px-2 py-1 w-16">
           <span>%</span>
         </label>
         <label class="inline-flex items-center gap-2" title="Sensitivity analysis">
