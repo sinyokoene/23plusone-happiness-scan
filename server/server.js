@@ -2450,6 +2450,11 @@ app.get('/api/analytics/validity', async (req, res) => {
           }
           if (hypotheses && hypotheses.h3) {
             reasons.push(`H3 (combined > best single): ΔR²=${(hypotheses.h3.delta_r2??0).toFixed(3)} p=${(hypotheses.h3.p==null?'—':hypotheses.h3.p.toExponential(2))} ${hypotheses.h3.pass?'PASS':'FAIL'}`);
+            if (typeof hypotheses.h3.r_combined === 'number' && hypotheses.h3.best_domain && typeof hypotheses.h3.best_domain.r === 'number') {
+              const rC = hypotheses.h3.r_combined; const rB = hypotheses.h3.best_domain.r;
+              const corrPass = (Math.abs(rC) > Math.abs(rB));
+              reasons.push(`H3 corr: r(composite, SWLS)=${rC.toFixed(3)} vs r(${hypotheses.h3.best_domain.name}, SWLS)=${rB.toFixed(3)} ${corrPass?'(higher)':''}`);
+            }
           }
         } catch(_) {}
       } catch (_) { grader = null; }
