@@ -101,6 +101,13 @@
             <input id="modArrow" type="checkbox" class="align-middle"> <span>Arrow</span>
           </label>
         </div>
+        <label class="inline-flex items-center gap-1" title="Which score to show in the distribution chart">
+          <span>Score view</span>
+          <select id="displayScore" class="border rounded px-2 py-1 w-36">
+            <option value="n1" selected>N1 only (0–100)</option>
+            <option value="raw">Raw IHS (0–100)</option>
+          </select>
+        </label>
         <label class="inline-flex items-center gap-2">
           <input id="filterExclusive" type="checkbox" class="align-middle"> <span>Exclusive only</span>
         </label>
@@ -218,13 +225,13 @@
               <label class="inline-flex items-center gap-1" title="Score used for IHS vs Benchmark">
                 <span>Score</span>
                 <select id="scoreMode" class="border rounded px-2 py-1 w-36">
-                  <option value="raw" selected>Raw</option>
+                  <option value="raw">Raw</option>
                   <option value="tuned">Tuned</option>
                   <option value="cv">CV</option>
                   <option value="cv_rtlearn">CV + RTLearn</option>
                   <option value="cv_domain">CV domain weights</option>
                   <option value="cv_card">CV card weights</option>
-                  <option value="n1">N1 only</option>
+                  <option value="n1" selected>N1 only</option>
                   <option value="n12">N1 + N2</option>
                 </select>
               </label>

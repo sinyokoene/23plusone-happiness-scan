@@ -42,6 +42,7 @@
   const filterTrimIhs = document.getElementById('filterTrimIhs');
   const filterTrimScales = document.getElementById('filterTrimScales');
   const filterSensitivity = document.getElementById('filterSensitivity');
+  const displayScoreSel = document.getElementById('displayScore');
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
   const cardCorrMetric = document.getElementById('cardCorrMetric');
@@ -290,7 +291,15 @@
 
   function renderCharts(entries){
     const { who5Scaled, swlsScaled, cantrilVals, usePercent } = computeDistributions(entries);
-    const ihsVals = entries.map(e => (e.ihs==null?null:Number(e.ihs))).filter(v=>v!=null && !Number.isNaN(v));
+    const useN1View = !!(displayScoreSel && displayScoreSel.value === 'n1');
+    const scoreVals = entries.map(e => {
+      if (useN1View) {
+        const v = (e.n1==null?null:Number(e.n1));
+        return (v==null || Number.isNaN(v)) ? null : v; // expected 0–100
+      }
+      const v = (e.ihs==null?null:Number(e.ihs));
+      return (v==null || Number.isNaN(v)) ? null : v;
+    }).filter(v=>v!=null && !Number.isNaN(v));
     // WHO‑5 bins: percent (0..100 step 4) or raw (0..25 step 1)
     let who5Bins, who5Labels;
     if (usePercent) {
@@ -360,20 +369,20 @@
       if (cantrilNEl) cantrilNEl.textContent = `N = ${cantrilVals.length}`;
     }
 
-    // IHS distribution 0..100 step 5 (21 bins)
+    // Score distribution 0..100 step 5 (21 bins)
     const ihsCanvas = document.getElementById('ihsChart');
     if (ihsCanvas) {
       const binSize = 5;
       const bins = new Array(21).fill(0);
       const labels = Array.from({length:21}, (_,i)=>i*binSize);
-      ihsVals.forEach(v => { const i = Math.max(0, Math.min(20, Math.round(v/binSize))); bins[i]++; });
+      scoreVals.forEach(v => { const i = Math.max(0, Math.min(20, Math.round(v/binSize))); bins[i]++; });
       if (ihsChart) ihsChart.destroy();
       ihsChart = new Chart(ihsCanvas, {
         type: 'bar',
-        data: { labels, datasets: [{ label: 'IHS (0–100)', data: bins, backgroundColor: 'rgba(59,130,246,.5)' }] },
+        data: { labels, datasets: [{ label: (useN1View ? 'N1 (0–100)' : 'IHS (0–100)'), data: bins, backgroundColor: 'rgba(59,130,246,.5)' }] },
         options: { responsive: true, scales: { x: { ticks: { maxRotation: 0 } }, y: { beginAtZero: true } } }
       });
-      if (ihsNEl) ihsNEl.textContent = `N = ${ihsVals.length}`;
+      if (ihsNEl) ihsNEl.textContent = `N = ${scoreVals.length}`;
     }
   }
 
@@ -1261,6 +1270,7 @@
   if (filterSensitivity) filterSensitivity.addEventListener('change', load);
   if (validityMethodSel) validityMethodSel.addEventListener('change', load);
   if (scoreModeSel) scoreModeSel.addEventListener('change', load);
+  if (displayScoreSel) displayScoreSel.addEventListener('change', () => renderCharts(currentEntries));
   // Close dropdowns on outside click
   (function setupDropdownClose(){
     function closeIfOutside(e, detailsEl){
