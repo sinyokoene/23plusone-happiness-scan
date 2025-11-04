@@ -39,6 +39,8 @@
   const filterExclusive = document.getElementById('filterExclusive');
   const filterNoTimeouts = document.getElementById('filterNoTimeouts');
   const filterIat = document.getElementById('filterIat');
+  const filterTrimIhs = document.getElementById('filterTrimIhs');
+  const filterTrimScales = document.getElementById('filterTrimScales');
   const filterSensitivity = document.getElementById('filterSensitivity');
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
@@ -638,6 +640,8 @@
       if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
       if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
       if (filterIat && filterIat.checked) q.set('iat', 'true');
+      if (filterTrimIhs && filterTrimIhs.checked) q.set('trimIhs', '0.10');
+      if (filterTrimScales && filterTrimScales.checked) q.set('trimScales', '0.10');
       if (filterSensitivity && filterSensitivity.checked) q.set('sensitivityAllMax', 'true');
       if (filterSex && filterSex.value) q.set('sex', filterSex.value);
       if (filterCountry && filterCountry.selectedOptions && filterCountry.selectedOptions.length > 0) {
@@ -1220,6 +1224,8 @@
   if (filterAgeMin) filterAgeMin.addEventListener('change', load);
   if (filterAgeMax) filterAgeMax.addEventListener('change', load);
   if (filterIat) filterIat.addEventListener('change', load);
+  if (filterTrimIhs) filterTrimIhs.addEventListener('change', load);
+  if (filterTrimScales) filterTrimScales.addEventListener('change', load);
   if (filterSensitivity) filterSensitivity.addEventListener('change', load);
   if (validityMethodSel) validityMethodSel.addEventListener('change', load);
   if (scoreModeSel) scoreModeSel.addEventListener('change', load);

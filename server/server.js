@@ -1384,6 +1384,9 @@ app.get('/api/analytics/validity', async (req, res) => {
     const sensitivityAllMax = String(req.query.sensitivityAllMax || '').toLowerCase() === 'true';
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
     const includePerSession = String(req.query.includePerSession || '').toLowerCase() === 'true';
+    // Outlier trimming (10% tails by default if enabled)
+    const trimIhs = (req.query.trimIhs!=null) ? (Number.isFinite(Number(req.query.trimIhs)) ? Number(req.query.trimIhs) : (String(req.query.trimIhs).toLowerCase()==='true' ? 0.10 : null)) : null;
+    const trimScales = (req.query.trimScales!=null) ? (Number.isFinite(Number(req.query.trimScales)) ? Number(req.query.trimScales) : (String(req.query.trimScales).toLowerCase()==='true' ? 0.10 : null)) : null;
     // Scoring/tuning and RT denoise options
     const scoreMode = String(req.query.score || 'raw').toLowerCase(); // 'raw' | 'tuned' | 'cv' | 'n1' | 'n12'
     const isoCalibrate = String(req.query.iso || '').toLowerCase() === 'true';
@@ -1408,7 +1411,7 @@ app.get('/api/analytics/validity', async (req, res) => {
       limit, device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold,
       includePerSession, sex, country, countries, ageMin, ageMax, excludeCountries,
       scoreMode, isoCalibrate, rtDenoise, domains: Array.from(domainSet),
-      excludeSwipe, timeoutsMax, timeoutsFracMax
+      excludeSwipe, timeoutsMax, timeoutsFracMax, trimIhs, trimScales
     });
     const cached = __validityCache.get(cacheKey);
     if (cached && (Date.now() - cached.at) < (cached.ttlMs || 60000)) {
@@ -1583,6 +1586,30 @@ app.get('/api/analytics/validity', async (req, res) => {
       const whoMean = mean(whoVals), whoSd = sd(whoVals);
       const swlMean = mean(swlVals), swlSd = sd(swlVals);
       const canMean = mean(canVals), canSd = sd(canVals);
+
+      // Preserve a base copy before trimming for robustness table
+      const joinedBase = joined.slice();
+      // Optional trimming of outliers using 10th/90th percentiles
+      if ((trimIhs && trimIhs > 0) || (trimScales && trimScales > 0)) {
+        let ihsLo=null, ihsHi=null, whoLo=null, whoHi=null, swlLo=null, swlHi=null, canLo=null, canHi=null;
+        if (trimIhs && trimIhs > 0) {
+          const ihsVals = joined.map(j=>Number(j.ihs)).filter(Number.isFinite);
+          if (ihsVals.length >= 10) { ihsLo = quantile(ihsVals.slice(), Math.max(0, Math.min(0.5, trimIhs))); ihsHi = quantile(ihsVals.slice(), 1 - Math.max(0, Math.min(0.5, trimIhs))); }
+        }
+        if (trimScales && trimScales > 0) {
+          if (whoVals.length >= 10) { whoLo = quantile(whoVals.slice(), Math.max(0, Math.min(0.5, trimScales))); whoHi = quantile(whoVals.slice(), 1 - Math.max(0, Math.min(0.5, trimScales))); }
+          if (swlVals.length >= 10) { swlLo = quantile(swlVals.slice(), Math.max(0, Math.min(0.5, trimScales))); swlHi = quantile(swlVals.slice(), 1 - Math.max(0, Math.min(0.5, trimScales))); }
+          if (canVals.length >= 10) { canLo = quantile(canVals.slice(), Math.max(0, Math.min(0.5, trimScales))); canHi = quantile(canVals.slice(), 1 - Math.max(0, Math.min(0.5, trimScales))); }
+        }
+        joined = joined.filter(j => {
+          let keep = true;
+          if (ihsLo!=null && ihsHi!=null && Number.isFinite(j.ihs)) { if (!(j.ihs >= ihsLo && j.ihs <= ihsHi)) keep = false; }
+          if (keep && whoLo!=null && whoHi!=null && Number.isFinite(j.who5Total)) { if (!(j.who5Total >= whoLo && j.who5Total <= whoHi)) keep = false; }
+          if (keep && swlLo!=null && swlHi!=null && Number.isFinite(j.swlsTotal)) { if (!(j.swlsTotal >= swlLo && j.swlsTotal <= swlHi)) keep = false; }
+          if (keep && canLo!=null && canHi!=null && Number.isFinite(j.cantril)) { if (!(j.cantril >= canLo && j.cantril <= canHi)) keep = false; }
+          return keep;
+        });
+      }
 
       // Per-session z-mean composite (require at least 2 present)
       const pairsIhs = [], pairsBench = [];
