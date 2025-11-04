@@ -164,14 +164,7 @@
     .overlay-btn { background: #ffffff !important; color: #2c1f1c; border: 1px solid #E8E8EA; border-radius: 12px; height: 40px; min-height: 40px; padding: 0 18px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25); }
     #retakeOverlayNo.overlay-btn { color: #0ea5a4; }
     #retakeOverlayYes.overlay-btn { color: #e11d48; }
-    /* Practice hint arrows */
-    .practice-swipe-hint { position: absolute; top: 50%; transform: translateY(-50%); color: #ffffff; font-size: 24px; font-weight: 600; pointer-events: none; user-select: none; display: flex; align-items: center; gap: 6px; z-index: 50; }
-    .practice-swipe-hint .hint-label { font-size: 14px; font-weight: 600; color: #ffffff; }
-    .practice-swipe-left { left: calc(50% - 360px); animation: nudgeLeft 1.8s ease-in-out infinite; }
-    .practice-swipe-right { right: calc(50% - 360px); animation: nudgeRight 1.8s ease-in-out infinite; }
-    .hint-arrow { display: inline-block; }
-    .hint-arrow-left { transform: none; }
-    .hint-arrow-right { transform: none; }
+    
     /* Pre-interaction pulse for real icons (subtle) */
     @keyframes pulse { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.06); opacity: .98; } }
     .pulse-icon { animation: pulse 1.8s ease-in-out infinite; }
@@ -202,12 +195,7 @@
     .flash-no { outline: 2px solid #DC006B; box-shadow: 0 0 0 3px rgba(220,0,107,0.20); transition: outline-color 300ms ease, box-shadow 300ms ease; }
     #yesBtn img, #noBtn img { width: 26px; height: 26px; }
     #practiceYesBtn:active, #practiceNoBtn:active { opacity: 1; transform: translateY(1px); box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25); }
-    @media (max-width: 640px) {
-      .practice-swipe-left { left: 10px; }
-      .practice-swipe-right { right: 10px; }
-    }
-    @keyframes nudgeLeft { 0%,100% { transform: translate(-6px, -50%); opacity: 1; } 50% { transform: translate(0, -50%); opacity: 1; } }
-    @keyframes nudgeRight { 0%,100% { transform: translate(6px, -50%); opacity: 1; } 50% { transform: translate(0, -50%); opacity: 1; } }
+    
     /* Subtle one-time shake for first practice card */
     @keyframes shakeSubtle { 0% { transform: translateX(0) rotate(0); } 15% { transform: translateX(-6px) rotate(-0.4deg); } 30% { transform: translateX(6px) rotate(0.4deg); } 45% { transform: translateX(-4px) rotate(-0.3deg); } 60% { transform: translateX(4px) rotate(0.3deg); } 75% { transform: translateX(-2px) rotate(-0.2deg); } 100% { transform: translateX(0) rotate(0); } }
     .practice-shake { animation: shakeSubtle 1200ms ease-in-out 1; }
@@ -381,8 +369,6 @@
             <div class="loading">Loading practice cards...</div>
           </div>
           <div id="practiceKeyboardHint"><div class="hint-box"><img src="LightBulbOutline.svg" class="hint-icon" alt="" aria-hidden><span class="hint-text">Use your keyboard arrows to be quickest.</span></div></div>
-          <div id="practiceHintLeft" class="practice-swipe-hint practice-swipe-left" aria-hidden="true"><span class="hint-label">No</span> <span class="hint-arrow hint-arrow-left">←</span></div>
-          <div id="practiceHintRight" class="practice-swipe-hint practice-swipe-right" aria-hidden="true"><span class="hint-arrow hint-arrow-right">→</span> <span class="hint-label">Yes</span></div>
         </div>
 
         <!-- Icon buttons -->

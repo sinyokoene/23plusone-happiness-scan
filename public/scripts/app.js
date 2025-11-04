@@ -207,8 +207,7 @@
   let practiceTimerInterval = null;
   let practiceTimerTimeouts = [];
   let practiceTimerActive = false;
-  let practiceStartX = null;
-  let practiceCurrentCard = null;
+  
 
   function startPractice() {
     console.log('🎯 startPractice called');
@@ -266,7 +265,7 @@
         // Only switch the last line based on device; leave the semibold line in HTML
         const controls = document.getElementById('practiceControlsText');
         if (controls) {
-          controls.textContent = isDesktop ? 'Use your arrow keys or buttons' : 'Swipe or use buttons';
+          controls.textContent = isDesktop ? 'Use your arrow keys or buttons' : 'Use the buttons';
         }
         // On mobile, keep text on one line and inject a space instead of the <br>
         const br = document.getElementById('practiceTimingBr');
@@ -297,7 +296,6 @@
     let disablePracticeTilt = function(){};
 
     setTimeout(() => {
-      setupPracticeSwipeListeners();
       setupPracticeKeyboardNavigation();
       const cardImage = document.querySelector('.practice-card-image');
       if (cardImage) {
@@ -370,13 +368,8 @@
       const right = document.getElementById('practiceHintRight');
       const hideHints = () => { if (left) left.style.display='none'; if (right) right.style.display='none'; };
       if (left && right) {
-        // Show swipe hints only on mobile
-        if (!isDesktop) {
-          left.style.display = 'block';
-          right.style.display = 'block';
-        } else {
-          hideHints();
-        }
+        // Always hide swipe hints (no swipe on mobile)
+        hideHints();
         const onceOpts = { once: true };
         if (cardImage) {
           const hideAllHints = () => { hideHints(); if (practiceGestureHint) practiceGestureHint.style.display = 'none'; removePulse(); disablePracticeTilt(); };
@@ -604,63 +597,7 @@
     });
   }
 
-  function setupPracticeSwipeListeners() {
-    const cardImage = document.querySelector('.practice-card-image');
-    if (!cardImage) return;
-    practiceCurrentCard = cardImage;
-
-    // Mobile touch swipe only
-    cardImage.addEventListener('touchstart', function(e){ e.preventDefault(); practiceStartX = e.touches[0].clientX; }, { passive: false });
-    cardImage.addEventListener('touchmove', function(e){
-      e.preventDefault();
-      if (practiceStartX == null) return;
-      const deltaX = e.touches[0].clientX - practiceStartX;
-      if (practiceCurrentCard) { practiceCurrentCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX * 0.1}deg)`; }
-    }, { passive: false });
-    cardImage.addEventListener('touchend', function(e){
-      e.preventDefault();
-      if (practiceStartX == null || !practiceCurrentCard) return;
-      const deltaX = e.changedTouches[0].clientX - practiceStartX;
-      if (Math.abs(deltaX) > 100) {
-        const isYes = deltaX > 0;
-        animatePracticeCardExit(isYes);
-        setTimeout(() => recordPracticeAnswer(isYes), 300);
-      } else {
-        practiceCurrentCard.style.transform = '';
-      }
-      practiceStartX = null;
-    }, { passive: false });
-
-    // Disable mouse-drag swipe on desktop
-    if (!isDesktop) {
-      // On mobile with mice, allow mouse drag as well
-      cardImage.addEventListener('mousedown', function(e){ e.preventDefault(); practiceStartX = e.clientX; });
-      cardImage.addEventListener('mousemove', function(e){ if (practiceStartX == null || !practiceCurrentCard) return; const dx = e.clientX - practiceStartX; practiceCurrentCard.style.transform = `translateX(${dx}px) rotate(${dx * 0.1}deg)`; });
-      const up = function(e){ if (practiceStartX == null || !practiceCurrentCard) return; const dx = e.clientX - practiceStartX; if (Math.abs(dx) > 100) { const isYes = dx > 0; animatePracticeCardExit(isYes); setTimeout(() => recordPracticeAnswer(isYes), 300); } else { practiceCurrentCard.style.transform = ''; } practiceStartX = null; };
-      cardImage.addEventListener('mouseup', up);
-      cardImage.addEventListener('mouseleave', up);
-    }
-  }
-
-  function animatePracticeCardExit(isYes) {
-    if (!practiceCurrentCard) return;
-    const direction = isYes ? 1 : -1;
-    // Move completely off-screen horizontally based on viewport width
-    const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
-    const rect = practiceCurrentCard.getBoundingClientRect();
-    const distance = (viewportWidth / 2) + rect.width; // half viewport + card width
-    practiceCurrentCard.style.transform = `translateX(${direction * distance}px) rotate(${direction * 30}deg)`;
-    // Limit transition to transform only to avoid property flicker
-    practiceCurrentCard.style.transition = 'transform 0.3s ease-out';
-    // Hide shortly before switch to avoid old-card flash on mobile
-    setTimeout(() => { if (practiceCurrentCard) practiceCurrentCard.style.visibility = 'hidden'; }, 250);
-    if (isYes && practiceYesBtn) { practiceYesBtn.style.transform = 'scale(1.1)'; }
-    if (!isYes && practiceNoBtn) { practiceNoBtn.style.transform = 'scale(1.1)'; }
-    setTimeout(() => {
-      if (practiceYesBtn) { practiceYesBtn.style.transform = ''; }
-      if (practiceNoBtn) { practiceNoBtn.style.transform = ''; }
-    }, 200);
-  }
+  
   
   function startScan() {
     scanTerminated = false;
@@ -904,8 +841,7 @@
       img.alt = 'Happiness card';
       img.onerror = function(){ this.style.display = 'none'; };
       imagesContainer.appendChild(img);
-      // Attach gesture listeners once to the persistent image
-      setupSwipeListeners();
+      // Attach keyboard navigation once to the persistent image
       setupKeyboardNavigation();
     }
     // Hide before switching source to prevent brief flash of previous image on mobile
@@ -2048,134 +1984,5 @@ function displayBenchmarkResults(benchmark, results) {
     } catch(_) {}
   };
   
-  // Touch/swipe functionality for mobile
-  let startX = null;
-  let startY = null;
-  let currentCard = null;
   
-  function setupSwipeListeners() {
-    const cardImage = document.querySelector('.card-image');
-    if (!cardImage) return;
-    
-    currentCard = cardImage;
-    
-    // Touch events
-    cardImage.addEventListener('touchstart', handleTouchStart, { passive: false });
-    cardImage.addEventListener('touchmove', handleTouchMove, { passive: false });
-    cardImage.addEventListener('touchend', handleTouchEnd, { passive: false });
-    
-    // Disable mouse-drag swipe on desktop; only allow on non-desktop (e.g., tablets with mice)
-    if (!isDesktop) {
-      cardImage.addEventListener('mousedown', handleMouseDown);
-      cardImage.addEventListener('mousemove', handleMouseMove);
-      cardImage.addEventListener('mouseup', handleMouseUp);
-      cardImage.addEventListener('mouseleave', handleMouseUp);
-    }
-  }
-  
-  function handleTouchStart(e) {
-    e.preventDefault();
-    startX = e.touches[0].clientX;
-    startY = e.touches[0].clientY;
-  }
-  
-  function handleTouchMove(e) {
-    e.preventDefault();
-    if (!startX || !startY) return;
-    
-    const currentX = e.touches[0].clientX;
-    const deltaX = currentX - startX;
-    
-    if (currentCard) {
-      currentCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX * 0.1}deg)`;
-      // Remove opacity change during swipe - keep cards fully visible
-    }
-  }
-  
-  function handleTouchEnd(e) {
-    e.preventDefault();
-    if (!startX || !currentCard) return;
-    
-    const endX = e.changedTouches[0].clientX;
-    const deltaX = endX - startX;
-    
-    if (Math.abs(deltaX) > 100) {
-      // Swipe detected
-      const isYes = deltaX > 0;
-      animateCardExit(isYes);
-      setTimeout(() => recordAnswer(isYes, 'swipe-touch'), 300);
-    } else {
-      // Snap back
-      currentCard.style.transform = '';
-      // Keep opacity at 1 when snapping back
-    }
-    
-    startX = null;
-    startY = null;
-  }
-  
-  function handleMouseDown(e) {
-    e.preventDefault();
-    startX = e.clientX;
-    startY = e.clientY;
-  }
-  
-  function handleMouseMove(e) {
-    if (!startX || !currentCard) return;
-    
-    const deltaX = e.clientX - startX;
-    currentCard.style.transform = `translateX(${deltaX}px) rotate(${deltaX * 0.1}deg)`;
-    // Remove opacity change during swipe - keep cards fully visible
-  }
-  
-  function handleMouseUp(e) {
-    if (!startX || !currentCard) return;
-    
-    const deltaX = e.clientX - startX;
-    
-    if (Math.abs(deltaX) > 100) {
-      // Swipe detected
-      const isYes = deltaX > 0;
-      animateCardExit(isYes);
-      setTimeout(() => recordAnswer(isYes, 'swipe-mouse'), 300);
-    } else {
-      // Snap back
-      currentCard.style.transform = '';
-      // Keep opacity at 1 when snapping back
-    }
-    
-    startX = null;
-    startY = null;
-  }
-  
-  function animateCardExit(isYes) {
-    if (!currentCard) return;
-    
-    const direction = isYes ? 1 : -1;
-    // Move completely off-screen horizontally based on viewport width
-    const viewportWidth = Math.max(window.innerWidth || 0, document.documentElement.clientWidth || 0);
-    const rect = currentCard.getBoundingClientRect();
-    const distance = (viewportWidth / 2) + rect.width; // half viewport + card width
-    currentCard.style.transform = `translateX(${direction * distance}px) rotate(${direction * 30}deg)`;
-    // Limit transition to transform only to avoid property flicker
-    currentCard.style.transition = 'transform 0.3s ease-out';
-    // Hide shortly before switch to avoid old-card flash on mobile
-    setTimeout(() => { if (currentCard) currentCard.style.visibility = 'hidden'; }, 250);
-    
-    // Visual feedback on buttons
-    if (isYes) {
-      yesBtn.style.transform = 'scale(1.1)';
-    } else {
-      noBtn.style.transform = 'scale(1.1)';
-    }
-    
-    setTimeout(() => {
-      if (yesBtn) {
-        yesBtn.style.transform = '';
-      }
-      if (noBtn) {
-        noBtn.style.transform = '';
-      }
-    }, 200);
-  }
 })();
