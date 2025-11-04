@@ -1072,13 +1072,17 @@
       if (scoreModeSel && scoreModeSel.value) q.set('score', scoreModeSel.value);
       // No auto defaults; use exactly what the user selected
       if (dev) q.set('device', dev);
-      // Server correlations allow a single modality value; if multiple are checked, omit and rely on client-side distributions
+      // Correlations: pass single modality via 'modality'; if multiple are checked, pass comma-separated 'modalities'
       const selectedMods = [
         modClick && modClick.checked ? 'click' : null,
         modSwipe && modSwipe.checked ? 'swipe' : null,
         modArrow && modArrow.checked ? 'arrow' : null
       ].filter(Boolean);
-      if (selectedMods.length === 1) q.set('modality', selectedMods[0]);
+      if (selectedMods.length === 1) {
+        q.set('modality', selectedMods[0]);
+      } else if (selectedMods.length > 1) {
+        q.set('modalities', selectedMods.join(','));
+      }
       if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
       if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
       if (filterIat && filterIat.checked) q.set('iat', 'true');

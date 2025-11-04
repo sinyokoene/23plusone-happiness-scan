@@ -869,6 +869,9 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const device = String(req.query.device || '').toLowerCase(); // 'mobile' | 'desktop' | ''
     const method = String(req.query.method || 'pearson').toLowerCase(); // 'pearson' | 'spearman'
     const modality = String(req.query.modality || '').toLowerCase(); // 'click' | 'swipe' | 'arrow' | ''
+    // Support multiple modalities via comma-separated 'modalities'
+    const modalitiesCsv = String(req.query.modalities || '').toLowerCase();
+    const modalities = modalitiesCsv ? modalitiesCsv.split(',').map(s=>s.trim()).filter(Boolean) : [];
     const exclusive = String(req.query.exclusive || '').toLowerCase() === 'true';
     const excludeTimeouts = String(req.query.excludeTimeouts || '').toLowerCase() === 'true';
     const iat = String(req.query.iat || '').toLowerCase() === 'true';
@@ -1020,7 +1023,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
       }
       // Preserve a base set after device filtering but before modality/timeouts/IAT/sensitivity/threshold filters
       const joinedBase = joined.slice();
-      if (modality || exclusive || excludeTimeouts || iat || sensitivityAllMax || (threshold != null)) {
+      if (modality || modalities.length > 0 || exclusive || excludeTimeouts || iat || sensitivityAllMax || (threshold != null)) {
         const matchers = {
           click: (m) => m === 'click',
           swipe: (m) => m === 'swipe-touch' || m === 'swipe-mouse',
@@ -1061,18 +1064,27 @@ app.get('/api/analytics/correlations', async (req, res) => {
             const swlsTotal = Number.isFinite(swlsScaled) ? Math.round(swlsScaled * (3/5)) : null; // approx back to 3..21
             if ((who5Total != null && who5Total >= 25) && (swlsTotal != null && swlsTotal >= 21)) return false;
           }
-          // modality presence (any)
+          // modality presence (single or multiple)
           if (modality) {
             if (modality === 'click' && counts.click === 0) return false;
             if (modality === 'swipe' && counts.swipe === 0) return false;
             if (modality === 'arrow' && counts.arrow === 0) return false;
+          } else if (modalities.length > 0) {
+            const present = {
+              click: counts.click > 0,
+              swipe: counts.swipe > 0,
+              arrow: counts.arrow > 0
+            };
+            // require at least one of the selected modalities be present
+            const anySelectedPresent = modalities.some(mod => present[mod]);
+            if (!anySelectedPresent) return false;
           }
           // exclusivity
           if (exclusive) {
             const present = [counts.click>0, counts.swipe>0, counts.arrow>0].filter(Boolean).length;
             if (present !== 1) return false;
           }
-          // threshold
+          // threshold applies only when a single modality is specified
           if (threshold != null && counts.total > 0 && modality) {
             const frac = (modality === 'click' ? counts.click : modality === 'swipe' ? counts.swipe : counts.arrow) / counts.total;
             if ((frac * 100) < threshold) return false;
