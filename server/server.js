@@ -1126,14 +1126,14 @@ app.get('/api/analytics/correlations', async (req, res) => {
       }
 
       // Card-level correlations
-      const cardStats = new Map(); // cardId -> { label, yes:[], affirm:[], who:[], swls:[], ihs:[], whoAff:[], swlsAff:[], ihsAff:[] }
+      const cardStats = new Map(); // cardId -> { label, yes:[], affirm:[], who:[], swls:[], whoAff:[], swlsAff:[] }
       for (const j of joined) {
         const all = j.selections?.allResponses;
         if (!Array.isArray(all)) continue;
         for (const e of all) {
           const cid = Number(e.cardId);
           if (!Number.isFinite(cid)) continue;
-          if (!cardStats.has(cid)) cardStats.set(cid, { label: e.label || null, yes: [], affirm: [], who: [], swls: [], ihs: [], whoAff: [], swlsAff: [], ihsAff: [] });
+          if (!cardStats.has(cid)) cardStats.set(cid, { label: e.label || null, yes: [], affirm: [], who: [], swls: [], whoAff: [], swlsAff: [] });
           const bucket = cardStats.get(cid);
           const yesBin = e.response === true ? 1 : (e.response === false ? 0 : null);
           const aff = (e.affirmationScore == null ? null : Number(e.affirmationScore));
@@ -1141,13 +1141,11 @@ app.get('/api/analytics/correlations', async (req, res) => {
             bucket.yes.push(yesBin);
             bucket.who.push(j.who5Percent);
             bucket.swls.push(j.swlsScaled);
-            bucket.ihs.push(Number(j.ihs));
           }
           if (aff != null && !Number.isNaN(aff)) {
             bucket.affirm.push(aff);
             bucket.whoAff.push(j.who5Percent);
             bucket.swlsAff.push(j.swlsScaled);
-            bucket.ihsAff.push(Number(j.ihs));
           }
         }
       }
@@ -1155,25 +1153,19 @@ app.get('/api/analytics/correlations', async (req, res) => {
       for (const [cardId, b] of cardStats.entries()) {
         const rYesWho = corrFn(b.yes, b.who);
         const rYesSwl = corrFn(b.yes, b.swls);
-        const rYesIhs = corrFn(b.yes, b.ihs);
         const rAffWho = corrFn(b.affirm, b.whoAff);
         const rAffSwl = corrFn(b.affirm, b.swlsAff);
-        const rAffIhs = corrFn(b.affirm, b.ihsAff);
         cards.push({
           cardId,
           label: b.label,
           r_yes_who5: rYesWho.r,
           r_yes_swls: rYesSwl.r,
-          r_yes_ihs: rYesIhs.r,
           r_affirm_who5: rAffWho.r,
           r_affirm_swls: rAffSwl.r,
-          r_affirm_ihs: rAffIhs.r,
           n_yes_who5: rYesWho.n,
           n_yes_swls: rYesSwl.n,
-          n_yes_ihs: rYesIhs.n,
           n_affirm_who5: rAffWho.n,
           n_affirm_swls: rAffSwl.n,
-          n_affirm_ihs: rAffIhs.n,
           method
         });
       }
@@ -1392,10 +1384,6 @@ app.get('/api/analytics/validity', async (req, res) => {
     const sensitivityAllMax = String(req.query.sensitivityAllMax || '').toLowerCase() === 'true';
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
     const includePerSession = String(req.query.includePerSession || '').toLowerCase() === 'true';
-    // Optional trimming: tails on predictor/benchmark or by residuals
-    const trimOutliersFrac = Number.isFinite(Number(req.query.trimOutliersFrac)) ? Math.max(0, Math.min(0.4, Number(req.query.trimOutliersFrac))) : 0;
-    const trimPredictorFrac = Number.isFinite(Number(req.query.trimPredictorFrac)) ? Math.max(0, Math.min(0.4, Number(req.query.trimPredictorFrac))) : 0;
-    const trimBenchmarkFrac = Number.isFinite(Number(req.query.trimBenchmarkFrac)) ? Math.max(0, Math.min(0.4, Number(req.query.trimBenchmarkFrac))) : 0;
     // Scoring/tuning and RT denoise options
     const scoreMode = String(req.query.score || 'raw').toLowerCase(); // 'raw' | 'tuned' | 'cv' | 'n1' | 'n12'
     const isoCalibrate = String(req.query.iso || '').toLowerCase() === 'true';
@@ -1420,8 +1408,7 @@ app.get('/api/analytics/validity', async (req, res) => {
       limit, device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold,
       includePerSession, sex, country, countries, ageMin, ageMax, excludeCountries,
       scoreMode, isoCalibrate, rtDenoise, domains: Array.from(domainSet),
-      excludeSwipe, timeoutsMax, timeoutsFracMax,
-      trimOutliersFrac, trimPredictorFrac, trimBenchmarkFrac
+      excludeSwipe, timeoutsMax, timeoutsFracMax
     });
     const cached = __validityCache.get(cacheKey);
     if (cached && (Date.now() - cached.at) < (cached.ttlMs || 60000)) {
@@ -1721,42 +1708,6 @@ app.get('/api/analytics/validity', async (req, res) => {
         }
       }
 
-      // Optionally trim tails on predictor and/or benchmark first
-      if ((trimPredictorFrac > 0 || trimBenchmarkFrac > 0) && pairsIhs.length >= 8) {
-        const xs = pairsIhs.slice();
-        const ys = pairsBench.slice();
-        const kept = new Array(xs.length).fill(true);
-        function applyTailTrim(arr, frac){
-          if (frac <= 0) return;
-          const n = arr.length; const k = Math.floor(n * (frac/2)); if (k <= 0) return;
-          const ord = arr.map((v,i)=>({v,i})).sort((a,b)=> a.v - b.v);
-          for (let i=0;i<k;i++){ kept[ord[i].i] = false; kept[ord[n-1-i].i] = false; }
-        }
-        applyTailTrim(xs, trimPredictorFrac);
-        applyTailTrim(ys, trimBenchmarkFrac);
-        const nx = []; const ny = [];
-        for (let i=0;i<xs.length;i++){ if (kept[i]) { nx.push(xs[i]); ny.push(ys[i]); } }
-        pairsIhs.length = 0; pairsBench.length = 0; for (let i=0;i<nx.length;i++){ pairsIhs.push(nx[i]); pairsBench.push(ny[i]); }
-      }
-      // Optionally trim outliers by residuals before computing r/AUC
-      if (trimOutliersFrac > 0 && pairsIhs.length >= 8) {
-        const xs = pairsIhs.slice();
-        const ys = pairsBench.slice();
-        const n0 = Math.min(xs.length, ys.length);
-        const mx = xs.reduce((a,b)=>a+b,0)/n0;
-        const my = ys.reduce((a,b)=>a+b,0)/n0;
-        let cov=0, vx=0; for (let i=0;i<n0;i++){ const dx=xs[i]-mx; const dy=ys[i]-my; cov+=dx*dy; vx+=dx*dx; }
-        const b = vx>0 ? (cov/vx) : 0; const a = my - b*mx;
-        const res = []; for (let i=0;i<n0;i++){ const yhat = a + b*xs[i]; res.push({ i, e: Math.abs(ys[i]-yhat) }); }
-        res.sort((p,q)=> q.e - p.e);
-        const k = Math.floor(n0 * trimOutliersFrac);
-        const drop = new Set(res.slice(0,k).map(r=>r.i));
-        const keptX = [], keptY = [];
-        for (let i=0;i<n0;i++){ if (!drop.has(i)) { keptX.push(xs[i]); keptY.push(ys[i]); } }
-        pairsIhs.length = 0; pairsBench.length = 0;
-        for (let i=0;i<keptX.length;i++){ pairsIhs.push(keptX[i]); pairsBench.push(keptY[i]); }
-      }
-
       const n = Math.min(pairsIhs.length, pairsBench.length);
       let r = null, ci95 = null;
       if (n >= 2) {
@@ -1960,6 +1911,163 @@ app.get('/api/analytics/validity', async (req, res) => {
           for (const f of foldSumm){ if (Array.isArray(f.beta) && f.beta.length>=4){ meanW[0]+=f.beta[1]; meanW[1]+=f.beta[2]; meanW[2]+=f.beta[3]; countW++; } }
           if (countW>0){ meanW[0]/=countW; meanW[1]/=countW; meanW[2]/=countW; }
           cvInfo = { k, lambda, mean_alpha: meanAlpha, mean_weights: { z1: meanW[0]||0, z2: meanW[1]||0, z3: meanW[2]||0 }, folds: foldSumm };
+        }
+      }
+
+      // CV per-domain or per-card weighting on affirmation features
+      else if ((scoreMode === 'cv_domain' || scoreMode === 'cv_card') && Array.isArray(joined) && joined.length >= 40) {
+        // Build feature matrix per session: affirmation sums per domain (5) or per card (filtered set)
+        const timeMultiplier = (ms) => { const x=Math.max(0, Math.min(4000, Number(ms)||0)); const lin=(4000-x)/4000; return Math.sqrt(Math.max(0, lin)); };
+        // Collect feature names
+        let featureNames = [];
+        if (scoreMode === 'cv_domain') {
+          featureNames = ['Basics','Self-development','Ambition','Vitality','Attraction'];
+        } else {
+          // Per-card: choose cards with sufficient session support to reduce overfit
+          const support = new Map(); // cid -> sessions count
+          for (const j of joined) {
+            const seen = new Set();
+            const all = j.selections?.allResponses;
+            if (!Array.isArray(all)) continue;
+            for (const e of all) {
+              const cid = Number(e && e.cardId);
+              if (!Number.isFinite(cid) || seen.has(cid)) continue;
+              seen.add(cid);
+              support.set(cid, (support.get(cid)||0) + 1);
+            }
+          }
+          const minSupport = Math.max(50, Math.min(200, Math.floor(joined.length * 0.25)));
+          featureNames = Array.from(support.entries())
+            .filter(([_, n]) => n >= minSupport)
+            .map(([cid]) => String(cid))
+            .sort((a,b)=> Number(a)-Number(b));
+          // Fallback: if filtering removed all, take top 24 by support
+          if (featureNames.length === 0) {
+            featureNames = Array.from(support.entries()).sort((a,b)=> b[1]-a[1]).slice(0, 24).map(([cid])=>String(cid));
+          }
+        }
+
+        // Build rows
+        const rows = [];
+        for (const j of joined) {
+          const zs = [];
+          if (j.who5Total != null && Number.isFinite(j.who5Total) && Number.isFinite(whoSd) && whoSd > 0) zs.push((j.who5Total - whoMean)/whoSd);
+          if (j.swlsTotal != null && Number.isFinite(j.swlsTotal) && Number.isFinite(swlSd) && swlSd > 0) zs.push((j.swlsTotal - swlMean)/swlSd);
+          if (j.cantril != null && Number.isFinite(j.cantril) && Number.isFinite(canSd) && canSd > 0) zs.push((j.cantril - canMean)/canSd);
+          if (zs.length < 2) continue;
+          const label = zs.reduce((a,b)=>a+b,0) / zs.length;
+          const feats = new Array(featureNames.length).fill(0);
+          const all = j.selections?.allResponses;
+          if (Array.isArray(all)) {
+            for (const e of all) {
+              if (!e || e.response !== true) continue;
+              const t = Number(e.responseTime); if (!Number.isFinite(t)) continue;
+              const val = 4 * timeMultiplier(t);
+              if (scoreMode === 'cv_domain') {
+                const d = String(e.domain||'');
+                const idx = featureNames.indexOf(d);
+                if (idx >= 0) feats[idx] += val;
+              } else {
+                const cid = String(Number(e.cardId));
+                const idx = featureNames.indexOf(cid);
+                if (idx >= 0) feats[idx] += val;
+              }
+            }
+          }
+          rows.push({ sessionId: j.sessionId, y: label, x: feats });
+        }
+
+        if (rows.length >= 40 && featureNames.length >= 1) {
+          // Ridge regression (generic p)
+          function ridgeFitGeneric(X, y, lambda){
+            const n = X.length; if (!n) return null;
+            const p = X[0].length + 1; // + intercept
+            const XT = new Array(p).fill(0).map(()=>new Array(p).fill(0));
+            const Xy = new Array(p).fill(0);
+            for (let i=0;i<n;i++){
+              const row = [1, ...X[i]];
+              for (let a=0;a<p;a++){ Xy[a] += row[a] * y[i]; for (let b=0;b<p;b++){ XT[a][b] += row[a] * row[b]; } }
+            }
+            for (let a=1;a<p;a++) XT[a][a] += lambda; // no penalty on intercept
+            function matInv(A){
+              const m = A.map(r=>r.slice()); const n=A.length; const I=new Array(n).fill(0).map((_,i)=>{const r=new Array(n).fill(0); r[i]=1; return r;});
+              for (let i=0;i<n;i++){
+                let maxR=i, maxV=Math.abs(m[i][i]);
+                for(let r=i+1;r<n;r++){ const v=Math.abs(m[r][i]); if(v>maxV){maxV=v; maxR=r;} }
+                if(maxR!==i){ const tmp=m[i]; m[i]=m[maxR]; m[maxR]=tmp; const t2=I[i]; I[i]=I[maxR]; I[maxR]=t2; }
+                let piv=m[i][i]; if (Math.abs(piv)<1e-12) return null;
+                for (let j=0;j<n;j++){ m[i][j]/=piv; I[i][j]/=piv; }
+                for (let r=0;r<n;r++) if(r!==i){ const f=m[r][i]; for (let j=0;j<n;j++){ m[r][j]-=f*m[i][j]; I[r][j]-=f*I[i][j]; } }
+              }
+              return I;
+            }
+            function matVec(M, v){ return M.map(row => row.reduce((s,a,i)=> s + a*v[i], 0)); }
+            const inv = matInv(XT); if (!inv) return null;
+            const beta = matVec(inv, Xy);
+            return beta; // [intercept, ...weights]
+          }
+
+          // K-fold CV with standardization per feature
+          const k = Math.min(5, Math.max(3, Math.floor(Math.sqrt(rows.length/10))));
+          const idx = rows.map((_,i)=>i);
+          for (let i=idx.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); const t=idx[i]; idx[i]=idx[j]; idx[j]=t; }
+          const folds = Array.from({length:k}, (_,fi)=> idx.filter((_,i)=> i % k === fi));
+          const lambda = 0.1;
+          const preds = []; const labels = [];
+          const foldSumm = [];
+          for (let fi=0; fi<k; fi++){
+            const testIdx = new Set(folds[fi]);
+            const train = rows.filter((_,i)=> !testIdx.has(i));
+            const test = rows.filter((_,i)=> testIdx.has(i));
+            if (train.length < 20 || test.length === 0) continue;
+            // compute means/sds per feature on train
+            const p = featureNames.length;
+            const means = new Array(p).fill(0);
+            const sds = new Array(p).fill(0);
+            for (let j=0;j<p;j++){
+              const col = train.map(rw=> Number(rw.x[j])||0);
+              const m = col.reduce((s,v)=>s+v,0)/col.length;
+              const v = col.reduce((s,v)=>{ const d=v-m; return s + d*d; },0) / Math.max(1, (col.length-1));
+              means[j] = m;
+              sds[j] = Math.sqrt(Math.max(0, v));
+            }
+            const X = train.map(rw => rw.x.map((v,j)=> (Number.isFinite(sds[j]) && sds[j]>0) ? ((v - means[j])/sds[j]) : 0));
+            const y = train.map(rw => Number(rw.y));
+            const beta = ridgeFitGeneric(X, y, lambda);
+            if (!beta) continue;
+            const Xtest = test.map(rw => rw.x.map((v,j)=> (Number.isFinite(sds[j]) && sds[j]>0) ? ((v - means[j])/sds[j]) : 0));
+            for (let i=0;i<Xtest.length;i++){
+              const row = Xtest[i];
+              let pred = beta[0];
+              for (let j=0;j<row.length;j++) pred += row[j]*beta[j+1];
+              preds.push(pred);
+              labels.push(Number(test[i].y));
+            }
+            // store fold weights summary (top few by |w|)
+            const weights = beta.slice(1).map((w, j)=>({ name: featureNames[j], w }));
+            weights.sort((a,b)=> Math.abs(b.w) - Math.abs(a.w));
+            foldSumm.push({ top: weights.slice(0, Math.min(10, weights.length)) });
+          }
+          if (preds.length >= 2 && labels.length === preds.length) {
+            const out = (method === 'spearman') ? spearman(preds, labels) : pearson(preds, labels);
+            r = out.r; if (method === 'pearson') ci95 = fisherCIZ(r, out.n);
+            // Replace pairs for downstream AUC/ROC
+            pairsIhs.length = 0; pairsBench.length = 0;
+            for (let i=0;i<preds.length;i++){ pairsIhs.push(preds[i]); pairsBench.push(labels[i]); }
+            // Session predictions
+            predBySession = new Map();
+            let pi = 0;
+            for (let fi=0; fi<k; fi++){
+              const testIdx = new Set(folds[fi]);
+              const test = rows.filter((_,i)=> testIdx.has(i));
+              for (let ti=0; ti<test.length; ti++){
+                const sid = test[ti].sessionId;
+                if (pi < preds.length) predBySession.set(sid, preds[pi]);
+                pi++;
+              }
+            }
+            cvInfo = { type: (scoreMode==='cv_domain'?'domain':'card'), k, lambda, p: featureNames.length, top_weights: (foldSumm[0]?.top || []) };
+          }
         }
       }
 
@@ -2450,11 +2558,6 @@ app.get('/api/analytics/validity', async (req, res) => {
           }
           if (hypotheses && hypotheses.h3) {
             reasons.push(`H3 (combined > best single): ΔR²=${(hypotheses.h3.delta_r2??0).toFixed(3)} p=${(hypotheses.h3.p==null?'—':hypotheses.h3.p.toExponential(2))} ${hypotheses.h3.pass?'PASS':'FAIL'}`);
-            if (typeof hypotheses.h3.r_combined === 'number' && hypotheses.h3.best_domain && typeof hypotheses.h3.best_domain.r === 'number') {
-              const rC = hypotheses.h3.r_combined; const rB = hypotheses.h3.best_domain.r;
-              const corrPass = (Math.abs(rC) > Math.abs(rB));
-              reasons.push(`H3 corr: r(composite, SWLS)=${rC.toFixed(3)} vs r(${hypotheses.h3.best_domain.name}, SWLS)=${rB.toFixed(3)} ${corrPass?'(higher)':''}`);
-            }
           }
         } catch(_) {}
       } catch (_) { grader = null; }
@@ -2483,7 +2586,7 @@ app.get('/api/analytics/validity', async (req, res) => {
         hypotheses,
         yesrate,
         cv: cvInfo,
-        filters_echo: { device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold, sex, country, countries, ageMin, ageMax, excludeCountries, trimOutliersFrac, trimPredictorFrac, trimBenchmarkFrac },
+        filters_echo: { device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold, sex, country, countries, ageMin, ageMax, excludeCountries },
         grader
       };
       if (includePerSession) payload.perSession = perSession;

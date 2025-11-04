@@ -110,23 +110,6 @@
         <label class="inline-flex items-center gap-2" title=">300ms & <2000ms, no timeouts, ≤10% outside">
           <input id="filterIat" type="checkbox" class="align-middle"> <span>IAT filter</span>
         </label>
-        <label class="inline-flex items-center gap-2" title="Trim top-k% residual outliers before r/AUC">
-          <input id="filterTrimOutliers" type="checkbox" class="align-middle"> <span>Trim residuals</span>
-        </label>
-        <label class="inline-flex items-center gap-1" title="Residual k% (0–40), default 10%">
-          <input id="filterTrimPct" type="number" min="0" max="40" step="1" placeholder="10" class="border rounded px-2 py-1 w-16">
-          <span>%</span>
-        </label>
-        <label class="inline-flex items-center gap-1" title="Trim IHS predictor tails (each side)">
-          <span>IHS tails</span>
-          <input id="filterTrimIhsPct" type="number" min="0" max="40" step="1" placeholder="0" class="border rounded px-2 py-1 w-16">
-          <span>%</span>
-        </label>
-        <label class="inline-flex items-center gap-1" title="Trim Benchmark tails (each side)">
-          <span>Benchmark tails</span>
-          <input id="filterTrimBenchPct" type="number" min="0" max="40" step="1" placeholder="0" class="border rounded px-2 py-1 w-16">
-          <span>%</span>
-        </label>
         <label class="inline-flex items-center gap-2" title="Sensitivity analysis">
           <input id="filterSensitivity" type="checkbox" class="align-middle"> <span>Sensitivity</span>
         </label>
@@ -233,6 +216,8 @@
                   <option value="tuned">Tuned</option>
                   <option value="cv">CV</option>
                   <option value="cv_rtlearn">CV + RTLearn</option>
+                  <option value="cv_domain">CV domain weights</option>
+                  <option value="cv_card">CV card weights</option>
                   <option value="n1">N1 only</option>
                   <option value="n12">N1 + N2</option>
                 </select>
@@ -368,14 +353,6 @@
               <select id="cardCorrMetric" class="border rounded px-2 py-1 text-xs">
                 <option value="yes" selected>Yes rate</option>
                 <option value="affirm">Affirmation (time‑weighted)</option>
-              </select>
-            </label>
-            <label class="text-xs opacity-80">Target
-              <select id="cardTarget" class="border rounded px-2 py-1 text-xs">
-                <option value="who5" selected>WHO‑5</option>
-                <option value="swls">SWLS</option>
-                <option value="cantril">Cantril</option>
-                <option value="ihs">IHS</option>
               </select>
             </label>
           </div>

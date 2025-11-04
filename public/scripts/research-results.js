@@ -39,15 +39,10 @@
   const filterExclusive = document.getElementById('filterExclusive');
   const filterNoTimeouts = document.getElementById('filterNoTimeouts');
   const filterIat = document.getElementById('filterIat');
-  const filterTrimOutliers = document.getElementById('filterTrimOutliers');
-  const filterTrimPct = document.getElementById('filterTrimPct');
-  const filterTrimIhsPct = document.getElementById('filterTrimIhsPct');
-  const filterTrimBenchPct = document.getElementById('filterTrimBenchPct');
   const filterSensitivity = document.getElementById('filterSensitivity');
   const filterThreshold = document.getElementById('filterThreshold');
   const applyFiltersBtn = document.getElementById('applyFilters');
   const cardCorrMetric = document.getElementById('cardCorrMetric');
-  const cardTarget = document.getElementById('cardTarget');
   const cardTimeSelector = document.getElementById('cardTimeSelector');
   const cardTimeCanvas = document.getElementById('cardTimeChart');
   const corrMethodSel = document.getElementById('corrMethod');
@@ -643,16 +638,7 @@
       if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
       if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
       if (filterIat && filterIat.checked) q.set('iat', 'true');
-      if (filterTrimOutliers && filterTrimOutliers.checked) {
-        const pct = Number(filterTrimPct && filterTrimPct.value ? filterTrimPct.value : 10);
-        const frac = Math.max(0, Math.min(40, isNaN(pct)?10:pct)) / 100;
-        if (frac > 0) q.set('trimOutliersFrac', String(frac));
-      }
       if (filterSensitivity && filterSensitivity.checked) q.set('sensitivityAllMax', 'true');
-      const trimIhsPct = Number(filterTrimIhsPct && filterTrimIhsPct.value ? filterTrimIhsPct.value : NaN);
-      const trimBenchPct = Number(filterTrimBenchPct && filterTrimBenchPct.value ? filterTrimBenchPct.value : NaN);
-      if (!Number.isNaN(trimIhsPct) && trimIhsPct > 0) q.set('trimPredictorFrac', String(Math.max(0, Math.min(40, trimIhsPct))/100));
-      if (!Number.isNaN(trimBenchPct) && trimBenchPct > 0) q.set('trimBenchmarkFrac', String(Math.max(0, Math.min(40, trimBenchPct))/100));
       if (filterSex && filterSex.value) q.set('sex', filterSex.value);
       if (filterCountry && filterCountry.selectedOptions && filterCountry.selectedOptions.length > 0) {
         const inc = Array.from(filterCountry.selectedOptions).map(o=>o.value).filter(Boolean);
@@ -713,10 +699,11 @@
         const cv = json && json.cv;
         const yr = json && json.yesrate;
         const cvTxt = (cv && typeof cv.mean_alpha === 'number') ? ` · CV weights (approx): w1=${(cv.mean_weights?.z1??0).toFixed(2)}, w2=${(cv.mean_weights?.z2??0).toFixed(2)}, w3=${(cv.mean_weights?.z3??0).toFixed(2)}${(typeof cv.mean_alpha==='number')?`, α≈${cv.mean_alpha.toFixed(2)}`:''}` : '';
+        const cvTxt2 = (cv && cv.type) ? ` · ${cv.type==='domain'?'CV domain-weights':'CV card-weights'}${(typeof cv.p==='number')?` (p=${cv.p})`:''}` : '';
         validitySummaryEl.innerHTML = `
           <div class="grid" style="grid-template-columns: repeat(12, 1fr); gap: 8px;">
             <div class="col-6">
-              <div class="text-sm"><span class="font-medium">Correlation</span> (${methodUsed}): <span class="inline-block px-2 py-0.5 rounded" style="background:rgba(59,130,246,.12)">${rText}</span> <span class="opacity-70">95% CI:</span> ${ciText} <span class="opacity-70">n=</span>${n}${cvTxt}</div>
+              <div class="text-sm"><span class="font-medium">Correlation</span> (${methodUsed}): <span class="inline-block px-2 py-0.5 rounded" style="background:rgba(59,130,246,.12)">${rText}</span> <span class="opacity-70">95% CI:</span> ${ciText} <span class="opacity-70">n=</span>${n}${cvTxt}${cvTxt2}</div>
               <div class="text-xs opacity-80 mt-1">${niText} · ${dR2Text}</div>
               ${yr ? `<div class="text-xs opacity-80 mt-1">Yes‑rate: r=${(yr.r??NaN).toFixed(3)}${(Array.isArray(yr.ci95)?` [${(yr.ci95[0]??NaN).toFixed(3)}, ${(yr.ci95[1]??NaN).toFixed(3)}]`: '')}${(typeof yr.auc==='number'?`, AUC=${yr.auc.toFixed(3)}`:'')}${(yr.partial_given_n1 && typeof yr.partial_given_n1.r==='number'?`, partial r|N1=${yr.partial_given_n1.r.toFixed(3)}`:'')}</div>` : ''}
               <div class="text-xs opacity-80 mt-1">Reliability: ${ihsSB}; Benchmark ${omega} ${attText ? '· '+attText : ''}</div>
@@ -1033,7 +1020,7 @@
     // Fetch server-side correlations for domains and cards
     try {
       // Pre-compute client-side Cantril correlations per card from raw entries (Yes or Affirm per metric)
-      const metricIsAffirmCards = (cardCorrMetric && cardCorrMetric.value === 'affirm');
+      const metricIsAffirm = (cardCorrMetric && cardCorrMetric.value === 'affirm');
       const cantrilByCard = metricIsAffirm ? computeCardAffirmVsCantril(entries, rFn) : computeCardYesVsCantril(entries, rFn);
       await ensureCardDomains();
       const dev = (filterDevice && filterDevice.value) || '';
@@ -1106,16 +1093,8 @@
         });
       }
 
-      // Card top/bottom selectable target
-      const tgt = (cardTarget && cardTarget.value) || 'who5';
-      const metricIsAffirm = (cardCorrMetric && cardCorrMetric.value === 'affirm');
-      function getR(c){
-        if (tgt === 'ihs') return metricIsAffirm ? (c.r_affirm_ihs||0) : (c.r_yes_ihs||0);
-        if (tgt === 'swls') return metricIsAffirm ? (c.r_affirm_swls||0) : (c.r_yes_swls||0);
-        if (tgt === 'cantril') return (metricIsAffirm ? (c.r_affirm_cantril||0) : (c.r_yes_can!=null?c.r_yes_can: (cantrilByCard.get(Number(c.cardId)) && cantrilByCard.get(Number(c.cardId)).r) ) || 0);
-        return metricIsAffirm ? (c.r_affirm_who5||0) : (c.r_yes_who5||0);
-      }
-      const score = (c) => getR(c);
+      // Card top/bottom by composite of WHO-5/SWLS/Cantril
+      const score = (c) => 0.4*(c.r_yes_who5||0) + 0.4*(c.r_yes_swls||0) + 0.2*( (c.r_yes_can!=null?c.r_yes_can: (cantrilByCard.get(Number(c.cardId)) && cantrilByCard.get(Number(c.cardId)).r) ) || 0 );
       const sorted = cards.slice().sort((a,b)=> score(b) - score(a));
       const top = sorted.slice(0, 12);
       const bottom = sorted.slice(-12);
@@ -1143,9 +1122,12 @@
           const dot = `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${color};margin-right:6px;vertical-align:middle;"></span>`;
           const name = c.label ? `${c.cardId} · ${c.label}` : c.cardId;
           const cid = Number(c.cardId);
-          const rVal = getR(c);
+          const rCanSource = (c.r_yes_can!=null ? Number(c.r_yes_can) : (cantrilByCard.get(cid) && cantrilByCard.get(cid).r));
+          const rCan = (rCanSource==null || Number.isNaN(rCanSource)) ? 0 : rCanSource;
           tr.innerHTML = `<td>${dot}${name}</td>
-            <td>${colorBadge(rVal)}</td>
+            <td>${colorBadge(c.r_yes_who5)}</td>
+            <td>${colorBadge(c.r_yes_swls)}</td>
+            <td>${colorBadge(rCan)}</td>
             <td>${c.n_yes_who5||0}</td>`;
           tbody.appendChild(tr);
         });
