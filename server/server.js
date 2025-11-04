@@ -211,6 +211,24 @@ async function dropIpAddressColumnIfExists() {
 }
 dropIpAddressColumnIfExists();
 
+// Startup migration: ensure N1 scaled columns exist on scan_responses
+async function ensureN1ScaledColumns(){
+  try {
+    const client = await pool.connect();
+    try {
+      await client.query('ALTER TABLE scan_responses ADD COLUMN IF NOT EXISTS n1_scaled_100 REAL');
+      await client.query('ALTER TABLE scan_responses ADD COLUMN IF NOT EXISTS n1_trials_total INTEGER');
+      await client.query('ALTER TABLE scan_responses ADD COLUMN IF NOT EXISTS n1_version SMALLINT NOT NULL DEFAULT 2');
+      console.log('🧩 Ensured N1 scaled columns exist');
+    } finally {
+      client.release();
+    }
+  } catch (e) {
+    console.warn('Startup migration: ensureN1ScaledColumns failed', e?.message || e);
+  }
+}
+ensureN1ScaledColumns();
+
 // Detect demographics table/columns once per process
 let detectedDemographics = null; // { table, pidCol, sexCol, ageCol, countryCol }
 function qIdent(name){ return '"' + String(name).replace(/"/g, '""') + '"'; }
@@ -567,6 +585,25 @@ app.post('/api/responses', async (req, res) => {
       });
     }
     
+    // Compute server-authoritative N1 scaled (0–100) from raw selections
+    function computeN1Scaled(allResponses){
+      if (!Array.isArray(allResponses) || allResponses.length === 0) return { scaled: null, trials: 0 };
+      const trials = allResponses.length;
+      const timeMultiplier = (ms)=>{ const t = Math.max(0, Math.min(4000, Number(ms)||0)); const lin = (4000 - t) / 4000; return Math.sqrt(Math.max(0, lin)); };
+      let sum = 0;
+      for (const e of allResponses){
+        if (!e) continue;
+        if (e.response === true){
+          const t = Number(e.responseTime);
+          if (Number.isFinite(t)) sum += 4 * timeMultiplier(t);
+          // missing/NaN time contributes 0
+        }
+      }
+      const denom = 4 * Math.max(1, trials);
+      const scaled = Math.max(0, Math.min(100, (100 * sum) / denom));
+      return { scaled, trials };
+    }
+
     const client = await pool.connect();
     
     try {
@@ -575,10 +612,12 @@ app.post('/api/responses', async (req, res) => {
         return res.status(409).json({ error: 'Duplicate submission', reason: 'Session already submitted' });
       }
       // Insert scan response (IP column removed)
+      const all = (cardSelections && Array.isArray(cardSelections.allResponses)) ? cardSelections.allResponses : [];
+      const n1calc = computeN1Scaled(all);
       const result = await client.query(
         `INSERT INTO scan_responses 
-         (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, selected_count, rejected_count)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+         (session_id, card_selections, ihs_score, n1_score, n2_score, n3_score, completion_time, user_agent, selected_count, rejected_count, n1_scaled_100, n1_trials_total, n1_version)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
          RETURNING id`,
         [
           sessionId, 
@@ -590,7 +629,10 @@ app.post('/api/responses', async (req, res) => {
           completionTime || 0,
           userAgent || null,
           cardSelections?.selected?.length || 0,
-          cardSelections?.rejected?.length || 0
+          cardSelections?.rejected?.length || 0,
+          n1calc.scaled,
+          n1calc.trials,
+          2
         ]
       );
       
@@ -727,13 +769,13 @@ app.get('/api/research-results', async (req, res) => {
       if (sessionIds.length) {
         // Use ANY(array) to avoid overly large IN clause
         const ihsRows = await mainClient.query(
-          `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, user_agent, card_selections, completion_time, selected_count, rejected_count
+          `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, n1_scaled_100, n1_trials_total, user_agent, card_selections, completion_time, selected_count, rejected_count
            FROM scan_responses WHERE session_id = ANY($1::text[])`,
           [sessionIds]
         );
         ihsMap = new Map(ihsRows.rows.map(r => [r.session_id, {
-          ihs: r.ihs_score,
-          n1: r.n1_score,
+        ihs: r.ihs_score,
+          n1: r.n1_scaled_100 != null ? r.n1_scaled_100 : r.n1_score,
           n2: r.n2_score,
           n3: r.n3_score,
           scan_user_agent: r.user_agent || null,
@@ -931,10 +973,20 @@ app.get('/api/analytics/correlations', async (req, res) => {
 
       // Fetch scan data for those sessions
       const { rows: scanRows } = await mainClient.query(
-        `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, card_selections, user_agent
+        `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, n1_scaled_100, n1_trials_total, card_selections, user_agent
          FROM scan_responses
          WHERE session_id = ANY($1::text[])`, [sessionIds]
       );
+
+      // Helper to compute N1 scaled from selections if missing
+      function computeN1Scaled(all){
+        if (!Array.isArray(all) || all.length === 0) return null;
+        const trials = all.length;
+        const timeMultiplier = (ms)=>{ const t=Math.max(0, Math.min(4000, Number(ms)||0)); const lin=(4000 - t)/4000; return Math.sqrt(Math.max(0, lin)); };
+        let sum=0; for (const e of all){ if (!e) continue; if (e.response===true){ const t=Number(e.responseTime); if (Number.isFinite(t)) sum += 4 * timeMultiplier(t); } }
+        const denom = 4 * Math.max(1, trials);
+        return Math.max(0, Math.min(100, (100 * sum) / denom));
+      }
 
       // Keep only sessions that exist in both sets and have IHS
       let joined = [];
@@ -945,7 +997,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
         joined.push({
           sessionId: s.session_id,
           ihs: Number(s.ihs_score),
-          n1: s.n1_score == null ? null : Number(s.n1_score),
+          n1: (s.n1_scaled_100!=null ? Number(s.n1_scaled_100) : computeN1Scaled(s.card_selections?.allResponses)),
           n2: s.n2_score == null ? null : Number(s.n2_score),
           n3: s.n3_score == null ? null : Number(s.n3_score),
           who5Percent: r.who5Percent,
@@ -1512,13 +1564,21 @@ app.get('/api/analytics/validity', async (req, res) => {
       }
 
       const { rows: scanRows } = await mainClient.query(
-        `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, card_selections, user_agent
+        `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, n1_scaled_100, n1_trials_total, card_selections, user_agent
          FROM scan_responses
          WHERE session_id = ANY($1::text[])`, [sessionIds]
       );
 
       // Build joined set
       let joined = [];
+      function computeN1Scaled(all){
+        if (!Array.isArray(all) || all.length === 0) return null;
+        const trials = all.length;
+        const timeMultiplier = (ms)=>{ const x=Math.max(0, Math.min(4000, Number(ms)||0)); const lin=(4000-x)/4000; return Math.sqrt(Math.max(0, lin)); };
+        let sum = 0; for (const e of all){ if (!e) continue; if (e.response===true){ const t=Number(e.responseTime); if (Number.isFinite(t)) sum += 4 * timeMultiplier(t); } }
+        const denom = 4 * Math.max(1, trials);
+        return Math.max(0, Math.min(100, (100 * sum) / denom));
+      }
       for (const s of scanRows) {
         const r = rBySession.get(s.session_id);
         if (!r) continue;
@@ -1526,7 +1586,7 @@ app.get('/api/analytics/validity', async (req, res) => {
         joined.push({
           sessionId: s.session_id,
           ihs: Number(s.ihs_score),
-          n1: s.n1_score == null ? null : Number(s.n1_score),
+          n1: (s.n1_scaled_100!=null ? Number(s.n1_scaled_100) : computeN1Scaled(s.card_selections?.allResponses)),
           n2: s.n2_score == null ? null : Number(s.n2_score),
           n3: s.n3_score == null ? null : Number(s.n3_score),
           who5Total: r.who5Total,
@@ -1663,7 +1723,8 @@ app.get('/api/analytics/validity', async (req, res) => {
           // choose predictor: raw IHS or tuned blend
           let ihsPred = Number(j.ihs);
           // Optional per-person RT denoise for N1 component
-          let n1Denoised = null;
+          let n1Denoised = null; // raw sum scale (Σ 4*mult)
+          let n1DenoisedScaled = null; // 0–100 scaled by trials presented
           if (rtDenoise) {
             const all = j.selections?.allResponses;
             if (Array.isArray(all) && all.length >= 5) {
@@ -1683,6 +1744,9 @@ app.get('/api/analytics/validity', async (req, res) => {
                   sum += 4 * timeMultiplier(t);
                 }
                 n1Denoised = sum;
+                const trials = all.length;
+                const denom = 4 * Math.max(1, trials);
+                n1DenoisedScaled = Math.max(0, Math.min(100, (100 * sum) / denom));
               }
             }
           }
@@ -1715,8 +1779,8 @@ app.get('/api/analytics/validity', async (req, res) => {
             }
           }
           if (scoreMode === 'n1') {
-            // Use N1 component only (optionally RT-denoised)
-            const n1 = (n1Denoised!=null ? n1Denoised : Number(j.n1));
+            // Use N1 scaled 0–100 (optionally RT-denoised scaled)
+            const n1 = (n1DenoisedScaled!=null ? n1DenoisedScaled : Number(j.n1));
             if (Number.isFinite(n1)) ihsPred = n1;
           }
           // Save for immediate modes
@@ -2764,7 +2828,7 @@ app.get('/api/research-entries.csv', async (req, res) => {
         for (const chunk of chunks) {
           const params = chunk.map((_,i)=>`$${i+1}`).join(',');
           const { rows } = await mainClient.query(
-            `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, completion_time, selected_count, rejected_count, card_selections, user_agent, created_at
+            `SELECT session_id, ihs_score, n1_score, n2_score, n3_score, n1_scaled_100, n1_trials_total, n1_version, completion_time, selected_count, rejected_count, card_selections, user_agent, created_at
              FROM scan_responses WHERE session_id IN (${params})`, chunk
           );
           scanRows = scanRows.concat(rows);
@@ -2785,7 +2849,7 @@ app.get('/api/research-entries.csv', async (req, res) => {
       const header = [
         'session_id','research_created_at','who5_total','swls_total','cantril',
         'sex','age','country',
-        'ihs','n1','n2','n3','scan_created_at','device','scan_user_agent',
+        'ihs','n1_legacy','n2','n3','n1_scaled_100','n1_trials_total','n1_version','scan_created_at','device','scan_user_agent',
         'completion_time_ms','selected_count','rejected_count','yes_count','no_count','timeouts',
         'mod_click','mod_swipe','mod_arrow'
       ];
@@ -2815,6 +2879,9 @@ app.get('/api/research-entries.csv', async (req, res) => {
           (s.n1_score==null?'':Number(s.n1_score)),
           (s.n2_score==null?'':Number(s.n2_score)),
           (s.n3_score==null?'':Number(s.n3_score)),
+          (s.n1_scaled_100==null?'':Number(s.n1_scaled_100)),
+          (s.n1_trials_total==null?'':Number(s.n1_trials_total)),
+          (s.n1_version==null?'':Number(s.n1_version)),
           s.created_at?.toISOString?.() || s.created_at || '',
           (isMobileUA(s.user_agent)?'Mobile':'Desktop'),
           s.user_agent || '',
@@ -2885,6 +2952,52 @@ app.get('/api/benchmarks', async (req, res) => {
   } catch (err) {
     console.error('Error fetching benchmarks:', err);
     res.status(500).json({ error: 'Failed to fetch benchmarks' });
+  }
+});
+
+// Admin backfill for n1_scaled_100 (requires x-admin-token header matching ADMIN_TOKEN)
+app.post('/api/admin/backfill-n1', async (req, res) => {
+  try {
+    const token = req.headers['x-admin-token'];
+    if (!process.env.ADMIN_TOKEN || token !== process.env.ADMIN_TOKEN) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+    const limit = Math.min(parseInt(String(req.query.limit||'5000'),10)||5000, 20000);
+    const client = await pool.connect();
+    try {
+      const { rows } = await client.query(
+        `SELECT id, card_selections FROM scan_responses
+         WHERE n1_scaled_100 IS NULL AND card_selections IS NOT NULL
+         ORDER BY id DESC
+         LIMIT $1`, [limit]
+      );
+      function computeN1Scaled(all){
+        if (!Array.isArray(all) || all.length === 0) return { scaled: null, trials: 0 };
+        const trials = all.length;
+        const timeMultiplier = (ms)=>{ const t=Math.max(0, Math.min(4000, Number(ms)||0)); const lin=(4000 - t)/4000; return Math.sqrt(Math.max(0, lin)); };
+        let sum=0; for (const e of all){ if (!e) continue; if (e.response===true){ const t=Number(e.responseTime); if (Number.isFinite(t)) sum += 4 * timeMultiplier(t); } }
+        const denom = 4 * Math.max(1, trials);
+        const scaled = Math.max(0, Math.min(100, (100 * sum) / denom));
+        return { scaled, trials };
+      }
+      let updated = 0;
+      for (const r of rows) {
+        const all = r.card_selections?.allResponses;
+        if (!Array.isArray(all)) continue;
+        const n1 = computeN1Scaled(all);
+        await client.query(
+          `UPDATE scan_responses SET n1_scaled_100=$1, n1_trials_total=$2, n1_version=2 WHERE id=$3`,
+          [n1.scaled, n1.trials, r.id]
+        );
+        updated++;
+      }
+      res.json({ updated });
+    } finally {
+      client.release();
+    }
+  } catch (e) {
+    console.error('Backfill n1_scaled_100 failed', e);
+    res.status(500).json({ error: 'Backfill failed' });
   }
 });
 

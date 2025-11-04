@@ -996,7 +996,7 @@
       n123Scatter = new Chart(n123Canvas, {
         ...scatterCommon,
         data: { datasets: [
-          { label: `N1 vs ${metric.toUpperCase()} (r=${r1.toFixed(2)})`, data: p1, backgroundColor: 'rgba(99,102,241,.5)' },
+          { label: `N1 (0–100) vs ${metric.toUpperCase()} (r=${r1.toFixed(2)})`, data: p1, backgroundColor: 'rgba(99,102,241,.5)' },
           { type: 'line', label: 'N1 trend', data: line1, borderColor: 'rgba(99,102,241,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 },
           { label: `N2 vs ${metric.toUpperCase()} (r=${r2.toFixed(2)})`, data: p2, backgroundColor: 'rgba(16,185,129,.5)' },
           { type: 'line', label: 'N2 trend', data: line2, borderColor: 'rgba(16,185,129,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderWidth: 1 },
