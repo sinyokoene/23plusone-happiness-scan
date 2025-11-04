@@ -621,6 +621,36 @@
     }
     // Apply client-side filters (device, modality, exclusivity, threshold)
     entries = entries.filter(entryMatchesFilters);
+    // Optional outlier trimming (10% tails) on IHS and/or scales
+    (function applyClientTrims(){
+      const wantTrimIhs = !!(filterTrimIhs && filterTrimIhs.checked);
+      const wantTrimScales = !!(filterTrimScales && filterTrimScales.checked);
+      if (!wantTrimIhs && !wantTrimScales) return;
+      function quantile(arr, q){ if(!arr||arr.length===0) return NaN; const a=arr.slice().sort((x,y)=>x-y); const pos=(a.length-1)*q; const base=Math.floor(pos); const rest=pos-base; if (a[base+1]!==undefined) return a[base] + rest*(a[base+1]-a[base]); return a[base]; }
+      let ihsLo=null, ihsHi=null, whoLo=null, whoHi=null, swlLo=null, swlHi=null, canLo=null, canHi=null;
+      if (wantTrimIhs) {
+        const ihsVals = entries.map(e=>Number(e.ihs)).filter(Number.isFinite);
+        if (ihsVals.length>=10) { ihsLo=quantile(ihsVals, 0.10); ihsHi=quantile(ihsVals, 0.90); }
+      }
+      if (wantTrimScales) {
+        const whoVals = entries.map(e=> sum(e.who5||[])).filter(Number.isFinite);
+        const swlVals = entries.map(e=> sum(e.swls||[])).filter(Number.isFinite);
+        const canVals = entries.map(e=> Number(e.cantril)).filter(Number.isFinite);
+        if (whoVals.length>=10) { whoLo=quantile(whoVals, 0.10); whoHi=quantile(whoVals, 0.90); }
+        if (swlVals.length>=10) { swlLo=quantile(swlVals, 0.10); swlHi=quantile(swlVals, 0.90); }
+        if (canVals.length>=10) { canLo=quantile(canVals, 0.10); canHi=quantile(canVals, 0.90); }
+      }
+      entries = entries.filter(e => {
+        let keep = true;
+        const ihs = Number(e.ihs);
+        if (keep && ihsLo!=null && ihsHi!=null && Number.isFinite(ihs)) { if (!(ihs >= ihsLo && ihs <= ihsHi)) keep = false; }
+        if (!keep) return false;
+        if (whoLo!=null && whoHi!=null) { const w = sum(e.who5||[]); if (Number.isFinite(w) && !(w>=whoLo && w<=whoHi)) return false; }
+        if (swlLo!=null && swlHi!=null) { const s = sum(e.swls||[]); if (Number.isFinite(s) && !(s>=swlLo && s<=swlHi)) return false; }
+        if (canLo!=null && canHi!=null) { const c = Number(e.cantril); if (Number.isFinite(c) && !(c>=canLo && c<=canHi)) return false; }
+        return true;
+      });
+    })();
     currentEntries = entries.slice();
     renderTable(currentEntries);
     renderCharts(currentEntries);
@@ -1043,6 +1073,8 @@
       if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
       if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
       if (filterIat && filterIat.checked) q.set('iat', 'true');
+      if (filterTrimIhs && filterTrimIhs.checked) q.set('trimIhs', '0.10');
+      if (filterTrimScales && filterTrimScales.checked) q.set('trimScales', '0.10');
       if (filterSensitivity && filterSensitivity.checked) q.set('sensitivityAllMax', 'true');
       // Pass demographics filters through to correlations so n matches
       if (filterSex && filterSex.value) q.set('sex', filterSex.value);

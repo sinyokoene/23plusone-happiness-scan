@@ -832,6 +832,9 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const iat = String(req.query.iat || '').toLowerCase() === 'true';
     const sensitivityAllMax = String(req.query.sensitivityAllMax || '').toLowerCase() === 'true';
     const threshold = Number.isFinite(Number(req.query.threshold)) ? Number(req.query.threshold) : null; // 0..100
+    // Outlier trimming
+    const trimIhs = (req.query.trimIhs!=null) ? (Number.isFinite(Number(req.query.trimIhs)) ? Number(req.query.trimIhs) : (String(req.query.trimIhs).toLowerCase()==='true' ? 0.10 : null)) : null;
+    const trimScales = (req.query.trimScales!=null) ? (Number.isFinite(Number(req.query.trimScales)) ? Number(req.query.trimScales) : (String(req.query.trimScales).toLowerCase()==='true' ? 0.10 : null)) : null;
     // Demographics filters
     const sex = req.query.sex ? String(req.query.sex) : '';
     const country = req.query.country ? String(req.query.country) : '';
@@ -1023,6 +1026,31 @@ app.get('/api/analytics/correlations', async (req, res) => {
             if ((frac * 100) < threshold) return false;
           }
           return true;
+        });
+      }
+
+      // Optional trimming on IHS and/or scales using percentile cutoffs
+      if ((trimIhs && trimIhs > 0) || (trimScales && trimScales > 0)) {
+        let ihsLo=null, ihsHi=null, whoLo=null, whoHi=null, swlLo=null, swlHi=null, canLo=null, canHi=null;
+        if (trimIhs && trimIhs > 0) {
+          const ihsVals = joined.map(j=>Number(j.ihs)).filter(Number.isFinite);
+          if (ihsVals.length >= 10) { ihsLo = quantile(ihsVals.slice(), Math.max(0, Math.min(0.5, trimIhs))); ihsHi = quantile(ihsVals.slice(), 1 - Math.max(0, Math.min(0.5, trimIhs))); }
+        }
+        if (trimScales && trimScales > 0) {
+          const whoVals = joined.map(j=>Number(j.who5Percent)).filter(Number.isFinite);
+          const swlVals = joined.map(j=>Number(j.swlsScaled)).filter(Number.isFinite);
+          const canVals = joined.map(j=>Number(j.cantril)).filter(Number.isFinite);
+          if (whoVals.length >= 10) { whoLo = quantile(whoVals.slice(), Math.max(0, Math.min(0.5, trimScales))); whoHi = quantile(whoVals.slice(), 1 - Math.max(0, Math.min(0.5, trimScales))); }
+          if (swlVals.length >= 10) { swlLo = quantile(swlVals.slice(), Math.max(0, Math.min(0.5, trimScales))); swlHi = quantile(swlVals.slice(), 1 - Math.max(0, Math.min(0.5, trimScales))); }
+          if (canVals.length >= 10) { canLo = quantile(canVals.slice(), Math.max(0, Math.min(0.5, trimScales))); canHi = quantile(canVals.slice(), 1 - Math.max(0, Math.min(0.5, trimScales))); }
+        }
+        joined = joined.filter(j => {
+          let keep = true;
+          if (ihsLo!=null && ihsHi!=null && Number.isFinite(j.ihs)) { if (!(j.ihs >= ihsLo && j.ihs <= ihsHi)) keep = false; }
+          if (keep && whoLo!=null && whoHi!=null && Number.isFinite(j.who5Percent)) { if (!(j.who5Percent >= whoLo && j.who5Percent <= whoHi)) keep = false; }
+          if (keep && swlLo!=null && swlHi!=null && Number.isFinite(j.swlsScaled)) { if (!(j.swlsScaled >= swlLo && j.swlsScaled <= swlHi)) keep = false; }
+          if (keep && canLo!=null && canHi!=null && Number.isFinite(j.cantril)) { if (!(j.cantril >= canLo && j.cantril <= canHi)) keep = false; }
+          return keep;
         });
       }
 
