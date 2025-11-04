@@ -1280,7 +1280,7 @@
       }
     } catch(_) {}
     // Update main score
-    document.getElementById('totalScore').textContent = `${results.ihs}%`;
+    document.getElementById('totalScore').textContent = `${results.n1}`;
     
     // Get domain data for visualization
     const domainData = getDomainAnalysis(results.domainCounts);
@@ -1543,7 +1543,7 @@
     // Use full report btn as harmless anchor for status text if needed
     const fallbackStatusBtn = document.getElementById('fullReportBtn');
     
-    const shareText = `I just completed the 23plusone Happiness Scan and scored ${results.ihs}! Discover what drives your happiness.`;
+    const shareText = `I just completed the 23plusone Happiness Scan and scored ${results.n1} (N1). Discover what drives your happiness.`;
     const shareUrl = window.location.href;
     
     // Native share handler
@@ -1876,7 +1876,7 @@
     };
     
     const benchmarkPayload = {
-      ihsScore: results.ihs,
+      ihsScore: results.n1,
       domainScores: domainScores
     };
     

@@ -3052,13 +3052,13 @@ app.post('/api/benchmarks', async (req, res) => {
     const client = await pool.connect();
     
     try {
-      // Calculate overall IHS percentile
+      // Calculate overall N1 (0–100) percentile
       const ihsPercentileQuery = `
         SELECT 
           COUNT(*) as total_responses,
-          COUNT(CASE WHEN ihs_score < $1 THEN 1 END) as lower_scores
+          COUNT(CASE WHEN n1_scaled_100 < $1 THEN 1 END) as lower_scores
         FROM scan_responses 
-        WHERE ihs_score IS NOT NULL
+        WHERE n1_scaled_100 IS NOT NULL
       `;
       
       const ihsResult = await client.query(ihsPercentileQuery, [Number(ihsScore)]);
@@ -3072,15 +3072,15 @@ app.post('/api/benchmarks', async (req, res) => {
       
       // Domain percentiles removed - not used by frontend and always showing 0
       
-      // Get some additional context stats
+      // Get some additional context stats (N1 based)
       const contextQuery = `
         SELECT 
-          AVG(ihs_score) as avg_ihs,
-          STDDEV(ihs_score) as stddev_ihs,
-          MIN(ihs_score) as min_ihs,
-          MAX(ihs_score) as max_ihs
+          AVG(n1_scaled_100) as avg_ihs,
+          STDDEV(n1_scaled_100) as stddev_ihs,
+          MIN(n1_scaled_100) as min_ihs,
+          MAX(n1_scaled_100) as max_ihs
         FROM scan_responses 
-        WHERE ihs_score IS NOT NULL
+        WHERE n1_scaled_100 IS NOT NULL
       `;
       
       const contextResult = await client.query(contextQuery);
