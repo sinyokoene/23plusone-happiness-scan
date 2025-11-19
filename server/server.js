@@ -732,37 +732,15 @@ app.get('/api/research-results', async (req, res) => {
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_pid TEXT');
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_study_id TEXT');
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_session_id TEXT');
-      // Demographics join (dynamic table/column detection)
-      const demo = await detectDemographics(mainClient);
-      const demoSelect = demo ? `, d.${qIdent(demo.sexCol || 'sex')} AS demo_sex, d.${qIdent(demo.ageCol || 'age')} AS demo_age, d.${qIdent(demo.countryCol || 'country_of_residence')} AS demo_country` : '';
-      const demoJoin = demo ? ` LEFT JOIN ${qIdent(demo.table)} d ON d.${qIdent(demo.pidCol)} = re.prolific_pid` : '';
+      
+      // First, query research_entries without demo filters (simpler, no cross-DB join issues)
       let query = `SELECT re.id, re.session_id, re.who5, re.swls, re.cantril, re.user_agent, re.created_at,
-                          re.prolific_pid, re.prolific_study_id, re.prolific_session_id${demoSelect}
-                   FROM research_entries re${demoJoin}`;
+                          re.prolific_pid, re.prolific_study_id, re.prolific_session_id
+                   FROM research_entries re`;
       const params = [];
       const clauses = [];
       if (from) { params.push(from); clauses.push(`created_at >= $${params.length}`); }
       if (to) { params.push(to); clauses.push(`created_at <= $${params.length}`); }
-      if (demo && sex) { params.push(String(sex)); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
-      if (demo && country) { params.push(String(country)); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
-      if (demo && countries) {
-        const inc = String(countries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-        if (inc.length) {
-          const placeholders = inc.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
-          params.push(...inc);
-          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) IN (${placeholders})`);
-        }
-      }
-      if (demo && excludeCountries) {
-        const ex = String(excludeCountries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-        if (ex.length) {
-          const loweredPlaceholders = ex.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
-          params.push(...ex);
-          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${loweredPlaceholders})`);
-        }
-      }
-      if (demo && ageMin) { params.push(Number(ageMin)); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
-      if (demo && ageMax) { params.push(Number(ageMax)); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
       if (clauses.length) query += ' WHERE ' + clauses.join(' AND ');
       params.push(Math.min(parseInt(limit, 10) || 700, 1500));
       query += ` ORDER BY re.created_at DESC LIMIT $${params.length}`;
@@ -791,10 +769,37 @@ app.get('/api/research-results', async (req, res) => {
           rejected_count: r.rejected_count == null ? null : Number(r.rejected_count)
         }]));
       }
+
+      // Fetch demographics from main DB for all prolific_pids
+      const demo = await detectDemographics(mainClient);
+      let demoMap = new Map();
+      if (demo) {
+        const pids = entries.map(e => e.prolific_pid).filter(Boolean);
+        if (pids.length) {
+          try {
+            const demoRows = await mainClient.query(
+              `SELECT ${qIdent(demo.pidCol)}, ${qIdent(demo.sexCol || 'sex')}, ${qIdent(demo.ageCol || 'age')}, ${qIdent(demo.countryCol || 'country_of_residence')}
+               FROM ${qIdent(demo.table)}
+               WHERE ${qIdent(demo.pidCol)} = ANY($1::text[])`,
+              [pids]
+            );
+            demoMap = new Map(demoRows.rows.map(r => [r[demo.pidCol], {
+              demo_sex: r[demo.sexCol || 'sex'] || null,
+              demo_age: r[demo.ageCol || 'age'] || null,
+              demo_country: r[demo.countryCol || 'country_of_residence'] || null
+            }]));
+          } catch (demoErr) {
+            console.warn('Demographics fetch failed:', demoErr.message);
+          }
+        }
+      }
+
       let merged = entries.map(e => {
         const s = ihsMap.get(e.session_id) || {};
+        const d = demoMap.get(e.prolific_pid) || {};
         const base = {
           ...e,
+          ...d,
           ihs: s.ihs ?? null,
           n1: s.n1 ?? null,
           n2: s.n2 ?? null,
@@ -809,6 +814,26 @@ app.get('/api/research-results', async (req, res) => {
         }
         return base;
       });
+      
+      // Apply demographics filters in JS (now that we have the data)
+      if (sex || country || countries || ageMin != null || ageMax != null || excludeCountries) {
+        merged = merged.filter(e => {
+          if (sex && (!e.demo_sex || String(e.demo_sex).toLowerCase() !== String(sex).toLowerCase())) return false;
+          if (country && (!e.demo_country || String(e.demo_country).toLowerCase() !== String(country).toLowerCase())) return false;
+          if (countries) {
+            const inc = String(countries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+            if (inc.length && (!e.demo_country || !inc.includes(String(e.demo_country).toLowerCase()))) return false;
+          }
+          if (excludeCountries) {
+            const ex = String(excludeCountries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+            if (ex.length && e.demo_country && ex.includes(String(e.demo_country).toLowerCase())) return false;
+          }
+          if (ageMin != null && (e.demo_age == null || Number(e.demo_age) < Number(ageMin))) return false;
+          if (ageMax != null && (e.demo_age == null || Number(e.demo_age) > Number(ageMax))) return false;
+          return true;
+        });
+      }
+
       // By default, only include rows that have an IHS score to avoid counting pre-scan refreshes
       const shouldIncludeNoIhs = String(includeNoIhs).toLowerCase() === 'true';
       if (!shouldIncludeNoIhs) {
