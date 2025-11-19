@@ -693,9 +693,6 @@ app.post('/api/research', async (req, res) => {
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_pid TEXT');
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_study_id TEXT');
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_session_id TEXT');
-      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_pid TEXT');
-      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_study_id TEXT');
-      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_session_id TEXT');
       const inserted = await client.query(
         `INSERT INTO research_entries (session_id, who5, swls, cantril, user_agent, prolific_pid, prolific_study_id, prolific_session_id)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8) RETURNING id, cantril`,
@@ -732,6 +729,9 @@ app.get('/api/research-results', async (req, res) => {
       );
       // Ensure cantril column exists for older tables
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
+      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_pid TEXT');
+      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_study_id TEXT');
+      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_session_id TEXT');
       // Demographics join (dynamic table/column detection)
       const demo = await detectDemographics(mainClient);
       const demoSelect = demo ? `, d.${qIdent(demo.sexCol || 'sex')} AS demo_sex, d.${qIdent(demo.ageCol || 'age')} AS demo_age, d.${qIdent(demo.countryCol || 'country_of_residence')} AS demo_country` : '';
