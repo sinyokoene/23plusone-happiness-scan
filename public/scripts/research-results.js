@@ -55,7 +55,6 @@
   const validityGraderEl = document.getElementById('validityGrader');
   const downloadValidityJsonBtn = document.getElementById('downloadValidityJson');
   const downloadValidityCsvBtn = document.getElementById('downloadValidityCsv');
-  const validityRocCanvas = document.getElementById('validityRoc');
   const validityCeilingTbody = document.querySelector('#validityCeiling tbody');
   const validityRobustnessTbody = document.querySelector('#validityRobustness tbody');
   const who5ScaleSel = document.getElementById('who5Scale');
@@ -786,19 +785,6 @@
         } else {
           validityGraderEl.innerHTML = '';
         }
-      }
-      // ROC mini chart
-      if (validityRocCanvas && json && json.roc && Array.isArray(json.roc.points)) {
-        const pts = json.roc.points.map(p=>({x: p.fpr, y: p.tpr})).sort((a,b)=> a.x - b.x);
-        if (window.validityRocChart) window.validityRocChart.destroy();
-        window.validityRocChart = new Chart(validityRocCanvas, {
-          type: 'line',
-          data: { datasets: [
-            { label: `ROC AUC=${(json.roc.auc??NaN).toFixed(3)}${Array.isArray(json.roc.ci95)?` [${(json.roc.ci95[0]??NaN).toFixed(3)}, ${(json.roc.ci95[1]??NaN).toFixed(3)}]`:''}`, data: pts, borderColor: 'rgba(59,130,246,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, tension: 0 },
-            { label: 'Chance', data: [{x:0,y:0},{x:1,y:1}], borderColor: 'rgba(156,163,175,1)', backgroundColor: 'rgba(0,0,0,0)', pointRadius: 0, borderDash: [4,4], tension: 0 }
-          ] },
-          options: { responsive: true, parsing: false, scales: { x: { min:0, max:1, title: { display: true, text: 'FPR' } }, y: { min:0, max:1, title: { display: true, text: 'TPR' } } }, plugins: { legend: { display: true } } }
-        });
       }
       // Ceiling table
       if (validityCeilingTbody && json && json.ceiling) {
