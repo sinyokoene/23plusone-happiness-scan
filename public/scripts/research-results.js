@@ -710,7 +710,18 @@
           q.set('score', scoreMode);
         }
       }
-      const r = await fetch(`/api/analytics/validity?${q.toString()}`);
+      const sessionIds = Array.from(new Set(currentEntries.map(e => e.session_id).filter(Boolean)));
+      const sessionLimit = Math.min(sessionIds.length, limit);
+      const sessionIdsPayload = sessionIds.slice(0, sessionLimit);
+      if (sessionIdsPayload.length > 0) {
+        q.set('limit', String(sessionIdsPayload.length));
+      }
+      const fetchOpts = sessionIdsPayload.length > 0 ? {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sessionIds: sessionIdsPayload })
+      } : undefined;
+      const r = await fetch(`/api/analytics/validity?${q.toString()}`, fetchOpts);
       const json = await r.json();
       if (validitySummaryEl) {
         const n = json && json.n_used || 0;

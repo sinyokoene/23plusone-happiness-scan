@@ -21,7 +21,10 @@ app.use(cors({
 app.use((req, res, next) => {
   res.removeHeader('X-Frame-Options');
   next();
-});
+};
+
+app.get('/api/analytics/validity', analyticsValidityHandler);
+app.post('/api/analytics/validity', analyticsValidityHandler);
 
 // Middleware
 app.use(express.json({ limit: '10mb' }));
@@ -886,6 +889,10 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const ageMin = Number.isFinite(Number(req.query.ageMin)) ? Number(req.query.ageMin) : null;
     const ageMax = Number.isFinite(Number(req.query.ageMax)) ? Number(req.query.ageMax) : null;
     const excludeCountries = req.query.excludeCountries ? String(req.query.excludeCountries) : '';
+    const sessionIdsOverride = Array.isArray(req.body?.sessionIds)
+      ? Array.from(new Set(req.body.sessionIds.map(id => String(id).trim()).filter(Boolean)))
+      : [];
+    const usingSessionOverride = sessionIdsOverride.length > 0;
     const researchClient = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -1273,7 +1280,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
 });
 
 // Validity analytics: Build Benchmark (z-mean of WHO-5 raw, SWLS raw, Cantril) and compare to IHS
-app.get('/api/analytics/validity', async (req, res) => {
+const analyticsValidityHandler = async (req, res) => {
   function sumArray(arr) {
     return (arr || []).reduce((a, b) => a + (Number(b) || 0), 0);
   }
@@ -1500,15 +1507,17 @@ app.get('/api/analytics/validity', async (req, res) => {
     const excludeCountries = req.query.excludeCountries ? String(req.query.excludeCountries) : '';
 
     // cache key includes all relevant params
-    const cacheKey = JSON.stringify({
+    const cacheKey = usingSessionOverride ? null : JSON.stringify({
       limit, device, method, modality, modalities, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold,
       includePerSession, sex, country, countries, ageMin, ageMax, excludeCountries,
       scoreMode, isoCalibrate, rtDenoise, domains: Array.from(domainSet),
       excludeSwipe, timeoutsMax, timeoutsFracMax, trimIhs, trimScales
     });
-    const cached = __validityCache.get(cacheKey);
-    if (cached && (Date.now() - cached.at) < (cached.ttlMs || 60000)) {
-      return res.json({ ...cached.data, cache: { hit: true } });
+    if (!usingSessionOverride && cacheKey) {
+      const cached = __validityCache.get(cacheKey);
+      if (cached && (Date.now() - cached.at) < (cached.ttlMs || 60000)) {
+        return res.json({ ...cached.data, cache: { hit: true } });
+      }
     }
 
     const researchClient = await researchPool.connect();
@@ -1526,40 +1535,52 @@ app.get('/api/analytics/validity', async (req, res) => {
         )`
       );
 
-      const demo = await detectDemographics(researchClient);
-      const demoJoin = demo ? ` LEFT JOIN ${qIdent(demo.table)} d ON d.${qIdent(demo.pidCol)} = re.prolific_pid` : '';
-      const clauses = [];
-      const params = [];
-      if (demo && sex) { params.push(sex); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
-      if (demo && country) { params.push(country); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
-      if (demo && countries) {
-        const inc = countries.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-        if (inc.length) {
-          const placeholders = inc.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
-          params.push(...inc);
-          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) IN (${placeholders})`);
+      let researchRows = [];
+      if (usingSessionOverride) {
+        const { rows } = await researchClient.query(
+          `SELECT re.session_id, re.who5, re.swls, re.cantril, re.created_at
+           FROM research_entries re
+           WHERE re.session_id = ANY($1::text[])`,
+          [sessionIdsOverride]
+        );
+        researchRows = rows || [];
+      } else {
+        const demo = await detectDemographics(researchClient);
+        const demoJoin = demo ? ` LEFT JOIN ${qIdent(demo.table)} d ON d.${qIdent(demo.pidCol)} = re.prolific_pid` : '';
+        const clauses = [];
+        const params = [];
+        if (demo && sex) { params.push(sex); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
+        if (demo && country) { params.push(country); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
+        if (demo && countries) {
+          const inc = countries.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+          if (inc.length) {
+            const placeholders = inc.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
+            params.push(...inc);
+            clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) IN (${placeholders})`);
+          }
         }
-      }
-      if (demo && ageMin != null) { params.push(ageMin); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
-      if (demo && ageMax != null) { params.push(ageMax); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
-      if (demo && excludeCountries) {
-        const ex = excludeCountries.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-        if (ex.length) {
-          const loweredPlaceholders = ex.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
-          params.push(...ex);
-          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${loweredPlaceholders})`);
+        if (demo && ageMin != null) { params.push(ageMin); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
+        if (demo && ageMax != null) { params.push(ageMax); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
+        if (demo && excludeCountries) {
+          const ex = excludeCountries.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+          if (ex.length) {
+            const loweredPlaceholders = ex.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
+            params.push(...ex);
+            clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${loweredPlaceholders})`);
+          }
         }
+        params.push(limit);
+        const whereSql = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+        const { rows } = await researchClient.query(
+          `SELECT re.session_id, re.who5, re.swls, re.cantril, re.created_at
+           FROM research_entries re${demoJoin}
+           ${whereSql}
+           ORDER BY re.created_at DESC
+           LIMIT $${params.length}`,
+          params
+        );
+        researchRows = rows || [];
       }
-      params.push(limit);
-      const whereSql = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
-      const { rows: researchRows } = await researchClient.query(
-        `SELECT re.session_id, re.who5, re.swls, re.cantril, re.created_at
-         FROM research_entries re${demoJoin}
-         ${whereSql}
-         ORDER BY re.created_at DESC
-         LIMIT $${params.length}`,
-        params
-      );
       const rBySession = new Map();
       for (const r of researchRows) {
         const who5Total = sumArray(r.who5); // 0-25
@@ -2730,8 +2751,10 @@ app.get('/api/analytics/validity', async (req, res) => {
       };
       if (includePerSession) payload.perSession = perSession;
       payload.usedSessions = joined.length;
-      __validityCache.set(cacheKey, { at: Date.now(), ttlMs: 60000, data: payload });
-      res.json({ ...payload, cache: { hit: false } });
+      if (!usingSessionOverride && cacheKey) {
+        __validityCache.set(cacheKey, { at: Date.now(), ttlMs: 60000, data: payload });
+      }
+      res.json({ ...payload, cache: { hit: false, bypass: usingSessionOverride } });
     } finally {
       researchClient.release();
       mainClient.release();
