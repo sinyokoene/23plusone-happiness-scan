@@ -1507,7 +1507,7 @@ app.get('/api/analytics/validity', async (req, res) => {
       excludeSwipe, timeoutsMax, timeoutsFracMax, trimIhs, trimScales
     });
     const cached = __validityCache.get(cacheKey);
-    if (cached && (Date.now() - cached.at) < (cached.ttlMs || 60000)) {
+    if (cached && (Date.now() - cached.at) < (cached.ttlMs || 5000)) {
       return res.json({ ...cached.data, cache: { hit: true } });
     }
 
@@ -2730,7 +2730,7 @@ app.get('/api/analytics/validity', async (req, res) => {
       };
       if (includePerSession) payload.perSession = perSession;
       payload.usedSessions = joined.length;
-      __validityCache.set(cacheKey, { at: Date.now(), ttlMs: 60000, data: payload });
+      __validityCache.set(cacheKey, { at: Date.now(), ttlMs: 5000, data: payload });
       res.json({ ...payload, cache: { hit: false } });
     } finally {
       researchClient.release();
