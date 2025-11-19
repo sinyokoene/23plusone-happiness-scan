@@ -871,9 +871,6 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const modality = String(req.query.modality || '').toLowerCase(); // 'click' | 'swipe' | 'arrow' | ''
     const modalitiesCsv = String(req.query.modalities || '').toLowerCase();
     const modalities = modalitiesCsv ? modalitiesCsv.split(',').map(s=>s.trim()).filter(Boolean) : [];
-    // Support multiple modalities via comma-separated 'modalities'
-    const modalitiesCsv = String(req.query.modalities || '').toLowerCase();
-    const modalities = modalitiesCsv ? modalitiesCsv.split(',').map(s=>s.trim()).filter(Boolean) : [];
     const exclusive = String(req.query.exclusive || '').toLowerCase() === 'true';
     const excludeTimeouts = String(req.query.excludeTimeouts || '').toLowerCase() === 'true';
     const iat = String(req.query.iat || '').toLowerCase() === 'true';
