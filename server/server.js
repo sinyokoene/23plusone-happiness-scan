@@ -1469,6 +1469,8 @@ app.get('/api/analytics/validity', async (req, res) => {
     const device = String(req.query.device || '').toLowerCase(); // 'mobile' | 'desktop' | ''
     const method = String(req.query.method || 'pearson').toLowerCase(); // 'pearson' | 'spearman'
     const modality = String(req.query.modality || '').toLowerCase(); // 'click' | 'swipe' | 'arrow' | ''
+    const modalitiesCsv = String(req.query.modalities || '').toLowerCase();
+    const modalities = modalitiesCsv ? modalitiesCsv.split(',').map(s=>s.trim()).filter(Boolean) : [];
     const exclusive = String(req.query.exclusive || '').toLowerCase() === 'true';
     const excludeTimeouts = String(req.query.excludeTimeouts || '').toLowerCase() === 'true';
     const iat = String(req.query.iat || '').toLowerCase() === 'true';
@@ -1499,7 +1501,7 @@ app.get('/api/analytics/validity', async (req, res) => {
 
     // cache key includes all relevant params
     const cacheKey = JSON.stringify({
-      limit, device, method, modality, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold,
+      limit, device, method, modality, modalities, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold,
       includePerSession, sex, country, countries, ageMin, ageMax, excludeCountries,
       scoreMode, isoCalibrate, rtDenoise, domains: Array.from(domainSet),
       excludeSwipe, timeoutsMax, timeoutsFracMax, trimIhs, trimScales
