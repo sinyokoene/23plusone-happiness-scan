@@ -26,9 +26,6 @@ app.use((req, res, next) => {
 // Middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
-
-app.get('/api/analytics/validity', analyticsValidityHandler);
-app.post('/api/analytics/validity', analyticsValidityHandler);
 // Sync demographics from Prolific API for a given study
 // ENV required: PROLIFIC_API_TOKEN; optional: PROLIFIC_API_BASE (defaults to v1)
 app.post('/api/prolific/sync', async (req, res) => {
@@ -729,18 +726,37 @@ app.get('/api/research-results', async (req, res) => {
       );
       // Ensure cantril column exists for older tables
       await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS cantril INTEGER');
-      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_pid TEXT');
-      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_study_id TEXT');
-      await client.query('ALTER TABLE research_entries ADD COLUMN IF NOT EXISTS prolific_session_id TEXT');
-      
-      // First, query research_entries without demo filters (simpler, no cross-DB join issues)
+      // Demographics join (dynamic table/column detection)
+      const demo = await detectDemographics(mainClient);
+      const demoSelect = demo ? `, d.${qIdent(demo.sexCol || 'sex')} AS demo_sex, d.${qIdent(demo.ageCol || 'age')} AS demo_age, d.${qIdent(demo.countryCol || 'country_of_residence')} AS demo_country` : '';
+      const demoJoin = demo ? ` LEFT JOIN ${qIdent(demo.table)} d ON d.${qIdent(demo.pidCol)} = re.prolific_pid` : '';
       let query = `SELECT re.id, re.session_id, re.who5, re.swls, re.cantril, re.user_agent, re.created_at,
-                          re.prolific_pid, re.prolific_study_id, re.prolific_session_id
-                   FROM research_entries re`;
+                          re.prolific_pid, re.prolific_study_id, re.prolific_session_id${demoSelect}
+                   FROM research_entries re${demoJoin}`;
       const params = [];
       const clauses = [];
       if (from) { params.push(from); clauses.push(`created_at >= $${params.length}`); }
       if (to) { params.push(to); clauses.push(`created_at <= $${params.length}`); }
+      if (demo && sex) { params.push(String(sex)); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
+      if (demo && country) { params.push(String(country)); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
+      if (demo && countries) {
+        const inc = String(countries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+        if (inc.length) {
+          const placeholders = inc.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
+          params.push(...inc);
+          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) IN (${placeholders})`);
+        }
+      }
+      if (demo && excludeCountries) {
+        const ex = String(excludeCountries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+        if (ex.length) {
+          const loweredPlaceholders = ex.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
+          params.push(...ex);
+          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${loweredPlaceholders})`);
+        }
+      }
+      if (demo && ageMin) { params.push(Number(ageMin)); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
+      if (demo && ageMax) { params.push(Number(ageMax)); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
       if (clauses.length) query += ' WHERE ' + clauses.join(' AND ');
       params.push(Math.min(parseInt(limit, 10) || 700, 1500));
       query += ` ORDER BY re.created_at DESC LIMIT $${params.length}`;
@@ -769,37 +785,10 @@ app.get('/api/research-results', async (req, res) => {
           rejected_count: r.rejected_count == null ? null : Number(r.rejected_count)
         }]));
       }
-
-      // Fetch demographics from main DB for all prolific_pids
-      const demo = await detectDemographics(mainClient);
-      let demoMap = new Map();
-      if (demo) {
-        const pids = entries.map(e => e.prolific_pid).filter(Boolean);
-        if (pids.length) {
-          try {
-            const demoRows = await mainClient.query(
-              `SELECT ${qIdent(demo.pidCol)}, ${qIdent(demo.sexCol || 'sex')}, ${qIdent(demo.ageCol || 'age')}, ${qIdent(demo.countryCol || 'country_of_residence')}
-               FROM ${qIdent(demo.table)}
-               WHERE ${qIdent(demo.pidCol)} = ANY($1::text[])`,
-              [pids]
-            );
-            demoMap = new Map(demoRows.rows.map(r => [r[demo.pidCol], {
-              demo_sex: r[demo.sexCol || 'sex'] || null,
-              demo_age: r[demo.ageCol || 'age'] || null,
-              demo_country: r[demo.countryCol || 'country_of_residence'] || null
-            }]));
-          } catch (demoErr) {
-            console.warn('Demographics fetch failed:', demoErr.message);
-          }
-        }
-      }
-
       let merged = entries.map(e => {
         const s = ihsMap.get(e.session_id) || {};
-        const d = demoMap.get(e.prolific_pid) || {};
         const base = {
           ...e,
-          ...d,
           ihs: s.ihs ?? null,
           n1: s.n1 ?? null,
           n2: s.n2 ?? null,
@@ -814,26 +803,6 @@ app.get('/api/research-results', async (req, res) => {
         }
         return base;
       });
-      
-      // Apply demographics filters in JS (now that we have the data)
-      if (sex || country || countries || ageMin != null || ageMax != null || excludeCountries) {
-        merged = merged.filter(e => {
-          if (sex && (!e.demo_sex || String(e.demo_sex).toLowerCase() !== String(sex).toLowerCase())) return false;
-          if (country && (!e.demo_country || String(e.demo_country).toLowerCase() !== String(country).toLowerCase())) return false;
-          if (countries) {
-            const inc = String(countries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-            if (inc.length && (!e.demo_country || !inc.includes(String(e.demo_country).toLowerCase()))) return false;
-          }
-          if (excludeCountries) {
-            const ex = String(excludeCountries).split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-            if (ex.length && e.demo_country && ex.includes(String(e.demo_country).toLowerCase())) return false;
-          }
-          if (ageMin != null && (e.demo_age == null || Number(e.demo_age) < Number(ageMin))) return false;
-          if (ageMax != null && (e.demo_age == null || Number(e.demo_age) > Number(ageMax))) return false;
-          return true;
-        });
-      }
-
       // By default, only include rows that have an IHS score to avoid counting pre-scan refreshes
       const shouldIncludeNoIhs = String(includeNoIhs).toLowerCase() === 'true';
       if (!shouldIncludeNoIhs) {
@@ -917,10 +886,6 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const ageMin = Number.isFinite(Number(req.query.ageMin)) ? Number(req.query.ageMin) : null;
     const ageMax = Number.isFinite(Number(req.query.ageMax)) ? Number(req.query.ageMax) : null;
     const excludeCountries = req.query.excludeCountries ? String(req.query.excludeCountries) : '';
-    const sessionIdsOverride = Array.isArray(req.body?.sessionIds)
-      ? Array.from(new Set(req.body.sessionIds.map(id => String(id).trim()).filter(Boolean)))
-      : [];
-    const usingSessionOverride = sessionIdsOverride.length > 0;
     const researchClient = await researchPool.connect();
     const mainClient = await pool.connect();
     try {
@@ -1308,7 +1273,7 @@ app.get('/api/analytics/correlations', async (req, res) => {
 });
 
 // Validity analytics: Build Benchmark (z-mean of WHO-5 raw, SWLS raw, Cantril) and compare to IHS
-const analyticsValidityHandler = async (req, res) => {
+app.get('/api/analytics/validity', async (req, res) => {
   function sumArray(arr) {
     return (arr || []).reduce((a, b) => a + (Number(b) || 0), 0);
   }
@@ -1535,17 +1500,15 @@ const analyticsValidityHandler = async (req, res) => {
     const excludeCountries = req.query.excludeCountries ? String(req.query.excludeCountries) : '';
 
     // cache key includes all relevant params
-    const cacheKey = usingSessionOverride ? null : JSON.stringify({
+    const cacheKey = JSON.stringify({
       limit, device, method, modality, modalities, exclusive, excludeTimeouts, iat, sensitivityAllMax, threshold,
       includePerSession, sex, country, countries, ageMin, ageMax, excludeCountries,
       scoreMode, isoCalibrate, rtDenoise, domains: Array.from(domainSet),
       excludeSwipe, timeoutsMax, timeoutsFracMax, trimIhs, trimScales
     });
-    if (!usingSessionOverride && cacheKey) {
-      const cached = __validityCache.get(cacheKey);
-      if (cached && (Date.now() - cached.at) < (cached.ttlMs || 60000)) {
-        return res.json({ ...cached.data, cache: { hit: true } });
-      }
+    const cached = __validityCache.get(cacheKey);
+    if (cached && (Date.now() - cached.at) < (cached.ttlMs || 60000)) {
+      return res.json({ ...cached.data, cache: { hit: true } });
     }
 
     const researchClient = await researchPool.connect();
@@ -1563,52 +1526,40 @@ const analyticsValidityHandler = async (req, res) => {
         )`
       );
 
-      let researchRows = [];
-      if (usingSessionOverride) {
-        const { rows } = await researchClient.query(
-          `SELECT re.session_id, re.who5, re.swls, re.cantril, re.created_at
-           FROM research_entries re
-           WHERE re.session_id = ANY($1::text[])`,
-          [sessionIdsOverride]
-        );
-        researchRows = rows || [];
-      } else {
-        const demo = await detectDemographics(researchClient);
-        const demoJoin = demo ? ` LEFT JOIN ${qIdent(demo.table)} d ON d.${qIdent(demo.pidCol)} = re.prolific_pid` : '';
-        const clauses = [];
-        const params = [];
-        if (demo && sex) { params.push(sex); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
-        if (demo && country) { params.push(country); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
-        if (demo && countries) {
-          const inc = countries.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-          if (inc.length) {
-            const placeholders = inc.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
-            params.push(...inc);
-            clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) IN (${placeholders})`);
-          }
+      const demo = await detectDemographics(researchClient);
+      const demoJoin = demo ? ` LEFT JOIN ${qIdent(demo.table)} d ON d.${qIdent(demo.pidCol)} = re.prolific_pid` : '';
+      const clauses = [];
+      const params = [];
+      if (demo && sex) { params.push(sex); clauses.push(`LOWER(d.${qIdent(demo.sexCol || 'sex')}) = LOWER($${params.length})`); }
+      if (demo && country) { params.push(country); clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) = LOWER($${params.length})`); }
+      if (demo && countries) {
+        const inc = countries.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+        if (inc.length) {
+          const placeholders = inc.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
+          params.push(...inc);
+          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) IN (${placeholders})`);
         }
-        if (demo && ageMin != null) { params.push(ageMin); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
-        if (demo && ageMax != null) { params.push(ageMax); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
-        if (demo && excludeCountries) {
-          const ex = excludeCountries.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-          if (ex.length) {
-            const loweredPlaceholders = ex.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
-            params.push(...ex);
-            clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${loweredPlaceholders})`);
-          }
-        }
-        params.push(limit);
-        const whereSql = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
-        const { rows } = await researchClient.query(
-          `SELECT re.session_id, re.who5, re.swls, re.cantril, re.created_at
-           FROM research_entries re${demoJoin}
-           ${whereSql}
-           ORDER BY re.created_at DESC
-           LIMIT $${params.length}`,
-          params
-        );
-        researchRows = rows || [];
       }
+      if (demo && ageMin != null) { params.push(ageMin); clauses.push(`d.${qIdent(demo.ageCol || 'age')} >= $${params.length}`); }
+      if (demo && ageMax != null) { params.push(ageMax); clauses.push(`d.${qIdent(demo.ageCol || 'age')} <= $${params.length}`); }
+      if (demo && excludeCountries) {
+        const ex = excludeCountries.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+        if (ex.length) {
+          const loweredPlaceholders = ex.map((_,i)=>`LOWER($${params.length + i + 1})`).join(',');
+          params.push(...ex);
+          clauses.push(`LOWER(d.${qIdent(demo.countryCol || 'country_of_residence')}) NOT IN (${loweredPlaceholders})`);
+        }
+      }
+      params.push(limit);
+      const whereSql = clauses.length ? `WHERE ${clauses.join(' AND ')}` : '';
+      const { rows: researchRows } = await researchClient.query(
+        `SELECT re.session_id, re.who5, re.swls, re.cantril, re.created_at
+         FROM research_entries re${demoJoin}
+         ${whereSql}
+         ORDER BY re.created_at DESC
+         LIMIT $${params.length}`,
+        params
+      );
       const rBySession = new Map();
       for (const r of researchRows) {
         const who5Total = sumArray(r.who5); // 0-25
@@ -2779,10 +2730,8 @@ const analyticsValidityHandler = async (req, res) => {
       };
       if (includePerSession) payload.perSession = perSession;
       payload.usedSessions = joined.length;
-      if (!usingSessionOverride && cacheKey) {
-        __validityCache.set(cacheKey, { at: Date.now(), ttlMs: 60000, data: payload });
-      }
-      res.json({ ...payload, cache: { hit: false, bypass: usingSessionOverride } });
+      __validityCache.set(cacheKey, { at: Date.now(), ttlMs: 60000, data: payload });
+      res.json({ ...payload, cache: { hit: false } });
     } finally {
       researchClient.release();
       mainClient.release();
