@@ -21,14 +21,14 @@ app.use(cors({
 app.use((req, res, next) => {
   res.removeHeader('X-Frame-Options');
   next();
-};
-
-app.get('/api/analytics/validity', analyticsValidityHandler);
-app.post('/api/analytics/validity', analyticsValidityHandler);
+});
 
 // Middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
+
+app.get('/api/analytics/validity', analyticsValidityHandler);
+app.post('/api/analytics/validity', analyticsValidityHandler);
 // Sync demographics from Prolific API for a given study
 // ENV required: PROLIFIC_API_TOKEN; optional: PROLIFIC_API_BASE (defaults to v1)
 app.post('/api/prolific/sync', async (req, res) => {
