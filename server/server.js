@@ -869,6 +869,8 @@ app.get('/api/analytics/correlations', async (req, res) => {
     const device = String(req.query.device || '').toLowerCase(); // 'mobile' | 'desktop' | ''
     const method = String(req.query.method || 'pearson').toLowerCase(); // 'pearson' | 'spearman'
     const modality = String(req.query.modality || '').toLowerCase(); // 'click' | 'swipe' | 'arrow' | ''
+    const modalitiesCsv = String(req.query.modalities || '').toLowerCase();
+    const modalities = modalitiesCsv ? modalitiesCsv.split(',').map(s=>s.trim()).filter(Boolean) : [];
     // Support multiple modalities via comma-separated 'modalities'
     const modalitiesCsv = String(req.query.modalities || '').toLowerCase();
     const modalities = modalitiesCsv ? modalitiesCsv.split(',').map(s=>s.trim()).filter(Boolean) : [];
@@ -1618,7 +1620,7 @@ app.get('/api/analytics/validity', async (req, res) => {
       } else if (device === 'desktop') {
         joined = joined.filter(j => !isMobileUA(j.scan_user_agent));
       }
-      if (modality || exclusive || excludeTimeouts || iat || sensitivityAllMax || (threshold != null) || excludeSwipe || timeoutsMax!=null || timeoutsFracMax!=null) {
+      if (modality || modalities.length > 0 || exclusive || excludeTimeouts || iat || sensitivityAllMax || (threshold != null) || excludeSwipe || timeoutsMax!=null || timeoutsFracMax!=null) {
         const matchers = {
           click: (m) => m === 'click',
           swipe: (m) => m === 'swipe-touch' || m === 'swipe-mouse',
@@ -1666,6 +1668,13 @@ app.get('/api/analytics/validity', async (req, res) => {
             if (modality === 'click' && counts.click === 0) return false;
             if (modality === 'swipe' && counts.swipe === 0) return false;
             if (modality === 'arrow' && counts.arrow === 0) return false;
+          } else if (modalities.length > 0) {
+            const present = {
+              click: counts.click > 0,
+              swipe: counts.swipe > 0,
+              arrow: counts.arrow > 0
+            };
+            if (!modalities.some(mod => present[mod])) return false;
           }
           if (exclusive) {
             const present = [counts.click>0, counts.swipe>0, counts.arrow>0].filter(Boolean).length;

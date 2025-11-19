@@ -675,7 +675,11 @@
         modSwipe && modSwipe.checked ? 'swipe' : null,
         modArrow && modArrow.checked ? 'arrow' : null
       ].filter(Boolean);
-      if (selectedMods.length === 1) q.set('modality', selectedMods[0]);
+      if (selectedMods.length === 1) {
+        q.set('modality', selectedMods[0]);
+      } else if (selectedMods.length > 1) {
+        q.set('modalities', selectedMods.join(','));
+      }
       if (filterExclusive && filterExclusive.checked) q.set('exclusive', 'true');
       if (filterNoTimeouts && filterNoTimeouts.checked) q.set('excludeTimeouts', 'true');
       if (filterIat && filterIat.checked) q.set('iat', 'true');
