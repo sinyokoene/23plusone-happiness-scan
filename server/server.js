@@ -1572,6 +1572,7 @@ app.get('/api/analytics/validity', async (req, res) => {
       }
 
       const sessionIds = Array.from(rBySession.keys());
+      console.log(`[Validity] After research query filters (excludeCountries='${excludeCountries}'): ${sessionIds.length} sessions`);
       if (!sessionIds.length) {
         return res.json({ n_used: 0, method, correlation: { r: null, n: 0, ci95: null }, benchmark: { method: 'z_mean' } });
       }
@@ -1848,6 +1849,7 @@ app.get('/api/analytics/validity', async (req, res) => {
       }
 
       const n = Math.min(pairsIhs.length, pairsBench.length);
+      console.log(`[Validity] Final n after all filters: ${n}, joined.length: ${joined.length}`);
       let r = null, ci95 = null;
       if (n >= 2) {
         const out = (method === 'spearman') ? spearman(pairsIhs, pairsBench) : pearson(pairsIhs, pairsBench);
