@@ -1743,7 +1743,10 @@
             let tries = 0; while (tries < 12 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
             if (win && !win.html2pdf) { await ensureHtml2pdfLoaded(); }
             if (win && win.html2pdf && page) {
-              const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+              // Detect mobile: use scale 1 to prevent layout overflow on mobile devices
+              const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+              const canvasScale = isMobile ? 1 : 2;
+              const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: canvasScale, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
               try {
                 blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
               } catch(_) {
@@ -1757,8 +1760,11 @@
             try {
               if (!(win.html2canvas && win.jspdf && win.jspdf.jsPDF)) { await ensureFallbackLibsLoaded(); }
               if (win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
+                // Use same mobile detection for fallback
+                const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
+                const canvasScale = isMobile ? 1 : 2;
                 let canvas;
-                try { canvas = await win.html2canvas(page, { scale: 2, useCORS: true }); }
+                try { canvas = await win.html2canvas(page, { scale: canvasScale, useCORS: true }); }
                 catch(_) { canvas = await win.html2canvas(page, { scale: 1, useCORS: true }); }
                 const imgData = canvas.toDataURL('image/png');
                 const jsPDF = win.jspdf.jsPDF; const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
