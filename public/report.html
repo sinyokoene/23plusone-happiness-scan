@@ -8,31 +8,31 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    @page { size: A4; margin: 12mm; }
+    @page { size: A4; margin: 10mm; }
     html, body { height: 100%; font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     body { color: #2c1f1c; }
-    .page { display: grid; grid-template-columns: 1fr; row-gap: 12px; }
+    .page { display: grid; grid-template-columns: 1fr; row-gap: 6px; }
     .header { display:flex; align-items:center; justify-content:space-between; }
     .title { font-weight:600; font-size: 18px; }
-    .logo-left { height: 72px; }
-    .logo-right { height: 24px; }
+    .logo-left { height: 60px; }
+    .logo-right { height: 20px; }
     .report-title { text-align:center; font-weight:700; font-size:14px; margin-top: -6px; }
-    .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; grid-auto-rows: auto; gap: 0 16px; align-items:start; }
+    .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; grid-auto-rows: auto; gap: 0 12px; align-items:start; }
     .section { margin-bottom: 0; }
-    .aside { background:#f6f6f6; border-radius:10px; padding:10px; font-size:9px; line-height:1.45; text-align:left; }
+    .aside { background:#f6f6f6; border-radius:10px; padding:6px 8px; font-size:9px; line-height:1.4; text-align:left; }
     /* Domain narratives under bars to smaller font */
-    #basicsText, #growthText, #ambitionText, #vitalityText, #attractionText { font-size:9px; line-height:1.4; margin-top:8px; }
+    #basicsText, #growthText, #ambitionText, #vitalityText, #attractionText { font-size:9px; line-height:1.3; margin-top:4px; }
     /* Keep bold text at original size */
     #basicsText strong, #growthText strong, #ambitionText strong, #vitalityText strong, #attractionText strong { font-size:11px; }
     .coach-section .aside { height: 100%; }
-    .coach-section { margin-bottom: 12px; }
-    h2 { font-size: 14px; margin: 0 0 6px; }
-    p { margin: 0 0 8px; font-size: 9px; line-height: 1.4; color:#2c1f1c; }
+    .coach-section { margin-bottom: 6px; }
+    h2 { font-size: 14px; margin: 0 0 3px; }
+    p { margin: 0 0 4px; font-size: 9px; line-height: 1.3; color:#2c1f1c; }
     .small { font-size: 9px; color: #666; }
     /* Bump specific labels to 12px */
     #overallLabel { font-size: 12px; }
     .domain > .small { font-size: 12px; }
-    .metric-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin: 10px 0 6px; }
+    .metric-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin: 6px 0 3px; }
     .muted { color:#9CA3AF; }
     .metric-bar { height: 6px; background:#e6e6e6; border-radius: 999px; position:relative; overflow:hidden; }
     .metric-fill { position:absolute; left:0; top:0; bottom:0; width: 0%; background:#b9aca8; border-radius:999px; }
@@ -42,8 +42,8 @@
     /* Cappuccino for overall note and label */
     #overallNote { color:#b9aca8; }
     #row0-left .metric-row .small { color:#b9aca8; }
-    .section { padding-top: 6px; }
-    .domain { margin: 12px 0; }
+    .section { padding-top: 3px; }
+    .domain { margin: 6px 0; }
     .domain .bar { height: 5px; background:#e6e6e6; border-radius:999px; position:relative; overflow:hidden; }
     .domain .fill { position:absolute; left:0; top:0; bottom:0; width:0%; border-radius:999px; }
     .d-green { background:#4CAF50; }
@@ -52,16 +52,16 @@
     .d-blue { background:#2196F3; }
     .d-pink { background:#E91E63; }
     .aside { background:#f6f6f6; border-radius:10px; padding:10px; }
-    .footer { display:flex; align-items:center; justify-content:space-between; margin-top: 8px; color:#8a8a8a; font-size:8px; flex-wrap: wrap; row-gap: 2px; text-align:left; }
+    .footer { display:flex; align-items:center; justify-content:space-between; margin-top: 4px; color:#8a8a8a; font-size:8px; flex-wrap: wrap; row-gap: 2px; text-align:left; }
     .footer .small { line-height: 1.2; }
     /* Benchmarks and Confidence sections cappuccino; lists flush-left */
     #benchmarksSection, #benchmarksSection + p, #benchmarksSection + p + p, #benchmarksSection + p + p + p { color:#b9aca8; }
     #confidenceSection, #confidenceSection + ul, #confidenceSection + ul li { color:#b9aca8; }
     /* Benchmarks list styled like Confidence */
-    .bench-list { color:#b9aca8; margin:6px 0 0 18px; padding:0; text-align:left; list-style: disc; font-size: 9px; }
-    .bench-list li { margin: 0 0 2px; }
+    .bench-list { color:#b9aca8; margin:3px 0 0 18px; padding:0; text-align:left; list-style: disc; font-size: 9px; }
+    .bench-list li { margin: 0 0 1px; }
     /* Right column: Benchmarks next to Confidence */
-    .right-top-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 12px 16px; align-items:start; }
+    .right-top-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; align-items:start; }
     #whatInside + ul, #confidenceSection + ul { margin-left: 0; padding-left: 0; text-align:left; list-style-position: inside; }
     /* On-screen A4 preview mode */
     body.preview { background:#f3f4f6; }
