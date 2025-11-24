@@ -404,7 +404,7 @@ app.get('/api/report-payload', async (req, res) => {
     const client = await pool.connect();
     try {
       const row = (await client.query(
-        `SELECT ihs_score, n1_score, n2_score, n3_score, completion_time, card_selections
+        `SELECT ihs_score, n1_score, n2_score, n3_score, n1_scaled_100, completion_time, card_selections
          FROM scan_responses WHERE session_id = $1 ORDER BY id DESC LIMIT 1`, [sessionId]
       )).rows?.[0];
       if (!row) return res.status(404).json({ error: 'Not found' });
@@ -421,19 +421,19 @@ app.get('/api/report-payload', async (req, res) => {
           domainAffirmations[d] = (domainAffirmations[d] || 0) + val;
         }
       }
-      // Benchmark context
+      // Benchmark context (using N1/n1_scaled_100 to match live benchmarks)
       let benchmark = null;
       try {
-        const ihs = row.ihs_score == null ? null : Number(row.ihs_score);
-        if (ihs != null) {
+        const score = row.n1_scaled_100 != null ? Number(row.n1_scaled_100) : (row.n1_score != null ? Number(row.n1_score) : null);
+        if (score != null) {
           const ihsResult = await client.query(
-            `SELECT COUNT(*) as total, COUNT(CASE WHEN ihs_score < $1 THEN 1 END) as lower FROM scan_responses WHERE ihs_score IS NOT NULL`, [ihs]
+            `SELECT COUNT(*) as total, COUNT(CASE WHEN n1_scaled_100 < $1 THEN 1 END) as lower FROM scan_responses WHERE n1_scaled_100 IS NOT NULL`, [score]
           );
           const total = parseInt(ihsResult.rows[0].total || 0);
           const lower = parseInt(ihsResult.rows[0].lower || 0);
           const percentile = total > 0 ? Math.round((lower / total) * 100) : 0;
-          const ctx = await client.query(`SELECT AVG(ihs_score) as avg_ihs FROM scan_responses WHERE ihs_score IS NOT NULL`);
-          benchmark = { ihsPercentile: percentile, context: { averageScore: ctx.rows[0].avg_ihs ? Math.round(parseFloat(ctx.rows[0].avg_ihs) * 10) / 10 : null } };
+          const ctx = await client.query(`SELECT AVG(n1_scaled_100) as avg_score FROM scan_responses WHERE n1_scaled_100 IS NOT NULL`);
+          benchmark = { ihsPercentile: percentile, context: { averageScore: ctx.rows[0].avg_score ? Math.round(parseFloat(ctx.rows[0].avg_score) * 10) / 10 : null } };
         }
       } catch (_) {}
       const payload = {

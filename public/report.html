@@ -215,7 +215,8 @@
       } catch(_) {}
 
       const results = payload.results || {};
-      const ihs = Number(results.ihs || 0);
+      // Use N1 score as the primary "Overall Drive Score" to match the results screen
+      const ihs = Number(results.n1 != null ? results.n1 : (results.ihs || 0));
       const avg = Number((payload.benchmark && payload.benchmark.context && payload.benchmark.context.averageScore) || 0);
       const percentile = payload.benchmark && payload.benchmark.ihsPercentile;
 
