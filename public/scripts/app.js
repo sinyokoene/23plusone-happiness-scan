@@ -1760,8 +1760,11 @@
                   height: 842,
                   windowWidth: 595,
                   windowHeight: 842,
+                  x: 0,
+                  y: 0,
                   scrollX: 0,
-                  scrollY: 0
+                  scrollY: 0,
+                  backgroundColor: '#ffffff'
                 }, 
                 jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait', hotfixes: ['px_scaling'] } 
               };
@@ -1780,7 +1783,7 @@
               if (win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
                 const canvasScale = 2;
                 let canvas;
-                const canvasOpts = { scale: canvasScale, useCORS: true, width: 595, height: 842, windowWidth: 595, windowHeight: 842, scrollX: 0, scrollY: 0 };
+                const canvasOpts = { scale: canvasScale, useCORS: true, width: 595, height: 842, windowWidth: 595, windowHeight: 842, x: 0, y: 0, scrollX: 0, scrollY: 0, backgroundColor: '#ffffff' };
                 try { canvas = await win.html2canvas(page, canvasOpts); }
                 catch(_) { canvas = await win.html2canvas(page, { ...canvasOpts, scale: 1.5 }); }
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
