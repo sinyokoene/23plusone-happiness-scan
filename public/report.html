@@ -2,220 +2,289 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>23plusone Drive Profile Report</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Happiness Scan Report</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" referrerpolicy="no-referrer"></script>
   <style>
-    @page { size: A4; margin: 10mm; }
-    html, body { height: 100%; font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    body { color: #2c1f1c; }
-    .page { display: grid; grid-template-columns: 1fr; row-gap: 6px; }
-    .header { display:flex; align-items:center; justify-content:space-between; }
-    .title { font-weight:600; font-size: 18px; }
-    .logo-left { height: 60px; }
-    .logo-right { height: 20px; }
-    .report-title { text-align:center; font-weight:700; font-size:14px; margin-top: -6px; }
-    .two-col { display:grid; grid-template-columns: 1.25fr 0.9fr; grid-auto-rows: auto; gap: 0 12px; align-items:start; }
-    .section { margin-bottom: 0; }
-    .aside { background:#f6f6f6; border-radius:10px; padding:6px 8px; font-size:9px; line-height:1.4; text-align:left; }
-    /* Domain narratives under bars to smaller font */
-    #basicsText, #growthText, #ambitionText, #vitalityText, #attractionText { font-size:9px; line-height:1.3; margin-top:4px; }
-    /* Keep bold text at original size */
-    #basicsText strong, #growthText strong, #ambitionText strong, #vitalityText strong, #attractionText strong { font-size:11px; }
-    .coach-section .aside { height: 100%; }
-    .coach-section { margin-bottom: 6px; }
-    h2 { font-size: 14px; margin: 0 0 3px; }
-    p { margin: 0 0 4px; font-size: 9px; line-height: 1.3; color:#2c1f1c; }
-    .small { font-size: 9px; color: #666; }
-    /* Bump specific labels to 12px */
-    #overallLabel { font-size: 12px; }
-    .domain > .small { font-size: 12px; }
-    .metric-row { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; margin: 6px 0 3px; }
-    .muted { color:#9CA3AF; }
-    .metric-bar { height: 6px; background:#e6e6e6; border-radius: 999px; position:relative; overflow:hidden; }
-    .metric-fill { position:absolute; left:0; top:0; bottom:0; width: 0%; background:#b9aca8; border-radius:999px; }
-    .score { font-weight:600; font-size: 12px; color:#b9aca8; }
-    /* Overall score semibold & cappuccino */
-    #overallScoreLabel { font-weight:600; color:#b9aca8; }
-    /* Cappuccino for overall note and label */
-    #overallNote { color:#b9aca8; }
-    #row0-left .metric-row .small { color:#b9aca8; }
-    .section { padding-top: 3px; }
-    .domain { margin: 6px 0; }
-    .domain .bar { height: 5px; background:#e6e6e6; border-radius:999px; position:relative; overflow:hidden; }
-    .domain .fill { position:absolute; left:0; top:0; bottom:0; width:0%; border-radius:999px; }
-    .d-green { background:#4CAF50; }
-    .d-orange { background:#FF9800; }
-    .d-purple { background:#9C27B0; }
-    .d-blue { background:#2196F3; }
-    .d-pink { background:#E91E63; }
-    .aside { background:#f6f6f6; border-radius:10px; padding:10px; }
-    .footer { display:flex; align-items:center; justify-content:space-between; margin-top: 4px; color:#8a8a8a; font-size:8px; flex-wrap: wrap; row-gap: 2px; text-align:left; }
-    .footer .small { line-height: 1.2; }
-    /* Benchmarks and Confidence sections cappuccino; lists flush-left */
-    #benchmarksSection, #benchmarksSection + p, #benchmarksSection + p + p, #benchmarksSection + p + p + p { color:#b9aca8; }
-    #confidenceSection, #confidenceSection + ul, #confidenceSection + ul li { color:#b9aca8; }
-    /* Benchmarks list styled like Confidence */
-    .bench-list { color:#b9aca8; margin:3px 0 0 18px; padding:0; text-align:left; list-style: disc; font-size: 9px; }
-    .bench-list li { margin: 0 0 1px; }
-    /* Right column: Benchmarks next to Confidence */
-    .right-top-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; align-items:start; }
-    #whatInside + ul, #confidenceSection + ul { margin-left: 0; padding-left: 0; text-align:left; list-style-position: inside; }
-    /* On-screen A4 preview mode */
-    body.preview { background:#f3f4f6; }
-    body.preview .page { width: 186mm; min-height: 273mm; margin: 16px auto; background:#ffffff; box-shadow: 0 8px 24px rgba(0,0,0,0.12); padding: 0 12mm 12mm; }
-    
-    /* Mobile-specific adjustments for tighter layout */
-    @media (max-width: 768px), (pointer: coarse) {
-      @page { margin: 8mm; }
-      .page { row-gap: 3px; }
-      .two-col { gap: 0 8px; }
-      .aside { padding: 4px 6px; font-size: 10px; line-height: 1.35; }
-      #basicsText, #growthText, #ambitionText, #vitalityText, #attractionText { font-size: 7px; line-height: 1.2; margin-top: 2px; }
-      #basicsText strong, #growthText strong, #ambitionText strong, #vitalityText strong, #attractionText strong { font-size: 9px; }
-      .coach-section { margin-bottom: 3px; }
-      h2 { font-size: 13px; margin: 0 0 2px; }
-      p { margin: 0 0 2px; font-size: 8px; line-height: 1.2; }
-      .small { font-size: 8px; }
-      .metric-row { margin: 4px 0 2px; }
-      .section { padding-top: 2px; }
-      .domain { margin: 4px 0; }
-      .footer { margin-top: 2px; font-size: 7px; }
-      .right-top-grid { gap: 3px 8px; }
-      .logo-left { height: 50px; }
-      .logo-right { height: 18px; }
-      .bench-list { margin: 2px 0 0 18px; font-size: 8px; }
-      .bench-list li { margin: 0; }
+    @page { size: A4; margin: 0; }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .font-\[\'Poppins\'\] { font-family: 'Poppins', sans-serif; }
+    .footer-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 8px;
+      font-weight: 600;
+      color: #9F847D; /* cappuccino */
+      line-height: 9px;
+      margin-bottom: 2px;
+    }
+    .footer-content {
+      font-family: 'Poppins', sans-serif;
+      font-size: 8px;
+      font-weight: 500;
+      color: #9F847D; /* cappuccino */
+      line-height: 11px;
+    }
+    .intro-text {
+      color: #9F847D; /* cappuccino */
+    }
+    ul.custom-bullets {
+      list-style-type: disc;
+      padding-left: 8px;
+      margin: 0;
+    }
+    ul.custom-bullets li {
+      margin-bottom: 0;
+      line-height: 11px;
+    }
+    ul.custom-bullets li::marker {
+      font-size: 6px;
+    }
+    .no-wrap {
+      white-space: nowrap;
     }
   </style>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" referrerpolicy="no-referrer"></script>
 </head>
-<body>
-  <div class="page">
-    <div class="header">
-      <a href="https://www.br-ndpeople.com/home" target="_blank" rel="noopener"><img src="/Br-ndLogo.webp" class="logo-left" alt="BR-ND"></a>
-      <div class="title">Your Drive Profile Report</div>
-      <a href="https://23plusone.org/" target="_blank" rel="noopener"><img src="/23plusone.png" class="logo-right" alt="23plusone"></a>
+<body class="bg-gray-100 flex justify-center items-center min-h-screen p-4">
+
+  <!-- A4 Container -->
+  <div id="report-page" class="w-[595px] h-[842px] relative bg-white overflow-hidden shadow-lg mx-auto">
+
+    <!-- Header -->
+    <div class="w-[549px] left-[23px] top-[22px] absolute flex justify-between items-center">
+      <img src="/Br-ndLogo.webp" class="h-12 object-contain" alt="BR-ND">
+      <img src="/23plusone.png" class="h-5 object-contain" alt="23plusone">
+    </div>
+    <div class="absolute w-full top-[29px] text-center pointer-events-none">
+        <div class="text-base font-semibold font-['Poppins']" style="color: #371B15;">Your Happiness Scan</div>
     </div>
 
-    <!-- Removed duplicate title for cleaner header -->
+    <!-- Content -->
+    <div class="w-[549px] left-[23px] top-[70px] absolute inline-flex flex-col justify-between items-start" style="height: calc(842px - 70px - 23px);">
 
-    <div class="two-col">
-      <!-- Row 0: Intro vs What you'll find inside -->
-      <section class="section" id="row0-left">
-        <h2>How it works</h2>
-        <p>This report shows your Drive Profile: a snapshot of the drives that most strongly influence your motivation.</p>
-        <p>Think of it as a mirror — it doesn’t predict your future, but it does reveal what sparks your energy, where you might get stuck, and how balanced your drives are compared to others.</p>
-      </section>
-      <section class="section" id="row0-right">
-        <h2 id="whatInside">What you’ll find inside:</h2>
-        <ul class="small" style="margin:6px 0 10px 18px; color:#555; text-align:left;">
-          <li>Your overall Drive Score.</li>
-          <li>Five domains that shape your motivation and simple actions to improve your profile.</li>
-          <li>Benchmarks against a real‑world cohort.</li>
-        </ul>
-      </section>
+      <!-- Main Content (Intro + Domains) -->
+      <div class="w-full flex flex-col justify-start items-start">
 
-      <!-- Row 1: Overall Drive Score (left) with Benchmarks + Confidence (right) -->
-      <section class="section" id="row1-left">
-        <div class="metric-row" style="margin-top:8px;">
-          <div class="small" id="overallLabel" style="font-weight:600; color:#b9aca8;">Overall Drive Score</div>
-          <div class="score" id="overallScoreLabel">-- | --</div>
+      <!-- Intro -->
+      <div class="w-[549px] flex flex-col justify-end items-start">
+        <div class="self-stretch inline-flex justify-between items-start">
+          <div class="w-80 flex justify-start items-start gap-2.5">
+            <div class="flex-1 justify-start text-[8px] font-semibold font-['Poppins']" style="color: #9F847D;">About the Scan</div>
+          </div>
+          <div class="w-52 flex justify-start items-start">
+            <div class="flex-1 justify-start text-[8px] font-semibold font-['Poppins']" style="color: #9F847D;">Content</div>
+          </div>
         </div>
-        <div class="metric-bar"><div id="overallBar" class="metric-fill" style="width: 0%"></div></div>
-        <p class="small" id="overallNote">&nbsp;</p>
-      </section>
-      <section class="section" id="row1-right">
-        <div class="right-top-grid">
-          <div>
-            <h2 id="benchmarksSection">Benchmarks</h2>
-            <ul class="small bench-list">
-              <li>Percentile: <span id="percentile">--</span></li>
-              <li>Cohort average: <span id="cohortAvg">--</span></li>
-              <li>n = <span id="cohortN">--</span></li>
+        <div class="self-stretch inline-flex justify-between items-start">
+          <div class="flex justify-start items-start gap-2.5">
+            <div class="w-80 justify-start text-[8px] font-medium font-['Poppins']" style="line-height: 11px; color: #9F847D;">This report offers a snapshot of the drives that most strongly influence your motivation today. It reflects where your energy is currently focused.<br/><br/>23plusone is a science-based method that visualizes human values. It maps 24 universal emotional drives, visualised in five domains: Safety, Self-development, Ambition, Vitality and Attraction.<br/><br/>The Happiness Scan applies this method to show which drives are most active for you right now — helping you focus on what matters, build stronger connections and create positive impact.</div>
+          </div>
+          <div class="w-52 inline-flex flex-col justify-start items-start gap-1">
+            <ul class="custom-bullets text-[8px] font-medium font-['Poppins'] leading-[10px]" style="color: #9F847D;">
+              <li>Overall Profile & Benchmarks – your overall drive score compared with a broader benchmark.</li>
+              <li>Drives Across Domains – your scores for each domain, with short tips to help you reflect and act on your strengths.</li>
+              <li>Disclaimer & Quality -</li>
             </ul>
           </div>
-          <div>
-            <h2 id="confidenceSection">Confidence & Quality</h2>
-            <ul class="small" style="margin:6px 0 0 18px; color:#555; text-align:left;">
+        </div>
+      </div>
+
+      <div class="self-stretch flex flex-col justify-start items-start">
+
+        <!-- Overall Score -->
+        <div class="self-stretch py-3 border-t-[0.50px] border-b-[0.50px] border-stone-400 inline-flex justify-between items-start mt-2">
+          <div class="w-80 flex justify-start items-start">
+            <div class="flex-1 inline-flex flex-col justify-start items-start">
+              <div class="self-stretch inline-flex justify-between items-start">
+                <div class="justify-start text-yellow-950 text-[9px] font-semibold font-['Poppins']">Overall Drive Score</div>
+                <div id="overallScoreLabel" class="justify-start text-yellow-950 text-[9px] font-semibold font-['Poppins']">-- | --</div>
+              </div>
+              <div class="self-stretch h-0.5 bg-neutral-200/95 inline-flex justify-start items-start gap-2 overflow-hidden my-px">
+                <div id="overallBar" class="w-0 self-stretch bg-yellow-950 transition-all duration-500"></div>
+              </div>
+              <div class="self-stretch py-0.5 inline-flex justify-center items-center gap-2">
+                <div id="overallNote" class="flex-1 justify-start text-yellow-950 text-[8px] font-medium font-['Poppins']" style="line-height: 10px !important;">
+                  <!-- Dynamic note inserted here -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-start items-start">
+            <div class="w-52 self-stretch px-2.5 rounded-lg flex justify-center items-center gap-2">
+              <div class="flex-1 justify-start">
+                <div class="text-yellow-950 text-[9px] font-semibold font-['Poppins']" style="line-height: 11px;">Benchmarks</div>
+                <div class="text-yellow-950 text-[9px] font-medium font-['Poppins']" style="line-height: 11px;">Percentile: <span id="percentile">--</span></div>
+                <div class="text-yellow-950 text-[9px] font-medium font-['Poppins']" style="line-height: 11px;">Cohort average: <span id="cohortAvg">--</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Basics -->
+        <div class="self-stretch inline-flex justify-between items-start py-1.5">
+          <div class="w-80 flex justify-start items-start">
+            <div class="flex-1 inline-flex flex-col justify-start items-start">
+              <div class="self-stretch inline-flex justify-between items-start">
+                <div class="justify-start text-green-500 text-[9px] font-semibold font-['Poppins']">Basics</div>
+                <div id="basicsScore" class="justify-start text-green-500 text-[9px] font-semibold font-['Poppins']">-- | --</div>
+              </div>
+              <div class="self-stretch h-0.5 bg-neutral-200/95 inline-flex justify-start items-start gap-2 overflow-hidden my-px">
+                <div id="basicsFill" class="w-0 self-stretch bg-green-500 transition-all duration-500"></div>
+              </div>
+              <div class="self-stretch py-0.5 inline-flex justify-center items-center gap-2">
+                <div id="basicsText" class="flex-1 justify-start">
+                   <!-- Narrative inserted here -->
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-start items-start">
+            <div class="w-52 p-1 bg-zinc-100 rounded-md flex items-start gap-2">
+              <div id="coachBlock1" class="flex-1 justify-start text-stone-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;">
+                <!-- Coach text -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Self-development -->
+        <div class="self-stretch inline-flex justify-between items-start py-1.5">
+          <div class="w-80 flex justify-start items-start">
+            <div class="flex-1 inline-flex flex-col justify-start items-start">
+              <div class="self-stretch inline-flex justify-between items-start">
+                <div class="justify-start text-amber-500 text-[9px] font-semibold font-['Poppins']">Self-development</div>
+                <div id="growthScore" class="justify-start text-amber-500 text-[9px] font-semibold font-['Poppins']">-- | --</div>
+              </div>
+              <div class="self-stretch h-0.5 bg-neutral-200/95 inline-flex justify-start items-start gap-2 overflow-hidden my-px">
+                <div id="growthFill" class="w-0 self-stretch bg-amber-500 transition-all duration-500"></div>
+              </div>
+              <div class="self-stretch py-0.5 inline-flex justify-center items-center gap-2">
+                <div id="growthText" class="flex-1 justify-start"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-start items-start">
+            <div class="w-52 p-1 bg-zinc-100 rounded-md flex items-start gap-2">
+              <div id="coachBlock2" class="flex-1 justify-start text-stone-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ambition -->
+        <div class="self-stretch inline-flex justify-between items-start py-1.5">
+          <div class="w-80 flex justify-start items-start">
+            <div class="flex-1 inline-flex flex-col justify-start items-start">
+              <div class="self-stretch inline-flex justify-between items-start">
+                <div class="justify-start text-fuchsia-700 text-[9px] font-semibold font-['Poppins']">Ambition</div>
+                <div id="ambitionScore" class="justify-start text-fuchsia-700 text-[9px] font-semibold font-['Poppins']">-- | --</div>
+              </div>
+              <div class="self-stretch h-0.5 bg-neutral-200/95 inline-flex justify-start items-start gap-2 overflow-hidden my-px">
+                <div id="ambitionFill" class="w-0 self-stretch bg-fuchsia-700 transition-all duration-500"></div>
+              </div>
+              <div class="self-stretch py-0.5 inline-flex justify-center items-center gap-2">
+                <div id="ambitionText" class="flex-1 justify-start"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-start items-start">
+            <div class="w-52 p-1 bg-zinc-100 rounded-md flex items-start gap-2">
+              <div id="coachBlock3" class="flex-1 justify-start text-stone-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vitality -->
+        <div class="self-stretch inline-flex justify-between items-start py-1.5">
+          <div class="w-80 flex justify-start items-start">
+            <div class="flex-1 inline-flex flex-col justify-start items-start">
+              <div class="self-stretch inline-flex justify-between items-start">
+                <div class="justify-start text-sky-500 text-[9px] font-semibold font-['Poppins']">Vitality</div>
+                <div id="vitalityScore" class="justify-start text-sky-500 text-[9px] font-semibold font-['Poppins']">-- | --</div>
+              </div>
+              <div class="self-stretch h-0.5 bg-neutral-200/95 inline-flex justify-start items-start gap-2 overflow-hidden my-px">
+                <div id="vitalityFill" class="w-0 self-stretch bg-sky-500 transition-all duration-500"></div>
+              </div>
+              <div class="self-stretch py-0.5 inline-flex justify-center items-center gap-2">
+                <div id="vitalityText" class="flex-1 justify-start"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-start items-start">
+            <div class="w-52 p-1 bg-zinc-100 rounded-md flex items-start gap-2">
+              <div id="coachBlock4" class="flex-1 justify-start text-stone-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;"></div>
+            </div>
+          </div>
+      </div>
+
+        <!-- Attraction -->
+        <div class="self-stretch pb-3 border-b-[0.50px] border-stone-400 inline-flex justify-between items-start py-1.5">
+          <div class="w-80 flex justify-start items-start">
+            <div class="flex-1 inline-flex flex-col justify-start items-start">
+              <div class="self-stretch inline-flex justify-between items-start">
+                <div class="justify-start text-pink-600 text-[9px] font-semibold font-['Poppins']">Attraction</div>
+                <div id="attractionScore" class="justify-start text-pink-600 text-[9px] font-semibold font-['Poppins']">-- | --</div>
+              </div>
+              <div class="self-stretch h-0.5 bg-neutral-200/95 inline-flex justify-start items-start gap-2 overflow-hidden my-px">
+                <div id="attractionFill" class="w-0 self-stretch bg-pink-600 transition-all duration-500"></div>
+              </div>
+              <div class="self-stretch py-0.5 inline-flex justify-center items-center gap-2">
+                <div id="attractionText" class="flex-1 justify-start"></div>
+              </div>
+            </div>
+          </div>
+          <div class="flex justify-start items-start">
+            <div class="w-52 p-1 bg-zinc-100 rounded-md flex items-start gap-2">
+              <div id="coachBlock5" class="flex-1 justify-start text-stone-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;"></div>
+            </div>
+          </div>
+      </div>
+
+      </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="self-stretch inline-flex justify-between items-start pt-2">
+        <div class="w-80 justify-start">
+          <div class="footer-title">Disclaimer</div>
+          <div class="footer-content">This is not a clinical assessment. If you have concerns about your mental health or wellbeing, we encourage you to seek support from a qualified health professional.<br/>Percentiles use NL 2025Q3 norms; they may shift as norms evolve.<br/>Privacy: your data is stored securely and can be deleted at any time.</div>
+        </div>
+        <div class="w-52 inline-flex justify-between items-start">
+          <div class="justify-start">
+            <div class="footer-title">Confidence & Quality</div>
+            <ul class="custom-bullets footer-content">
               <li>Responses: 24/24</li>
-              <li>Timeouts: <span id="timeouts">--</span></li>
+              <li>Timeouts: <span id="timeouts">--</span>/24</li>
               <li>Total time: <span id="totalTime">--</span></li>
               <li>Quality flag: <span id="qualityFlag">Pass</span></li>
             </ul>
           </div>
+          <div id="footerMeta" class="justify-start text-left footer-content">
+            <!-- Version/Date info inserted here -->
+          </div>
         </div>
-      </section>
-
-      <!-- Row 1: Basics -->
-      <div class="domain" id="basicsDomain">
-        <div class="small" style="color:#4CAF50; font-weight:600;">Basics <span id="basicsScore" style="float:right; color:#4CAF50; font-weight:600;">--</span></div>
-        <div class="bar"><div id="basicsFill" class="fill d-green" style="width:0%"></div></div>
-        <p class="small" id="basicsText">&nbsp;</p>
       </div>
-      <section class="section coach-section"><div class="aside" id="coachBlock1">&nbsp;</div></section>
 
-      <!-- Row 2: Self-development -->
-      <div class="domain" id="growthDomain">
-        <div class="small" style="color:#FF9800; font-weight:600;">Self-development <span id="growthScore" style="float:right; color:#FF9800; font-weight:600;">--</span></div>
-        <div class="bar"><div id="growthFill" class="fill d-orange" style="width:0%"></div></div>
-        <p class="small" id="growthText">&nbsp;</p>
-      </div>
-      <section class="section coach-section"><div class="aside" id="coachBlock2">&nbsp;</div></section>
-
-      <!-- Row 3: Ambition -->
-      <div class="domain" id="ambitionDomain">
-        <div class="small" style="color:#9C27B0; font-weight:600;">Ambition <span id="ambitionScore" style="float:right; color:#9C27B0; font-weight:600;">--</span></div>
-        <div class="bar"><div id="ambitionFill" class="fill d-purple" style="width:0%"></div></div>
-        <p class="small" id="ambitionText">&nbsp;</p>
-      </div>
-      <section class="section coach-section"><div class="aside" id="coachBlock3">&nbsp;</div></section>
-
-      <!-- Row 4: Vitality -->
-      <div class="domain" id="vitalityDomain">
-        <div class="small" style="color:#2196F3; font-weight:600;">Vitality <span id="vitalityScore" style="float:right; color:#2196F3; font-weight:600;">--</span></div>
-        <div class="bar"><div id="vitalityFill" class="fill d-blue" style="width:0%"></div></div>
-        <p class="small" id="vitalityText">&nbsp;</p>
-      </div>
-      <section class="section coach-section"><div class="aside" id="coachBlock4">&nbsp;</div></section>
-
-      <!-- Row 5: Attraction -->
-      <div class="domain" id="attractionDomain">
-        <div class="small" style="color:#E91E63; font-weight:600;">Attraction <span id="attractionScore" style="float:right; color:#E91E63; font-weight:600;">--</span></div>
-        <div class="bar"><div id="attractionFill" class="fill d-pink" style="width:0%"></div></div>
-        <p class="small" id="attractionText">&nbsp;</p>
-      </div>
-      <section class="section coach-section"><div class="aside" id="coachBlock5">&nbsp;</div></section>
-
-      <!-- Row 6: Footer (move version to right column) -->
-      <section class="footer small" style="margin-top:10px;">
-        <div>This is not a clinical assessment. Privacy: your data is stored securely and can be deleted at any time.</div>
-      </section>
-      <section class="footer small" style="margin-top:10px; justify-content:flex-end;">
-        <div id="footerMeta" class="small">Version: v1.2.0 • Date: -- • Norms Reference: NL 2025Q3</div>
-      </section>
     </div>
   </div>
 
   <script>
-    // Allow data via base64 ?data= param for preview/server rendering
     (function(){
       const params = new URLSearchParams(location.search || '');
       const base64 = params.get('data');
       if ((params.get('preview') || '').toString() === '1') { try { document.body.classList.add('preview'); } catch(_) {} }
+      
       let payload = {};
       try {
         if (base64) {
-          // Prefer UTF-8 safe decode; fallback to plain atob
           try { payload = JSON.parse(decodeURIComponent(escape(atob(base64)))); }
           catch(_) { payload = JSON.parse(atob(base64)); }
         }
       } catch(_) {}
 
       const results = payload.results || {};
-      // Use N1 score as the primary "Overall Drive Score" to match the results screen
       const ihs = Number(results.n1 != null ? results.n1 : (results.ihs || 0));
       const avg = Number((payload.benchmark && payload.benchmark.context && payload.benchmark.context.averageScore) || 0);
       const percentile = payload.benchmark && payload.benchmark.ihsPercentile;
@@ -224,11 +293,13 @@
       function setWidth(id, pct){ var el = document.getElementById(id); if (el) el.style.width = Math.max(0, Math.min(100, pct)) + '%'; }
       function setHTML(id, html){ var el = document.getElementById(id); if (el) el.innerHTML = html; }
 
-      // Overall label: simple banding by score
       function bandLabel(v){ if (v >= 66) return 'High'; if (v >= 34) return 'Mid'; return 'Low'; }
+      
+      // Overall
       setText('overallScoreLabel', ihs ? (ihs + ' | ' + bandLabel(ihs)) : '-- | --');
       setWidth('overallBar', Math.max(0, Math.min(100, ihs)));
-      // Dynamic Top/Bottom rendering based on computed top percentage
+
+      // Percentile
       try {
         if (percentile == null || Number.isNaN(Number(percentile))) {
           setText('percentile', '--');
@@ -241,22 +312,22 @@
           }
         }
       } catch(_) { setText('percentile', '--'); }
+      
       setText('cohortAvg', avg ? String(avg) : '--');
-      // Benchmarks sample size (n). Prefer explicit participants count if provided.
-      var n = null;
-      try {
-        var b = payload && payload.benchmark;
-        var ctx = b && b.context;
-        n = (b && (b.totalResponses || b.n || b.N || b.count || b.size))
-          || (ctx && (ctx.totalResponses || ctx.n || ctx.N || ctx.count || ctx.sampleSize || ctx.size))
-          || null;
-      } catch(_) {}
-      setText('cohortN', (n != null ? String(n) : '--'));
-      // Fallbacks for quality metrics
+
+      // Quality
       var completion = (payload && payload.completionTime != null) ? payload.completionTime : (results && typeof results.completionTime === 'number' ? results.completionTime : null);
       var timeoutsCount = (payload && payload.unansweredCount != null) ? payload.unansweredCount : (results && typeof results.unansweredCount === 'number' ? results.unansweredCount : null);
-      setText('totalTime', (completion != null ? (completion + 's') : '--'));
-      setText('timeouts', (timeoutsCount != null ? String(timeoutsCount) : '--'));
+      
+      // For time, format seconds to m s
+      let timeStr = '--';
+      if (completion != null) {
+        const m = Math.floor(completion / 60);
+        const s = Math.round(completion % 60);
+        timeStr = m + 'm ' + s + 's';
+      }
+      setText('totalTime', timeStr);
+      setText('timeouts', (timeoutsCount != null ? String(timeoutsCount) : '0'));
 
       const max = { 'Basics': 24, 'Self-development': 24, 'Ambition': 32, 'Vitality': 8, 'Attraction': 8 };
       const aff = results.domainAffirmations || {};
@@ -268,46 +339,52 @@
         Vitality: domainPct('Vitality'),
         Attraction: domainPct('Attraction')
       };
+
+      // Domain Scores & Bars
       setWidth('basicsFill', dp['Basics']); setText('basicsScore', Math.round(dp['Basics']) + ' | ' + bandLabel(dp['Basics']));
       setWidth('growthFill', dp['Self-development']); setText('growthScore', Math.round(dp['Self-development']) + ' | ' + bandLabel(dp['Self-development']));
       setWidth('ambitionFill', dp['Ambition']); setText('ambitionScore', Math.round(dp['Ambition']) + ' | ' + bandLabel(dp['Ambition']));
       setWidth('vitalityFill', dp['Vitality']); setText('vitalityScore', Math.round(dp['Vitality']) + ' | ' + bandLabel(dp['Vitality']));
       setWidth('attractionFill', dp['Attraction']); setText('attractionScore', Math.round(dp['Attraction']) + ' | ' + bandLabel(dp['Attraction']));
 
-      // Per-domain narrative content below bars (headline + insight by band)
+      // Narrative Text
       function narrativeBand(v){ if (v >= 66) return 'high'; if (v >= 34) return 'mid'; return 'low'; }
       const narrative = {
         Basics: {
           low: { headline: 'Your first step toward deeper connection', insight: "This shows you're very good at relying on yourself, which is a great strength. The next step is to practice letting others in, too. We know from our research that people are happiest when they can both stand on their own and lean on others when needed. It’s not about being needy; it’s about making your own strength even stronger with the support of others." },
           mid: { headline: 'Building on your foundation of connection', insight: 'You already have a healthy balance between being independent and connecting with others. That’s a wonderful skill. To feel even better, you can shift from just having good people in your life to actively putting a little energy into those friendships, like watering a plant.' },
-          high: { headline: 'Celebrating connection', insight: "A high score here is fantastic. It means you're a natural at bringing people together and making them feel safe and understood. Creating that kind of trust for yourself and others is one of the most powerful things a person can do." }
+          high: { headline: 'Recognize Your Role as a Connector', insight: "You naturally bring people together and build trust. This helps others feel safe and grow. That’s a major contribution to any group." }
         },
         'Self-development': {
           low: { headline: 'An invitation to rediscover play', insight: "This score shows there’s a great chance to bring more fun into your life. The demands of being an adult can often push our natural sense of play aside. But making time for fun isn't silly; it’s a direct way to feel more creative, less stressed, and more energized." },
-          mid: { headline: 'From curious moments to a consistent habit', insight: 'You have a good connection to your fun and creative side, which is a great starting point. To feel even better, you can work on turning those occasional sparks of fun into a regular habit, so it becomes a reliable source of good energy for you.' },
+          mid: { headline: 'Make Time for Curiosity', insight: 'You know how energizing it feels to follow your curiosity and lose yourself in an idea. Growth happens when we make space for these moments on purpose.' },
           high: { headline: 'Honoring your curiosity', insight: 'This is a top-level score. It means you live with a wonderful spirit of discovery and are naturally open to new things. You tend to see life not just as a to-do list, but as an adventure full of possibilities.' }
         },
         Ambition: {
-          low: { headline: 'Getting your inner drive going', insight: "You are driven by the joy of the work itself, not just by praise or rewards. That's a very healthy and sustainable way to be. To build on this, you can start to aim that positive energy toward goals that feel meaningful to you and help others." },
+          low: { headline: 'Let Ambition Be A Healthy Drive', insight: "Your motivation comes from enjoying the process and working with others, not just chasing rewards. That’s sustainable ambition." },
           mid: { headline: 'Boosting your ambition', insight: 'You have a very healthy relationship with ambition, which shows you’re emotionally smart. To take it to the next level, you can work on clearly connecting your goals to what truly matters to you. This turns the feeling of a race into the feeling of a meaningful mission.' },
           high: { headline: 'Leading with your positive impact', insight: "A high score here shows you have a powerful inner drive. You have the energy to do great things. The key for you is remembering that this strength isn't just about winning; it’s about using your drive to leave a positive mark on the world." }
         },
         Vitality: {
           low: { headline: 'Building your foundation of well-being', insight: "This score shows that taking care of yourself is a big opportunity for you to feel better. The most important first step is a simple shift in thinking: your well-being isn't a prize you get after all the work is done. It’s the fuel in your tank that lets you do the work in the first place." },
           mid: { headline: 'Turning awareness to consistent self-care', insight: 'You already know what you need to do to feel good, which is the perfect starting point. To feel even better, the goal is to create small habits that stick, so that taking care of yourself feels like a choice you deserve, not a chore you have to do.' },
-          high: { headline: 'Enjoying your health', insight: 'This is an outstanding score. It shows you make your well-being a top priority in a deep and consistent way. Treating your health as the foundation for everything else is a sign of wisdom, and it quietly inspires the people around you.' }
+          high: { headline: 'Respect Your Well-Being', insight: 'You treat your health as a foundation, not an afterthought. That quiet commitment lifts both you and the people around you.' }
         },
         Attraction: {
           low: { headline: 'Reconnecting with your senses', insight: 'This score shows you have a great opportunity to connect with the world in a richer way. Our busy lives can make us feel disconnected. Tuning back into your senses—what you see, hear, and feel—is one of the fastest ways to feel calm and happy.' },
           mid: { headline: 'Actively designing a richer life', insight: "You notice and enjoy beautiful moments. Now, let's go from being aware of these moments to actively making time for them in your day." },
-          high: { headline: 'Spreading your attraction', insight: 'Your high score means you experience the world with a richness and depth that many people miss. Your ability to see the beauty and passion in life keeps you in the present moment.' }
+          high: { headline: 'Add More Sensory Joy', insight: 'You enjoy life’s beauty—through music, food, or scenery. The next step is to invite more of these moments on purpose.' }
         }
       };
+
       function setNarrative(id, domain, pct){
         var band = narrativeBand(pct);
         var data = (narrative[domain] && narrative[domain][band]) || null;
         if (!data) return;
-        setHTML(id, '<strong>' + data.headline + '</strong><br>' + data.insight);
+        // New HTML Structure
+        var html = '<div class="text-stone-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px; margin-bottom: 2px;">' + data.headline + '</div>' +
+                   '<div class="text-stone-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">' + data.insight + '</div>';
+        setHTML(id, html);
       }
 
       setNarrative('basicsText', 'Basics', dp['Basics']);
@@ -316,33 +393,26 @@
       setNarrative('vitalityText', 'Vitality', dp['Vitality']);
       setNarrative('attractionText', 'Attraction', dp['Attraction']);
 
-      // Keep columns equal height by distributing remaining space with padding at bottom
+      // Overall Note (Top 2 domains)
       try {
-        var left = document.getElementById('leftCol');
-        var right = document.getElementById('rightCol');
-        function equalize(){
-          if (!left || !right) return;
-          left.style.paddingBottom = '0px';
-          right.style.paddingBottom = '0px';
-          var lh = left.getBoundingClientRect().height;
-          var rh = right.getBoundingClientRect().height;
-          if (lh > rh) { right.style.paddingBottom = (lh - rh) + 'px'; }
-          else if (rh > lh) { left.style.paddingBottom = (rh - lh) + 'px'; }
+        const entries = Object.entries(dp).sort((a,b)=>b[1]-a[1]);
+        if (entries.length >= 2 && entries[0][1] > 0) {
+          const d1 = entries[0][0];
+          const d2 = entries[1][0];
+          var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + d1 + ' & ' + d2 + '</span>' +
+                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;"> stand out clearly — your reactions here were fast and consistent.</span>';
+          setHTML('overallNote', noteHtml);
         }
-        setTimeout(equalize, 50);
-        window.addEventListener('load', function(){ setTimeout(equalize, 50); });
       } catch(_) {}
 
-      // Removed overall narrative; per-domain narratives will be used beside bars in design
-
-      // Coaching blocks per domain based on band (low/mid/high)
+      // Coaches
       function coachBand(v){ if (v >= 66) return 'high'; if (v >= 34) return 'mid'; return 'low'; }
       function pickCoachText(domain, band){
         var copy = {
           Basics: {
             low: "Do one small thing for someone else this week. Try to define what sharing feels like.",
             mid: "Pick one person in your circle. Send them a quick message today simply saying that you think of them.",
-            high: "Take a moment today to acknowledge that you’re a connector. Feel proud of the good relationships you’ve built."
+            high: "Take a moment to feel proud of this quality. Think about the communities you’ve helped shape. That ability to connect is one of your real strengths."
           },
           'Self-development': {
             low: "Find just five minutes today to do something fun for no reason: put on a great song and dance, doodle, or watch a cool video online.",
@@ -351,18 +421,18 @@
           },
           Ambition: {
             low: "Think of one skill you enjoy that also benefits others. Spend 20 minutes this week practicing it, just for the satisfaction of something that has a positive effect.",
-            mid: "Think about something you achieved recently. Ask yourself, \"What part of that felt the best and most like 'me'?\" Let that feeling guide what you aim for next.",
+            mid: "Pick one skill—at work or in a hobby—and practice it for 20 minutes this week. Focus only on the joy of learning.",
             high: "Spend some time reflecting on this question: \"What drives my ambition?\""
           },
           Vitality: {
             low: "Practice a \"one-minute reset.\" Right now, just close your eyes, take three slow, deep breaths, and let your shoulders drop as you breathe out.",
             mid: "Find one chance today to do something for your well-being that feels like a treat, not a task. This could be a five-minute stretch, a big glass of water, or just stepping outside for fresh air.",
-            high: "Take a moment today to thank your body for all that it does for you. This simple act of gratitude will strengthen that positive habit."
+            high: "Pause today to thank your body—for its strength, resilience, and how it carries you through life. Gratitude reinforces your mind-body connection."
           },
           Attraction: {
             low: "For the next 60 seconds, just stop and listen. Notice the little sounds around you that you normally ignore. Don’t judge them, just notice them.",
             mid: "Intentionally add one small moment of pleasure to your day. Smell your morning coffee or pick a prettier route on your commute. Do it just for the pure enjoyment of it.",
-            high: "Today, gently point out something beautiful to someone who might have missed it—like the light on a building, the smell after it rains, or the taste of a perfect strawberry."
+            high: "Tomorrow, add one sensory treat to your day. Light a candle, add fresh herbs to your meal, or take a more scenic walk. Do it just for delight."
           }
         };
         return (copy[domain] && copy[domain][band]) || '';
@@ -382,24 +452,11 @@
       setCoach('coachBlock4', 'Vitality', dp['Vitality']);
       setCoach('coachBlock5', 'Attraction', dp['Attraction']);
 
-      // Overall note: highlight top two domains by pct
-      try {
-        const entries = Object.entries(dp).sort((a,b)=>b[1]-a[1]);
-        if (entries.length >= 2 && entries[0][1] > 0) {
-          const d1 = entries[0][0];
-          const d2 = entries[1][0];
-          setText('overallNote', `${d1} & ${d2} stand out clearly — your reactions here were fast and consistent.`);
-        }
-      } catch(_) {}
+      // Footer
+      setHTML('footerMeta', '<br/>Version: v1.2.0<br/>Date: ' + (new Date().toISOString().slice(0,10)) + '<br/>Norms Reference: NL<br/>2025Q3 (n = 12,843)');
 
-      // Footer meta
-      setText('footerMeta', 'Version: v1.2.0 • Date: ' + (new Date().toISOString().slice(0,10)) + ' • Norms Reference: NL 2025Q3');
-
-      // Mark ready quickly; benchmarks disabled for stability
       try { window.__REPORT_READY__ = true; } catch(_) {}
     })();
   </script>
 </body>
 </html>
-
-
