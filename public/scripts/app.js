@@ -1746,12 +1746,27 @@
               // Detect mobile: use scale 1.5 for sharper rendering while still fitting on one page
               const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
               const canvasScale = isMobile ? 1.5 : 2;
-              const opt = { margin: 0, image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: canvasScale, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } };
+              // A4 at 72 DPI = 595x842px, at 96 DPI = 794x1123px
+              // html2pdf works in mm: A4 = 210x297mm
+              const opt = { 
+                margin: 0, 
+                filename: '23plusone-report.pdf',
+                image: { type: 'jpeg', quality: 0.98 }, 
+                html2canvas: { 
+                  scale: canvasScale, 
+                  useCORS: true,
+                  width: 595,
+                  height: 842,
+                  windowWidth: 595,
+                  windowHeight: 842
+                }, 
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+              };
               try {
                 blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
               } catch(_) {
                 // Low-memory retry at lower scale
-                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { scale: 1, useCORS: true } }).toPdf().output('blob'); } catch(_) {}
+                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { scale: 1, useCORS: true, width: 595, height: 842, windowWidth: 595, windowHeight: 842 } }).toPdf().output('blob'); } catch(_) {}
               }
             }
           } catch(_) {}
@@ -1764,8 +1779,9 @@
                 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
                 const canvasScale = isMobile ? 1.5 : 2;
                 let canvas;
-                try { canvas = await win.html2canvas(page, { scale: canvasScale, useCORS: true }); }
-                catch(_) { canvas = await win.html2canvas(page, { scale: 1, useCORS: true }); }
+                const canvasOpts = { scale: canvasScale, useCORS: true, width: 595, height: 842, windowWidth: 595, windowHeight: 842 };
+                try { canvas = await win.html2canvas(page, canvasOpts); }
+                catch(_) { canvas = await win.html2canvas(page, { ...canvasOpts, scale: 1 }); }
                 const imgData = canvas.toDataURL('image/png');
                 const jsPDF = win.jspdf.jsPDF; const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
                 const pageWidth = 210; const imgHeight = (canvas.height * pageWidth) / canvas.width;
