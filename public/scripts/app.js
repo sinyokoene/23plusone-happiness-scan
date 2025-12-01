@@ -1746,30 +1746,32 @@
             let tries = 0; while (tries < 12 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
             if (win && !win.html2pdf) { await ensureHtml2pdfLoaded(); }
             if (win && win.html2pdf && page) {
-              // Detect mobile: use scale 1.5 for sharper rendering while still fitting on one page
+              // Higher scale = sharper PDF (3 for desktop, 2 for mobile)
               const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
-              const canvasScale = isMobile ? 1.5 : 2;
-              // A4 at 72 DPI = 595x842px, at 96 DPI = 794x1123px
+              const canvasScale = isMobile ? 2 : 3;
+              // A4 at 72 DPI = 595x842px
               // html2pdf works in mm: A4 = 210x297mm
               const opt = { 
                 margin: 0, 
                 filename: '23plusone-report.pdf',
-                image: { type: 'jpeg', quality: 0.98 }, 
+                image: { type: 'png', quality: 1 }, 
                 html2canvas: { 
                   scale: canvasScale, 
                   useCORS: true,
                   width: 595,
                   height: 842,
                   windowWidth: 595,
-                  windowHeight: 842
+                  windowHeight: 842,
+                  scrollX: 0,
+                  scrollY: 0
                 }, 
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+                jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait', hotfixes: ['px_scaling'] } 
               };
               try {
                 blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
               } catch(_) {
                 // Low-memory retry at lower scale
-                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { scale: 1, useCORS: true, width: 595, height: 842, windowWidth: 595, windowHeight: 842 } }).toPdf().output('blob'); } catch(_) {}
+                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { scale: 2, useCORS: true, width: 595, height: 842, windowWidth: 595, windowHeight: 842, scrollX: 0, scrollY: 0 } }).toPdf().output('blob'); } catch(_) {}
               }
             }
           } catch(_) {}
@@ -1778,17 +1780,18 @@
             try {
               if (!(win.html2canvas && win.jspdf && win.jspdf.jsPDF)) { await ensureFallbackLibsLoaded(); }
               if (win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
-                // Use same mobile detection for fallback
+                // Higher scale for sharper output
                 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) || window.innerWidth <= 768;
-                const canvasScale = isMobile ? 1.5 : 2;
+                const canvasScale = isMobile ? 2 : 3;
                 let canvas;
-                const canvasOpts = { scale: canvasScale, useCORS: true, width: 595, height: 842, windowWidth: 595, windowHeight: 842 };
+                const canvasOpts = { scale: canvasScale, useCORS: true, width: 595, height: 842, windowWidth: 595, windowHeight: 842, scrollX: 0, scrollY: 0 };
                 try { canvas = await win.html2canvas(page, canvasOpts); }
-                catch(_) { canvas = await win.html2canvas(page, { ...canvasOpts, scale: 1 }); }
-                const imgData = canvas.toDataURL('image/png');
-                const jsPDF = win.jspdf.jsPDF; const pdf = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
-                const pageWidth = 210; const imgHeight = (canvas.height * pageWidth) / canvas.width;
-                pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
+                catch(_) { canvas = await win.html2canvas(page, { ...canvasOpts, scale: 2 }); }
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                // Use exact pixel dimensions for single page
+                const jsPDF = win.jspdf.jsPDF; 
+                const pdf = new jsPDF({ unit: 'px', format: [595, 842], orientation: 'portrait', hotfixes: ['px_scaling'] });
+                pdf.addImage(imgData, 'PNG', 0, 0, 595, 842);
                 blob = pdf.output('blob');
               }
             } catch(_) {}
