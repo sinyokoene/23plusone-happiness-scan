@@ -1766,13 +1766,23 @@
                   scrollY: 0,
                   backgroundColor: '#ffffff'
                 }, 
-                jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait', hotfixes: ['px_scaling'] } 
+                jsPDF: { unit: 'px', format: [595, 842], orientation: 'portrait', hotfixes: ['px_scaling'], compress: true }
               };
               try {
-                blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
+                // Use html2canvas directly then add single image to PDF for guaranteed single page
+                const canvas = await win.html2canvas(page, opt.html2canvas);
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const jsPDF = win.jspdf?.jsPDF || win.jsPDF;
+                if (jsPDF) {
+                  const pdf = new jsPDF({ unit: 'px', format: [595, 842], orientation: 'portrait', hotfixes: ['px_scaling'], compress: true });
+                  pdf.addImage(imgData, 'JPEG', 0, 0, 595, 842);
+                  blob = pdf.output('blob');
+                } else {
+                  blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
+                }
               } catch(_) {
-                // Low-memory retry at lower scale
-                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { ...opt.html2canvas, scale: 1.5 }, image: { type: 'jpeg', quality: 0.9 } }).toPdf().output('blob'); } catch(_) {}
+                // Fallback to html2pdf
+                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { ...opt.html2canvas, scale: 2 }, image: { type: 'jpeg', quality: 0.9 } }).toPdf().output('blob'); } catch(_) {}
               }
             }
           } catch(_) {}
