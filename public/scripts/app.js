@@ -1713,7 +1713,7 @@
           // wait for layout/fonts ready flag inside iframe
           let waited = 0;
           while (waited < 4000 && !(win && win.__REPORT_READY__)) { await new Promise(r => setTimeout(r, 200)); waited += 200; }
-          const page = doc && doc.querySelector('.page');
+          const page = doc && (doc.querySelector('#report-page') || doc.querySelector('.page'));
           let blob = null;
           // Ensure html2pdf exists inside iframe (some browsers isolate globals)
           async function ensureHtml2pdfLoaded() {
