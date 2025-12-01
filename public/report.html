@@ -11,7 +11,25 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" referrerpolicy="no-referrer"></script>
   <style>
     @page { size: A4; margin: 0; }
+    @media print {
+      body { margin: 0; padding: 0; }
+      #report-page { margin: 0; box-shadow: none; }
+    }
     body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body.pdf-render { 
+      margin: 0 !important; 
+      padding: 0 !important; 
+      background: white !important;
+      min-height: auto !important;
+      display: block !important;
+    }
+    body.pdf-render #report-page { 
+      margin: 0 !important; 
+      box-shadow: none !important;
+      position: absolute !important;
+      left: 0 !important;
+      top: 0 !important;
+    }
     .font-\[\'Poppins\'\] { font-family: 'Poppins', sans-serif; }
     .footer-title {
       font-family: 'Poppins', sans-serif;
