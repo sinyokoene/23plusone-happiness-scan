@@ -7,14 +7,7 @@ const nodemailer = require('nodemailer');
 // Use global fetch if available (Node 18+); otherwise lazy-load node-fetch
 const httpFetch = (typeof fetch !== 'undefined') ? fetch : (url, opts) => import('node-fetch').then(m => m.default(url, opts));
 
-// Puppeteer for server-side PDF generation
-let chromium, puppeteer;
-try {
-  chromium = require('chrome-aws-lambda');
-  puppeteer = require('puppeteer-core');
-} catch (e) {
-  console.warn('Puppeteer not available, PDF generation will use client-side fallback');
-}
+// PDF generation is handled client-side for Vercel compatibility
 
 // Force deployment update - Complete data structure fix
 const app = express();
@@ -331,48 +324,7 @@ function buildTransport() {
   return nodemailer.createTransport({ jsonTransport: true });
 }
 
-// Server-side PDF generation with Puppeteer
-async function generatePdfWithPuppeteer(dataPayload, baseUrl) {
-  if (!puppeteer || !chromium) {
-    throw new Error('Puppeteer not available');
-  }
-  
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: { width: 595, height: 842 },
-    executablePath: await chromium.executablePath,
-    headless: chromium.headless,
-  });
-  
-  try {
-    const page = await browser.newPage();
-    
-    // Build the report URL with data
-    const encodedData = Buffer.from(JSON.stringify(dataPayload)).toString('base64');
-    const reportUrl = `${baseUrl}/report.html?data=${encodeURIComponent(encodedData)}&preview=1`;
-    
-    await page.goto(reportUrl, { waitUntil: 'networkidle0', timeout: 30000 });
-    
-    // Wait for fonts and content to load
-    await page.waitForFunction(() => window.__REPORT_READY__ === true, { timeout: 10000 }).catch(() => {});
-    await new Promise(r => setTimeout(r, 500)); // Extra time for fonts
-    
-    // Generate PDF with exact A4 dimensions
-    const pdfBuffer = await page.pdf({
-      width: '595px',
-      height: '842px',
-      printBackground: true,
-      preferCSSPageSize: false,
-      margin: { top: 0, right: 0, bottom: 0, left: 0 }
-    });
-    
-    return pdfBuffer;
-  } finally {
-    await browser.close();
-  }
-}
-
-// Request full report: generates a PDF and emails it
+// Request full report: receives client-generated PDF and emails it
 app.post('/api/report', async (req, res) => {
   try {
     const { email, sessionId, results, marketing } = req.body || {};
@@ -380,62 +332,18 @@ app.post('/api/report', async (req, res) => {
       return res.status(400).json({ error: 'Invalid email' });
     }
 
-    // Optional: fetch benchmark context for the report
-    let benchmark = null;
-    try {
-      const client = await pool.connect();
-      try {
-        const ihs = typeof results?.ihs === 'number' ? results.ihs : null;
-        if (ihs != null) {
-          const ihsResult = await client.query(
-            `SELECT COUNT(*) as total, COUNT(CASE WHEN ihs_score < $1 THEN 1 END) as lower FROM scan_responses WHERE ihs_score IS NOT NULL`, [ihs]
-          );
-          const total = parseInt(ihsResult.rows[0].total || 0);
-          const lower = parseInt(ihsResult.rows[0].lower || 0);
-          const percentile = total > 0 ? Math.round((lower / total) * 100) : 0;
-          const ctx = await client.query(`SELECT AVG(ihs_score) as avg_ihs FROM scan_responses WHERE ihs_score IS NOT NULL`);
-          benchmark = { ihsPercentile: percentile, context: { averageScore: ctx.rows[0].avg_ihs ? Math.round(parseFloat(ctx.rows[0].avg_ihs) * 10) / 10 : null } };
-        }
-      } finally { client.release(); }
-    } catch(_) {}
-
-    let pdfBuffer;
-    
-    // Try server-side PDF generation first (Puppeteer)
-    if (puppeteer && chromium) {
-      try {
-        const dataPayload = { 
-          results, 
-          benchmark,
-          completionTime: req.body.completionTime || null,
-          unansweredCount: req.body.unansweredCount || null
-        };
-        // Get base URL from request or env
-        const protocol = req.headers['x-forwarded-proto'] || 'https';
-        const host = req.headers['x-forwarded-host'] || req.headers.host || 'localhost:3001';
-        const baseUrl = process.env.BASE_URL || `${protocol}://${host}`;
-        
-        pdfBuffer = await generatePdfWithPuppeteer(dataPayload, baseUrl);
-        console.log('PDF generated server-side with Puppeteer, size:', pdfBuffer.length);
-      } catch (puppeteerError) {
-        console.error('Puppeteer PDF generation failed:', puppeteerError.message);
-        // Fall through to client-side fallback
-      }
+    // Require client-provided PDF
+    const pdfBase64 = typeof req.body?.pdfBase64 === 'string' ? req.body.pdfBase64 : null;
+    if (!pdfBase64) {
+      return res.status(400).json({ error: 'Missing pdfBase64' });
     }
     
-    // Fallback to client-provided PDF if server-side failed
-    if (!pdfBuffer) {
-      const pdfBase64 = typeof req.body?.pdfBase64 === 'string' ? req.body.pdfBase64 : null;
-      if (!pdfBase64) {
-        return res.status(400).json({ error: 'PDF generation failed and no fallback provided' });
-      }
-      try {
-        const base64 = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
-        pdfBuffer = Buffer.from(base64, 'base64');
-        console.log('Using client-provided PDF fallback, size:', pdfBuffer.length);
-      } catch(_) {
-        return res.status(400).json({ error: 'Invalid pdfBase64' });
-      }
+    let pdfBuffer;
+    try {
+      const base64 = pdfBase64.replace(/^data:application\/pdf;base64,/, '');
+      pdfBuffer = Buffer.from(base64, 'base64');
+    } catch(_) {
+      return res.status(400).json({ error: 'Invalid pdfBase64' });
     }
 
     // Send email
@@ -3263,4 +3171,4 @@ process.on('SIGTERM', () => {
   pool.end(() => {
     process.exit(0);
   });
-});// Deploy trigger Wed Dec  3 17:37:02 CET 2025
+});

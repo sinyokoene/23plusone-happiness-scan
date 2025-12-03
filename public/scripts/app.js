@@ -1813,43 +1813,18 @@
           }
           try { document.body.removeChild(iframe); } catch(_){}
         } catch(_) {}
-        // Try server-side PDF generation first (smaller, sharper)
-        statusEl.textContent = 'Generating report…';
-        let serverPdfSuccess = false;
-        try {
-          const serverPayload = {
-            email: payload.email,
-            sessionId: payload.sessionId,
-            results: payload.results,
-            marketing: payload.marketing,
-            completionTime: (typeof window !== 'undefined' ? (window.LATEST_COMPLETION_TIME ?? null) : null),
-            unansweredCount: (typeof window !== 'undefined' ? (window.LATEST_UNANSWERED ?? null) : null)
-          };
-          const serverRes = await fetch('/api/report', { 
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' }, 
-            body: JSON.stringify(serverPayload) 
-          });
-          if (serverRes.ok) {
-            serverPdfSuccess = true;
-            showSent();
-          }
-        } catch(_) {}
-        
-        // Fall back to client-side PDF if server-side failed
-        if (!serverPdfSuccess) {
-          if (!payload.pdfBase64 && window.LAST_PDF_BASE64) {
-            payload.pdfBase64 = window.LAST_PDF_BASE64;
-          }
-          if (!payload.pdfBase64) {
-            statusEl.textContent = 'Could not prepare PDF. Please try again.';
-            return;
-          }
-          statusEl.textContent = 'Sending…';
-          const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
-          if (!res.ok) { throw new Error('Failed to send'); }
-          showSent();
+        // Use client-generated PDF
+        if (!payload.pdfBase64 && window.LAST_PDF_BASE64) {
+          payload.pdfBase64 = window.LAST_PDF_BASE64;
         }
+        if (!payload.pdfBase64) {
+          statusEl.textContent = 'Could not prepare PDF. Please try again.';
+          return;
+        }
+        statusEl.textContent = 'Sending…';
+        const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        if (!res.ok) { throw new Error('Failed to send'); }
+        showSent();
       } catch (e) {
         statusEl.textContent = 'Something went wrong. Please try again.';
         statusEl.style.display = 'block';
