@@ -1746,8 +1746,8 @@
             let tries = 0; while (tries < 12 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
             if (win && !win.html2pdf) { await ensureHtml2pdfLoaded(); }
             if (win && win.html2pdf && page) {
-              // Scale 4 = maximum sharpness, PNG for lossless text
-              const canvasScale = 4;
+              // Scale 6 = ultra sharpness, PNG for lossless text
+              const canvasScale = 6;
               // A4 at 72 DPI = 595x842px
               const opt = { 
                 margin: 0, 
@@ -1782,7 +1782,7 @@
                 }
               } catch(_) {
                 // Fallback to html2pdf
-                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { ...opt.html2canvas, scale: 4 }, image: { type: 'png', quality: 1 } }).toPdf().output('blob'); } catch(_) {}
+                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { ...opt.html2canvas, scale: 6 }, image: { type: 'png', quality: 1 } }).toPdf().output('blob'); } catch(_) {}
               }
             }
           } catch(_) {}
@@ -1791,7 +1791,7 @@
             try {
               if (!(win.html2canvas && win.jspdf && win.jspdf.jsPDF)) { await ensureFallbackLibsLoaded(); }
               if (win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
-                const canvasScale = 4;
+                const canvasScale = 6;
                 let canvas;
                 const canvasOpts = { scale: canvasScale, useCORS: true, width: 595, height: 842, windowWidth: 595, windowHeight: 842, x: 0, y: 0, scrollX: 0, scrollY: 0, backgroundColor: '#ffffff' };
                 try { canvas = await win.html2canvas(page, canvasOpts); }
