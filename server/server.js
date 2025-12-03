@@ -370,8 +370,14 @@ app.post('/api/report', async (req, res) => {
     const info = await transport.sendMail({
       from,
       to: email,
-      subject: 'Your 23plusone Drive Profile Report',
-      text: 'Attached is your drive profile report. Thank you for taking the 23plusone scan!',
+      subject: 'Your 23plusone Happiness Scan',
+      text: `Hello!
+
+Thanks for taking part. Attached you'll find your 23plusone Happiness Scan — a short, behavioural snapshot of the drives that currently influence your motivation and well-being. The scan doesn't ask you to explain or rate how happy you feel; instead, it looks at what you instinctively resonate with right now. See this as a moment-in-time reflection, not a verdict. There's no right or wrong outcome — the value sits in the pattern across domains and the conversations it might spark. If you have questions or want to explore the results further, feel free to reach out.
+
+Best,
+
+BR-ND People`,
       attachments: [{ filename: '23plusone-report.pdf', content: pdfBuffer }]
     });
 
