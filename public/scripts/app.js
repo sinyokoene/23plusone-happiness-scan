@@ -1782,7 +1782,7 @@
                 }
               } catch(_) {
                 // Fallback to html2pdf
-                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { ...opt.html2canvas, scale: 2 }, image: { type: 'jpeg', quality: 0.9 } }).toPdf().output('blob'); } catch(_) {}
+                try { blob = await win.html2pdf().from(page).set({ ...opt, html2canvas: { ...opt.html2canvas, scale: 4 }, image: { type: 'png', quality: 1 } }).toPdf().output('blob'); } catch(_) {}
               }
             }
           } catch(_) {}
