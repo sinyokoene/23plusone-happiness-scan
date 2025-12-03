@@ -10,7 +10,7 @@ const httpFetch = (typeof fetch !== 'undefined') ? fetch : (url, opts) => import
 // Puppeteer for server-side PDF generation
 let chromium, puppeteer;
 try {
-  chromium = require('@sparticuz/chromium');
+  chromium = require('chrome-aws-lambda');
   puppeteer = require('puppeteer-core');
 } catch (e) {
   console.warn('Puppeteer not available, PDF generation will use client-side fallback');
@@ -340,7 +340,7 @@ async function generatePdfWithPuppeteer(dataPayload, baseUrl) {
   const browser = await puppeteer.launch({
     args: chromium.args,
     defaultViewport: { width: 595, height: 842 },
-    executablePath: await chromium.executablePath(),
+    executablePath: await chromium.executablePath,
     headless: chromium.headless,
   });
   
