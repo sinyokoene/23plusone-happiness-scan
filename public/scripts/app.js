@@ -1746,13 +1746,13 @@
             let tries = 0; while (tries < 12 && (!win || !win.html2pdf)) { await new Promise(r => setTimeout(r, 250)); tries++; }
             if (win && !win.html2pdf) { await ensureHtml2pdfLoaded(); }
             if (win && win.html2pdf && page) {
-              // Scale 3 = sharp output, quality 0.92 to balance file size
-              const canvasScale = 3;
+              // Scale 4 = maximum sharpness, PNG for lossless text
+              const canvasScale = 4;
               // A4 at 72 DPI = 595x842px
               const opt = { 
                 margin: 0, 
                 filename: '23plusone-report.pdf',
-                image: { type: 'jpeg', quality: 0.92 }, 
+                image: { type: 'png', quality: 1 }, 
                 html2canvas: { 
                   scale: canvasScale, 
                   useCORS: true,
@@ -1771,11 +1771,11 @@
               try {
                 // Use html2canvas directly then add single image to PDF for guaranteed single page
                 const canvas = await win.html2canvas(page, opt.html2canvas);
-                const imgData = canvas.toDataURL('image/jpeg', 0.92);
+                const imgData = canvas.toDataURL('image/png');
                 const jsPDF = win.jspdf?.jsPDF || win.jsPDF;
                 if (jsPDF) {
                   const pdf = new jsPDF({ unit: 'px', format: [595, 842], orientation: 'portrait', hotfixes: ['px_scaling'], compress: true });
-                  pdf.addImage(imgData, 'JPEG', 0, 0, 595, 842);
+                  pdf.addImage(imgData, 'PNG', 0, 0, 595, 842);
                   blob = pdf.output('blob');
                 } else {
                   blob = await win.html2pdf().from(page).set(opt).toPdf().output('blob');
@@ -1791,16 +1791,16 @@
             try {
               if (!(win.html2canvas && win.jspdf && win.jspdf.jsPDF)) { await ensureFallbackLibsLoaded(); }
               if (win.html2canvas && win.jspdf && win.jspdf.jsPDF) {
-                const canvasScale = 3;
+                const canvasScale = 4;
                 let canvas;
                 const canvasOpts = { scale: canvasScale, useCORS: true, width: 595, height: 842, windowWidth: 595, windowHeight: 842, x: 0, y: 0, scrollX: 0, scrollY: 0, backgroundColor: '#ffffff' };
                 try { canvas = await win.html2canvas(page, canvasOpts); }
                 catch(_) { canvas = await win.html2canvas(page, { ...canvasOpts, scale: 1.5 }); }
-                const imgData = canvas.toDataURL('image/jpeg', 0.92);
+                const imgData = canvas.toDataURL('image/png');
                 // Use exact pixel dimensions for single page
                 const jsPDF = win.jspdf.jsPDF; 
                 const pdf = new jsPDF({ unit: 'px', format: [595, 842], orientation: 'portrait', hotfixes: ['px_scaling'] });
-                pdf.addImage(imgData, 'JPEG', 0, 0, 595, 842);
+                pdf.addImage(imgData, 'PNG', 0, 0, 595, 842);
                 blob = pdf.output('blob');
               }
             } catch(_) {}
