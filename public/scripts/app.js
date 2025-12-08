@@ -1373,22 +1373,18 @@
       return a.avgResponseTime - b.avgResponseTime; // faster (lower time) wins
     });
     
-    // Build insight text
+    // Build insight text - keep it SHORT for scan results (details in PDF report)
     let parts = [];
     
     // Opening: Reference specific values from fastest responses (gut feeling signals)
     if (fastValues.length >= 2) {
       const valuesStr = fastValues.slice(0, 2).join(' and ');
-      parts.push(`Your quick responses to ${valuesStr} reveal that these themes are core to who you are.`);
+      parts.push(`Your quick responses to ${valuesStr} reveal what truly matters to you.`);
     } else if (fastValues.length === 1) {
-      parts.push(`Your quick response to ${fastValues[0]} reveals that this theme is core to who you are.`);
-    } else {
-      // Fallback to domain-based opening
-      const openings = ci.openingPhrases || ["Here's what stands out about you:"];
-      parts.push(pick(openings));
+      parts.push(`${fastValues[0]} stands out as a core driver for you.`);
     }
     
-    // Domain summary based on score band
+    // One domain summary based on score band
     const getBand = (count, max) => {
       const pct = (count / max) * 100;
       if (pct >= 66) return 'high';
@@ -1401,46 +1397,8 @@
       parts.push(pick(summaries[topDomainBand]));
     }
     
-    // Pattern-based insight (if detected) - use strongest match
-    if (detectedPatterns.length > 0) {
-      const mainPattern = detectedPatterns[0];
-      parts.push(mainPattern.insight);
-      
-      // Optionally mention secondary pattern if present
-      const secondary = detectedPatterns[1];
-      if (secondary) {
-        parts.push(`You also show elements of ${secondary.name}.`);
-      }
-    }
-    
-    // Breadth insight
-    if (totalSelected <= 5) {
-      parts.push("You're selective and intentional with what brings you joy.");
-    } else if (totalSelected >= 18) {
-      parts.push("You find joy in many places — a true happiness maximalist.");
-    }
-    
-    // Get specific card insights for top domain
-    const topDomainCards = selectedCards.filter(c => c.domain === topDomain.name);
-    if (topDomainCards.length > 0) {
-      const specificInsights = topDomainCards
-        .map(c => getCardShortInsight(c.id))
-        .filter(Boolean);
-      if (specificInsights.length >= 2) {
-        const insightsStr = specificInsights.slice(0, 2).join(' and ');
-        parts.push(`In ${topDomain.name}, you're drawn to ${insightsStr}.`);
-      } else if (specificInsights.length === 1) {
-        parts.push(`You value ${specificInsights[0]}.`);
-      }
-    }
-    
-    // Closing (only if we have enough content)
-    if (parts.length >= 2 && ci.closingPhrases) {
-      // Only add closing ~30% of the time to avoid repetition
-      if (Math.random() < 0.3) {
-        parts.push(pick(ci.closingPhrases));
-      }
-    }
+    // Simple closing - encourage full report
+    parts.push("Request your full report for detailed insights.");
     
     return parts.join(' ').trim();
   }
@@ -1956,6 +1914,8 @@
     })
     .then(data => {
       console.log('Benchmark data received:', data);
+      // Store benchmark for PDF report (ensure consistency with displayed values)
+      try { window.LATEST_BENCHMARK = data?.benchmark || null; } catch(_) {}
       displayBenchmarkResults(data.benchmark, results);
     })
     .catch(err => {
