@@ -675,6 +675,15 @@
         const entries = Object.entries(dp).sort((a,b)=>b[1]-a[1]);
         const fastCards = getFastestCards(3);
         
+        // Build fast response text (used in multiple places)
+        const fastValuesNotInPattern = (patternCardIds) => {
+          const nonPatternFast = fastCards.filter(c => !patternCardIds.includes(c.id)).slice(0, 2);
+          if (nonPatternFast.length >= 2) {
+            return nonPatternFast.map(c => c.value).join(' & ');
+          }
+          return null;
+        };
+        
         // Priority: detected pattern > fast cards > domain names
         if (detectedPatterns.length > 0) {
           // Show primary detected pattern (strongest match)
@@ -689,16 +698,20 @@
           var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + mainPattern.name + triggeredBy + ': </span>' +
                          '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">' + mainPattern.insight + '</span>';
           
-          // Optionally mention secondary pattern if present
-          if (secondary) {
+          // Add fast response insight if there are fast cards outside the pattern
+          const extraFastValues = fastValuesNotInPattern(matchedCardIds);
+          if (extraFastValues) {
+            noteHtml += ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Your quick responses to ' + extraFastValues + ' also reveal strong instincts.</span>';
+          } else if (secondary) {
+            // Only mention secondary if we don't have extra fast values (to keep text length manageable)
             noteHtml += ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">You also show elements of ' + secondary.name + '.</span>';
           }
           setHTML('overallNote', noteHtml);
         } else if (fastCards.length >= 2) {
           // Use specific values from fastest responses
           const valuesStr = fastCards.slice(0, 2).map(c => c.value).join(' & ');
-          var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + valuesStr + '</span>' +
-                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;"> triggered your fastest responses — these are core to who you are.</span>';
+          var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">Your quick responses to ' + valuesStr + ' reveal what truly drives you: </span>' +
+                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">these themes are core to who you are.</span>';
           setHTML('overallNote', noteHtml);
         } else if (entries.length >= 2 && entries[0][1] > 0) {
           // Fallback to domain names

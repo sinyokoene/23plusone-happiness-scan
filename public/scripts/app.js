@@ -1376,12 +1376,12 @@
     // Build insight text
     let parts = [];
     
-    // Opening: Reference specific values if available
+    // Opening: Reference specific values from fastest responses (gut feeling signals)
     if (fastValues.length >= 2) {
       const valuesStr = fastValues.slice(0, 2).join(' and ');
-      parts.push(`Your quick responses to ${valuesStr} reveal what truly drives you.`);
+      parts.push(`Your quick responses to ${valuesStr} reveal that these themes are core to who you are.`);
     } else if (fastValues.length === 1) {
-      parts.push(`${fastValues[0]} stands out as a core driver for you.`);
+      parts.push(`Your quick response to ${fastValues[0]} reveals that this theme is core to who you are.`);
     } else {
       // Fallback to domain-based opening
       const openings = ci.openingPhrases || ["Here's what stands out about you:"];
