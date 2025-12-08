@@ -885,8 +885,8 @@
       var now = new Date();
       var quarter = 'Q' + (Math.floor(now.getMonth() / 3) + 1);
       var year = now.getFullYear();
-      var sampleSize = (payload.benchmark && payload.benchmark.context && payload.benchmark.context.sampleSize) || '--';
-      var nDisplay = typeof sampleSize === 'number' ? sampleSize.toLocaleString() : sampleSize;
+      var totalResponses = (payload.benchmark && payload.benchmark.totalResponses) || '--';
+      var nDisplay = typeof totalResponses === 'number' ? totalResponses.toLocaleString() : totalResponses;
       setHTML('footerMeta', '<br/>Version: v1.2.0<br/>Date: ' + now.toISOString().slice(0,10) + '<br/>Norms Reference: NL<br/>' + year + quarter + ' (n = ' + nDisplay + ')');
 
       try { window.__REPORT_READY__ = true; } catch(_) {}
