@@ -1257,18 +1257,8 @@
         try {
           const ihs = Number(results?.ihs);
           const domainCounts = results?.domainCounts || {};
-          const domainScores = {
-            red: domainCounts['Attraction'] || 0,
-            orange: domainCounts['Self-development'] || 0,
-            yellow: domainCounts['Ambition'] || 0,
-            green: domainCounts['Basics'] || 0,
-            blue: domainCounts['Vitality'] || 0
-          };
-          const resp = await fetch('/api/benchmarks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ihsScore: ihs, domainScores }) });
-          if (resp.ok) {
-            const data = await resp.json();
-            try { window.LATEST_BENCHMARK = data?.benchmark || null; } catch(_) {}
-          }
+          // Benchmark API call removed - now handled by getBenchmarkData() to avoid duplicate calls
+          // which were causing percentile discrepancy between scan results and PDF report
         } catch(_) {}
       })();
     } catch(_) {}
