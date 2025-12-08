@@ -1745,6 +1745,8 @@
         try {
           // Build a small, ASCII-safe benchmark object to avoid btoa Unicode errors (emoji, etc.)
           const fullBm = (typeof window !== 'undefined' ? (window.LATEST_BENCHMARK || null) : null);
+          console.log('PDF Generation - LATEST_BENCHMARK:', fullBm);
+          console.log('PDF Generation - ihsPercentile:', fullBm?.ihsPercentile);
           const safeBenchmark = fullBm ? {
             ihsPercentile: typeof fullBm.ihsPercentile === 'number' ? fullBm.ihsPercentile : null,
             totalResponses: typeof fullBm.totalResponses === 'number' ? fullBm.totalResponses : null,
@@ -1752,6 +1754,7 @@
               averageScore: (fullBm.context && typeof fullBm.context.averageScore === 'number') ? fullBm.context.averageScore : null
             }
           } : null;
+          console.log('PDF Generation - safeBenchmark:', safeBenchmark);
           const dataPayload = { 
             results, 
             benchmark: safeBenchmark, 
@@ -1914,8 +1917,12 @@
     })
     .then(data => {
       console.log('Benchmark data received:', data);
+      console.log('Benchmark ihsPercentile from API:', data?.benchmark?.ihsPercentile);
       // Store benchmark for PDF report (ensure consistency with displayed values)
-      try { window.LATEST_BENCHMARK = data?.benchmark || null; } catch(_) {}
+      try { 
+        window.LATEST_BENCHMARK = data?.benchmark || null; 
+        console.log('Stored LATEST_BENCHMARK:', window.LATEST_BENCHMARK);
+      } catch(_) {}
       displayBenchmarkResults(data.benchmark, results);
     })
     .catch(err => {

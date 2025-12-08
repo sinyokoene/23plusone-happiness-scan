@@ -162,9 +162,9 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-start items-start">
-            <div class="w-52 px-2 py-2.5 bg-zinc-100 rounded-md flex items-center gap-2">
-              <div id="coachBlock1" class="flex-1 justify-start text-stone-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;">
+          <div class="flex justify-start items-center">
+            <div class="w-52 px-2 py-2 bg-zinc-100 rounded-md flex items-center justify-center">
+              <div id="coachBlock1" class="text-stone-950 text-[8px] font-medium font-['Poppins'] text-center" style="line-height: 11px;">
                 <!-- Coach text -->
               </div>
             </div>
@@ -187,9 +187,9 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-start items-start">
-            <div class="w-52 px-2 py-2.5 bg-zinc-100 rounded-md flex items-center gap-2">
-              <div id="coachBlock2" class="flex-1 justify-start text-stone-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;"></div>
+          <div class="flex justify-start items-center">
+            <div class="w-52 px-2 py-2 bg-zinc-100 rounded-md flex items-center justify-center">
+              <div id="coachBlock2" class="text-stone-950 text-[8px] font-medium font-['Poppins'] text-center" style="line-height: 11px;"></div>
             </div>
           </div>
         </div>
@@ -210,9 +210,9 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-start items-start">
-            <div class="w-52 px-2 py-2.5 bg-zinc-100 rounded-md flex items-center gap-2">
-              <div id="coachBlock3" class="flex-1 justify-start text-stone-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;"></div>
+          <div class="flex justify-start items-center">
+            <div class="w-52 px-2 py-2 bg-zinc-100 rounded-md flex items-center justify-center">
+              <div id="coachBlock3" class="text-stone-950 text-[8px] font-medium font-['Poppins'] text-center" style="line-height: 11px;"></div>
             </div>
           </div>
         </div>
@@ -233,9 +233,9 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-start items-start">
-            <div class="w-52 px-2 py-2.5 bg-zinc-100 rounded-md flex items-center gap-2">
-              <div id="coachBlock4" class="flex-1 justify-start text-stone-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;"></div>
+          <div class="flex justify-start items-center">
+            <div class="w-52 px-2 py-2 bg-zinc-100 rounded-md flex items-center justify-center">
+              <div id="coachBlock4" class="text-stone-950 text-[8px] font-medium font-['Poppins'] text-center" style="line-height: 11px;"></div>
             </div>
           </div>
       </div>
@@ -256,9 +256,9 @@
               </div>
             </div>
           </div>
-          <div class="flex justify-start items-start">
-            <div class="w-52 px-2 py-2.5 bg-zinc-100 rounded-md flex items-center gap-2">
-              <div id="coachBlock5" class="flex-1 justify-start text-stone-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;"></div>
+          <div class="flex justify-start items-center">
+            <div class="w-52 px-2 py-2 bg-zinc-100 rounded-md flex items-center justify-center">
+              <div id="coachBlock5" class="text-stone-950 text-[8px] font-medium font-['Poppins'] text-center" style="line-height: 11px;"></div>
             </div>
           </div>
       </div>
@@ -309,6 +309,9 @@
       const ihs = Number(results.n1 != null ? results.n1 : (results.ihs || 0));
       const avg = Number((payload.benchmark && payload.benchmark.context && payload.benchmark.context.averageScore) || 0);
       const percentile = payload.benchmark && payload.benchmark.ihsPercentile;
+      console.log('Report - received benchmark:', payload.benchmark);
+      console.log('Report - ihsPercentile:', percentile);
+      console.log('Report - calculated topPct:', percentile != null ? (100 - Number(percentile)) : 'N/A');
       
       // Card selection data from payload
       const selectedCardIds = payload.selectedCardIds || [];
