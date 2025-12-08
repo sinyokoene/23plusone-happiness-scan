@@ -1,0 +1,417 @@
+{
+  "cards": {
+    "1": {
+      "id": 1,
+      "domain": "Basics",
+      "value": "Idealism",
+      "label": "Better World",
+      "traits": ["purpose-driven", "visionary", "socially conscious"],
+      "shortInsight": "making a meaningful difference",
+      "coachTip": "Choose one issue you care about and take a small, concrete step for it this week."
+    },
+    "2": {
+      "id": 2,
+      "domain": "Basics",
+      "value": "Loyalty",
+      "label": "Moral",
+      "traits": ["principled", "trustworthy", "steadfast"],
+      "shortInsight": "living by strong principles",
+      "coachTip": "Think of a moment when you stayed true to someone or something and let it remind you what loyalty means to you."
+    },
+    "3": {
+      "id": 3,
+      "domain": "Basics",
+      "value": "Connection",
+      "label": "Together",
+      "traits": ["community-minded", "collaborative", "social"],
+      "shortInsight": "being part of something bigger",
+      "coachTip": "Contact someone you would like to feel closer to and send a simple, genuine message."
+    },
+    "4": {
+      "id": 4,
+      "domain": "Basics",
+      "value": "Warmth",
+      "label": "Caring",
+      "traits": ["nurturing", "empathetic", "compassionate"],
+      "shortInsight": "caring for others",
+      "coachTip": "Offer a small act of kindness today, such as a check-in, a compliment or practical help."
+    },
+    "5": {
+      "id": 5,
+      "domain": "Basics",
+      "value": "Order",
+      "label": "Structure",
+      "traits": ["organized", "methodical", "reliable"],
+      "shortInsight": "creating stability and structure",
+      "coachTip": "Spend ten minutes bringing order to one small area, like your desk or inbox."
+    },
+    "6": {
+      "id": 6,
+      "domain": "Basics",
+      "value": "Safety",
+      "label": "Secure",
+      "traits": ["protective", "grounded", "cautious"],
+      "shortInsight": "feeling safe and secure",
+      "coachTip": "Notice one thing that makes you feel safe and make a conscious effort to protect or strengthen it."
+    },
+    "7": {
+      "id": 7,
+      "domain": "Self-development",
+      "value": "Relaxation",
+      "label": "Carefree",
+      "traits": ["easygoing", "stress-free", "present"],
+      "shortInsight": "letting go and relaxing",
+      "coachTip": "Plan a short pause today where you intentionally set tasks aside and let your body unwind."
+    },
+    "8": {
+      "id": 8,
+      "domain": "Self-development",
+      "value": "Play",
+      "label": "Fun",
+      "traits": ["playful", "joyful", "lighthearted"],
+      "shortInsight": "having fun and playing",
+      "coachTip": "Do something light and playful today, even if it is only for a few minutes."
+    },
+    "9": {
+      "id": 9,
+      "domain": "Self-development",
+      "value": "Freedom",
+      "label": "Independent",
+      "traits": ["autonomous", "self-reliant", "adventurous"],
+      "shortInsight": "freedom and independence",
+      "coachTip": "Make one decision today that reflects your own preference, even in a small matter."
+    },
+    "10": {
+      "id": 10,
+      "domain": "Self-development",
+      "value": "Creativity",
+      "label": "Fantasy",
+      "traits": ["imaginative", "innovative", "artistic"],
+      "shortInsight": "expressing creativity",
+      "coachTip": "Give yourself twenty minutes to make or shape something, without judging the result."
+    },
+    "11": {
+      "id": 11,
+      "domain": "Self-development",
+      "value": "Individuality",
+      "label": "Unique",
+      "traits": ["authentic", "distinctive", "original"],
+      "shortInsight": "being uniquely yourself",
+      "coachTip": "Name one way in which you differ from others and allow yourself to appreciate it."
+    },
+    "12": {
+      "id": 12,
+      "domain": "Self-development",
+      "value": "Discovery",
+      "label": "Curious",
+      "traits": ["curious", "inquisitive", "explorer"],
+      "shortInsight": "discovering new things",
+      "coachTip": "Learn one new fact, idea or perspective today through a conversation, article or video."
+    },
+    "13": {
+      "id": 13,
+      "domain": "Ambition",
+      "value": "Capability",
+      "label": "Talent",
+      "traits": ["skilled", "competent", "capable"],
+      "shortInsight": "developing your talents",
+      "coachTip": "Practice a skill you value for fifteen minutes and notice what feels a little easier than before."
+    },
+    "14": {
+      "id": 14,
+      "domain": "Ambition",
+      "value": "Achievement",
+      "label": "Innovation",
+      "traits": ["driven", "innovative", "goal-oriented"],
+      "shortInsight": "achieving and innovating",
+      "coachTip": "Set one clear, realistic task for today and take it to completion."
+    },
+    "15": {
+      "id": 15,
+      "domain": "Ambition",
+      "value": "Challenge",
+      "label": "Winning",
+      "traits": ["competitive", "determined", "resilient"],
+      "shortInsight": "overcoming challenges",
+      "coachTip": "Choose a manageable challenge you have been postponing and take a first step toward it."
+    },
+    "16": {
+      "id": 16,
+      "domain": "Ambition",
+      "value": "Pride",
+      "label": "Self-Assured",
+      "traits": ["confident", "self-assured", "dignified"],
+      "shortInsight": "feeling proud and confident",
+      "coachTip": "Recall one recent achievement and allow yourself a moment to feel quietly proud of it."
+    },
+    "17": {
+      "id": 17,
+      "domain": "Ambition",
+      "value": "Appreciation",
+      "label": "Recognition",
+      "traits": ["valued", "acknowledged", "appreciated"],
+      "shortInsight": "being appreciated and recognized",
+      "coachTip": "Express appreciation to someone today in a way that feels natural to you."
+    },
+    "18": {
+      "id": 18,
+      "domain": "Ambition",
+      "value": "Standing",
+      "label": "Prestige",
+      "traits": ["respected", "influential", "distinguished"],
+      "shortInsight": "earning respect and status",
+      "coachTip": "Take a moment to reflect on how you would like to be seen and check whether your actions match that picture."
+    },
+    "19": {
+      "id": 19,
+      "domain": "Ambition",
+      "value": "Collection",
+      "label": "Possess",
+      "traits": ["acquisitive", "collector", "materialistic"],
+      "shortInsight": "acquiring meaningful things",
+      "coachTip": "Look at something you own that matters to you and consider why it deserves its place in your life."
+    },
+    "20": {
+      "id": 20,
+      "domain": "Ambition",
+      "value": "Influence",
+      "label": "Leadership",
+      "traits": ["leader", "influential", "impactful"],
+      "shortInsight": "leading and influencing others",
+      "coachTip": "Use your influence today to support someone or to move a shared goal a small step forward."
+    },
+    "21": {
+      "id": 21,
+      "domain": "Vitality",
+      "value": "Fitness",
+      "label": "Sporty",
+      "traits": ["active", "athletic", "energetic"],
+      "shortInsight": "staying fit and active",
+      "coachTip": "Include at least one short moment of movement in your day, such as a walk or a stretch."
+    },
+    "22": {
+      "id": 22,
+      "domain": "Vitality",
+      "value": "Health",
+      "label": "Nutrition",
+      "traits": ["health-conscious", "balanced", "vital"],
+      "shortInsight": "nourishing your body",
+      "coachTip": "Make one choice that supports your health today, for example water, fresh food or going to bed on time."
+    },
+    "23": {
+      "id": 23,
+      "domain": "Attraction",
+      "value": "Beauty",
+      "label": "Esthetics",
+      "traits": ["aesthetic", "refined", "beauty-loving"],
+      "shortInsight": "appreciating beauty",
+      "coachTip": "Pause to notice one visual detail that you find beautiful, however small."
+    },
+    "24": {
+      "id": 24,
+      "domain": "Attraction",
+      "value": "Sensuality",
+      "label": "Aroused",
+      "traits": ["sensual", "passionate", "alluring"],
+      "shortInsight": "embracing sensory pleasure",
+      "coachTip": "Take time to experience a simple sensory moment fully, such as a taste, scent or touch."
+    }
+  },
+  "patterns": {
+    "explorer": {
+      "name": "The Explorer",
+      "requires": [10, 12],
+      "minMatch": 2,
+      "insight": "Your curiosity and imagination work hand in hand. You tend to feel most alive when you can explore, learn and try out new possibilities.",
+      "coachTip": "Feed your explorer spirit: venture somewhere new this week, physically or mentally."
+    },
+    "nurturer": {
+      "name": "The Nurturer",
+      "requires": [3, 4],
+      "minMatch": 2,
+      "insight": "Connection and care are at your core. You often feel most at ease when you can support others in a warm, reliable way.",
+      "coachTip": "Your gift is making others feel seen. Use it intentionally with someone who needs it."
+    },
+    "achiever": {
+      "name": "The Achiever",
+      "requires": [13, 14, 15],
+      "minMatch": 2,
+      "insight": "You are driven by mastery and visible progress. Clear goals and tangible results tend to give you focus and energy.",
+      "coachTip": "Channel your drive toward something meaningful. Achievement feels best when aligned with purpose."
+    },
+    "free_spirit": {
+      "name": "The Free Spirit",
+      "requires": [7, 8, 9],
+      "minMatch": 2,
+      "insight": "You value ease, play and room to move. You flourish when there is space to choose your own pace and enjoy the moment.",
+      "coachTip": "Protect your freedom fiercely—schedule time for unstructured joy."
+    },
+    "groundedLeader": {
+      "name": "The Grounded Leader",
+      "requires": [5, 6, 20],
+      "minMatch": 2,
+      "insight": "Stability and responsibility matter to you. Others are likely to see you as someone who offers direction without losing sight of people's needs.",
+      "coachTip": "Your calm presence is a gift. Lead by example in moments of chaos."
+    },
+    "holisticWellness": {
+      "name": "Holistic Wellness",
+      "requires": [21, 22, 23],
+      "minMatch": 2,
+      "insight": "You see well-being as more than just fitness or food. You pay attention to how body, mind and environment all influence how you feel.",
+      "coachTip": "Integrate your wellness practices: combine movement with beauty and mindful eating."
+    },
+    "visionaryIdealist": {
+      "name": "The Visionary Idealist",
+      "requires": [1, 10, 14],
+      "minMatch": 2,
+      "insight": "You are moved by big ideas and meaningful change. You are at your best when you can turn your ideals into concrete projects or actions.",
+      "coachTip": "Turn one of your visions into a small prototype this week."
+    },
+    "authenticExpression": {
+      "name": "Authentic Expression",
+      "requires": [10, 11],
+      "minMatch": 2,
+      "insight": "For you, creativity and being yourself are closely linked. You feel most real when you can express your own voice rather than follow the crowd.",
+      "coachTip": "Share something you've created—your authentic voice deserves to be heard."
+    },
+    "statusSeeker": {
+      "name": "The Status Builder",
+      "requires": [16, 17, 18],
+      "minMatch": 2,
+      "insight": "Recognition and respect are important signals for you. When your efforts are seen, it strengthens your motivation to keep raising the bar.",
+      "coachTip": "Remember that true prestige comes from impact, not just visibility."
+    },
+    "sensoryConnoisseur": {
+      "name": "The Sensory Connoisseur",
+      "requires": [23, 24],
+      "minMatch": 2,
+      "insight": "You experience life strongly through your senses. Carefully chosen details in music, food, touch or aesthetics can turn an ordinary moment into something special for you.",
+      "coachTip": "Create a sensory ritual: morning coffee ceremony, evening aromatherapy, or weekly art appreciation."
+    },
+    "balanceSeeker": {
+      "name": "The Balance Seeker",
+      "crossDomain": true,
+      "requires": [6, 7, 21],
+      "minMatch": 2,
+      "insight": "You seek harmony between security and relaxation, stability and vitality.",
+      "coachTip": "Your balance is your superpower. Protect it by setting boundaries."
+    },
+    "creativeAchiever": {
+      "name": "The Creative Achiever",
+      "crossDomain": true,
+      "requires": [10, 14],
+      "minMatch": 2,
+      "insight": "You don't just create—you create with impact. Innovation is your path to achievement.",
+      "coachTip": "Combine your creativity with your drive: what could you build that matters?"
+    }
+  },
+  "domainSummaries": {
+    "Basics": {
+      "high": [
+        "You naturally help people feel included and safe.",
+        "Being connected to others seems to give you energy.",
+        "You are often the person others can rely on."
+      ],
+      "mid": [
+        "You seem to move comfortably between standing on your own feet and being part of a group.",
+        "You already have people and places where you feel at home.",
+        "You know how to give and receive support."
+      ],
+      "low": [
+        "You are used to managing a lot on your own.",
+        "Independence is clearly important to you.",
+        "You know how to carry yourself through challenging situations."
+      ]
+    },
+    "Self-development": {
+      "high": [
+        "You approach life with an open and questioning mind.",
+        "You tend to see the world as something to discover rather than just to get through.",
+        "Learning and experimenting seem to come naturally to you."
+      ],
+      "mid": [
+        "You already know how energising it feels to follow your curiosity.",
+        "You seem to enjoy learning and trying new things when you can.",
+        "Your curiosity is a helpful compass."
+      ],
+      "low": [
+        "Daily demands may leave little room for lightness or exploration.",
+        "It might feel like there is always something more important than your own interests.",
+        "You do not need big changes to restart your sense of growth."
+      ]
+    },
+    "Ambition": {
+      "high": [
+        "You have a strong inner drive to achieve and move things forward.",
+        "You seem to set the bar high for yourself.",
+        "You are likely to take initiative and seek growth."
+      ],
+      "mid": [
+        "You seem to have a healthy level of ambition without losing yourself in it.",
+        "You are willing to work for what you care about.",
+        "You can push yourself, but you also know when to slow down."
+      ],
+      "low": [
+        "Your motivation may come more from meaning, connection or enjoyment than from constant push.",
+        "You do not have to chase big goals to live a valuable life.",
+        "You may prefer steady contribution over being in the spotlight."
+      ]
+    },
+    "Vitality": {
+      "high": [
+        "You clearly treat your health as an important foundation.",
+        "You seem to understand your body's signals and act on them.",
+        "Energy and physical care appear to be active priorities for you."
+      ],
+      "mid": [
+        "You seem to know what helps you feel well.",
+        "There is already some attention for your body and health.",
+        "You are not starting from zero when it comes to vitality."
+      ],
+      "low": [
+        "Caring for your body and energy could use more attention.",
+        "It may feel like your body only gets attention when something is wrong.",
+        "You do not have to change everything at once to feel better."
+      ]
+    },
+    "Attraction": {
+      "high": [
+        "You experience the world strongly through your senses.",
+        "Details in music, food, touch or surroundings clearly matter to you.",
+        "You do not just register what is around you; you savour it."
+      ],
+      "mid": [
+        "You already notice and appreciate pleasant moments.",
+        "Aesthetics and atmosphere have some place in your life.",
+        "You seem to value small pleasures when they appear."
+      ],
+      "low": [
+        "Life may feel quite practical or task-focused at times.",
+        "It is easy to move through the day on autopilot.",
+        "You do not need big experiences to feel more alive."
+      ]
+    }
+  },
+  "openingPhrases": [
+    "Your selections reveal something interesting:",
+    "Here's what stands out about you:",
+    "Your happiness profile shows:",
+    "Looking at your choices:",
+    "What drives you is clear:"
+  ],
+  "transitionPhrases": [
+    "What's more,",
+    "Additionally,",
+    "It's also worth noting that",
+    "Beyond that,",
+    "Interestingly,"
+  ],
+  "closingPhrases": [
+    "This is your unique happiness fingerprint.",
+    "These drives shape how you experience the world.",
+    "Understanding these patterns can help you thrive.",
+    "Lean into these insights—they're uniquely yours.",
+    "This is what makes you, you."
+  ]
+}
+

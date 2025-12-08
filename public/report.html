@@ -309,6 +309,56 @@
       const ihs = Number(results.n1 != null ? results.n1 : (results.ihs || 0));
       const avg = Number((payload.benchmark && payload.benchmark.context && payload.benchmark.context.averageScore) || 0);
       const percentile = payload.benchmark && payload.benchmark.ihsPercentile;
+      
+      // Card selection data from payload
+      const selectedCardIds = payload.selectedCardIds || [];
+      const answersData = payload.answers || [];
+      
+      // Card metadata for personalized insights
+      const cardMeta = {
+        1: { domain: 'Basics', value: 'Idealism', shortInsight: 'making a meaningful difference' },
+        2: { domain: 'Basics', value: 'Loyalty', shortInsight: 'living by strong principles' },
+        3: { domain: 'Basics', value: 'Connection', shortInsight: 'being part of something bigger' },
+        4: { domain: 'Basics', value: 'Warmth', shortInsight: 'caring for others' },
+        5: { domain: 'Basics', value: 'Order', shortInsight: 'creating stability and structure' },
+        6: { domain: 'Basics', value: 'Safety', shortInsight: 'feeling safe and secure' },
+        7: { domain: 'Self-development', value: 'Relaxation', shortInsight: 'letting go and relaxing' },
+        8: { domain: 'Self-development', value: 'Play', shortInsight: 'having fun and playing' },
+        9: { domain: 'Self-development', value: 'Freedom', shortInsight: 'freedom and independence' },
+        10: { domain: 'Self-development', value: 'Creativity', shortInsight: 'expressing creativity' },
+        11: { domain: 'Self-development', value: 'Individuality', shortInsight: 'being uniquely yourself' },
+        12: { domain: 'Self-development', value: 'Discovery', shortInsight: 'discovering new things' },
+        13: { domain: 'Ambition', value: 'Capability', shortInsight: 'developing your talents' },
+        14: { domain: 'Ambition', value: 'Achievement', shortInsight: 'achieving and innovating' },
+        15: { domain: 'Ambition', value: 'Challenge', shortInsight: 'overcoming challenges' },
+        16: { domain: 'Ambition', value: 'Pride', shortInsight: 'feeling proud and confident' },
+        17: { domain: 'Ambition', value: 'Appreciation', shortInsight: 'being appreciated and recognized' },
+        18: { domain: 'Ambition', value: 'Standing', shortInsight: 'earning respect and status' },
+        19: { domain: 'Ambition', value: 'Collection', shortInsight: 'acquiring meaningful things' },
+        20: { domain: 'Ambition', value: 'Influence', shortInsight: 'leading and influencing others' },
+        21: { domain: 'Vitality', value: 'Fitness', shortInsight: 'staying fit and active' },
+        22: { domain: 'Vitality', value: 'Health', shortInsight: 'nourishing your body' },
+        23: { domain: 'Attraction', value: 'Beauty', shortInsight: 'appreciating beauty' },
+        24: { domain: 'Attraction', value: 'Sensuality', shortInsight: 'embracing sensory pleasure' }
+      };
+      
+      // Get selected cards for a domain
+      function getSelectedCardsForDomain(domain) {
+        return selectedCardIds
+          .filter(id => cardMeta[id] && cardMeta[id].domain === domain)
+          .map(id => cardMeta[id]);
+      }
+      
+      // Get fastest response cards (high confidence selections)
+      function getFastestCards(count) {
+        if (!answersData.length) return [];
+        return [...answersData]
+          .filter(a => a.yes === true)
+          .sort((a, b) => a.time - b.time)
+          .slice(0, count)
+          .map(a => cardMeta[a.id])
+          .filter(Boolean);
+      }
 
       function setText(id, text){ var el = document.getElementById(id); if (el) el.textContent = text; }
       function setWidth(id, pct){ var el = document.getElementById(id); if (el) el.style.width = Math.max(0, Math.min(100, pct)) + '%'; }
@@ -368,41 +418,201 @@
       setWidth('vitalityFill', dp['Vitality']); setText('vitalityScore', Math.round(dp['Vitality']) + ' | ' + bandLabel(dp['Vitality']));
       setWidth('attractionFill', dp['Attraction']); setText('attractionScore', Math.round(dp['Attraction']) + ' | ' + bandLabel(dp['Attraction']));
 
-      // Narrative Text
+      // Narrative Text - Now card-aware
       function narrativeBand(v){ if (v >= 66) return 'high'; if (v >= 34) return 'mid'; return 'low'; }
-      const narrative = {
+      
+      // Text variation helper - picks random item from array
+      function pickVariation(arr) {
+        if (!arr || !arr.length) return '';
+        return arr[Math.floor(Math.random() * arr.length)];
+      }
+      
+      // Base narratives with text variations for fallback
+      const baseNarrative = {
         Basics: {
-          low: { headline: 'Your first step toward deeper connection', insight: "This shows you're very good at relying on yourself, which is a great strength. The next step is to practice letting others in, too. We know from our research that people are happiest when they can both stand on their own and lean on others when needed. It’s not about being needy; it’s about making your own strength even stronger with the support of others." },
-          mid: { headline: 'Building on your foundation of connection', insight: 'You already have a healthy balance between being independent and connecting with others. That’s a wonderful skill. To feel even better, you can shift from just having good people in your life to actively putting a little energy into those friendships, like watering a plant.' },
-          high: { headline: 'Recognize Your Role as a Connector', insight: "You naturally bring people together and build trust. This helps others feel safe and grow. That’s a major contribution to any group." }
+          low: { 
+            headlines: ['Your first step toward deeper connection', 'Standing strong, with room to lean on others', 'From self-reliance to shared support'],
+            insights: [
+              "You are used to managing a lot on your own. There may be room to let trusted people stand a bit closer to you.",
+              "Independence is clearly important to you. Exploring small moments of asking for help could actually make you feel more grounded, not less.",
+              "You know how to carry yourself through challenging situations. Inviting others in now and then can turn pressure into shared strength."
+            ]
+          },
+          mid: { 
+            headlines: ['Building on a healthy foundation of connection', 'Balancing independence and belonging', 'Your connection toolkit is growing'],
+            insights: [
+              "You seem to move comfortably between standing on your own feet and being part of a group. Strengthening a few key relationships can deepen that sense of security.",
+              "You already have people and places where you feel at home. Investing a little more attention in those bonds can make everyday life feel lighter.",
+              "You know how to give and receive support. Naming the relationships that matter most can help you protect and nurture them more consciously."
+            ]
+          },
+          high: { 
+            headlines: ['Recognising your role as a connector', 'Community is one of your strengths', 'You help others feel at ease'],
+            insights: [
+              "You naturally help people feel included and safe. That sense of trust is a quiet but powerful contribution to any team or community.",
+              "Being connected to others seems to give you energy. When you protect your own boundaries as well, this quality becomes even more sustainable.",
+              "You are often the person others can rely on. Taking a moment to acknowledge that role can help you use it with intention, not just habit."
+            ]
+          }
         },
         'Self-development': {
-          low: { headline: 'An invitation to rediscover play', insight: "This score shows there’s a great chance to bring more fun into your life. The demands of being an adult can often push our natural sense of play aside. But making time for fun isn't silly; it’s a direct way to feel more creative, less stressed, and more energized." },
-          mid: { headline: 'Make Time for Curiosity', insight: 'You know how energizing it feels to follow your curiosity and lose yourself in an idea. Growth happens when we make space for these moments on purpose.' },
-          high: { headline: 'Honoring your curiosity', insight: 'This is a top-level score. It means you live with a wonderful spirit of discovery and are naturally open to new things. You tend to see life not just as a to-do list, but as an adventure full of possibilities.' }
+          low: { 
+            headlines: ['An invitation to rediscover play', 'Making space for your own growth', 'Allowing curiosity back in'],
+            insights: [
+              "Daily demands may leave little room for lightness or exploration. Small pockets of play and curiosity could bring back a sense of ease and inspiration.",
+              "It might feel like there is always something more important than your own interests. Treating even a few minutes a week as 'time for me' can already shift your energy.",
+              "You do not need big changes to restart your sense of growth. Gentle experiments—trying something new, learning one small thing—can open that door again."
+            ]
+          },
+          mid: { 
+            headlines: ['Making time for curiosity', 'Growth is quietly present', 'Feeding your curious mind'],
+            insights: [
+              "You already know how energising it feels to follow your curiosity. Turning this into a small, regular habit can keep that feeling alive in everyday life.",
+              "You seem to enjoy learning and trying new things when you can. Protecting a bit of time for this each week can deepen your sense of progress.",
+              "Your curiosity is a helpful compass. Paying attention to what keeps catching your interest can guide your next steps in work and life."
+            ]
+          },
+          high: { 
+            headlines: ['Honouring your curiosity', 'Your explorer spirit stands out', 'Discovery keeps you moving'],
+            insights: [
+              "You approach life with an open and questioning mind. New ideas, skills and perspectives appear to be a strong source of energy for you.",
+              "You tend to see the world as something to discover rather than just to get through. Using that attitude deliberately can help you navigate change more easily.",
+              "Learning and experimenting seem to come naturally to you. Sharing that mindset with others can make the people around you more open as well."
+            ]
+          }
         },
         Ambition: {
-          low: { headline: 'Let Ambition Be A Healthy Drive', insight: "Your motivation comes from enjoying the process and working with others, not just chasing rewards. That’s sustainable ambition." },
-          mid: { headline: 'Boosting your ambition', insight: 'You have a very healthy relationship with ambition, which shows you’re emotionally smart. To take it to the next level, you can work on clearly connecting your goals to what truly matters to you. This turns the feeling of a race into the feeling of a meaningful mission.' },
-          high: { headline: 'Leading with your positive impact', insight: "A high score here shows you have a powerful inner drive. You have the energy to do great things. The key for you is remembering that this strength isn't just about winning; it’s about using your drive to leave a positive mark on the world." }
+          low: { 
+            headlines: ['Letting ambition be a healthy drive', 'Purpose over pressure', 'Redefining what achievement means'],
+            insights: [
+              "Your motivation may come more from meaning, connection or enjoyment than from constant push and competition. That can be a very sustainable way to move forward.",
+              "You do not have to chase big goals to live a valuable life. Clarifying what 'doing well' means for you personally can bring more calm and direction.",
+              "You may prefer steady contribution over being in the spotlight. Recognising the impact you already have can prevent you from underestimating yourself."
+            ]
+          },
+          mid: { 
+            headlines: ['Channelling a balanced sense of ambition', 'Goals with personal meaning', 'Directed, sustainable drive'],
+            insights: [
+              "You seem to have a healthy level of ambition without losing yourself in it. Connecting your goals more clearly to your values can make your efforts feel even more worthwhile.",
+              "You are willing to work for what you care about. Defining a few concrete next steps can help turn that motivation into visible progress.",
+              "You can push yourself, but you also know when to slow down. Keeping that balance in mind protects both your performance and your well-being."
+            ]
+          },
+          high: { 
+            headlines: ['Leading with focused ambition', 'Your drive is a real strength', 'Using your energy for impact'],
+            insights: [
+              "You have a strong inner drive to achieve and move things forward. When you link this clearly to a purpose you believe in, it becomes a powerful force for good.",
+              "You seem to set the bar high for yourself. Remembering that rest and perspective are part of performance can keep your ambition from turning into pressure.",
+              "You are likely to take initiative and seek growth. Being selective about where you invest that energy helps you create impact without burning out."
+            ]
+          }
         },
         Vitality: {
-          low: { headline: 'Building your foundation of well-being', insight: "This score shows that taking care of yourself is a big opportunity for you to feel better. The most important first step is a simple shift in thinking: your well-being isn't a prize you get after all the work is done. It’s the fuel in your tank that lets you do the work in the first place." },
-          mid: { headline: 'Turning awareness to consistent self-care', insight: 'You already know what you need to do to feel good, which is the perfect starting point. To feel even better, the goal is to create small habits that stick, so that taking care of yourself feels like a choice you deserve, not a chore you have to do.' },
-          high: { headline: 'Respect Your Well-Being', insight: 'You treat your health as a foundation, not an afterthought. That quiet commitment lifts both you and the people around you.' }
+          low: { 
+            headlines: ['Building your foundation of well-being', 'Listening to what your body needs', 'Starting small with self-care'],
+            insights: [
+              "Your score suggests that caring for your body and energy could use more attention. Small, realistic steps often make more difference than big promises you cannot keep.",
+              "It may feel like your body only gets attention when something is wrong. Treating rest, movement and nourishment as everyday basics can gradually change that.",
+              "You do not have to change everything at once to feel better. Choosing one gentle habit—sleep, movement or food—and respecting it can already shift how you experience your days."
+            ]
+          },
+          mid: { 
+            headlines: ['Turning awareness into steady habits', 'From knowing to doing more consistently', 'Protecting the energy you already have'],
+            insights: [
+              "You seem to know what helps you feel well. Making a few of those things non-negotiable habits can stabilise your energy over time.",
+              "There is already some attention for your body and health. Strengthening one or two routines can turn good intentions into lasting support for yourself.",
+              "You are not starting from zero when it comes to vitality. Clarifying which small practices help most can make it easier to prioritise them in busy weeks."
+            ]
+          },
+          high: { 
+            headlines: ['Respecting your well-being', 'Your body as a reliable partner', 'Vitality supports everything else'],
+            insights: [
+              "You clearly treat your health as an important foundation. That quiet discipline lifts both you and the people around you.",
+              "You seem to understand your body's signals and act on them. Continuing to listen in this way will help you stay resilient in demanding periods.",
+              "Energy and physical care appear to be active priorities for you. Acknowledging that effort can reinforce your commitment to yourself."
+            ]
+          }
         },
         Attraction: {
-          low: { headline: 'Reconnecting with your senses', insight: 'This score shows you have a great opportunity to connect with the world in a richer way. Our busy lives can make us feel disconnected. Tuning back into your senses—what you see, hear, and feel—is one of the fastest ways to feel calm and happy.' },
-          mid: { headline: 'Actively designing a richer life', insight: "You notice and enjoy beautiful moments. Now, let's go from being aware of these moments to actively making time for them in your day." },
-          high: { headline: 'Add More Sensory Joy', insight: 'You enjoy life’s beauty—through music, food, or scenery. The next step is to invite more of these moments on purpose.' }
+          low: { 
+            headlines: ['Reconnecting with your senses', 'Noticing more of what is around you', 'Inviting small moments of beauty'],
+            insights: [
+              "Life may feel quite practical or task-focused at times. Paying a bit more attention to what you see, hear and feel can quietly increase your sense of calm and pleasure.",
+              "It is easy to move through the day on autopilot. Pausing now and then to notice a colour, sound or texture can make moments feel fuller without taking extra time.",
+              "You do not need big experiences to feel more alive. Allowing simple things—a view, a piece of music, a taste—to register can already change the tone of your day."
+            ]
+          },
+          mid: { 
+            headlines: ['Actively designing a richer day', 'Curating moments of enjoyment', 'Bringing more beauty into reach'],
+            insights: [
+              "You already notice and appreciate pleasant moments. Choosing a few of them on purpose each week can make your life feel more carefully designed, not just experienced.",
+              "Aesthetics and atmosphere have some place in your life. Paying attention to which environments lift you can help you create more of them.",
+              "You seem to value small pleasures when they appear. Making space for them intentionally can increase your sense of quality in everyday routines."
+            ]
+          },
+          high: { 
+            headlines: ['Letting sensory joy support you', 'A refined sense for atmosphere', 'Beauty as a source of energy'],
+            insights: [
+              "You experience the world strongly through your senses. When you allow for these moments of beauty and enjoyment, they can restore you as well as delight you.",
+              "Details in music, food, touch or surroundings clearly matter to you. Using this awareness to shape your environment can make work and home feel more nourishing.",
+              "You do not just register what is around you; you savour it. That sensitivity can help you create spaces and moments that others also love to be in."
+            ]
+          }
         }
       };
 
+      // Generate card-aware narrative with text variations
+      function buildCardAwareNarrative(domain, pct) {
+        const band = narrativeBand(pct);
+        const domainCards = getSelectedCardsForDomain(domain);
+        const baseData = (baseNarrative[domain] && baseNarrative[domain][band]) || { headlines: [domain], insights: [''] };
+        
+        // Pick variations
+        let headline = pickVariation(baseData.headlines) || baseData.headlines?.[0] || domain;
+        let insight = pickVariation(baseData.insights) || baseData.insights?.[0] || '';
+        
+        // Personalize based on selected cards
+        if (domainCards.length > 0) {
+          const values = domainCards.map(c => c.value);
+          const cardInsights = domainCards.map(c => c.shortInsight);
+          
+          // Headline variations for card-specific content
+          const headlineVariations = [
+            `Your ${values[0]}${values[1] ? ' & ' + values[1] : ''} shine through`,
+            `${values[0]}${values[1] ? ' and ' + values[1] : ''} drive${values.length === 1 ? 's' : ''} you`,
+            `Powered by ${values[0]}${values[1] ? ' & ' + values[1] : ''}`
+          ];
+          
+          if (domainCards.length >= 2) {
+            // Multiple cards selected - reference specific values
+            headline = pickVariation(headlineVariations);
+            const insightOpeners = [
+              `You're drawn to ${cardInsights.slice(0, 2).join(' and ')}.`,
+              `${cardInsights[0].charAt(0).toUpperCase() + cardInsights[0].slice(1)} and ${cardInsights[1]} matter to you.`,
+              `Your selections reveal a passion for ${cardInsights.slice(0, 2).join(' and ')}.`
+            ];
+            insight = `${pickVariation(insightOpeners)} ${insight}`;
+          } else if (domainCards.length === 1) {
+            // Single card - focus on that value
+            headline = pickVariation([
+              `${values[0]} drives you`,
+              `Powered by ${values[0]}`,
+              `Your ${values[0].toLowerCase()} shines`
+            ]);
+            const insightOpeners = [
+              `You value ${cardInsights[0]}.`,
+              `${cardInsights[0].charAt(0).toUpperCase() + cardInsights[0].slice(1)} is important to you.`,
+              `Your connection to ${cardInsights[0]} is clear.`
+            ];
+            insight = `${pickVariation(insightOpeners)} ${insight}`;
+          }
+        }
+        
+        return { headline, insight };
+      }
+
       function setNarrative(id, domain, pct){
-        var band = narrativeBand(pct);
-        var data = (narrative[domain] && narrative[domain][band]) || null;
-        if (!data) return;
-        // New HTML Structure
+        const data = buildCardAwareNarrative(domain, pct);
         var html = '<div class="text-stone-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px; margin-bottom: 2px;">' + data.headline + '</div>' +
                    '<div class="text-stone-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">' + data.insight + '</div>';
         setHTML(id, html);
@@ -414,10 +624,79 @@
       setNarrative('vitalityText', 'Vitality', dp['Vitality']);
       setNarrative('attractionText', 'Attraction', dp['Attraction']);
 
-      // Overall Note (Top 2 domains)
+      // Pattern detection
+      const patterns = {
+        explorer: { name: 'The Explorer', requires: [10, 12], minMatch: 2, insight: 'Your curiosity and imagination work hand in hand. You tend to feel most alive when you can explore, learn and try out new possibilities.' },
+        nurturer: { name: 'The Nurturer', requires: [3, 4], minMatch: 2, insight: 'Connection and care are at your core. You often feel most at ease when you can support others in a warm, reliable way.' },
+        achiever: { name: 'The Achiever', requires: [13, 14, 15], minMatch: 2, insight: 'You are driven by mastery and visible progress. Clear goals and tangible results tend to give you focus and energy.' },
+        freeSpirit: { name: 'The Free Spirit', requires: [7, 8, 9], minMatch: 2, insight: 'You value ease, play and room to move. You flourish when there is space to choose your own pace and enjoy the moment.' },
+        groundedLeader: { name: 'The Grounded Leader', requires: [5, 6, 20], minMatch: 2, insight: "Stability and responsibility matter to you. Others are likely to see you as someone who offers direction without losing sight of people's needs." },
+        holisticWellness: { name: 'Holistic Wellness', requires: [21, 22, 23], minMatch: 2, insight: 'You see well-being as more than just fitness or food. You pay attention to how body, mind and environment all influence how you feel.' },
+        visionaryIdealist: { name: 'The Visionary Idealist', requires: [1, 10, 14], minMatch: 2, insight: 'You are moved by big ideas and meaningful change. You are at your best when you can turn your ideals into concrete projects or actions.' },
+        authenticExpression: { name: 'Authentic Expression', requires: [10, 11], minMatch: 2, insight: 'For you, creativity and being yourself are closely linked. You feel most real when you can express your own voice rather than follow the crowd.' },
+        statusBuilder: { name: 'The Status Builder', requires: [16, 17, 18], minMatch: 2, insight: 'Recognition and respect are important signals for you. When your efforts are seen, it strengthens your motivation to keep raising the bar.' },
+        sensoryConnoisseur: { name: 'The Sensory Connoisseur', requires: [23, 24], minMatch: 2, insight: 'You experience life strongly through your senses. Carefully chosen details in music, food, touch or aesthetics can turn an ordinary moment into something special for you.' }
+      };
+      
+      function detectPatterns() {
+        const detected = [];
+        for (const [key, pattern] of Object.entries(patterns)) {
+          const matchingCards = pattern.requires.filter(id => selectedCardIds.includes(id));
+          const matchCount = matchingCards.length;
+          if (matchCount >= pattern.minMatch) {
+            // Calculate average response time for matched cards (lower = faster = stronger signal)
+            const matchedAnswers = answersData.filter(a => matchingCards.includes(a.id) && a.yes === true);
+            const avgResponseTime = matchedAnswers.length > 0 
+              ? matchedAnswers.reduce((sum, a) => sum + (a.time || 4000), 0) / matchedAnswers.length 
+              : 4000;
+            
+            detected.push({ 
+              key, 
+              matchCount, 
+              matchPct: matchCount / pattern.requires.length, // e.g., 3/3 = 1.0, 2/3 = 0.67
+              avgResponseTime,
+              ...pattern 
+            });
+          }
+        }
+        // Sort by: 1) match count, 2) match percentage, 3) faster response time wins ties
+        detected.sort((a, b) => {
+          if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
+          if (b.matchPct !== a.matchPct) return b.matchPct - a.matchPct;
+          return a.avgResponseTime - b.avgResponseTime; // faster (lower time) wins
+        });
+        return detected;
+      }
+      
+      const detectedPatterns = detectPatterns();
+
+      // Overall Note - Card-aware with pattern detection and fastest response values
       try {
         const entries = Object.entries(dp).sort((a,b)=>b[1]-a[1]);
-        if (entries.length >= 2 && entries[0][1] > 0) {
+        const fastCards = getFastestCards(3);
+        
+        // Priority: detected pattern > fast cards > domain names
+        if (detectedPatterns.length > 0) {
+          // Show primary detected pattern (strongest match)
+          const mainPattern = detectedPatterns[0];
+          const secondary = detectedPatterns[1];
+          
+          var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + mainPattern.name + ': </span>' +
+                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">' + mainPattern.insight + '</span>';
+          
+          // Optionally mention secondary pattern if present
+          if (secondary) {
+            noteHtml += ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">You also show elements of ' + secondary.name + '.</span>';
+          }
+          setHTML('overallNote', noteHtml);
+        } else if (fastCards.length >= 2) {
+          // Use specific values from fastest responses
+          const valuesStr = fastCards.slice(0, 2).map(c => c.value).join(' & ');
+          var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + valuesStr + '</span>' +
+                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;"> triggered your fastest responses — these are core to who you are.</span>';
+          setHTML('overallNote', noteHtml);
+        } else if (entries.length >= 2 && entries[0][1] > 0) {
+          // Fallback to domain names
           const d1 = entries[0][0];
           const d2 = entries[1][0];
           var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + d1 + ' & ' + d2 + '</span>' +
@@ -426,44 +705,151 @@
         }
       } catch(_) {}
 
-      // Coaches
+      // Coaches - Card-specific recommendations
       function coachBand(v){ if (v >= 66) return 'high'; if (v >= 34) return 'mid'; return 'low'; }
-      function pickCoachText(domain, band){
-        var copy = {
-          Basics: {
-            low: "Do one small thing for someone else this week. Try to define what sharing feels like.",
-            mid: "Pick one person in your circle. Send them a quick message today simply saying that you think of them.",
-            high: "Take a moment to feel proud of this quality. Think about the communities you’ve helped shape. That ability to connect is one of your real strengths."
-          },
-          'Self-development': {
-            low: "Find just five minutes today to do something fun for no reason: put on a great song and dance, doodle, or watch a cool video online.",
-            mid: "Schedule a 30-minute \"curiosity appointment\" with yourself this week. Use that time to wander a bookstore or explore something interesting online, with no pressure for it to be productive.",
-            high: "The next time you find something cool or interesting, make a point to show it to someone else. Let them see the world through your eyes for a moment."
-          },
-          Ambition: {
-            low: "Think of one skill you enjoy that also benefits others. Spend 20 minutes this week practicing it, just for the satisfaction of something that has a positive effect.",
-            mid: "Pick one skill—at work or in a hobby—and practice it for 20 minutes this week. Focus only on the joy of learning.",
-            high: "Spend some time reflecting on this question: \"What drives my ambition?\""
-          },
-          Vitality: {
-            low: "Practice a \"one-minute reset.\" Right now, just close your eyes, take three slow, deep breaths, and let your shoulders drop as you breathe out.",
-            mid: "Find one chance today to do something for your well-being that feels like a treat, not a task. This could be a five-minute stretch, a big glass of water, or just stepping outside for fresh air.",
-            high: "Pause today to thank your body—for its strength, resilience, and how it carries you through life. Gratitude reinforces your mind-body connection."
-          },
-          Attraction: {
-            low: "For the next 60 seconds, just stop and listen. Notice the little sounds around you that you normally ignore. Don’t judge them, just notice them.",
-            mid: "Intentionally add one small moment of pleasure to your day. Smell your morning coffee or pick a prettier route on your commute. Do it just for the pure enjoyment of it.",
-            high: "Tomorrow, add one sensory treat to your day. Light a candle, add fresh herbs to your meal, or take a more scenic walk. Do it just for delight."
+      
+      // Card-specific coach tips
+      const cardCoachTips = {
+        1: "Choose one issue you care about and take a small, concrete step for it this week.",
+        2: "Think of a moment when you stayed true to someone or something and let it remind you what loyalty means to you.",
+        3: "Contact someone you would like to feel closer to and send a simple, genuine message.",
+        4: "Offer a small act of kindness today, such as a check-in, a compliment or practical help.",
+        5: "Spend ten minutes bringing order to one small area, like your desk or inbox.",
+        6: "Notice one thing that makes you feel safe and make a conscious effort to protect or strengthen it.",
+        7: "Plan a short pause today where you intentionally set tasks aside and let your body unwind.",
+        8: "Do something light and playful today, even if it is only for a few minutes.",
+        9: "Make one decision today that reflects your own preference, even in a small matter.",
+        10: "Give yourself twenty minutes to make or shape something, without judging the result.",
+        11: "Name one way in which you differ from others and allow yourself to appreciate it.",
+        12: "Learn one new fact, idea or perspective today through a conversation, article or video.",
+        13: "Practice a skill you value for fifteen minutes and notice what feels a little easier than before.",
+        14: "Set one clear, realistic task for today and take it to completion.",
+        15: "Choose a manageable challenge you have been postponing and take a first step toward it.",
+        16: "Recall one recent achievement and allow yourself a moment to feel quietly proud of it.",
+        17: "Express appreciation to someone today in a way that feels natural to you.",
+        18: "Take a moment to reflect on how you would like to be seen and check whether your actions match that picture.",
+        19: "Look at something you own that matters to you and consider why it deserves its place in your life.",
+        20: "Use your influence today to support someone or to move a shared goal a small step forward.",
+        21: "Include at least one short moment of movement in your day, such as a walk or a stretch.",
+        22: "Make one choice that supports your health today, for example water, fresh food or going to bed on time.",
+        23: "Pause to notice one visual detail that you find beautiful, however small.",
+        24: "Take time to experience a simple sensory moment fully, such as a taste, scent or touch."
+      };
+      
+      // Base coach tips with variations as fallback
+      const baseCoachTips = {
+        Basics: {
+          low: [
+            "Do one small helpful thing for someone else this week.",
+            "Offer support to a person around you, even in a modest way.",
+            "Practise one act of generosity, such as listening with attention or giving practical help."
+          ],
+          mid: [
+            "Send someone a short message to let them know you are thinking of them.",
+            "Reach out to a person you value and suggest a small moment to catch up.",
+            "Express appreciation to someone in your circle for something they have done."
+          ],
+          high: [
+            "Reflect on the communities or groups where you help others feel at home.",
+            "Notice how your presence influences the atmosphere in a group.",
+            "Take a moment to appreciate the trust that people place in you."
+          ]
+        },
+        'Self-development': {
+          low: [
+            "Set aside five minutes to do something you simply enjoy.",
+            "Allow yourself a brief moment of play, without any goal attached.",
+            "Return to an activity you used to find light and enjoyable, even for a short while."
+          ],
+          mid: [
+            "Plan a short curiosity break this week to explore a topic that interests you.",
+            "Spend some time reading, watching or listening to something that genuinely fascinates you.",
+            "Follow one line of interest a bit further than you usually would, just to see where it leads."
+          ],
+          high: [
+            "Share something you have recently discovered with someone who might enjoy it.",
+            "Teach or explain one small thing you know well to another person.",
+            "Note one area where you would like to deepen your knowledge and consider a next step."
+          ]
+        },
+        Ambition: {
+          low: [
+            "Use one of your skills today in a way that is helpful for someone or something you care about.",
+            "Choose an activity that feels meaningful rather than impressive and give it your attention.",
+            "Notice a task you handle reliably and acknowledge the quiet value it brings."
+          ],
+          mid: [
+            "Choose one skill and practise it for a short, focused period.",
+            "Define a small, realistic step towards a goal and complete it.",
+            "Pay attention to how progress, rather than perfection, feels in your body and mind."
+          ],
+          high: [
+            "Write down what currently motivates you most and see how it links to your values.",
+            "Ask yourself where your energy has the greatest positive impact and adjust one action accordingly.",
+            "Plan a short pause in your week to step back and reflect on whether your goals still fit you."
+          ]
+        },
+        Vitality: {
+          low: [
+            "Take a one-minute pause to breathe slowly and soften your shoulders.",
+            "Stand up, stretch gently and notice how your body feels.",
+            "Choose one simple act of care today, such as drinking water or stepping outside briefly."
+          ],
+          mid: [
+            "Identify one routine that supports your energy and protect it in your schedule.",
+            "Add a small restorative moment to your day, like a walk, a stretch or quiet time.",
+            "Notice which activities leave you feeling more rested and plan one of them this week."
+          ],
+          high: [
+            "Acknowledge the effort you already invest in your health and energy.",
+            "Take a moment to listen to what your body needs today and respond to it.",
+            "Consider how your approach to well-being might also inspire someone close to you."
+          ]
+        },
+        Attraction: {
+          low: [
+            "Pause for a moment and listen carefully to the sounds around you.",
+            "Look out of a window or around the room and notice one detail you usually overlook.",
+            "Touch an object slowly and focus on its texture and temperature."
+          ],
+          mid: [
+            "Plan one small sensory pleasure into your day, such as a favourite drink or a walk in a pleasant place.",
+            "Take a little extra time to arrange your surroundings in a way that feels good to you.",
+            "When you notice something pleasant, stay with it for a few breaths before moving on."
+          ],
+          high: [
+            "Intentionally create one simple moment of beauty tomorrow, for yourself or others.",
+            "Use your eye for atmosphere to adjust a space you often spend time in.",
+            "Share something you find beautiful - a view, a piece of music or an object - with someone else."
+          ]
+        }
+      };
+      
+      function buildCardAwareCoach(domain, pct) {
+        const band = coachBand(pct);
+        const domainCards = getSelectedCardsForDomain(domain);
+        
+        // If we have selected cards, use card-specific tips
+        if (domainCards.length > 0) {
+          // Get the first selected card's tip
+          const cardId = selectedCardIds.find(id => cardMeta[id] && cardMeta[id].domain === domain);
+          if (cardId && cardCoachTips[cardId]) {
+            return cardCoachTips[cardId];
           }
-        };
-        return (copy[domain] && copy[domain][band]) || '';
+        }
+        
+        // Fallback to base coach tips with variations
+        const tips = baseCoachTips[domain] && baseCoachTips[domain][band];
+        if (Array.isArray(tips)) {
+          return pickVariation(tips);
+        }
+        return tips || '';
       }
 
       function setCoach(id, domain, pct){
         var el = document.getElementById(id);
         if (!el) return;
-        var band = coachBand(pct);
-        var text = pickCoachText(domain, band);
+        var text = buildCardAwareCoach(domain, pct);
         el.textContent = text;
       }
 
