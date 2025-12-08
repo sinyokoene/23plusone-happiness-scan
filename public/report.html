@@ -270,7 +270,7 @@
       <div class="self-stretch inline-flex justify-between items-start pt-2">
         <div class="w-80 justify-start">
           <div class="footer-title">Disclaimer</div>
-          <div class="footer-content">This is not a clinical assessment. If you have concerns about your mental health or wellbeing, we encourage you to seek support from a qualified health professional.<br/>Percentiles use NL 2025Q3 norms; they may shift as norms evolve.<br/>Privacy: your data is stored securely and can be deleted at any time.</div>
+          <div class="footer-content">This is not a clinical assessment. If you have concerns about your mental health or wellbeing, we encourage you to seek support from a qualified health professional.<br/>Percentiles use current NL norms; they may shift as norms evolve.<br/>Privacy: your data is stored securely and can be deleted at any time.</div>
         </div>
         <div class="w-52 inline-flex justify-between items-start">
           <div class="justify-start">
@@ -881,7 +881,11 @@
       setCoach('coachBlock5', 'Attraction', dp['Attraction']);
 
       // Footer
-      setHTML('footerMeta', '<br/>Version: v1.2.0<br/>Date: ' + (new Date().toISOString().slice(0,10)) + '<br/>Norms Reference: NL<br/>2025Q3 (n = 12,843)');
+      // Auto-calculate current quarter
+      var now = new Date();
+      var quarter = 'Q' + (Math.floor(now.getMonth() / 3) + 1);
+      var year = now.getFullYear();
+      setHTML('footerMeta', '<br/>Version: v1.2.0<br/>Date: ' + now.toISOString().slice(0,10) + '<br/>Norms Reference: NL<br/>' + year + quarter + ' (n = 1,218)');
 
       try { window.__REPORT_READY__ = true; } catch(_) {}
     })();
