@@ -26,7 +26,7 @@ app.use((req, res, next) => {
 });
 
 // Middleware
-app.use(express.json({ limit: '10mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(express.static(path.join(__dirname, '../public')));
 // Sync demographics from Prolific API for a given study
 // ENV required: PROLIFIC_API_TOKEN; optional: PROLIFIC_API_BASE (defaults to v1)
