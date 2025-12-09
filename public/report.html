@@ -95,7 +95,7 @@
           <div class="w-80 flex justify-start items-start gap-2.5">
             <div class="flex-1 justify-start text-[8px] font-semibold font-['Poppins']" style="color: #9F847D;">About the Scan</div>
           </div>
-          <div class="w-52 flex justify-start items-start">
+          <div class="w-52 flex justify-start items-start mb-1">
             <div class="flex-1 justify-start text-[8px] font-semibold font-['Poppins']" style="color: #9F847D;">Your Selected Values</div>
           </div>
         </div>
@@ -504,7 +504,7 @@
           const colors = domainColors[domain];
           
           cards.forEach(card => {
-            html += '<span style="display: inline-block; vertical-align: middle; padding: 1px 6px 4px 6px; border-radius: 4px; background: ' + colors.bg + '; color: ' + colors.text + '; margin: 1px 1px 2px 1px; font-weight: 500; line-height: 1.2; font-size: 7px; white-space: nowrap;">' +
+            html += '<span style="display: inline-flex; align-items: center; justify-content: center; padding: 2px 6px; border-radius: 4px; background: ' + colors.bg + '; color: ' + colors.text + '; margin: 1px 1px 2px 1px; font-weight: 500; line-height: 1.2; font-size: 7px; white-space: nowrap;">' +
                     card.value + '</span>';
           });
         });

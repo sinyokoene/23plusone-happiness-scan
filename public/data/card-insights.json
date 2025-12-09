@@ -7,7 +7,11 @@
       "label": "Better World",
       "traits": ["purpose-driven", "visionary", "socially conscious"],
       "shortInsight": "making a meaningful difference",
-      "coachTip": "Choose one issue you care about and take a small, concrete step for it this week."
+      "coachTips": [
+        "Choose one issue you care about and take a small, concrete step for it this week.",
+        "Ask yourself what kind of world you want to help create, and do one thing today that moves toward it.",
+        "Find one way to contribute to a cause you believe in, no matter how small the action."
+      ]
     },
     "2": {
       "id": 2,
@@ -25,7 +29,11 @@
       "label": "Together",
       "traits": ["community-minded", "collaborative", "social"],
       "shortInsight": "being part of something bigger",
-      "coachTip": "Contact someone you would like to feel closer to and send a simple, genuine message."
+      "coachTips": [
+        "Contact someone you would like to feel closer to and send a simple, genuine message.",
+        "Think of one person you have not spoken to in a while and reach out with a short, heartfelt note.",
+        "Share something meaningful with someone today, even if it is just a thought or memory."
+      ]
     },
     "4": {
       "id": 4,
@@ -34,7 +42,11 @@
       "label": "Caring",
       "traits": ["nurturing", "empathetic", "compassionate"],
       "shortInsight": "caring for others",
-      "coachTip": "Offer a small act of kindness today, such as a check-in, a compliment or practical help."
+      "coachTips": [
+        "Offer a small act of kindness today, such as a check-in, a compliment or practical help.",
+        "Notice someone who might need support and offer a small gesture of care.",
+        "Do one thing today that makes someone else's day a little easier or brighter."
+      ]
     },
     "5": {
       "id": 5,
@@ -61,7 +73,11 @@
       "label": "Carefree",
       "traits": ["easygoing", "stress-free", "present"],
       "shortInsight": "letting go and relaxing",
-      "coachTip": "Plan a short pause today where you intentionally set tasks aside and let your body unwind."
+      "coachTips": [
+        "Plan a short pause today where you intentionally set tasks aside and let your body unwind.",
+        "Give yourself permission to do nothing useful for ten minutes and see how it feels.",
+        "Find a moment today to breathe slowly and release the tension you are carrying."
+      ]
     },
     "8": {
       "id": 8,
@@ -70,7 +86,11 @@
       "label": "Fun",
       "traits": ["playful", "joyful", "lighthearted"],
       "shortInsight": "having fun and playing",
-      "coachTip": "Do something light and playful today, even if it is only for a few minutes."
+      "coachTips": [
+        "Do something light and playful today, even if it is only for a few minutes.",
+        "Rediscover something you enjoyed as a child and allow yourself to play with it again.",
+        "Let yourself be silly or spontaneous today, without worrying about the outcome."
+      ]
     },
     "9": {
       "id": 9,
@@ -79,7 +99,11 @@
       "label": "Independent",
       "traits": ["autonomous", "self-reliant", "adventurous"],
       "shortInsight": "freedom and independence",
-      "coachTip": "Make one decision today that reflects your own preference, even in a small matter."
+      "coachTips": [
+        "Make one decision today that reflects your own preference, even in a small matter.",
+        "Say no to one thing that does not serve you, and notice how it feels to protect your freedom.",
+        "Choose something today purely because you want to, not because you should."
+      ]
     },
     "10": {
       "id": 10,
@@ -88,7 +112,11 @@
       "label": "Fantasy",
       "traits": ["imaginative", "innovative", "artistic"],
       "shortInsight": "expressing creativity",
-      "coachTip": "Give yourself twenty minutes to make or shape something, without judging the result."
+      "coachTips": [
+        "Give yourself twenty minutes to make or shape something, without judging the result.",
+        "Start a small creative project today and focus on the process rather than the outcome.",
+        "Express an idea in a new way—through writing, drawing, building or any form that calls to you."
+      ]
     },
     "11": {
       "id": 11,
@@ -106,7 +134,11 @@
       "label": "Curious",
       "traits": ["curious", "inquisitive", "explorer"],
       "shortInsight": "discovering new things",
-      "coachTip": "Learn one new fact, idea or perspective today through a conversation, article or video."
+      "coachTips": [
+        "Learn one new fact, idea or perspective today through a conversation, article or video.",
+        "Follow your curiosity somewhere unexpected today and see where it leads.",
+        "Ask a question you have been wondering about and spend a few minutes exploring the answer."
+      ]
     },
     "13": {
       "id": 13,
@@ -187,7 +219,11 @@
       "label": "Sporty",
       "traits": ["active", "athletic", "energetic"],
       "shortInsight": "staying fit and active",
-      "coachTip": "Include at least one short moment of movement in your day, such as a walk or a stretch."
+      "coachTips": [
+        "Include at least one short moment of movement in your day, such as a walk or a stretch.",
+        "Move your body in a way that feels good today, even if only for five minutes.",
+        "Step outside for a brief walk and notice how your energy shifts."
+      ]
     },
     "22": {
       "id": 22,
@@ -196,7 +232,11 @@
       "label": "Nutrition",
       "traits": ["health-conscious", "balanced", "vital"],
       "shortInsight": "nourishing your body",
-      "coachTip": "Make one choice that supports your health today, for example water, fresh food or going to bed on time."
+      "coachTips": [
+        "Make one choice that supports your health today, for example water, fresh food or going to bed on time.",
+        "Notice how one healthy choice today makes you feel, and let that guide tomorrow.",
+        "Pick one small health ritual—hydration, rest, or movement—and honour it today."
+      ]
     },
     "23": {
       "id": 23,
@@ -235,14 +275,14 @@
     "achiever": {
       "name": "The Achiever",
       "requires": [13, 14, 15],
-      "minMatch": 2,
+      "minMatch": 3,
       "insight": "You are driven by mastery and visible progress. Clear goals and tangible results tend to give you focus and energy.",
       "coachTip": "Channel your drive toward something meaningful. Achievement feels best when aligned with purpose."
     },
     "free_spirit": {
       "name": "The Free Spirit",
       "requires": [7, 8, 9],
-      "minMatch": 2,
+      "minMatch": 3,
       "insight": "You value ease, play and room to move. You flourish when there is space to choose your own pace and enjoy the moment.",
       "coachTip": "Protect your freedom fiercely—schedule time for unstructured joy."
     },
@@ -303,6 +343,46 @@
       "minMatch": 2,
       "insight": "You don't just create—you create with impact. Innovation is your path to achievement.",
       "coachTip": "Combine your creativity with your drive: what could you build that matters?"
+    },
+    "connectorAchiever": {
+      "name": "The Connector-Achiever",
+      "crossDomain": true,
+      "requires": [3, 14],
+      "minMatch": 2,
+      "insight": "You build success through relationships. Your achievements feel most meaningful when they strengthen the bonds around you.",
+      "coachTip": "Look for ways to achieve something that also deepens a relationship this week."
+    },
+    "mindfulPerformer": {
+      "name": "The Mindful Performer",
+      "crossDomain": true,
+      "requires": [22, 15],
+      "minMatch": 2,
+      "insight": "You push hard but take care of yourself. Sustainable performance matters more to you than short-term wins.",
+      "coachTip": "Before your next challenge, check in with your body and give it what it needs."
+    },
+    "creativeNurturer": {
+      "name": "The Creative Nurturer",
+      "crossDomain": true,
+      "requires": [10, 4],
+      "minMatch": 2,
+      "insight": "You express care through what you create. Your warmth shows up in the things you make and share.",
+      "coachTip": "Create something small this week with someone you care about in mind."
+    },
+    "principledVisionary": {
+      "name": "The Principled Visionary",
+      "crossDomain": true,
+      "requires": [2, 1],
+      "minMatch": 2,
+      "insight": "Your loyalty is to a cause greater than yourself. Principles and purpose guide your vision for a better world.",
+      "coachTip": "Identify one principle you hold dear and find a way to act on it this week."
+    },
+    "balancedStriver": {
+      "name": "The Balanced Striver",
+      "crossDomain": true,
+      "requires": [7, 14],
+      "minMatch": 2,
+      "insight": "You know when to push and when to pause. Relaxation is not laziness for you—it is fuel for your next achievement.",
+      "coachTip": "Schedule both a focused work session and a guilt-free rest period today."
     }
   },
   "domainSummaries": {
@@ -358,6 +438,21 @@
       ]
     },
     "Vitality": {
+      "headlines": {
+        "both": [
+          "Your body knows what it needs",
+          "Energy as your foundation",
+          "Vitality fuels everything",
+          "Movement and nourishment matter",
+          "Your physical self is a priority",
+          "Taking care from the inside out",
+          "Health and fitness work together"
+        ],
+        "single": {
+          "21": ["Fitness drives you", "Movement is your anchor", "Your active side shines"],
+          "22": ["Health guides you", "Nourishment matters to you", "Your body is a priority"]
+        }
+      },
       "high": [
         "You clearly treat your health as an important foundation.",
         "You seem to understand your body's signals and act on them.",
@@ -375,6 +470,21 @@
       ]
     },
     "Attraction": {
+      "headlines": {
+        "both": [
+          "Tuned into beauty around you",
+          "Your senses are alive",
+          "Pleasure and aesthetics guide you",
+          "Beauty speaks to you",
+          "The sensory world delights you",
+          "Attuned to beauty and pleasure",
+          "Your aesthetic sense is strong"
+        ],
+        "single": {
+          "23": ["Beauty catches your eye", "Aesthetics matter to you", "Your eye for beauty shines"],
+          "24": ["Sensory joy guides you", "Pleasure speaks to you", "Your senses are attuned"]
+        }
+      },
       "high": [
         "You experience the world strongly through your senses.",
         "Details in music, food, touch or surroundings clearly matter to you.",
