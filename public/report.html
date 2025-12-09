@@ -96,19 +96,17 @@
             <div class="flex-1 justify-start text-[8px] font-semibold font-['Poppins']" style="color: #9F847D;">About the Scan</div>
           </div>
           <div class="w-52 flex justify-start items-start">
-            <div class="flex-1 justify-start text-[8px] font-semibold font-['Poppins']" style="color: #9F847D;">Content</div>
+            <div class="flex-1 justify-start text-[8px] font-semibold font-['Poppins']" style="color: #9F847D;">Your Selected Values</div>
           </div>
         </div>
         <div class="self-stretch inline-flex justify-between items-start">
           <div class="flex justify-start items-start gap-2.5">
-            <div class="w-80 justify-start text-[8px] font-medium font-['Poppins']" style="line-height: 11px; color: #9F847D;">This report offers a snapshot of the drives that most strongly influence your motivation today. It reflects where your energy is currently focused.<br/><br/>23plusone is a science-based method that visualizes human values. It maps 24 universal emotional drives, visualised in five domains: Safety, Self-development, Ambition, Vitality and Attraction.<br/><br/>The Happiness Scan applies this method to show which drives are most active for you right now — helping you focus on what matters, build stronger connections and create positive impact.</div>
+            <div class="w-80 justify-start text-[8px] font-medium font-['Poppins']" style="line-height: 11px; color: #9F847D;">This report shows which drives are most active for you right now. 23plusone maps 24 universal emotional drives across five domains: Basics, Self-development, Ambition, Vitality and Attraction.<br/><br/>Use these insights to focus on what matters, build stronger connections and create positive impact.</div>
           </div>
-          <div class="w-52 inline-flex flex-col justify-start items-start gap-1">
-            <ul class="custom-bullets text-[8px] font-medium font-['Poppins'] leading-[10px]" style="color: #9F847D;">
-              <li>Overall Profile & Benchmarks – your overall drive score compared with a broader benchmark.</li>
-              <li>Drives Across Domains – your scores for each domain, with short tips to help you reflect and act on your strengths.</li>
-              <li>Disclaimer & Quality -</li>
-            </ul>
+          <div class="w-52 inline-flex flex-col justify-start items-start gap-0.5">
+            <div id="cardGrid" class="w-full flex flex-wrap gap-0.5" style="font-size: 7px; line-height: 10px;">
+              <!-- Card chips will be inserted here by JS -->
+            </div>
           </div>
         </div>
       </div>
@@ -164,7 +162,7 @@
           </div>
           <div class="flex justify-start items-center">
             <div class="w-52 bg-zinc-100 rounded-md flex">
-              <div id="coachBlock1" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 2px 8px 8px 8px; line-height: 11px;">
+              <div id="coachBlock1" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 8px 8px 8px 8px; line-height: 11px;">
                 <!-- Coach text -->
               </div>
             </div>
@@ -189,7 +187,7 @@
           </div>
           <div class="flex justify-start items-center">
             <div class="w-52 bg-zinc-100 rounded-md flex">
-              <div id="coachBlock2" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 2px 8px 8px 8px; line-height: 11px;"></div>
+              <div id="coachBlock2" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 8px 8px 8px 8px; line-height: 11px;"></div>
             </div>
           </div>
         </div>
@@ -212,7 +210,7 @@
           </div>
           <div class="flex justify-start items-center">
             <div class="w-52 bg-zinc-100 rounded-md flex">
-              <div id="coachBlock3" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 2px 8px 8px 8px; line-height: 11px;"></div>
+              <div id="coachBlock3" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 8px 8px 8px 8px; line-height: 11px;"></div>
             </div>
           </div>
         </div>
@@ -235,7 +233,7 @@
           </div>
           <div class="flex justify-start items-center">
             <div class="w-52 bg-zinc-100 rounded-md flex">
-              <div id="coachBlock4" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 2px 8px 8px 8px; line-height: 11px;"></div>
+              <div id="coachBlock4" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 8px 8px 8px 8px; line-height: 11px;"></div>
             </div>
           </div>
       </div>
@@ -258,7 +256,7 @@
           </div>
           <div class="flex justify-start items-center">
             <div class="w-52 bg-zinc-100 rounded-md flex">
-              <div id="coachBlock5" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 2px 8px 8px 8px; line-height: 11px;"></div>
+              <div id="coachBlock5" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 8px 8px 8px 8px; line-height: 11px;"></div>
             </div>
           </div>
       </div>
@@ -298,20 +296,58 @@
       if ((params.get('preview') || '').toString() === '1') { try { document.body.classList.add('preview'); } catch(_) {} }
       
       let payload = {};
-      try {
-        if (base64) {
-          try { payload = JSON.parse(decodeURIComponent(escape(atob(base64)))); }
-          catch(_) { payload = JSON.parse(atob(base64)); }
+      
+      // TEST MODE: Use ?test=1 to load sample data
+      if (params.get('test') === '1') {
+        payload = {
+          selectedCardIds: [1, 3, 4, 7, 8, 10, 12, 14, 21, 22],
+          answers: [
+            {id: 1, yes: true, time: 1200}, {id: 3, yes: true, time: 800},
+            {id: 4, yes: true, time: 950}, {id: 7, yes: true, time: 600},
+            {id: 8, yes: true, time: 1100}, {id: 10, yes: true, time: 750},
+            {id: 12, yes: true, time: 900}, {id: 14, yes: true, time: 1300},
+            {id: 21, yes: true, time: 850}, {id: 22, yes: true, time: 700}
+          ],
+          results: {
+            n1: 58,
+            domainAffirmations: { 'Basics': 12, 'Self-development': 16, 'Ambition': 4, 'Vitality': 8, 'Attraction': 0 }
+          },
+          benchmark: { ihsPercentile: 72, totalResponses: 1250, context: { averageScore: 52 } },
+          completionTime: 145
+        };
+        console.log('TEST MODE: Using sample data');
+      } else {
+        try {
+          if (base64) {
+            try { 
+              payload = JSON.parse(decodeURIComponent(escape(atob(base64)))); 
+            } catch(e1) { 
+              console.log('First decode attempt failed:', e1.message);
+              try {
+                payload = JSON.parse(atob(base64)); 
+              } catch(e2) {
+                console.log('Second decode attempt failed:', e2.message);
+                console.log('Base64 length:', base64.length);
+              }
+            }
+          }
+        } catch(e) { 
+          console.log('Outer catch error:', e.message);
         }
-      } catch(_) {}
+      }
 
       const results = payload.results || {};
       const ihs = Number(results.n1 != null ? results.n1 : (results.ihs || 0));
       const avg = Number((payload.benchmark && payload.benchmark.context && payload.benchmark.context.averageScore) || 0);
       const percentile = payload.benchmark && payload.benchmark.ihsPercentile;
-      console.log('Report - received benchmark:', payload.benchmark);
-      console.log('Report - ihsPercentile:', percentile);
-      console.log('Report - calculated topPct:', percentile != null ? (100 - Number(percentile)) : 'N/A');
+      
+      // Debug: Log full payload
+      console.log('=== REPORT DEBUG ===');
+      console.log('Raw base64:', base64 ? base64.substring(0, 50) + '...' : 'null');
+      console.log('Full payload:', payload);
+      console.log('payload.selectedCardIds:', payload.selectedCardIds);
+      console.log('payload.answers:', payload.answers);
+      console.log('====================');
       
       // Card selection data from payload
       const selectedCardIds = payload.selectedCardIds || [];
@@ -420,6 +456,63 @@
       setWidth('ambitionFill', dp['Ambition']); setText('ambitionScore', Math.round(dp['Ambition']) + ' | ' + bandLabel(dp['Ambition']));
       setWidth('vitalityFill', dp['Vitality']); setText('vitalityScore', Math.round(dp['Vitality']) + ' | ' + bandLabel(dp['Vitality']));
       setWidth('attractionFill', dp['Attraction']); setText('attractionScore', Math.round(dp['Attraction']) + ' | ' + bandLabel(dp['Attraction']));
+
+      // Card Grid - Visual display of selected cards grouped by domain
+      // Colors match the 23plusone brand colors - solid background with white text
+      const domainColors = {
+        'Basics': { bg: '#4CAF50', text: '#ffffff' },           // green
+        'Self-development': { bg: '#FF9800', text: '#ffffff' }, // orange
+        'Ambition': { bg: '#9C27B0', text: '#ffffff' },         // purple
+        'Vitality': { bg: '#2196F3', text: '#ffffff' },         // blue
+        'Attraction': { bg: '#E91E63', text: '#ffffff' }        // pink
+      };
+      
+      // Build card grid HTML grouped by domain
+      function buildCardGrid() {
+        const cardGridEl = document.getElementById('cardGrid');
+        console.log('Card Grid Debug:', { 
+          element: cardGridEl, 
+          selectedCardIds: selectedCardIds,
+          cardMetaKeys: Object.keys(cardMeta)
+        });
+        if (!cardGridEl) {
+          console.log('Card grid element not found!');
+          return;
+        }
+        if (!selectedCardIds.length) {
+          console.log('No selected cards!');
+          cardGridEl.innerHTML = '<span style="color: #9F847D; font-style: italic;">No cards selected</span>';
+          return;
+        }
+        
+        // Group selected cards by domain
+        const byDomain = {};
+        selectedCardIds.forEach(id => {
+          const card = cardMeta[id];
+          if (!card) return;
+          if (!byDomain[card.domain]) byDomain[card.domain] = [];
+          byDomain[card.domain].push(card);
+        });
+        
+        // Domain order
+        const domainOrder = ['Basics', 'Self-development', 'Ambition', 'Vitality', 'Attraction'];
+        
+        let html = '';
+        domainOrder.forEach(domain => {
+          const cards = byDomain[domain];
+          if (!cards || !cards.length) return;
+          const colors = domainColors[domain];
+          
+          cards.forEach(card => {
+            html += '<span style="display: inline-flex; align-items: center; padding: 1px 5px; border-radius: 3px; background: ' + colors.bg + '; color: ' + colors.text + '; margin: 1px; font-weight: 500;">' +
+                    card.value + '</span>';
+          });
+        });
+        
+        cardGridEl.innerHTML = html;
+      }
+      
+      buildCardGrid();
 
       // Narrative Text - Now card-aware
       function narrativeBand(v){ if (v >= 66) return 'high'; if (v >= 34) return 'mid'; return 'low'; }
@@ -564,6 +657,40 @@
         }
       };
 
+      // Special headline variations for 2-card domains (Vitality & Attraction)
+      const twoCardDomainHeadlines = {
+        Vitality: {
+          both: [
+            'Your body knows what it needs',
+            'Energy as your foundation',
+            'Vitality fuels everything',
+            'Movement and nourishment matter',
+            'Your physical self is a priority',
+            'Taking care from the inside out',
+            'Health and fitness work together'
+          ],
+          single: {
+            21: ['Fitness drives you', 'Movement is your anchor', 'Your active side shines'],
+            22: ['Health guides you', 'Nourishment matters to you', 'Your body is a priority']
+          }
+        },
+        Attraction: {
+          both: [
+            'Tuned into beauty around you',
+            'Your senses are alive',
+            'Pleasure and aesthetics guide you',
+            'Beauty speaks to you',
+            'The sensory world delights you',
+            'Attuned to beauty and pleasure',
+            'Your aesthetic sense is strong'
+          ],
+          single: {
+            23: ['Beauty catches your eye', 'Aesthetics matter to you', 'Your eye for beauty shines'],
+            24: ['Sensory joy guides you', 'Pleasure speaks to you', 'Your senses are attuned']
+          }
+        }
+      };
+
       // Generate card-aware narrative with text variations
       function buildCardAwareNarrative(domain, pct) {
         const band = narrativeBand(pct);
@@ -578,36 +705,63 @@
         if (domainCards.length > 0) {
           const values = domainCards.map(c => c.value);
           const cardInsights = domainCards.map(c => c.shortInsight);
+          const cardIds = selectedCardIds.filter(id => cardMeta[id] && cardMeta[id].domain === domain);
           
-          // Headline variations for card-specific content
-          const headlineVariations = [
-            `Your ${values[0]}${values[1] ? ' & ' + values[1] : ''} shine through`,
-            `${values[0]}${values[1] ? ' and ' + values[1] : ''} drive${values.length === 1 ? 's' : ''} you`,
-            `Powered by ${values[0]}${values[1] ? ' & ' + values[1] : ''}`
-          ];
-          
-          if (domainCards.length >= 2) {
-            // Multiple cards selected - reference specific values
-            headline = pickVariation(headlineVariations);
-            const insightOpeners = [
-              `You're drawn to ${cardInsights.slice(0, 2).join(' and ')}.`,
-              `${cardInsights[0].charAt(0).toUpperCase() + cardInsights[0].slice(1)} and ${cardInsights[1]} matter to you.`,
-              `Your selections reveal a passion for ${cardInsights.slice(0, 2).join(' and ')}.`
-            ];
+          // Special handling for 2-card domains (Vitality & Attraction)
+          if (twoCardDomainHeadlines[domain]) {
+            const domainHeadlines = twoCardDomainHeadlines[domain];
+            if (domainCards.length >= 2) {
+              // Both cards selected - use special "both" headlines
+              headline = pickVariation(domainHeadlines.both);
+            } else if (domainCards.length === 1 && domainHeadlines.single[cardIds[0]]) {
+              // Single card - use card-specific headlines
+              headline = pickVariation(domainHeadlines.single[cardIds[0]]);
+            }
+            
+            // Add insight openers
+            const insightOpeners = domainCards.length >= 2 
+              ? [
+                  `You're drawn to ${cardInsights.slice(0, 2).join(' and ')}.`,
+                  `${cardInsights[0].charAt(0).toUpperCase() + cardInsights[0].slice(1)} and ${cardInsights[1]} matter to you.`,
+                  `Your selections reveal a passion for ${cardInsights.slice(0, 2).join(' and ')}.`
+                ]
+              : [
+                  `You value ${cardInsights[0]}.`,
+                  `${cardInsights[0].charAt(0).toUpperCase() + cardInsights[0].slice(1)} is important to you.`,
+                  `Your connection to ${cardInsights[0]} is clear.`
+                ];
             insight = `${pickVariation(insightOpeners)} ${insight}`;
-          } else if (domainCards.length === 1) {
-            // Single card - focus on that value
-            headline = pickVariation([
-              `${values[0]} drives you`,
-              `Powered by ${values[0]}`,
-              `Your ${values[0].toLowerCase()} shines`
-            ]);
-            const insightOpeners = [
-              `You value ${cardInsights[0]}.`,
-              `${cardInsights[0].charAt(0).toUpperCase() + cardInsights[0].slice(1)} is important to you.`,
-              `Your connection to ${cardInsights[0]} is clear.`
+          } else {
+            // Standard handling for other domains
+            const headlineVariations = [
+              `Your ${values[0]}${values[1] ? ' & ' + values[1] : ''} shine through`,
+              `${values[0]}${values[1] ? ' and ' + values[1] : ''} drive${values.length === 1 ? 's' : ''} you`,
+              `Powered by ${values[0]}${values[1] ? ' & ' + values[1] : ''}`
             ];
-            insight = `${pickVariation(insightOpeners)} ${insight}`;
+            
+            if (domainCards.length >= 2) {
+              // Multiple cards selected - reference specific values
+              headline = pickVariation(headlineVariations);
+              const insightOpeners = [
+                `You're drawn to ${cardInsights.slice(0, 2).join(' and ')}.`,
+                `${cardInsights[0].charAt(0).toUpperCase() + cardInsights[0].slice(1)} and ${cardInsights[1]} matter to you.`,
+                `Your selections reveal a passion for ${cardInsights.slice(0, 2).join(' and ')}.`
+              ];
+              insight = `${pickVariation(insightOpeners)} ${insight}`;
+            } else if (domainCards.length === 1) {
+              // Single card - focus on that value
+              headline = pickVariation([
+                `${values[0]} drives you`,
+                `Powered by ${values[0]}`,
+                `Your ${values[0].toLowerCase()} shines`
+              ]);
+              const insightOpeners = [
+                `You value ${cardInsights[0]}.`,
+                `${cardInsights[0].charAt(0).toUpperCase() + cardInsights[0].slice(1)} is important to you.`,
+                `Your connection to ${cardInsights[0]} is clear.`
+              ];
+              insight = `${pickVariation(insightOpeners)} ${insight}`;
+            }
           }
         }
         
@@ -628,21 +782,35 @@
       setNarrative('attractionText', 'Attraction', dp['Attraction']);
 
       // Pattern detection
+      // Note: 3-card patterns require ALL 3 cards (minMatch: 3) to prevent over-triggering
+      // 2-card patterns are more specific by nature
       const patterns = {
         explorer: { name: 'The Explorer', requires: [10, 12], minMatch: 2, insight: 'Your curiosity and imagination work hand in hand. You tend to feel most alive when you can explore, learn and try out new possibilities.' },
         nurturer: { name: 'The Nurturer', requires: [3, 4], minMatch: 2, insight: 'Connection and care are at your core. You often feel most at ease when you can support others in a warm, reliable way.' },
-        achiever: { name: 'The Achiever', requires: [13, 14, 15], minMatch: 2, insight: 'You are driven by mastery and visible progress. Clear goals and tangible results tend to give you focus and energy.' },
-        freeSpirit: { name: 'The Free Spirit', requires: [7, 8, 9], minMatch: 2, insight: 'You value ease, play and room to move. You flourish when there is space to choose your own pace and enjoy the moment.' },
-        groundedLeader: { name: 'The Grounded Leader', requires: [5, 6, 20], minMatch: 2, insight: "Stability and responsibility matter to you. Others are likely to see you as someone who offers direction without losing sight of people's needs." },
-        holisticWellness: { name: 'Holistic Wellness', requires: [21, 22, 23], minMatch: 2, insight: 'You see well-being as more than just fitness or food. You pay attention to how body, mind and environment all influence how you feel.' },
-        visionaryIdealist: { name: 'The Visionary Idealist', requires: [1, 10, 14], minMatch: 2, insight: 'You are moved by big ideas and meaningful change. You are at your best when you can turn your ideals into concrete projects or actions.' },
+        achiever: { name: 'The Achiever', requires: [13, 14, 15], minMatch: 3, insight: 'You are driven by mastery and visible progress. Clear goals and tangible results tend to give you focus and energy.' },
+        freeSpirit: { name: 'The Free Spirit', requires: [7, 8, 9], minMatch: 3, insight: 'You value ease, play and room to move. You flourish when there is space to choose your own pace and enjoy the moment.' },
+        groundedLeader: { name: 'The Grounded Leader', requires: [5, 6, 20], minMatch: 3, insight: "Stability and responsibility matter to you. Others are likely to see you as someone who offers direction without losing sight of people's needs." },
+        holisticWellness: { name: 'Holistic Wellness', requires: [21, 22, 23], minMatch: 3, insight: 'You see well-being as more than just fitness or food. You pay attention to how body, mind and environment all influence how you feel.' },
+        visionaryIdealist: { name: 'The Visionary Idealist', requires: [1, 10, 14], minMatch: 3, insight: 'You are moved by big ideas and meaningful change. You are at your best when you can turn your ideals into concrete projects or actions.' },
         authenticExpression: { name: 'Authentic Expression', requires: [10, 11], minMatch: 2, insight: 'For you, creativity and being yourself are closely linked. You feel most real when you can express your own voice rather than follow the crowd.' },
-        statusBuilder: { name: 'The Status Builder', requires: [16, 17, 18], minMatch: 2, insight: 'Recognition and respect are important signals for you. When your efforts are seen, it strengthens your motivation to keep raising the bar.' },
-        sensoryConnoisseur: { name: 'The Sensory Connoisseur', requires: [23, 24], minMatch: 2, insight: 'You experience life strongly through your senses. Carefully chosen details in music, food, touch or aesthetics can turn an ordinary moment into something special for you.' }
+        statusBuilder: { name: 'The Status Builder', requires: [16, 17, 18], minMatch: 3, insight: 'Recognition and respect are important signals for you. When your efforts are seen, it strengthens your motivation to keep raising the bar.' },
+        sensoryConnoisseur: { name: 'The Sensory Connoisseur', requires: [23, 24], minMatch: 2, insight: 'You experience life strongly through your senses. Carefully chosen details in music, food, touch or aesthetics can turn an ordinary moment into something special for you.' },
+        // Cross-domain patterns (2-card, more specific combinations)
+        balanceSeeker: { name: 'The Balance Seeker', requires: [6, 7, 21], minMatch: 3, crossDomain: true, insight: 'You seek harmony between security and relaxation, stability and vitality. Balance is not passive for you—it is an active practice.' },
+        creativeAchiever: { name: 'The Creative Achiever', requires: [10, 14], minMatch: 2, crossDomain: true, insight: 'You do not just create—you create with impact. Innovation is your path to achievement.' },
+        connectorAchiever: { name: 'The Connector-Achiever', requires: [3, 14], minMatch: 2, crossDomain: true, insight: 'You build success through relationships. Your achievements feel most meaningful when they strengthen the bonds around you.' },
+        mindfulPerformer: { name: 'The Mindful Performer', requires: [22, 15], minMatch: 2, crossDomain: true, insight: 'You push hard but take care of yourself. Sustainable performance matters more to you than short-term wins.' },
+        creativeNurturer: { name: 'The Creative Nurturer', requires: [10, 4], minMatch: 2, crossDomain: true, insight: 'You express care through what you create. Your warmth shows up in the things you make and share.' },
+        principledVisionary: { name: 'The Principled Visionary', requires: [2, 1], minMatch: 2, crossDomain: true, insight: 'Your loyalty is to a cause greater than yourself. Principles and purpose guide your vision for a better world.' },
+        balancedStriver: { name: 'The Balanced Striver', requires: [7, 14], minMatch: 2, crossDomain: true, insight: 'You know when to push and when to pause. Relaxation is not laziness for you—it is fuel for your next achievement.' }
       };
       
       function detectPatterns() {
         const detected = [];
+        
+        // Cards that are selected very often (top 5) - patterns using only these are less distinctive
+        const commonCardIds = [22, 7, 4, 1, 3]; // Health, Relaxation, Warmth, Idealism, Connection
+        
         for (const [key, pattern] of Object.entries(patterns)) {
           const matchingCards = pattern.requires.filter(id => selectedCardIds.includes(id));
           const matchCount = matchingCards.length;
@@ -653,19 +821,31 @@
               ? matchedAnswers.reduce((sum, a) => sum + (a.time || 4000), 0) / matchedAnswers.length 
               : 4000;
             
+            // Calculate distinctiveness score:
+            // - Cross-domain patterns get a boost (more meaningful combinations)
+            // - Patterns with less common cards are more distinctive
+            const hasUncommonCard = matchingCards.some(id => !commonCardIds.includes(id));
+            const crossDomainBonus = pattern.crossDomain ? 0.15 : 0;
+            const distinctivenessBonus = hasUncommonCard ? 0.1 : 0;
+            
+            // Combined score: match%, cross-domain bonus, distinctiveness, response time
+            const score = (matchCount / pattern.requires.length) + crossDomainBonus + distinctivenessBonus;
+            
             detected.push({ 
               key, 
               matchCount, 
-              matchPct: matchCount / pattern.requires.length, // e.g., 3/3 = 1.0, 2/3 = 0.67
+              matchPct: matchCount / pattern.requires.length,
               avgResponseTime,
+              score, // Combined weighted score
+              hasUncommonCard,
               ...pattern 
             });
           }
         }
-        // Sort by: 1) match count, 2) match percentage, 3) faster response time wins ties
+        
+        // Sort by: 1) score (includes cross-domain & distinctiveness), 2) faster response time breaks ties
         detected.sort((a, b) => {
-          if (b.matchCount !== a.matchCount) return b.matchCount - a.matchCount;
-          if (b.matchPct !== a.matchPct) return b.matchPct - a.matchPct;
+          if (b.score !== a.score) return b.score - a.score;
           return a.avgResponseTime - b.avgResponseTime; // faster (lower time) wins
         });
         return detected;
@@ -729,20 +909,52 @@
       // Coaches - Card-specific recommendations
       function coachBand(v){ if (v >= 66) return 'high'; if (v >= 34) return 'mid'; return 'low'; }
       
-      // Card-specific coach tips
+      // Card-specific coach tips (top 10 cards have multiple variations)
       const cardCoachTips = {
-        1: "Choose one issue you care about and take a small, concrete step for it this week.",
+        1: [
+          "Choose one issue you care about and take a small, concrete step for it this week.",
+          "Ask yourself what kind of world you want to help create, and do one thing today that moves toward it.",
+          "Find one way to contribute to a cause you believe in, no matter how small the action."
+        ],
         2: "Think of a moment when you stayed true to someone or something and let it remind you what loyalty means to you.",
-        3: "Contact someone you would like to feel closer to and send a simple, genuine message.",
-        4: "Offer a small act of kindness today, such as a check-in, a compliment or practical help.",
+        3: [
+          "Contact someone you would like to feel closer to and send a simple, genuine message.",
+          "Think of one person you have not spoken to in a while and reach out with a short, heartfelt note.",
+          "Share something meaningful with someone today, even if it is just a thought or memory."
+        ],
+        4: [
+          "Offer a small act of kindness today, such as a check-in, a compliment or practical help.",
+          "Notice someone who might need support and offer a small gesture of care.",
+          "Do one thing today that makes someone else's day a little easier or brighter."
+        ],
         5: "Spend ten minutes bringing order to one small area, like your desk or inbox.",
         6: "Notice one thing that makes you feel safe and make a conscious effort to protect or strengthen it.",
-        7: "Plan a short pause today where you intentionally set tasks aside and let your body unwind.",
-        8: "Do something light and playful today, even if it is only for a few minutes.",
-        9: "Make one decision today that reflects your own preference, even in a small matter.",
-        10: "Give yourself twenty minutes to make or shape something, without judging the result.",
+        7: [
+          "Plan a short pause today where you intentionally set tasks aside and let your body unwind.",
+          "Give yourself permission to do nothing useful for ten minutes and see how it feels.",
+          "Find a moment today to breathe slowly and release the tension you are carrying."
+        ],
+        8: [
+          "Do something light and playful today, even if it is only for a few minutes.",
+          "Rediscover something you enjoyed as a child and allow yourself to play with it again.",
+          "Let yourself be silly or spontaneous today, without worrying about the outcome."
+        ],
+        9: [
+          "Make one decision today that reflects your own preference, even in a small matter.",
+          "Say no to one thing that does not serve you, and notice how it feels to protect your freedom.",
+          "Choose something today purely because you want to, not because you should."
+        ],
+        10: [
+          "Give yourself twenty minutes to make or shape something, without judging the result.",
+          "Start a small creative project today and focus on the process rather than the outcome.",
+          "Express an idea in a new way—through writing, drawing, building or any form that calls to you."
+        ],
         11: "Name one way in which you differ from others and allow yourself to appreciate it.",
-        12: "Learn one new fact, idea or perspective today through a conversation, article or video.",
+        12: [
+          "Learn one new fact, idea or perspective today through a conversation, article or video.",
+          "Follow your curiosity somewhere unexpected today and see where it leads.",
+          "Ask a question you have been wondering about and spend a few minutes exploring the answer."
+        ],
         13: "Practice a skill you value for fifteen minutes and notice what feels a little easier than before.",
         14: "Set one clear, realistic task for today and take it to completion.",
         15: "Choose a manageable challenge you have been postponing and take a first step toward it.",
@@ -751,8 +963,16 @@
         18: "Take a moment to reflect on how you would like to be seen and check whether your actions match that picture.",
         19: "Look at something you own that matters to you and consider why it deserves its place in your life.",
         20: "Use your influence today to support someone or to move a shared goal a small step forward.",
-        21: "Include at least one short moment of movement in your day, such as a walk or a stretch.",
-        22: "Make one choice that supports your health today, for example water, fresh food or going to bed on time.",
+        21: [
+          "Include at least one short moment of movement in your day, such as a walk or a stretch.",
+          "Move your body in a way that feels good today, even if only for five minutes.",
+          "Step outside for a brief walk and notice how your energy shifts."
+        ],
+        22: [
+          "Make one choice that supports your health today, for example water, fresh food or going to bed on time.",
+          "Notice how one healthy choice today makes you feel, and let that guide tomorrow.",
+          "Pick one small health ritual—hydration, rest, or movement—and honour it today."
+        ],
         23: "Pause to notice one visual detail that you find beautiful, however small.",
         24: "Take time to experience a simple sensory moment fully, such as a taste, scent or touch."
       };
@@ -848,14 +1068,19 @@
       
       function buildCardAwareCoach(domain, pct) {
         const band = coachBand(pct);
-        const domainCards = getSelectedCardsForDomain(domain);
+        const domainCardIds = selectedCardIds.filter(id => cardMeta[id] && cardMeta[id].domain === domain);
         
-        // If we have selected cards, use card-specific tips
-        if (domainCards.length > 0) {
-          // Get the first selected card's tip
-          const cardId = selectedCardIds.find(id => cardMeta[id] && cardMeta[id].domain === domain);
-          if (cardId && cardCoachTips[cardId]) {
-            return cardCoachTips[cardId];
+        // If we have selected cards, randomly pick one and use its tip
+        if (domainCardIds.length > 0) {
+          // Randomly select from ALL cards in this domain, not just the first
+          const randomCardId = domainCardIds[Math.floor(Math.random() * domainCardIds.length)];
+          if (cardCoachTips[randomCardId]) {
+            const tip = cardCoachTips[randomCardId];
+            // Handle both single tips and arrays of variations
+            if (Array.isArray(tip)) {
+              return pickVariation(tip);
+            }
+            return tip;
           }
         }
         
