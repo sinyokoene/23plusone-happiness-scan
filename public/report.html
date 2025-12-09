@@ -104,7 +104,7 @@
             <div class="w-80 justify-start text-[8px] font-medium font-['Poppins']" style="line-height: 11px; color: #9F847D;">This report offers a snapshot of the drives that most strongly influence your motivation today. It reflects where your energy is currently focused.<br/><br/>23plusone is a science-based method that visualizes human values. It maps 24 universal emotional drives, visualised in five domains: Safety, Self-development, Ambition, Vitality and Attraction.<br/><br/>The Happiness Scan applies this method to show which drives are most active for you right now — helping you focus on what matters, build stronger connections and create positive impact.</div>
           </div>
           <div class="w-52 inline-flex flex-col justify-start items-start gap-0.5">
-            <div id="cardGrid" class="w-full flex flex-wrap justify-center items-center gap-0.5" style="font-size: 7px; line-height: 10px;">
+            <div id="cardGrid" class="w-full flex flex-wrap justify-start items-start gap-0.5" style="font-size: 7px; line-height: 10px;">
               <!-- Card chips will be inserted here by JS -->
             </div>
           </div>
@@ -161,8 +161,8 @@
             </div>
           </div>
           <div class="flex justify-start items-center">
-            <div class="w-52 bg-zinc-100 rounded-md flex justify-center items-center">
-              <div id="coachBlock1" class="text-stone-950 text-[8px] font-medium font-['Poppins'] text-center" style="width: 100%; padding: 3px 8px 8px 8px; line-height: 11px;">
+            <div class="w-52 bg-zinc-100 rounded-md flex justify-start items-start">
+              <div id="coachBlock1" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 8px; line-height: 11px; text-align: left;">
                 <!-- Coach text -->
               </div>
             </div>
@@ -186,8 +186,8 @@
             </div>
           </div>
           <div class="flex justify-start items-center">
-            <div class="w-52 bg-zinc-100 rounded-md flex justify-center items-center">
-              <div id="coachBlock2" class="text-stone-950 text-[8px] font-medium font-['Poppins'] text-center" style="width: 100%; padding: 3px 8px 8px 8px; line-height: 11px;"></div>
+            <div class="w-52 bg-zinc-100 rounded-md flex justify-start items-start">
+              <div id="coachBlock2" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 8px; line-height: 11px; text-align: left;"></div>
             </div>
           </div>
         </div>
@@ -209,8 +209,8 @@
             </div>
           </div>
           <div class="flex justify-start items-center">
-            <div class="w-52 bg-zinc-100 rounded-md flex justify-center items-center">
-              <div id="coachBlock3" class="text-stone-950 text-[8px] font-medium font-['Poppins'] text-center" style="width: 100%; padding: 3px 8px 8px 8px; line-height: 11px;"></div>
+            <div class="w-52 bg-zinc-100 rounded-md flex justify-start items-start">
+              <div id="coachBlock3" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 8px; line-height: 11px; text-align: left;"></div>
             </div>
           </div>
         </div>
@@ -232,8 +232,8 @@
             </div>
           </div>
           <div class="flex justify-start items-center">
-            <div class="w-52 bg-zinc-100 rounded-md flex justify-center items-center">
-              <div id="coachBlock4" class="text-stone-950 text-[8px] font-medium font-['Poppins'] text-center" style="width: 100%; padding: 3px 8px 8px 8px; line-height: 11px;"></div>
+            <div class="w-52 bg-zinc-100 rounded-md flex justify-start items-start">
+              <div id="coachBlock4" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 8px; line-height: 11px; text-align: left;"></div>
             </div>
           </div>
       </div>
@@ -255,8 +255,8 @@
             </div>
           </div>
           <div class="flex justify-start items-center">
-            <div class="w-52 bg-zinc-100 rounded-md flex justify-center items-center">
-              <div id="coachBlock5" class="text-stone-950 text-[8px] font-medium font-['Poppins'] text-center" style="width: 100%; padding: 3px 8px 8px 8px; line-height: 11px;"></div>
+            <div class="w-52 bg-zinc-100 rounded-md flex justify-start items-start">
+              <div id="coachBlock5" class="text-stone-950 text-[8px] font-medium font-['Poppins']" style="width: 100%; padding: 8px; line-height: 11px; text-align: left;"></div>
             </div>
           </div>
       </div>
@@ -504,7 +504,7 @@
           const colors = domainColors[domain];
           
           cards.forEach(card => {
-            html += '<span style="display: inline-flex; align-items: center; justify-content: center; padding: 2px 6px; border-radius: 4px; background: ' + colors.bg + '; color: ' + colors.text + '; margin: 1px 1px 2px 1px; font-weight: 500; line-height: 9px;">' +
+            html += '<span style="display: inline-block; vertical-align: middle; padding: 3px 6px 2px 6px; border-radius: 4px; background: ' + colors.bg + '; color: ' + colors.text + '; margin: 1px 1px 2px 1px; font-weight: 500; line-height: 1; font-size: 7px; white-space: nowrap;">' +
                     card.value + '</span>';
           });
         });
