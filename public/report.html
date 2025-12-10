@@ -1077,6 +1077,12 @@
         Vitality: [21, 22], // fitness, health
         Attraction: [24, 23] // sensuality, beauty
       };
+      const missingActionTemplates = [
+        (name, alt, detail) => `Worth exploring ${name}${alt ? ' (also ' + alt + ')' : ''}. Often linked to ${detail}.`,
+        (name, alt, detail) => `Try adding ${name}${alt ? ' (or ' + alt + ')' : ''} this week. People often draw on ${detail}.`,
+        (name, alt, detail) => `Consider ${name}${alt ? ' (also ' + alt + ')' : ''} next; it often ties to ${detail}.`,
+        (name, alt, detail) => `Explore ${name}${alt ? ' (also ' + alt + ')' : ''}; a small step toward ${detail} can help.`
+      ];
       
       function buildCardAwareCoach(domain, pct) {
         const band = coachBand(pct);
@@ -1090,11 +1096,9 @@
           const firstName = cardMeta[firstId]?.value || cardMeta[firstId]?.label || 'this value';
           const secondName = secondId ? (cardMeta[secondId]?.value || cardMeta[secondId]?.label) : null;
           const shortInsight = cardMeta[firstId]?.shortInsight;
-          const note = shortInsight ? `People who lean into ${firstName.toLowerCase()} often draw on ${shortInsight}.` : '';
-          if (secondName) {
-            return `You did not select ${firstName}${secondName ? ' (also consider ' + secondName + ')' : ''}. ${note || 'Explore whether it fits your drives.'}`;
-          }
-          return `You did not select ${firstName}. ${note || 'Explore whether it fits your drives.'}`;
+          const detail = shortInsight ? shortInsight : 'this drive';
+          const template = pickVariation(missingActionTemplates);
+          return template(firstName, secondName, detail);
         }
         
         // If we have selected cards, randomly pick one and use its tip
