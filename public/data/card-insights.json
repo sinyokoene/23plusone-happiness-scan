@@ -312,7 +312,7 @@
       "requires": [10, 11],
       "minMatch": 2,
       "insight": "For you, creativity and being yourself are closely linked. You feel most real when you can express your own voice rather than follow the crowd.",
-      "coachTip": "Share something you've created—your authentic voice deserves to be heard."
+      "coachTip": "Share something you have created—your authentic voice deserves to be heard."
     },
     "statusSeeker": {
       "name": "The Status Builder",
@@ -341,7 +341,7 @@
       "crossDomain": true,
       "requires": [10, 14],
       "minMatch": 2,
-      "insight": "You don't just create—you create with impact. Innovation is your path to achievement.",
+      "insight": "You do not just create—you create with impact. Innovation is your path to achievement.",
       "coachTip": "Combine your creativity with your drive: what could you build that matters?"
     },
     "connectorAchiever": {
@@ -504,15 +504,15 @@
   },
   "openingPhrases": [
     "Your selections reveal something interesting:",
-    "Here's what stands out about you:",
+    "Here is what stands out about you:",
     "Your happiness profile shows:",
     "Looking at your choices:",
     "What drives you is clear:"
   ],
   "transitionPhrases": [
-    "What's more,",
+    "What is more,",
     "Additionally,",
-    "It's also worth noting that",
+    "It is also worth noting that",
     "Beyond that,",
     "Interestingly,"
   ],
@@ -520,7 +520,7 @@
     "This is your unique happiness fingerprint.",
     "These drives shape how you experience the world.",
     "Understanding these patterns can help you thrive.",
-    "Lean into these insights—they're uniquely yours.",
+    "Lean into these insights—they are uniquely yours.",
     "This is what makes you, you."
   ]
 }

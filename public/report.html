@@ -721,7 +721,7 @@
             // Add insight openers
             const insightOpeners = domainCards.length >= 2 
               ? [
-                  `You're drawn to ${cardInsights.slice(0, 2).join(' and ')}.`,
+                  `You are drawn to ${cardInsights.slice(0, 2).join(' and ')}.`,
                   `${cardInsights[0].charAt(0).toUpperCase() + cardInsights[0].slice(1)} and ${cardInsights[1]} matter to you.`,
                   `Your selections reveal a passion for ${cardInsights.slice(0, 2).join(' and ')}.`
                 ]
@@ -743,7 +743,7 @@
               // Multiple cards selected - reference specific values
               headline = pickVariation(headlineVariations);
               const insightOpeners = [
-                `You're drawn to ${cardInsights.slice(0, 2).join(' and ')}.`,
+                `You are drawn to ${cardInsights.slice(0, 2).join(' and ')}.`,
                 `${cardInsights[0].charAt(0).toUpperCase() + cardInsights[0].slice(1)} and ${cardInsights[1]} matter to you.`,
                 `Your selections reveal a passion for ${cardInsights.slice(0, 2).join(' and ')}.`
               ];
@@ -886,22 +886,26 @@
           if (extraFastValues) {
             noteHtml += ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Your quick responses to ' + extraFastValues + ' also reveal strong instincts.</span>';
           } else if (secondary) {
-            // Only mention secondary if we don't have extra fast values (to keep text length manageable)
+            // Only mention secondary if we do not have extra fast values (to keep text length manageable)
             noteHtml += ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">You also show elements of ' + secondary.name + '.</span>';
           }
+          // Encourage looking at coach blocks for growth
+          noteHtml += ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Check the tips below to round out your drives.</span>';
           setHTML('overallNote', noteHtml);
         } else if (fastCards.length >= 2) {
           // Use specific values from fastest responses
           const valuesStr = fastCards.slice(0, 2).map(c => c.value).join(' & ');
           var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">Your quick responses to ' + valuesStr + ' reveal what truly drives you: </span>' +
-                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">these themes are core to who you are.</span>';
+                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">these themes are core to who you are.</span>' +
+                         ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Check the tips below to round out your drives.</span>';
           setHTML('overallNote', noteHtml);
         } else if (entries.length >= 2 && entries[0][1] > 0) {
           // Fallback to domain names
           const d1 = entries[0][0];
           const d2 = entries[1][0];
           var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + d1 + ' & ' + d2 + '</span>' +
-                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;"> stand out clearly — your reactions here were fast and consistent.</span>';
+                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;"> stand out clearly — your reactions here were fast and consistent.</span>' +
+                         ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Check the tips below to round out your drives.</span>';
           setHTML('overallNote', noteHtml);
         }
       } catch(_) {}
@@ -1066,9 +1070,32 @@
         }
       };
       
+      const correlationPriority = {
+        Basics: [2, 3, 6, 1, 4, 5], // loyalty, connection, safety, idealism, warmth, order
+        'Self-development': [8, 7, 12, 10, 11, 9], // play, relaxation, discovery, creativity, individuality, freedom
+        Ambition: [15, 14, 18, 16, 17, 20, 13, 19], // challenge, achievement, standing, pride, appreciation, influence, capability, collection
+        Vitality: [21, 22], // fitness, health
+        Attraction: [24, 23] // sensuality, beauty
+      };
+      
       function buildCardAwareCoach(domain, pct) {
         const band = coachBand(pct);
         const domainCardIds = selectedCardIds.filter(id => cardMeta[id] && cardMeta[id].domain === domain);
+        const prioritizedMissing = (correlationPriority[domain] || []).filter(id => !domainCardIds.includes(id));
+        
+        // If cards are missing, surface a suggestion based on correlation priority
+        if (prioritizedMissing.length > 0) {
+          const firstId = prioritizedMissing[0];
+          const secondId = prioritizedMissing[1];
+          const firstName = cardMeta[firstId]?.value || cardMeta[firstId]?.label || 'this value';
+          const secondName = secondId ? (cardMeta[secondId]?.value || cardMeta[secondId]?.label) : null;
+          const shortInsight = cardMeta[firstId]?.shortInsight;
+          const note = shortInsight ? `People who lean into ${firstName.toLowerCase()} often draw on ${shortInsight}.` : '';
+          if (secondName) {
+            return `You did not select ${firstName}${secondName ? ' (also consider ' + secondName + ')' : ''}. ${note || 'Explore whether it fits your drives.'}`;
+          }
+          return `You did not select ${firstName}. ${note || 'Explore whether it fits your drives.'}`;
+        }
         
         // If we have selected cards, randomly pick one and use its tip
         if (domainCardIds.length > 0) {
