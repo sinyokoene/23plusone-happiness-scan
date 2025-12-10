@@ -486,8 +486,8 @@ Each domain has 3 score bands (Low, Mid, High) with 3 headline and 3 insight var
 These tips are shown when a user selects a specific card.
 
 ### Missing-card nudges (per domain, 1 line max)
-- If a domain is missing its highest-priority card(s), we show one nudge using that card’s own coach tip (or short insight if no tip exists).
-- We rotate short action templates like: “Consider {Card}…”, “Try adding {Card}…”, “Explore {Card}…”.
+- If a domain is missing its highest-priority card, we show one nudge using that card’s own coach tip (or short insight if no tip exists).
+- No “also/consider” phrasing and no extra template text; the line is the coach tip itself (max one line).
 - Only one missing-card line is shown per domain to avoid repetition.
 
 | Card | Value | Coach Tip |

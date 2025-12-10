@@ -1077,12 +1077,6 @@
         Vitality: [21, 22], // fitness, health
         Attraction: [24, 23] // sensuality, beauty
       };
-      const missingActionTemplates = [
-        (name, alt, detail) => `Consider ${name}${alt ? ' (also ' + alt + ')' : ''}; it often ties to ${detail}.`,
-        (name, alt, detail) => `Try adding ${name}${alt ? ' (or ' + alt + ')' : ''} this week. People often draw on ${detail}.`,
-        (name, alt, detail) => `Explore ${name}${alt ? ' (also ' + alt + ')' : ''}; a small step toward ${detail} can help.`,
-        (name, alt, detail) => `${name}${alt ? ' (also ' + alt + ')' : ''} can support you; it often connects to ${detail}.`
-      ];
       
       function buildCardAwareCoach(domain, pct) {
         const band = coachBand(pct);
@@ -1092,13 +1086,15 @@
         // If cards are missing, surface a suggestion based on correlation priority
         if (prioritizedMissing.length > 0) {
           const firstId = prioritizedMissing[0];
-          const secondId = prioritizedMissing[1];
-          const firstName = cardMeta[firstId]?.value || cardMeta[firstId]?.label || 'this value';
-          const secondName = secondId ? (cardMeta[secondId]?.value || cardMeta[secondId]?.label) : null;
           const cardTip = cardCoachTips[firstId];
-          const detail = Array.isArray(cardTip) ? pickVariation(cardTip) : (cardTip || cardMeta[firstId]?.shortInsight || 'this drive');
-          const template = pickVariation(missingActionTemplates);
-          return template(firstName, secondName, detail);
+          if (Array.isArray(cardTip)) {
+            return pickVariation(cardTip);
+          }
+          if (typeof cardTip === 'string' && cardTip.trim().length > 0) {
+            return cardTip;
+          }
+          const fallback = cardMeta[firstId]?.shortInsight || 'Explore this drive with a small action.';
+          return fallback;
         }
         
         // If we have selected cards, randomly pick one and use its tip
