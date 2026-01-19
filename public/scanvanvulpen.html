@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="description" content="Ontdek wat jou gelukkig maakt met de 23plusone Geluksscan - een snelle maar zinvolle test die jouw unieke geluksmix onthult.">
+  <title>23plusone Geluksscan</title>
+  
+  <!-- Performance optimizations -->
+  <link rel="dns-prefetch" href="//fonts.googleapis.com">
+  <meta name="theme-color" content="#e91e63">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  
+  <!-- Tailwind CSS only -->
+  <link rel="stylesheet" href="styles/tw.build.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Dynamic viewport height script - early execution for mobile browser support -->
+  <script src="scripts/viewport.js"></script>
+  <script>
+    // Detect embed mode (research iframe) to keep parent footer stable
+    (function(){
+      try {
+        const url = new URL(window.location.href);
+        const mode = url.searchParams.get('mode');
+        if (mode === 'research' || window !== window.parent) {
+          // In embed: set footer height to 0 so internal sections fill available height
+          document.documentElement.style.setProperty('--footer-h', '0px');
+          // Notify parent that we are in embed mode (optional)
+          try { window.parent.postMessage({ type: 'scan_embed_ready' }, '*'); } catch(_) {}
+        }
+      } catch (_) {}
+    })();
+  </script>
+  
+  <!-- Minimal CSS variables needed after removing legacy CSS -->
+  <style>
+    :root {
+      --progress-bg: #e0e0e0;
+      --domain-basics: #4CAF50;
+      --domain-growth: #FF9800;
+      --domain-ambition: #9C27B0;
+      --domain-vitality: #2196F3;
+      --domain-beauty: #E91E63;
+      --footer-h: 64px;
+      /* Active state colors */
+      --btn-active-pink: #c2185b;  /* darker brand pink */
+      --btn-active-green: #16a34a; /* green-600 */
+      --btn-active-red: #dc2626;   /* red-600 */
+    }
+    body { font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+    /* Domain bar fill: height 100% so width animations are visible */
+    .bar-fill { height: 100%; border-radius: 999px; transition: width 1.5s ease-out; position: relative; }
+    #globalFooter { height: var(--footer-h); }
+    /* Active feedback for Yes/No buttons */
+    #yesBtn, #noBtn { opacity: 0.8; transition: opacity 120ms ease, transform 60ms ease; }
+    #yesBtn:active, #noBtn:active { opacity: 1; }
+    /* Practice mode buttons same behavior */
+    #practiceYesBtn, #practiceNoBtn { opacity: 0.8; transition: opacity 120ms ease, transform 60ms ease; }
+    #practiceYesBtn:active, #practiceNoBtn:active { opacity: 1; }
+
+    /* Universal button active states */
+    button, .share-button, .link-like { -webkit-tap-highlight-color: transparent; }
+    button, .share-button { transition: background-color 120ms ease, transform 60ms ease; }
+
+    /* Start and Share buttons use brand pink by default; darken on press */
+    #startBtn:active, .share-button:active { background-color: var(--btn-active-pink); transform: translateY(1px); }
+
+    /* Laten we gaan button active state uses green */
+    #letsGoBtn:active { background-color: var(--btn-active-green); transform: translateY(1px); }
+
+    /* Icon buttons get colored fill on press */
+    #yesBtn:active { transform: translateY(1px); }
+    #noBtn:active { transform: translateY(1px); }
+    #yesBtn img, #noBtn img { pointer-events: none; }
+
+    /* Text link button subtle active color */
+    .link-like:active { color: var(--btn-active-pink); }
+
+    /* Prevent scroll globally and use dynamic viewport height */
+    html, body { height: calc(var(--vh, 1vh) * 100); overflow: hidden; overscroll-behavior: none; }
+    body.no-scroll { overflow: hidden; height: calc(var(--vh, 1vh) * 100); }
+    /* Ensure each app section cannot create its own scrollbars */
+    .section { overflow: hidden; }
+      /* Ensure intro fills viewport minus footer so flex centering works on large screens */
+      #intro { height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); }
+    /* Remove double-tap-to-zoom on interactive elements */
+    button, .share-button, .link-like { touch-action: manipulation; }
+
+      /* Practice typography sizes */
+      #practiceIntroText { font-size: 20px; }
+      #practice-heading { font-size: 24px; margin-bottom: 10px; }
+      /* Intro title */
+      #introTitle { font-size: 24px; margin-bottom: 10px; }
+      /* Intro buttons spacing (default) */
+      #introButtons { margin-top: 12px; }
+      /* Game prompt size */
+      #gamePrompt { font-size: 24px; }
+
+    /* Mobile typography tweaks */
+    @media (max-width: 480px) {
+      /* Intro */
+      #intro h2 { font-size: 1.375rem; line-height: 1.6; }
+      #intro p { font-size: 0.95rem; }
+      #intro { padding-top: 30px; height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); }
+      #intro > div { padding-top: 8px !important; padding-bottom: 8px !important; gap: 10px; }
+      /* Keep headline on one line on mobile */
+      #introTitle { font-size: 20px; white-space: nowrap; }
+      /* More space between GIF and Continue on mobile */
+      #introButtons { margin-top: 20px; }
+      /* Match practice typography to intro on mobile */
+      #practice-heading { font-size: 1.375rem; line-height: 1.6; }
+      #practiceIntroText { font-size: 0.95rem; }
+      /* Reduce game prompt size on mobile by 4px */
+      #game #gamePrompt { font-size: 20px; }
+
+    /* Smaller footer on mobile (overridden to 0 in embed) */
+    :root { --footer-h: 48px; }
+      #globalFooter .grid { font-size: 10px; }
+
+      /* Results */
+      #results { overflow: hidden; align-items: center; }
+      #resultsHeader { margin-top: 4px; margin-bottom: 4px; }
+      #resultsHeader h2 { font-size: 0.95rem !important; line-height: 1.35; white-space: nowrap; }
+      #insightBlock { margin-top: 6px; font-size: 0.875rem !important; line-height: 1.4; max-width: calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)) !important; }
+      #colorVisualization { margin-top: 4px; }
+      #totalScore { font-size: 2.2rem; }
+      #benchmarkMessage { font-size: 0.8rem; }
+      #benchmarkStats .benchmark-label,
+      #benchmarkStats .benchmark-value { font-size: 0.78rem; }
+      .bar-name { font-size: 0.8rem; }
+      /* Pull Average/Participants closer together */
+      #benchmarkStats { display: grid; grid-template-columns: auto auto; column-gap: 8px; justify-content: center; align-items: center; margin-top: 2px; }
+      #resultsContent { 
+        padding-top: calc(8px + env(safe-area-inset-top)); 
+        padding-left: calc(16px + env(safe-area-inset-left)); 
+        padding-right: calc(16px + env(safe-area-inset-right)); 
+        padding-bottom: calc(8px + env(safe-area-inset-bottom)); 
+        height: calc(var(--vh, 1vh) * 100 - var(--footer-h) - 8px); 
+        display: flex; flex-direction: column; justify-content: space-between; gap: 6px; 
+      }
+      #domainBars { width: 100%; max-width: calc(100vw - 32px - env(safe-area-inset-left) - env(safe-area-inset-right)) !important; }
+      #domainBars .bar-container { height: 4px; }
+      .palette-tagline { margin-top: 4px; font-size: 0.85rem; }
+      .share-buttons .share-button { padding: 6px 10px; font-size: 0.9rem; }
+      /* Two-row mobile layout: top row = 2 buttons; bottom row = Try again */
+      #resultsActions { display: grid !important; grid-template-columns: 1fr 1fr; gap: 8px !important; min-height: auto !important; height: auto !important; }
+      #resultsActions .btn-pill { width: 100%; height: 36px; min-height: 36px; max-height: 36px; padding: 0 12px; font-size: 0.85rem; }
+      #fullReportBtn, #nativeShareBtn { width: 100%; }
+      #retakeBtn { grid-column: 1 / -1; margin-top: 0; font-size: 0.85rem; width: 100% !important; min-width: 0 !important; }
+      #shareSection { margin-top: 8px; }
+    }
+    /* Overlay */
+    .overlay-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 100; padding: 16px; height: calc(var(--vh, 1vh) * 100); }
+    .overlay-card { background: #ffffff; border-radius: 16px; width: 100%; max-width: 560px; box-shadow: 0 10px 28px rgba(0,0,0,0.28); padding: 20px; text-align: left; min-height: 220px; display: flex; flex-direction: column; }
+    .overlay-card h3 { font-size: 1.1rem; font-weight: 600; color: #2c1f1c; margin: 0 0 8px; }
+    .overlay-card ul { margin: 0 0 10px 18px; color: #2c1f1c; list-style: disc; }
+    .overlay-actions { display: flex; justify-content: center; gap: 12px; margin-top: 12px; }
+    .overlay-btn { background: #ffffff !important; color: #2c1f1c; border: 1px solid #E8E8EA; border-radius: 12px; height: 40px; min-height: 40px; padding: 0 18px; font-weight: 600; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25); }
+    #retakeOverlayNo.overlay-btn { color: #0ea5a4; }
+    #retakeOverlayYes.overlay-btn { color: #e11d48; }
+    
+    /* Pre-interaction pulse for real icons (subtle) */
+    @keyframes pulse { 0%,100% { transform: scale(1); opacity: .9; } 50% { transform: scale(1.06); opacity: .98; } }
+    .pulse-icon { animation: pulse 1.8s ease-in-out infinite; }
+    /* Practice buttons: white pill with border and subtle shadow (100x40) */
+    #practiceYesBtn, #practiceNoBtn {
+      width: 100px; /* button width */
+      height: 40px; /* button height */
+      background: #ffffff;
+      border: 1px solid #E8E8EA; /* light gray border */
+      border-radius: 12px; /* pill corners */
+      box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25);
+    }
+    #practiceYesBtn img { filter: none; }
+    #practiceNoBtn img { filter: none; }
+    /* Icon stroke colors come from SVGs: x '#DC006B' (pink), heart '#3AB4A0' (teal) */
+    #practiceYesBtn img, #practiceNoBtn img { width: 26px; height: 26px; }
+    /* Game buttons styled same as practice (100x40) */
+    #yesBtn, #noBtn {
+      width: 100px;
+      height: 40px;
+      background: #ffffff;
+      border: 1px solid #E8E8EA;
+      border-radius: 12px;
+      box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25);
+    }
+    /* Brief colored focus/selection flash for keyboard arrows */
+    .flash-yes { outline: 2px solid #3AB4A0; box-shadow: 0 0 0 3px rgba(58,180,160,0.25); transition: outline-color 300ms ease, box-shadow 300ms ease; }
+    .flash-no { outline: 2px solid #DC006B; box-shadow: 0 0 0 3px rgba(220,0,107,0.20); transition: outline-color 300ms ease, box-shadow 300ms ease; }
+    #yesBtn img, #noBtn img { width: 26px; height: 26px; }
+    #practiceYesBtn:active, #practiceNoBtn:active { opacity: 1; transform: translateY(1px); box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25); }
+    
+    /* Subtle one-time shake for first practice card */
+    @keyframes shakeSubtle { 0% { transform: translateX(0) rotate(0); } 15% { transform: translateX(-6px) rotate(-0.4deg); } 30% { transform: translateX(6px) rotate(0.4deg); } 45% { transform: translateX(-4px) rotate(-0.3deg); } 60% { transform: translateX(4px) rotate(0.3deg); } 75% { transform: translateX(-2px) rotate(-0.2deg); } 100% { transform: translateX(0) rotate(0); } }
+    .practice-shake { animation: shakeSubtle 1200ms ease-in-out 1; }
+    /* Keyboard hint text (desktop only; JS toggles display) */
+    .kbd-hint { font-size: 12px; color: rgba(0,0,0,0.45); margin-top: 6px; display: none; }
+    /* Hover arrow tooltips above practice buttons (desktop-only hover) */
+    .btn-with-hint { position: relative; }
+    .arrow-tooltip { position: absolute; bottom: 100%; left: 50%; transform: translate(-50%, -8px); background: rgba(0,0,0,0.75); color: #fff; font-size: 12px; line-height: 1; padding: 6px 8px; border-radius: 6px; white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 120ms ease, visibility 120ms ease, transform 120ms ease; pointer-events: none; }
+    @media (hover: hover) and (pointer: fine) {
+      .btn-with-hint:hover .arrow-tooltip { opacity: 1; visibility: visible; transform: translate(-50%, -10px); }
+    }
+    /* practice popup is positioned within the card container */
+    /* Practice desktop keyboard hint */
+    /* Move the practice hint to the top-right corner of the page (fixed) */
+    #practiceKeyboardHint { position: fixed; top: 16px; right: 16px; display: none; z-index: 60; }
+    #practiceKeyboardHint .hint-box { display: inline-flex; align-items: center; gap: 8px; background: #ffffff; border: 1px solid #E8E8EA; border-radius: 12px; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25); padding: 8px 12px; white-space: nowrap; }
+    #practiceKeyboardHint .hint-text { font-size: 12px; font-weight: 500; color: var(--brand-pink, #e91e63); }
+    #practiceKeyboardHint .hint-icon { width: 16px; height: 16px; display: inline-block; filter: brightness(0) saturate(100%) invert(16%) sepia(80%) saturate(4243%) hue-rotate(321deg) brightness(97%) contrast(90%); }
+    /* Unified button style (opt-in via class): white pill, border, 40px height */
+    .btn-pill {
+      height: 40px;
+      min-height: 40px;
+      max-height: 40px;
+      background: #ffffff !important;
+      border: 1px solid #E8E8EA;
+      border-radius: 12px;
+      box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25);
+      padding: 0 18px; /* ensure visible horizontal padding without relying on Tailwind */
+      white-space: nowrap; /* keep label on one line on mobile */
+    }
+    /* Notification pill */
+    .notif-pill { position: fixed; top: 18px; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #E8E8EA; border-radius: 999px; box-shadow: 0 6px 16px rgba(0,0,0,0.12); padding: 8px 14px; display: none; align-items: center; gap: 8px; z-index: 60; }
+    .notif-pill.show { display: inline-flex; animation: fadeInOut 1500ms ease forwards; }
+    .notif-pill-icon { width: 18px; height: 18px; display: inline-block; }
+    .notif-pill-text { font-weight: 600; color: #e91e63; font-size: 14px; }
+    @keyframes fadeInOut { 0% { opacity: 0; transform: translate(-50%, -6px); } 10% { opacity: 1; transform: translate(-50%, 0); } 80% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, -6px); } }
+    /* Preserve colored intent via text color */
+    #startBtn { color: var(--brand-pink, #e91e63); }
+    #letsGoBtn { color: #3AB4A0; }
+    .share-button { color: var(--brand-pink, #e91e63); background: #ffffff !important; }
+    #practiceNextBtn, #practicePrevBtn { color: #2c1f1c; }
+    /* Results: desktop hint pills fixed at top-right */
+    #resultsTopRow { position: fixed; top: 16px; right: 16px; display: none; align-items: flex-end; justify-content: flex-end; gap: 8px; z-index: 60; flex-direction: column; }
+    .results-pill { display: inline-flex; align-items: center; gap: 8px; height: 36px; min-height: 36px; background: #ffffff; color: #2c1f1c; border: 1px solid #E8E8EA; border-radius: 12px; padding: 0 12px; box-shadow: 0 1px 1px rgba(0,0,0,0.25); white-space: nowrap; }
+    /* Pink hint, wrapped to ~4 lines */
+    #desktopResultsHint { color: var(--brand-pink, #e91e63); width: 210px; white-space: normal; line-height: 1.35; height: auto; min-height: calc(1em * 1.35 * 4 + 16px); text-align: left; }
+    #desktopResultsHint .hint-icon { width: 18px; height: 18px; display: inline-block; filter: brightness(0) saturate(100%) invert(22%) sepia(84%) saturate(3320%) hue-rotate(314deg) brightness(95%) contrast(93%); }
+    #desktopLearnMoreBtn { margin-top: 6px; }
+    #desktopLearnMoreBtn { color: #2c1f1c; text-decoration: none; }
+    /* Results content block styling */
+    #resultsContent { background: #F5F5F5; border-radius: 18px; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25); }
+    /* Only color the first sentence 'You're in the top X%!'. We wrap it in a span in JS if needed */
+    #benchmarkMessage .accent { color: var(--brand-pink, #e91e63); }
+    /* Benchmark pills: reversed cappuccino (filled) with light text */
+    #benchmarkStats .benchmark-item { background: #b9aca8; border: none; border-radius: 999px; padding: 4px 10px; color: #ffffff; font-size: 12px; }
+    #benchmarkStats .benchmark-label, #benchmarkStats .benchmark-value { color: #ffffff; font-size: 12px; }
+    /* Domain bar titles: 12px and semibold */
+    .bar-name { font-size: 12px; font-weight: 600; }
+    /* Tagline below bars: cappuccino and 10px */
+    .palette-tagline { color: #b9aca8; font-size: 10px; }
+    /* Results action buttons style (match design: filled center, text-only sides) */
+    #resultsActions { align-items: center; display: grid !important; grid-template-columns: 1fr auto 1fr; justify-items: center; gap: 12px; }
+    #fullReportBtn { background: #2c1f1c !important; color: #ffffff !important; border: none; box-shadow: none; padding-left: 28px; padding-right: 28px; border-radius: 10px; }
+    #fullReportBtn img { display: none; }
+    #retakeBtn, #nativeShareBtn { background: transparent !important; border: none; box-shadow: none; color: #2c1f1c !important; padding-left: 0; padding-right: 0; height: auto; min-height: 0; max-height: none; }
+    #retakeBtn span { color: #2c1f1c !important; }
+    /* Override legacy widths so side labels don't reserve extra space */
+    #retakeBtn { width: auto !important; min-width: 0 !important; }
+    #retakeBtn img, #nativeShareBtn img { display: none; }
+    /* Retake confirmation: separate pill + actions, all matching Try again width */
+    #retakeBtn { width: 30%; min-width: 220px; }
+    /* Reserve tallest row height so page doesn't re-center when toggling */
+    #resultsActions { min-height: 56px; height: 56px; align-items: center; }
+    /* Nudge results content slightly lower on desktop to clear the hint */
+    @media (min-width: 641px) { #resultsContent { padding-top: 20px; } }
+
+    /* Compress spacing slightly on short screens so all content fits */
+    @media (max-height: 720px) {
+      #resultsHeader { margin-top: 2px; margin-bottom: 2px; }
+      #resultsHeader h2 { font-size: 0.95rem; }
+      #totalScore { font-size: 2rem; }
+      #insightBlock { margin-top: 4px; font-size: 0.82rem; line-height: 1.3; }
+      #benchmarkMessage { font-size: 0.75rem; }
+      #benchmarkStats .benchmark-label, #benchmarkStats .benchmark-value { font-size: 0.74rem; }
+      #domainBars { margin-top: 2px; }
+      .palette-tagline { margin-top: 2px; }
+    }
+    #retakeConfirmPill { position: absolute; display: none; z-index: 55; background: #ffffff; border: 1px solid #E8E8EA; border-radius: 12px; box-shadow: 0 1px 1px 0 rgba(0,0,0,0.25); padding: 12px 16px; }
+    #retakeConfirmPill .title { font-size: 14px; font-weight: 500; color: #2c1f1c; line-height: 1.3; }
+    #retakeConfirmButtons { position: absolute; display: none; z-index: 55; }
+    #retakeConfirmButtons .actions { display: flex; gap: 12px; }
+    #retakeConfirmButtons .actions > button { flex: 1 1 0; font-size: 14px; }
+    /* Multi-line pill variant for inline confirm state */
+    .btn-pill-multi { height: auto; min-height: 56px; max-height: none; white-space: normal; align-items: flex-start; padding-top: 10px; padding-bottom: 10px; text-align: left; }
+    #retakeConfirmDelete { background: #e11d48; color: #ffffff; }
+    #retakeConfirmCancel { color: #0ea5a4; background: #ffffff; border: 1px solid #E8E8EA; }
+    /* Mobile overlay sizing */
+    @media (max-width: 480px) {
+      .overlay-card { max-width: 94vw; padding: 16px; }
+      /* Match in-game card ratio on mobile as well */
+      #reportOverlay .overlay-card { aspect-ratio: 3 / 2; min-height: 0; height: auto; }
+      #reportOverlay #reportEmailInput { font-size: 16px; padding: 14px 12px; }
+      #reportOverlay #reportSendBtn { height: 44px; min-height: 44px; max-height: 44px; }
+      /* Force results action buttons to one line on small screens */
+      #resultsActions { display: flex !important; align-items: center; justify-content: space-between; gap: 8px !important; width: calc(100% - 16px); margin-left: 8px; margin-right: 8px; }
+      #resultsActions .btn-pill { width: auto !important; min-width: 0 !important; height: 36px; min-height: 36px; max-height: 36px; padding: 0 12px; font-size: 0.95rem; }
+      #fullReportBtn { order: 2; }
+      #retakeBtn { order: 1; }
+      #nativeShareBtn { order: 3; }
+      #retakeBtn, #nativeShareBtn { white-space: nowrap; }
+      #fullReportBtn { justify-self: center; }
+      /* Avoid clipped sides: use white background and remove shadow on mobile */
+      #resultsContent { background: #ffffff; box-shadow: none; margin-left: 6px; margin-right: 6px; }
+      /* Tighten spacing around large score on mobile */
+      #totalScore { margin-top: 2px; margin-bottom: 6px; }
+    }
+  </style>
+  
+  
+</head>
+<body class="bg-white text-[#2c1f1c]">
+  <div class="min-h-screen flex flex-col">
+  <div id="notificationPill" class="notif-pill" role="status" aria-live="polite">
+    <img src="LightningBoltOutline.svg" alt="" class="notif-pill-icon" aria-hidden>
+    <span class="notif-pill-text">Oeps! Te langzaam.</span>
+  </div>
+  <div class="container flex flex-col items-center flex-1 py-0" style="padding-bottom: 0;">
+    
+    <section id="intro" class="section active-section w-full flex items-center justify-center" role="banner" aria-labelledby="intro-heading">
+      <div class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 py-10 md:py-16 text-center">
+        <div class="flex flex-col items-center gap-3">
+          <h2 id="introTitle" class="text-center text-yellow-950 text-3xl font-semibold pt-[10px]">
+            Let’s find out what <span class="text-pink-600">drives</span> you!
+          </h2>
+          <p class="text-center text-yellow-950 text-xl max-w-[900px] leading-relaxed font-normal">
+            23plusone is een wetenschappelijke methode met 24 unieke kaarten.<br>
+            Elke kaart belicht iets waar wij als mensen van houden en voor leven.
+          </p>
+        </div>
+        <div class="w-full flex items-center justify-center pt-2">
+          <div id="introGifContainer" class="w-full max-w-[560px] flex items-center justify-center" style="aspect-ratio: 3 / 2;">
+            <img id="introGifImage" src="23plusone_humanvaluesvisualized.gif" alt="Human values visualized" class="w-auto h-auto max-w-full max-h-full object-contain block rounded-[16px]" loading="lazy">
+          </div>
+        </div>
+        <div id="introButtons" class="w-full flex flex-col items-center gap-4">
+          <button id="startBtn" type="button" class="btn-pill w-[200px] text-lg font-semibold" onclick="startPractice()">Doorgaan</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Practice Section (between Intro and Countdown) -->
+    <section id="practice" class="section w-full flex items-center justify-center relative" role="region" aria-labelledby="practice-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none;">
+        <div class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center">
+        <div class="flex flex-col items-center gap-2 pt-2">
+          <h2 id="practice-heading" class="text-xl md:text-2xl font-semibold text-yellow-950">Hoe werkt het?</h2>
+          <p id="practiceIntroText" class="text-base md:text-lg text-yellow-950 max-w-[560px] mx-auto">Elke kaart toont 4 afbeeldingen. <span id="practiceControlsText">Gebruik je pijltjestoetsen of knoppen</span> om te selecteren welke bij jouw leven horen.<span id="practiceTimingSpace" style="display:none;"> </span><br id="practiceTimingBr">Je hebt maar 4 seconden per kaart, dus vertrouw op je intuïtie!</p> 
+          <span class="inline-flex items-center rounded-full text-sm font-semibold py-1" style="background-color:#FF9800; color:#ffffff; padding-left:6px; padding-right:6px;">Oefenronde</span>
+        </div>
+
+        <!-- thin progress/timer line at top -->
+        <div id="practiceTimerContainer" class="w-[560px] max-w-full mx-auto" role="timer" aria-label="Oefentimer" style="visibility: hidden; min-height: 10px;">
+          <div id="practiceTimerBar" class="h-[4px] bg-[var(--progress-bg)] rounded-full overflow-hidden" role="progressbar" aria-label="Resterende tijd" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 80%; margin-left: auto; margin-right: auto;">
+            <div id="practiceTimerProgress" class="h-full w-full rounded-full bg-green-500"></div>
+          </div>
+        </div>
+
+        <!-- Card area -->
+        <div id="practiceCardContainer" class="w-full min-h-0 flex items-center justify-center text-center relative" role="region" aria-live="polite" aria-label="Oefenkaart presentatiegebied">
+          <div id="practiceCard" class="w-full max-w-[560px] flex items-center justify-center relative" style="aspect-ratio: 3 / 2;">
+            <div class="loading">Oefenkaarten laden...</div>
+          </div>
+          <div id="practiceKeyboardHint"><div class="hint-box"><img src="LightBulbOutline.svg" class="hint-icon" alt="" aria-hidden><span class="hint-text">Gebruik je pijltjestoetsen voor de snelste reactie.</span></div></div>
+        </div>
+
+        <!-- Icon buttons -->
+          <div id="practiceButtons" class="buttons" role="group" aria-label="Oefenantwoord opties" style="visibility: hidden; min-height: 72px;">
+          <div class="flex items-center justify-center" style="gap: 20px; padding-top: 16px; padding-bottom: 4px;">
+            <div class="btn-with-hint">
+              <div class="arrow-tooltip" aria-hidden="true">Gebruik ←</div>
+              <button id="practiceNoBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="Nee - Dit spreekt mij niet aan" accesskey="n">
+                <img src="x-mark.svg" alt="No" class="w-7 h-7" />
+              </button>
+            </div>
+            <div class="btn-with-hint">
+              <div class="arrow-tooltip" aria-hidden="true">Gebruik →</div>
+              <button id="practiceYesBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="Ja - Dit spreekt mij aan" accesskey="y">
+                <img src="heart.svg" alt="Yes" class="w-7 h-7" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Countdown Section -->
+    <section id="countdown" class="section w-full flex items-center justify-center" role="region" aria-labelledby="countdown-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
+      <div id="countdownContent" class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center">
+        <h2 id="countdown-heading" class="sr-only">Aftellen naar start</h2>
+        <div id="countdownText" class="text-lg md:text-xl font-semibold min-h-[40px] w-full flex items-center justify-center" aria-live="assertive">Klaar?</div>
+        <div class="progress-container w-full max-w-[280px] h-[6px] bg-[var(--progress-bg)] rounded-full overflow-hidden mx-auto">
+          <div id="countdownProgress" class="progress-bar h-full w-0 bg-[var(--brand-pink)]" role="progressbar" aria-label="Aftellen voortgang" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div></div>
+      </div>
+    </section>
+
+    <main id="game" class="section w-full flex items-center justify-center" role="main" aria-labelledby="game-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
+      <h2 id="game-heading" class="sr-only">Geluksscan Vraag</h2>
+      <div class="w-full flex flex-col justify-center items-center px-6 md:px-16 gap-6 text-center">
+        <!-- Prompt above timer -->
+        <div class="w-full flex items-center justify-center" aria-hidden="false">
+          <div id="gamePrompt" class="text-sm md:text-base font-medium text-yellow-950 opacity-90">Hoort dit bij jouw leven?</div>
+        </div>
+        <!-- thin progress/timer line at top -->
+        <div id="timerContainer" class="w-[560px] max-w-full mx-auto" role="timer" aria-label="Antwoord timer" style="display: none;">
+          <div id="timerBar" class="h-[4px] bg-[var(--progress-bg)] rounded-full overflow-hidden" role="progressbar" aria-label="Resterende tijd" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 80%; margin-left: auto; margin-right: auto;">
+            <div id="timerProgress" class="h-full w-full rounded-full bg-green-500"></div>
+          </div>
+        </div>
+
+        <!-- Card area -->
+        <div id="cardContainer" class="w-full min-h-0 flex items-center justify-center text-center" role="region" aria-live="polite" aria-label="Kaart presentatiegebied">
+          <div id="card" class="w-full max-w-[560px] flex items-center justify-center" aria-live="assertive">
+            <div class="loading">Kaarten laden...</div>
+          </div>
+        </div>
+
+        <!-- Icon buttons -->
+        <div id="gameButtons" class="buttons" role="group" aria-label="Antwoord opties" style="display: none; min-height: 72px;">
+          <div class="flex items-center justify-center" style="gap: 20px; padding-top: 16px; padding-bottom: 4px;">
+            <button id="noBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="Nee - Dit spreekt mij niet aan" accesskey="n">
+              <img src="x-mark.svg" alt="No" class="w-7 h-7" />
+            </button>
+            <button id="yesBtn" type="button" class="w-14 h-14 rounded-full flex items-center justify-center transition" aria-label="Ja - Dit spreekt mij aan" accesskey="y">
+              <img src="heart.svg" alt="Yes" class="w-7 h-7" />
+            </button>
+          </div>
+        </div>
+
+        <!-- removed inline footer row -->
+      </div>
+    </main>
+
+    <!-- Practice Complete Section -->
+    <section id="practice-complete" class="section w-full flex items-center justify-center relative" role="region" aria-labelledby="practice-complete-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h)); display: none;">
+      <div class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center" style="gap: 0;">
+        <h2 id="practice-complete-heading" class="text-xl md:text-2xl font-semibold" style="color:#e91e63;">Goed gedaan!</h2>
+        <p class="text-lg font-normal text-yellow-950" style="margin-top: 28px;">Klaar om de test te beginnen?</p>
+        <div class="flex items-center justify-center gap-4" style="margin-top: 80px;">
+          <button id="practiceMoreBtn" type="button" class="btn-pill text-base font-medium inline-flex items-center gap-2" style="color:#9F847D; padding-left: 32px; padding-right: 32px;">
+            <span>Meer oefenen</span>
+          </button>
+          <button id="letsGoBtn" type="button" class="btn-pill text-base font-semibold inline-flex items-center gap-2" style="padding-left: 32px; padding-right: 32px;">
+            <span>Let’s go</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Processing Section -->
+    <section id="processing" class="section w-full flex items-center justify-center" role="region" aria-labelledby="processing-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
+      <div id="processingContent" class="w-full flex flex-col justify-center items-center gap-6 px-6 md:px-16 text-center">
+        <h2 id="processing-heading" class="sr-only">Resultaten verwerken</h2>
+        <div id="processingText" class="text-lg md:text-xl font-semibold min-h-[40px] w-full flex items-center justify-center" aria-live="assertive">Verwerken...</div>
+        <div class="progress-container w-full max-w-[280px] h-[6px] bg-[var(--progress-bg)] rounded-full overflow-hidden mx-auto">
+          <div id="processingProgress" class="progress-bar h-full w-0 bg-[var(--brand-pink)]" role="progressbar" aria-label="Verwerkingsvoortgang" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+        <div></div>
+      </div>
+    </section>
+
+    <section id="results" class="section w-full flex items-center justify-center" role="region" aria-labelledby="results-heading" style="height: calc(var(--vh, 1vh) * 100 - var(--footer-h));">
+            <!-- Consolidated Results Page -->
+      <div class="results-page active" id="results-page-1">
+        <div id="resultsContent" class="results-content px-4 max-w-[560px] mx-auto text-center pb-[24px]" style="position: relative;">
+          <!-- Page 1 Content: Score & Overview -->
+          <!-- Desktop-only: info hint and learn more button -->
+          <div id="resultsTopRow">
+            <div id="desktopResultsHint" class="results-pill" style="align-items:flex-start; padding-top:8px; padding-bottom:8px;">
+              <img src="LightBulbOutline.svg" alt="" class="hint-icon" aria-hidden>
+              <span>Pssst... Wist je dat 23plusone een wetenschappelijke methode is?</span>
+            </div>
+            <a id="desktopLearnMoreBtn" class="results-pill" href="https://23plusone.org/" target="_blank" rel="noopener">Meer weten</a>
+          </div>
+          <header id="resultsHeader" class="mb-4">
+            <h2 id="results-heading" class="font-semibold" style="font-size:23px;"><span class="heading-part-1">Klaar! Dit is jouw</span> <span class="accent heading-part-2 text-[var(--brand-pink)]">waardenprofiel.</span></h2>
+          </header>
+          <section id="scoreSection" aria-labelledby="score-heading">
+            <h3 id="score-heading" class="sr-only">Jouw Geluksscore</h3>
+            <div id="totalScore" class="text-6xl md:text-7xl font-bold text-[#2c1f1c] mb-1" role="img" aria-label="Individuele Geluksscore" style="font-weight:700;">--</div>
+          </section>
+          <section id="benchmarkSection" aria-labelledby="benchmark-heading">
+            
+            <div id="benchmarkMessage" class="mt-2 text-[#2c1f1c]" role="status" aria-live="polite" style="font-size:16px; font-weight:600;">Jouw ranking berekenen...</div>
+            <div id="benchmarkStats" class="mt-2 grid grid-cols-2 gap-2 place-items-center" role="list" aria-label="Vergelijkingsstatistieken">
+              <div class="benchmark-item" role="listitem">
+                <span class="benchmark-label font-medium">Gemiddelde Score:</span>
+                <span class="benchmark-value" id="benchmarkAverage" aria-label="Gemiddelde deelnemerscore">--</span>
+              </div>
+              <div class="benchmark-item" role="listitem">
+                <span class="benchmark-label font-medium">Deelnemers:</span>
+                <span class="benchmark-value" id="benchmarkTotal" aria-label="Totaal aantal deelnemers">--</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Personalized insight placed under benchmark, before bars -->
+          <section id="insightBlock" class="insight-block mt-4" aria-label="Persoonlijk inzicht" style="text-align: left; max-width: 420px; margin-left:auto; margin-right:auto; font-size:16px;"></section>
+
+          <!-- Page 2 Content: Your Happiness Palette -->
+          <section id="colorVisualization" class="mt-6" aria-label="Jouw Gelukspalet">
+            <div id="domainBars" class="space-y-3 mx-auto text-left" role="list" aria-label="Geluksdomeinen overzicht" style="text-align: left; max-width: 420px;">
+              <div class="domain-bar" role="listitem" data-domain="Basics" aria-labelledby="basics-label">
+                <div class="bar-header text-left">
+                  <span id="basics-label" class="bar-name">Basis</span>
+                </div>
+                <div class="bar-container bg-[var(--progress-bg)] h-[6px] rounded-full overflow-hidden relative" role="progressbar" aria-labelledby="basics-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6">
+                  <div class="bar-fill bar-basics" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="domain-bar" role="listitem" data-domain="Self-development" aria-labelledby="growth-label">
+                <div class="bar-header text-left">
+                  <span id="growth-label" class="bar-name">Zelfontwikkeling</span>
+                </div>
+                <div class="bar-container bg-[var(--progress-bg)] h-[6px] rounded-full overflow-hidden relative" role="progressbar" aria-labelledby="growth-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="6">
+                  <div class="bar-fill bar-self-dev" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="domain-bar" role="listitem" data-domain="Ambition" aria-labelledby="ambition-label">
+                <div class="bar-header text-left">
+                  <span id="ambition-label" class="bar-name">Ambitie</span>
+                </div>
+                <div class="bar-container bg-[var(--progress-bg)] h-[6px] rounded-full overflow-hidden relative" role="progressbar" aria-labelledby="ambition-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="8">
+                  <div class="bar-fill bar-ambition" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="domain-bar" role="listitem" data-domain="Vitality" aria-labelledby="vitality-label">
+                <div class="bar-header text-left">
+                  <span id="vitality-label" class="bar-name">Vitaliteit</span>
+                </div>
+                <div class="bar-container bg-[var(--progress-bg)] h-[6px] rounded-full overflow-hidden relative" role="progressbar" aria-labelledby="vitality-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2">
+                  <div class="bar-fill bar-vitality" style="width: 0%"></div>
+                </div>
+              </div>
+              <div class="domain-bar" role="listitem" data-domain="Attraction" aria-labelledby="beauty-label">
+                <div class="bar-header text-left">
+                  <span id="beauty-label" class="bar-name">Schoonheid</span>
+                </div>
+                <div class="bar-container bg-[var(--progress-bg)] h-[6px] rounded-full overflow-hidden relative" role="progressbar" aria-labelledby="beauty-label" aria-valuenow="0" aria-valuemin="0" aria-valuemax="2">
+                  <div class="bar-fill bar-attraction" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+            <p class="palette-tagline mt-2">Meer Kleur = Meer Motivatie</p>
+          </section>
+
+          <!-- Insights section removed per design -->
+          <section id="shareSection" class="mt-6" aria-labelledby="share-heading">
+            <div id="resultsActions" class="flex justify-center gap-3" role="group" aria-label="Acties" style="position: relative;">
+              <button id="retakeBtn" type="button" class="btn-pill inline-flex items-center justify-center px-4" aria-label="Start een nieuwe geluksscan">
+                <img src="RefreshOutline.svg" alt="" width="18" height="18" style="margin-right:6px; filter: brightness(0) saturate(100%) invert(58%) sepia(10%) saturate(630%) hue-rotate(337deg) brightness(88%) contrast(90%);">
+                <span style="color:#9F847D;">Opnieuw proberen</span>
+              </button>
+              <button id="fullReportBtn" type="button" class="btn-pill inline-flex items-center justify-center px-4">
+                <img src="Download.svg" alt="" width="18" height="18" style="margin-right:6px;">
+                <span>Volledig rapport ontvangen</span>
+              </button>
+              <button id="nativeShareBtn" type="button" class="share-button btn-pill native inline-flex items-center justify-center px-4" aria-label="Deel resultaten via native delen">
+                <img src="ExternalLinkOutline.svg" alt="" width="18" height="18" style="margin-right:6px;">
+                <span>Delen</span>
+              </button>
+            </div>
+            <!-- Confirmation pill (non-clickable) + actions under it -->
+            <div id="retakeConfirmPill" class="inline-flex items-start gap-2">
+              <img src="LightningBoltOutline.svg" alt="" width="18" height="18" style="margin-top:2px; filter: brightness(0) saturate(100%) invert(8%) sepia(27%) saturate(982%) hue-rotate(334deg) brightness(92%) contrast(94%);">
+              <div class="title">Weet je het zeker? Je gegevens gaan verloren!</div>
+            </div>
+            <div id="retakeConfirmButtons">
+              <div class="actions">
+                <button id="retakeConfirmDelete" class="btn-pill" type="button" style="color:#DC006B;">Verwijderen</button>
+                <button id="retakeConfirmCancel" class="btn-pill" type="button" style="color:#0ea5a4;">Hier blijven</button>
+              </div>
+            </div>
+            <!-- Mobile overlay confirmation for Try again -->
+            <div id="retakeOverlay" class="overlay-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Bevestig opnieuw doen">
+              <div class="overlay-card">
+                <h3>Weet je het zeker?</h3>
+                <p>Dit wist je gegevens en start de scan opnieuw.</p>
+                <div class="overlay-actions">
+                  <button id="retakeOverlayNo" class="overlay-btn" style="background:#0ea5a4;">Nee</button>
+                  <button id="retakeOverlayYes" class="overlay-btn" style="background:#e11d48;">Ja</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Full report request overlay -->
+            <div id="reportOverlay" class="overlay-backdrop" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Ontvang volledig rapport">
+              <div class="overlay-card" style="max-width:560px; position: relative; width: 100%; aspect-ratio: 3 / 2;">
+                <div id="reportFormBlock">
+                  <h3 style="margin-top:8px;">We’ll send <span style="color:#e91e63;">your drives</span> over!</h3>
+                  <div style="margin-top:12px; display:flex; gap:8px;">
+                    <input id="reportEmailInput" type="email" placeholder="Typ je e-mailadres" style="flex:1 1 auto; border:1px solid #E8E8EA; border-radius:10px; padding:10px 12px; font-size:14px;" autocomplete="email">
+                    <button id="reportSendBtn" type="button" class="btn-pill" style="font-weight:600; padding:0 6px; min-width:64px; font-size:12px;">Versturen</button>
+                  </div>
+                  <div style="margin-top:10px; display:flex; flex-direction:column; gap:10px; font-size:14px; color:#2c1f1c;">
+                    <label style="display:flex; gap:8px; align-items:flex-start;">
+                      <input id="reportConsent" type="checkbox" style="margin-top:3px;">
+                      <span>Ik ga akkoord met het ontvangen van mijn volledige rapport op dit e-mailadres en begrijp dat dit geen klinische beoordeling is.</span>
+                    </label>
+                    <label style="display:flex; gap:8px; align-items:flex-start; color:#6b7280;">
+                      <input id="reportMarketing" type="checkbox" style="margin-top:3px;">
+                      <span>Abonneer op de BR-ND People nieuwsbrief.</span>
+                    </label>
+                    <div id="reportError" style="color:#e11d48; display:none;">Voer een geldig e-mailadres in en ga akkoord om je rapport te ontvangen.</div>
+                    <div id="reportStatus" style="color:#5DA1BB; display:none;">Verzenden…</div>
+                  </div>
+                </div>
+                <div id="reportSentBlock" style="display:none; text-align:center; padding-top:12px;">
+                  <h3>Verzonden!</h3>
+                  <p style="margin:8px 0 16px;">Je volledige profiel is onderweg. Bekijk je inbox om meer te leren over wat jou drijft. Kun je het niet vinden? Controleer je spam!</p>
+                  <div style="display:flex; gap:10px; justify-content:center;">
+                    <button id="reportTryAgainBtn" type="button" class="btn-pill" style="color:#9F847D;">Opnieuw proberen</button>
+                    <button id="reportShareBtn" type="button" class="btn-pill" style="color:#e91e63;">Delen</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <!-- Navigation Footer Removed -->
+    </section>
+    </div>
+  </div>
+
+  <footer id="globalFooter" class="fixed bottom-0 left-0 right-0 bg-white">
+      <div class="w-full grid items-center text-yellow-950 text-xs px-6 md:px-16" style="height: 100%; grid-template-columns: 1fr auto 1fr;">
+      <div class="opacity-80 flex items-center h-full" style="justify-self: start;"><a href="https://www.br-ndpeople.com/home" target="_blank" rel="noopener"><img src="van-vulpen-logo-full.png" alt="Van Vulpen logo" class="w-auto" style="height: auto; width: auto; max-height: var(--footer-h);"></a></div>
+      <div class="opacity-80" style="justify-self: center;">© 2006-2025 Cramer & Koene</div>
+      <div class="flex items-center h-full" style="justify-self: end;"><a href="https://23plusone.org/" target="_blank" rel="noopener"><img src="23plusone.png" alt="23plusone logo" class="w-auto" style="height: auto; width: auto; max-height: calc((var(--footer-h) - 12px) * 0.55); filter: none;"></a></div>
+    </div>
+  </footer>
+
+  <script src="scripts/app.js" defer></script>
+</body>
+</html>
