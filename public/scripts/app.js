@@ -1889,23 +1889,22 @@
         statusEl.style.display = 'block';
         setPhase(initialPhase);
         
-        // Smooth progress animation with phase-aware speed
-        // Real time breakdown: Generating=80%, Sending=20%
+        // Linear smooth progress - consistent speed throughout
         progressInterval = setInterval(() => {
           const bar = document.getElementById('pdfProgressBar');
           if (!bar) return;
           
-          let maxProgress = 95;
-          let speed = 0.4;
-          
-          // Adjust based on phase - Generating is the bottleneck (most of the bar)
-          if (currentPhase === 'preparing') { maxProgress = 10; speed = 1.5; }
-          else if (currentPhase === 'generating') { maxProgress = 85; speed = 0.25; }
-          else if (currentPhase === 'sending') { maxProgress = 95; speed = 1.2; }
-          
-          if (progress < maxProgress) {
-            progress += speed;
+          // Consistent linear progress, auto-update phase labels at milestones
+          if (progress < 90) {
+            progress += 0.5; // Steady linear increment
             bar.style.width = progress + '%';
+            
+            // Auto-update phase text based on progress
+            if (progress >= 5 && progress < 80 && currentPhase === 'preparing') {
+              setPhase('generating');
+            } else if (progress >= 80 && currentPhase === 'generating') {
+              setPhase('sending');
+            }
           }
         }, 50);
 
@@ -1936,7 +1935,6 @@
         
         // If no PDF ready, wait for pre-generation to finish
         if (!payload.pdfBase64 && !isPdfReady) {
-          setPhase('generating');
           // Wait up to 20 seconds for PDF to be ready (scale 6 takes longer)
           let waitTime = 0;
           while (!isPdfReady && !cachedPdfBase64 && waitTime < 20000) {
@@ -1955,12 +1953,9 @@
           return;
         }
         
-        // Switch to sending phase - jump progress to 85% if we were generating
-        setPhase('sending');
-        if (progress < 85) {
-          progress = 85;
-          const bar = document.getElementById('pdfProgressBar');
-          if (bar) bar.style.width = '85%';
+        // Ensure we're in sending phase (may already be there from auto-update)
+        if (currentPhase !== 'sending') {
+          setPhase('sending');
         }
         
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
