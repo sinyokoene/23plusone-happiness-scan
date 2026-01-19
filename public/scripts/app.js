@@ -738,9 +738,10 @@
   document.body.classList.add('no-scroll');
   
   // Load cards and card insights data
+  const isDutch = document.documentElement.lang === 'nl';
   Promise.all([
     fetch('cards.json').then(r => r.json()),
-    fetch('data/card-insights.json').then(r => r.json()).catch(() => null)
+    fetch(isDutch ? 'data/card-insights-nl.json' : 'data/card-insights.json').then(r => r.json()).catch(() => null)
   ])
     .then(([cardsJson, insightsJson]) => {
       cards = cardsJson;
@@ -1084,9 +1085,10 @@
     
     // If more than 3 NULLs, stop immediately and show retry message
     const nullCount = answers.filter(a => a.yes === null).length;
+    const isDutch = document.documentElement.lang === 'nl';
     if (nullCount > 3) {
       scanTerminated = true;
-      showValidationError('You took too long — try again.');
+      showValidationError(isDutch ? 'Je deed er te lang over — probeer het opnieuw.' : 'You took too long — try again.');
       return;
     }
     
@@ -1175,9 +1177,12 @@
     }
     
     // Reject all "No" responses
+    const isDutch = document.documentElement.lang === 'nl';
     if (selectedCount === 0) {
       console.log('❌ Frontend: All No responses');
-      return { isValid: false, reason: 'You said "No" to everything. Please retake the scan and engage more thoughtfully.' };
+      return { isValid: false, reason: isDutch 
+        ? 'Je hebt overal "Nee" op gezegd. Doe de scan opnieuw en denk goed na.' 
+        : 'You said "No" to everything. Please retake the scan and engage more thoughtfully.' };
     }
     
     // Allow all "Yes" responses - removed restriction
@@ -1185,13 +1190,17 @@
     // Too many unanswered (NULL) responses
     if (nullCount > 3) {
       console.log('❌ Frontend: Too many unanswered cards');
-      return { isValid: false, reason: 'You took too long — try again.' };
+      return { isValid: false, reason: isDutch
+        ? 'Je deed er te lang over — probeer het opnieuw.'
+        : 'You took too long — try again.' };
     }
     
     // Allow fast individual clicks but prevent completing entire scan too quickly
     if (totalTime < 5) {
       console.log('❌ Frontend: Too fast completion');
-      return { isValid: false, reason: 'Scan completed too quickly. Please take more time to view each image.' };
+      return { isValid: false, reason: isDutch
+        ? 'Scan te snel voltooid. Neem meer tijd om elke afbeelding te bekijken.'
+        : 'Scan completed too quickly. Please take more time to view each image.' };
     }
     
     console.log('✅ Frontend validation passed');
@@ -1205,12 +1214,13 @@
       if (promptEl) promptEl.style.display = 'none';
     } catch(_) {}
 
+    const isDutch = document.documentElement.lang === 'nl';
     // Render invalid message with a button using the shared btn-pill style
     cardDiv.innerHTML = `
       <div style="text-align: center; color: #F44336; padding: 20px;">
-        <h3 style="color: #F44336; margin-bottom: 15px;">⚠️ Invalid Scan</h3>
+        <h3 style="color: #F44336; margin-bottom: 15px;">⚠️ ${isDutch ? 'Ongeldige Scan' : 'Invalid Scan'}</h3>
         <p style="margin-bottom: 20px;">${reason}</p>
-        <button id="retakeScanBtn" type="button" class="btn-pill" style="color: var(--brand-pink, #e91e63);">Retake Scan</button>
+        <button id="retakeScanBtn" type="button" class="btn-pill" style="color: var(--brand-pink, #e91e63);">${isDutch ? 'Scan Opnieuw' : 'Retake Scan'}</button>
       </div>
     `;
     try {
@@ -1399,11 +1409,16 @@
     let parts = [];
     
     // Opening: Reference specific values from fastest responses (gut feeling signals)
+    const isDutch = document.documentElement.lang === 'nl';
     if (fastValues.length >= 2) {
-      const valuesStr = fastValues.slice(0, 2).join(' and ');
-      parts.push(`Your quick responses to ${valuesStr} reveal what truly matters to you.`);
+      const valuesStr = fastValues.slice(0, 2).join(isDutch ? ' en ' : ' and ');
+      parts.push(isDutch 
+        ? `Jouw snelle reacties op ${valuesStr} onthullen wat echt belangrijk voor je is.`
+        : `Your quick responses to ${valuesStr} reveal what truly matters to you.`);
     } else if (fastValues.length === 1) {
-      parts.push(`${fastValues[0]} stands out as a core driver for you.`);
+      parts.push(isDutch
+        ? `${fastValues[0]} springt eruit als een belangrijke drijfveer voor jou.`
+        : `${fastValues[0]} stands out as a core driver for you.`);
     }
     
     // One domain summary based on score band
@@ -1420,7 +1435,9 @@
     }
     
     // Simple closing - encourage full report
-    parts.push("Request your full report for detailed insights.");
+    parts.push(isDutch
+      ? "Vraag je volledige rapport aan voor gedetailleerde inzichten."
+      : "Request your full report for detailed insights.");
     
     return parts.join(' ').trim();
   }

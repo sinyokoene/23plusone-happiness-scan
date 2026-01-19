@@ -1,0 +1,526 @@
+{
+  "cards": {
+    "1": {
+      "id": 1,
+      "domain": "Basics",
+      "value": "Idealisme",
+      "label": "Betere Wereld",
+      "traits": ["doelgericht", "visionair", "maatschappelijk bewust"],
+      "shortInsight": "een betekenisvol verschil maken",
+      "coachTips": [
+        "Kies één onderwerp dat je belangrijk vindt en zet deze week een kleine, concrete stap.",
+        "Vraag jezelf af wat voor wereld je wilt helpen creëren en doe vandaag één ding in die richting.",
+        "Zoek een manier om bij te dragen aan een doel waar je in gelooft, hoe klein de actie ook is."
+      ]
+    },
+    "2": {
+      "id": 2,
+      "domain": "Basics",
+      "value": "Loyaliteit",
+      "label": "Moreel",
+      "traits": ["principes", "betrouwbaar", "standvastig"],
+      "shortInsight": "leven volgens sterke principes",
+      "coachTip": "Denk aan een moment waarop je trouw bleef aan iemand of iets en laat dat je herinneren aan wat loyaliteit voor jou betekent."
+    },
+    "3": {
+      "id": 3,
+      "domain": "Basics",
+      "value": "Verbondenheid",
+      "label": "Samen",
+      "traits": ["gemeenschapsgericht", "collaboratief", "sociaal"],
+      "shortInsight": "deel uitmaken van iets groters",
+      "coachTips": [
+        "Neem contact op met iemand waar je je meer verbonden mee wilt voelen en stuur een eenvoudig, oprecht bericht.",
+        "Denk aan één persoon die je al een tijdje niet hebt gesproken en stuur een kort, hartelijk berichtje.",
+        "Deel vandaag iets betekenisvols met iemand, ook al is het maar een gedachte of herinnering."
+      ]
+    },
+    "4": {
+      "id": 4,
+      "domain": "Basics",
+      "value": "Warmte",
+      "label": "Zorgzaam",
+      "traits": ["verzorgend", "empathisch", "medelevend"],
+      "shortInsight": "zorgen voor anderen",
+      "coachTips": [
+        "Doe vandaag een kleine vriendelijke daad, zoals even informeren hoe het gaat, een compliment geven of praktische hulp bieden.",
+        "Merk op wie er steun nodig heeft en bied een klein gebaar van zorg aan.",
+        "Doe vandaag één ding dat de dag van iemand anders een beetje makkelijker of vrolijker maakt."
+      ]
+    },
+    "5": {
+      "id": 5,
+      "domain": "Basics",
+      "value": "Orde",
+      "label": "Structuur",
+      "traits": ["georganiseerd", "methodisch", "betrouwbaar"],
+      "shortInsight": "stabiliteit en structuur creëren",
+      "coachTip": "Besteed tien minuten aan het ordenen van een kleine plek, zoals je bureau of inbox."
+    },
+    "6": {
+      "id": 6,
+      "domain": "Basics",
+      "value": "Veiligheid",
+      "label": "Veilig",
+      "traits": ["beschermend", "geaard", "voorzichtig"],
+      "shortInsight": "je veilig en geborgen voelen",
+      "coachTip": "Merk één ding op waardoor je je veilig voelt en doe bewust moeite om dat te beschermen of te versterken."
+    },
+    "7": {
+      "id": 7,
+      "domain": "Self-development",
+      "value": "Ontspanning",
+      "label": "Zorgeloos",
+      "traits": ["gemakkelijk", "stressvrij", "aanwezig"],
+      "shortInsight": "loslaten en ontspannen",
+      "coachTips": [
+        "Plan vandaag een korte pauze waarin je bewust taken opzij zet en je lichaam laat ontspannen.",
+        "Geef jezelf toestemming om tien minuten niets nuttigs te doen en kijk hoe dat voelt.",
+        "Vind vandaag een moment om langzaam te ademen en de spanning die je vasthoudt los te laten."
+      ]
+    },
+    "8": {
+      "id": 8,
+      "domain": "Self-development",
+      "value": "Spel",
+      "label": "Plezier",
+      "traits": ["speels", "vreugdevol", "luchtig"],
+      "shortInsight": "plezier hebben en spelen",
+      "coachTips": [
+        "Doe vandaag iets lichts en speels, ook al is het maar voor een paar minuten.",
+        "Herontdek iets waar je als kind van genoot en sta jezelf toe er weer mee te spelen.",
+        "Laat jezelf vandaag gek of spontaan zijn, zonder je zorgen te maken over de uitkomst."
+      ]
+    },
+    "9": {
+      "id": 9,
+      "domain": "Self-development",
+      "value": "Vrijheid",
+      "label": "Onafhankelijk",
+      "traits": ["autonoom", "zelfredzaam", "avontuurlijk"],
+      "shortInsight": "vrijheid en onafhankelijkheid",
+      "coachTips": [
+        "Neem vandaag één beslissing die jouw eigen voorkeur weerspiegelt, zelfs in iets kleins.",
+        "Zeg nee tegen één ding dat je niet dient, en merk op hoe het voelt om je vrijheid te beschermen.",
+        "Kies vandaag iets puur omdat je het wilt, niet omdat het moet."
+      ]
+    },
+    "10": {
+      "id": 10,
+      "domain": "Self-development",
+      "value": "Creativiteit",
+      "label": "Fantasie",
+      "traits": ["verbeeldingsrijk", "innovatief", "artistiek"],
+      "shortInsight": "creativiteit uiten",
+      "coachTips": [
+        "Geef jezelf twintig minuten om iets te maken of vorm te geven, zonder het resultaat te beoordelen.",
+        "Start vandaag een klein creatief project en focus op het proces in plaats van de uitkomst.",
+        "Druk een idee uit op een nieuwe manier—via schrijven, tekenen, bouwen of elke vorm die je aanspreekt."
+      ]
+    },
+    "11": {
+      "id": 11,
+      "domain": "Self-development",
+      "value": "Individualiteit",
+      "label": "Uniek",
+      "traits": ["authentiek", "onderscheidend", "origineel"],
+      "shortInsight": "uniek jezelf zijn",
+      "coachTip": "Benoem één manier waarop je verschilt van anderen en sta jezelf toe dat te waarderen."
+    },
+    "12": {
+      "id": 12,
+      "domain": "Self-development",
+      "value": "Ontdekking",
+      "label": "Nieuwsgierig",
+      "traits": ["nieuwsgierig", "onderzoekend", "ontdekker"],
+      "shortInsight": "nieuwe dingen ontdekken",
+      "coachTips": [
+        "Leer vandaag één nieuw feit, idee of perspectief via een gesprek, artikel of video.",
+        "Volg je nieuwsgierigheid vandaag ergens onverwachts en zie waar het leidt.",
+        "Stel een vraag waar je over hebt nagedacht en besteed een paar minuten aan het onderzoeken van het antwoord."
+      ]
+    },
+    "13": {
+      "id": 13,
+      "domain": "Ambition",
+      "value": "Bekwaamheid",
+      "label": "Talent",
+      "traits": ["vaardig", "competent", "capabel"],
+      "shortInsight": "je talenten ontwikkelen",
+      "coachTip": "Oefen een vaardigheid die je waardeert voor vijftien minuten en merk wat iets makkelijker voelt dan voorheen."
+    },
+    "14": {
+      "id": 14,
+      "domain": "Ambition",
+      "value": "Prestatie",
+      "label": "Innovatie",
+      "traits": ["gedreven", "innovatief", "doelgericht"],
+      "shortInsight": "presteren en innoveren",
+      "coachTip": "Stel vandaag één duidelijke, realistische taak en rond deze volledig af."
+    },
+    "15": {
+      "id": 15,
+      "domain": "Ambition",
+      "value": "Uitdaging",
+      "label": "Winnen",
+      "traits": ["competitief", "vastberaden", "veerkrachtig"],
+      "shortInsight": "uitdagingen overwinnen",
+      "coachTip": "Kies een behapbare uitdaging die je hebt uitgesteld en zet een eerste stap."
+    },
+    "16": {
+      "id": 16,
+      "domain": "Ambition",
+      "value": "Trots",
+      "label": "Zelfverzekerd",
+      "traits": ["zelfverzekerd", "waardig", "fier"],
+      "shortInsight": "je trots en zelfverzekerd voelen",
+      "coachTip": "Denk terug aan een recente prestatie en sta jezelf toe om je daar even stilletjes trots op te voelen."
+    },
+    "17": {
+      "id": 17,
+      "domain": "Ambition",
+      "value": "Waardering",
+      "label": "Erkenning",
+      "traits": ["gewaardeerd", "erkend", "gezien"],
+      "shortInsight": "gewaardeerd en erkend worden",
+      "coachTip": "Spreek vandaag je waardering uit naar iemand op een manier die natuurlijk voor je voelt."
+    },
+    "18": {
+      "id": 18,
+      "domain": "Ambition",
+      "value": "Aanzien",
+      "label": "Prestige",
+      "traits": ["gerespecteerd", "invloedrijk", "onderscheidend"],
+      "shortInsight": "respect en status verdienen",
+      "coachTip": "Neem even de tijd om na te denken over hoe je gezien wilt worden en controleer of je acties bij dat beeld passen."
+    },
+    "19": {
+      "id": 19,
+      "domain": "Ambition",
+      "value": "Verzamelen",
+      "label": "Bezit",
+      "traits": ["verwervend", "verzamelaar", "materialistisch"],
+      "shortInsight": "betekenisvolle dingen verwerven",
+      "coachTip": "Kijk naar iets dat je bezit dat belangrijk voor je is en bedenk waarom het zijn plek in je leven verdient."
+    },
+    "20": {
+      "id": 20,
+      "domain": "Ambition",
+      "value": "Invloed",
+      "label": "Leiderschap",
+      "traits": ["leider", "invloedrijk", "impactvol"],
+      "shortInsight": "leiden en anderen beïnvloeden",
+      "coachTip": "Gebruik je invloed vandaag om iemand te steunen of een gedeeld doel een klein stapje verder te brengen."
+    },
+    "21": {
+      "id": 21,
+      "domain": "Vitality",
+      "value": "Fitheid",
+      "label": "Sportief",
+      "traits": ["actief", "atletisch", "energiek"],
+      "shortInsight": "fit en actief blijven",
+      "coachTips": [
+        "Plan minstens één kort moment van beweging in je dag, zoals een wandeling of rekken.",
+        "Beweeg je lichaam vandaag op een manier die goed voelt, al is het maar voor vijf minuten.",
+        "Stap naar buiten voor een korte wandeling en merk hoe je energie verandert."
+      ]
+    },
+    "22": {
+      "id": 22,
+      "domain": "Vitality",
+      "value": "Gezondheid",
+      "label": "Voeding",
+      "traits": ["gezondheidsbewust", "evenwichtig", "vitaal"],
+      "shortInsight": "je lichaam voeden",
+      "coachTips": [
+        "Maak vandaag één keuze die je gezondheid ondersteunt, bijvoorbeeld water, vers eten of op tijd naar bed gaan.",
+        "Merk op hoe één gezonde keuze vandaag je laat voelen, en laat dat je morgen leiden.",
+        "Kies één klein gezondheidsritueel—hydratatie, rust of beweging—en houd je er vandaag aan."
+      ]
+    },
+    "23": {
+      "id": 23,
+      "domain": "Attraction",
+      "value": "Schoonheid",
+      "label": "Esthetiek",
+      "traits": ["esthetisch", "verfijnd", "schoonheidslievend"],
+      "shortInsight": "schoonheid waarderen",
+      "coachTip": "Pauzeer om één visueel detail op te merken dat je mooi vindt, hoe klein ook."
+    },
+    "24": {
+      "id": 24,
+      "domain": "Attraction",
+      "value": "Sensualiteit",
+      "label": "Opwinding",
+      "traits": ["sensueel", "gepassioneerd", "verleidelijk"],
+      "shortInsight": "zintuiglijk genot omarmen",
+      "coachTip": "Neem de tijd om een eenvoudig zintuiglijk moment volledig te ervaren, zoals een smaak, geur of aanraking."
+    }
+  },
+  "patterns": {
+    "explorer": {
+      "name": "De Ontdekker",
+      "requires": [10, 12],
+      "minMatch": 2,
+      "insight": "Je nieuwsgierigheid en verbeelding gaan hand in hand. Je voelt je vaak het meest levendig wanneer je nieuwe mogelijkheden kunt verkennen, leren en uitproberen.",
+      "coachTip": "Voed je ontdekkersgeest: waag je deze week ergens nieuws, fysiek of mentaal."
+    },
+    "nurturer": {
+      "name": "De Verzorger",
+      "requires": [3, 4],
+      "minMatch": 2,
+      "insight": "Verbinding en zorgzaamheid vormen je kern. Je voelt je vaak het meest op je gemak wanneer je anderen op een warme, betrouwbare manier kunt steunen.",
+      "coachTip": "Je gave is dat anderen zich gezien voelen. Zet dit bewust in bij iemand die het nodig heeft."
+    },
+    "achiever": {
+      "name": "De Presteerder",
+      "requires": [13, 14, 15],
+      "minMatch": 3,
+      "insight": "Je wordt gedreven door meesterschap en zichtbare vooruitgang. Duidelijke doelen en tastbare resultaten geven je vaak focus en energie.",
+      "coachTip": "Richt je gedrevenheid op iets betekenisvols. Presteren voelt het best als het aansluit bij een doel."
+    },
+    "free_spirit": {
+      "name": "De Vrije Geest",
+      "requires": [7, 8, 9],
+      "minMatch": 3,
+      "insight": "Je hecht waarde aan gemak, spel en bewegingsruimte. Je bloeit op als er ruimte is om je eigen tempo te kiezen en van het moment te genieten.",
+      "coachTip": "Bescherm je vrijheid fel—plan tijd in voor ongestructureerd plezier."
+    },
+    "groundedLeader": {
+      "name": "De Geaarde Leider",
+      "requires": [5, 6, 20],
+      "minMatch": 2,
+      "insight": "Stabiliteit en verantwoordelijkheid zijn belangrijk voor je. Anderen zien je waarschijnlijk als iemand die richting geeft zonder de behoeften van mensen uit het oog te verliezen.",
+      "coachTip": "Je kalme aanwezigheid is een geschenk. Geef het goede voorbeeld in momenten van chaos."
+    },
+    "holisticWellness": {
+      "name": "Holistisch Welzijn",
+      "requires": [21, 22, 23],
+      "minMatch": 2,
+      "insight": "Je ziet welzijn als meer dan alleen fitness of voeding. Je let op hoe lichaam, geest en omgeving allemaal invloed hebben op hoe je je voelt.",
+      "coachTip": "Integreer je welzijnspraktijken: combineer beweging met schoonheid en bewust eten."
+    },
+    "visionaryIdealist": {
+      "name": "De Visionaire Idealist",
+      "requires": [1, 10, 14],
+      "minMatch": 2,
+      "insight": "Je wordt geraakt door grote ideeën en betekenisvolle verandering. Je bent op je best wanneer je je idealen kunt omzetten in concrete projecten of acties.",
+      "coachTip": "Zet deze week een van je visies om in een klein prototype."
+    },
+    "authenticExpression": {
+      "name": "Authentieke Expressie",
+      "requires": [10, 11],
+      "minMatch": 2,
+      "insight": "Voor jou zijn creativiteit en jezelf zijn nauw verbonden. Je voelt je het meest echt wanneer je je eigen stem kunt laten horen in plaats van de menigte te volgen.",
+      "coachTip": "Deel iets dat je hebt gemaakt—jouw authentieke stem verdient het om gehoord te worden."
+    },
+    "statusSeeker": {
+      "name": "De Statusbouwer",
+      "requires": [16, 17, 18],
+      "minMatch": 2,
+      "insight": "Erkenning en respect zijn belangrijke signalen voor jou. Wanneer je inspanningen worden gezien, versterkt dat je motivatie om de lat steeds hoger te leggen.",
+      "coachTip": "Onthoud dat echt aanzien voortkomt uit impact, niet alleen uit zichtbaarheid."
+    },
+    "sensoryConnoisseur": {
+      "name": "De Zintuiglijke Kenner",
+      "requires": [23, 24],
+      "minMatch": 2,
+      "insight": "Je ervaart het leven sterk via je zintuigen. Zorgvuldig gekozen details in muziek, eten, aanraking of esthetiek kunnen een gewoon moment voor jou bijzonder maken.",
+      "coachTip": "Creëer een zintuiglijk ritueel: ochtendkoffieceremonie, avondaromatherapie of wekelijkse kunstwaardering."
+    },
+    "balanceSeeker": {
+      "name": "De Balanszoeker",
+      "crossDomain": true,
+      "requires": [6, 7, 21],
+      "minMatch": 2,
+      "insight": "Je zoekt harmonie tussen zekerheid en ontspanning, stabiliteit en vitaliteit.",
+      "coachTip": "Je balans is je superkracht. Bescherm die door grenzen te stellen."
+    },
+    "creativeAchiever": {
+      "name": "De Creatieve Presteerder",
+      "crossDomain": true,
+      "requires": [10, 14],
+      "minMatch": 2,
+      "insight": "Je creëert niet zomaar—je creëert met impact. Innovatie is jouw weg naar prestatie.",
+      "coachTip": "Combineer je creativiteit met je gedrevenheid: wat zou je kunnen bouwen dat ertoe doet?"
+    },
+    "connectorAchiever": {
+      "name": "De Verbinder-Presteerder",
+      "crossDomain": true,
+      "requires": [3, 14],
+      "minMatch": 2,
+      "insight": "Je bouwt succes op door relaties. Je prestaties voelen het meest betekenisvol wanneer ze de banden om je heen versterken.",
+      "coachTip": "Zoek deze week naar manieren om iets te bereiken dat ook een relatie verdiept."
+    },
+    "mindfulPerformer": {
+      "name": "De Bewuste Presteerder",
+      "crossDomain": true,
+      "requires": [22, 15],
+      "minMatch": 2,
+      "insight": "Je pusht hard maar zorgt goed voor jezelf. Duurzame prestaties zijn voor jou belangrijker dan kortetermijnwinsten.",
+      "coachTip": "Check voor je volgende uitdaging in bij je lichaam en geef het wat het nodig heeft."
+    },
+    "creativeNurturer": {
+      "name": "De Creatieve Verzorger",
+      "crossDomain": true,
+      "requires": [10, 4],
+      "minMatch": 2,
+      "insight": "Je uit zorgzaamheid door wat je creëert. Je warmte toont zich in de dingen die je maakt en deelt.",
+      "coachTip": "Maak deze week iets kleins met iemand om wie je geeft in gedachten."
+    },
+    "principledVisionary": {
+      "name": "De Principiële Visionair",
+      "crossDomain": true,
+      "requires": [2, 1],
+      "minMatch": 2,
+      "insight": "Je loyaliteit ligt bij een doel groter dan jezelf. Principes en zingeving leiden je visie voor een betere wereld.",
+      "coachTip": "Identificeer één principe dat je dierbaar is en vind een manier om er deze week naar te handelen."
+    },
+    "balancedStriver": {
+      "name": "De Evenwichtige Strever",
+      "crossDomain": true,
+      "requires": [7, 14],
+      "minMatch": 2,
+      "insight": "Je weet wanneer je moet doorzetten en wanneer je moet pauzeren. Ontspanning is voor jou geen luiheid—het is brandstof voor je volgende prestatie.",
+      "coachTip": "Plan vandaag zowel een gefocuste werksessie als een schuldvrije rustperiode."
+    }
+  },
+  "domainSummaries": {
+    "Basics": {
+      "high": [
+        "Je helpt mensen van nature om zich inbegrepen en veilig te voelen.",
+        "Verbonden zijn met anderen lijkt je energie te geven.",
+        "Je bent vaak de persoon op wie anderen kunnen rekenen."
+      ],
+      "mid": [
+        "Je lijkt je comfortabel te bewegen tussen op eigen benen staan en deel uitmaken van een groep.",
+        "Je hebt al mensen en plekken waar je je thuis voelt.",
+        "Je weet hoe je steun kunt geven en ontvangen."
+      ],
+      "low": [
+        "Je bent gewend om veel zelf te regelen.",
+        "Onafhankelijkheid is duidelijk belangrijk voor je.",
+        "Je weet hoe je jezelf door uitdagende situaties moet loodsen."
+      ]
+    },
+    "Self-development": {
+      "high": [
+        "Je benadert het leven met een open en vragende geest.",
+        "Je ziet de wereld eerder als iets om te ontdekken dan om gewoon doorheen te komen.",
+        "Leren en experimenteren lijkt jou van nature goed af te gaan."
+      ],
+      "mid": [
+        "Je weet al hoe stimulerend het voelt om je nieuwsgierigheid te volgen.",
+        "Je lijkt te genieten van leren en nieuwe dingen proberen wanneer dat kan.",
+        "Je nieuwsgierigheid is een behulpzaam kompas."
+      ],
+      "low": [
+        "De dagelijkse eisen laten misschien weinig ruimte voor lichtheid of verkenning.",
+        "Het kan voelen alsof er altijd iets belangrijkers is dan je eigen interesses.",
+        "Je hebt geen grote veranderingen nodig om je gevoel van groei weer op te starten."
+      ]
+    },
+    "Ambition": {
+      "high": [
+        "Je hebt een sterke innerlijke drive om te presteren en dingen vooruit te helpen.",
+        "Je lijkt de lat hoog te leggen voor jezelf.",
+        "Je neemt waarschijnlijk graag initiatief en zoekt groei."
+      ],
+      "mid": [
+        "Je lijkt een gezond ambitieniveau te hebben zonder jezelf erin te verliezen.",
+        "Je bent bereid te werken voor waar je om geeft.",
+        "Je kunt jezelf pushen, maar je weet ook wanneer je gas terug moet nemen."
+      ],
+      "low": [
+        "Je motivatie komt misschien meer uit zingeving, verbinding of plezier dan uit constante druk.",
+        "Je hoeft geen grote doelen na te jagen om een waardevol leven te leiden.",
+        "Je geeft misschien de voorkeur aan gestage bijdragen boven in de schijnwerpers staan."
+      ]
+    },
+    "Vitality": {
+      "headlines": {
+        "both": [
+          "Je lichaam weet wat het nodig heeft",
+          "Energie als jouw fundament",
+          "Vitaliteit voedt alles",
+          "Beweging en voeding doen ertoe",
+          "Je fysieke zelf is een prioriteit",
+          "Zorgen van binnenuit",
+          "Gezondheid en fitheid werken samen"
+        ],
+        "single": {
+          "21": ["Fitheid drijft jou", "Beweging is je anker", "Je actieve kant straalt"],
+          "22": ["Gezondheid leidt jou", "Voeding is belangrijk voor je", "Je lichaam is een prioriteit"]
+        }
+      },
+      "high": [
+        "Je behandelt je gezondheid duidelijk als een belangrijk fundament.",
+        "Je lijkt de signalen van je lichaam te begrijpen en ernaar te handelen.",
+        "Energie en fysieke zorg lijken actieve prioriteiten voor je te zijn."
+      ],
+      "mid": [
+        "Je lijkt te weten wat je helpt om je goed te voelen.",
+        "Er is al enige aandacht voor je lichaam en gezondheid.",
+        "Je begint niet bij nul als het gaat om vitaliteit."
+      ],
+      "low": [
+        "Zorg voor je lichaam en energie kan wat meer aandacht gebruiken.",
+        "Het kan voelen alsof je lichaam alleen aandacht krijgt als er iets mis is.",
+        "Je hoeft niet alles in één keer te veranderen om je beter te voelen."
+      ]
+    },
+    "Attraction": {
+      "headlines": {
+        "both": [
+          "Afgestemd op schoonheid om je heen",
+          "Je zintuigen staan op scherp",
+          "Plezier en esthetiek leiden je",
+          "Schoonheid spreekt tot je",
+          "De zintuiglijke wereld verrukt je",
+          "Afgestemd op schoonheid en genot",
+          "Je esthetische gevoel is sterk"
+        ],
+        "single": {
+          "23": ["Schoonheid trekt je oog", "Esthetiek doet ertoe voor jou", "Je oog voor schoonheid straalt"],
+          "24": ["Zintuiglijk genot leidt je", "Plezier spreekt tot je", "Je zintuigen zijn afgestemd"]
+        }
+      },
+      "high": [
+        "Je ervaart de wereld sterk via je zintuigen.",
+        "Details in muziek, eten, aanraking of omgeving doen er duidelijk toe voor jou.",
+        "Je registreert niet alleen wat er om je heen is; je geniet ervan."
+      ],
+      "mid": [
+        "Je merkt aangename momenten al op en waardeert ze.",
+        "Esthetiek en sfeer hebben een plek in je leven.",
+        "Je lijkt kleine genoegens te waarderen wanneer ze zich voordoen."
+      ],
+      "low": [
+        "Het leven kan soms behoorlijk praktisch of taakgericht aanvoelen.",
+        "Het is makkelijk om op de automatische piloot de dag door te komen.",
+        "Je hebt geen grote ervaringen nodig om je levendiger te voelen."
+      ]
+    }
+  },
+  "openingPhrases": [
+    "Jouw keuzes onthullen iets interessants:",
+    "Dit is wat opvalt aan jou:",
+    "Jouw geluksprofiel laat zien:",
+    "Kijkend naar je keuzes:",
+    "Wat jou drijft is duidelijk:"
+  ],
+  "transitionPhrases": [
+    "Bovendien,",
+    "Daarnaast,",
+    "Het is ook het vermelden waard dat",
+    "Verder,",
+    "Interessant is,"
+  ],
+  "closingPhrases": [
+    "Dit is jouw unieke geluidsvingerafdruk.",
+    "Deze drijfveren vormen hoe je de wereld ervaart.",
+    "Het begrijpen van deze patronen kan je helpen bloeien.",
+    "Omarm deze inzichten—ze zijn uniek van jou.",
+    "Dit is wat jou, jou maakt."
+  ]
+}
