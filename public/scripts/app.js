@@ -844,7 +844,6 @@
       img.setAttribute('tabindex', '0');
       img.setAttribute('role', 'img');
       img.alt = 'Happiness card';
-      img.onerror = function(){ this.style.display = 'none'; };
       imagesContainer.appendChild(img);
       // Attach keyboard navigation once to the persistent image
       setupKeyboardNavigation();
@@ -858,8 +857,24 @@
     img.style.opacity = '1';
     // Force reflow so transition removal takes effect immediately
     void img.offsetWidth;
-    // Reveal only after the new image has loaded; restore transition to default afterwards
-    img.onload = function() { img.style.visibility = 'visible'; img.style.transition = ''; img.onload = null; };
+    // Reveal only after the new image has loaded; start timer only when image is visible
+    img.onload = function() {
+      img.style.visibility = 'visible';
+      img.style.transition = '';
+      img.onload = null;
+      
+      // Start timer only after image is loaded and visible
+      startTimer();
+      // Record start time for individual card response time
+      startTime = Date.now();
+    };
+    // Also start timer on error so scan doesn't get stuck
+    img.onerror = function() {
+      this.style.display = 'none';
+      // Still start timer even if image fails, so scan can continue
+      startTimer();
+      startTime = Date.now();
+    };
     img.src = card.images[0];
     
     // Show timer and buttons
@@ -870,12 +885,6 @@
     try { if (typeof showKeyboardHintsIfDesktop === 'function') { showKeyboardHintsIfDesktop(); } } catch (_) {}
     
     // Ensure card is fully visible and reset any lingering styles (already done above)
-    
-    // Reset and start timer
-    startTimer();
-    
-    // Record start time for individual card response time
-    startTime = Date.now();
   }
   
   function startTimer() {
@@ -1864,37 +1873,22 @@
       let phaseStartTime = 0;
       let phaseStartProgress = 0;
       
-      // Phase colors matching countdown: Pink → Orange → Green
-      const phaseColors = {
-        preparing: '#DA006B',  // Pink
-        generating: '#FF9800', // Orange
-        sending: '#4CAF50'     // Green
-      };
-
-      // Helper to update progress text and color
+      // Helper to update progress text
       function setPhase(phase) {
         currentPhase = phase;
         const txt = document.getElementById('pdfProgressText');
-        const bar = document.getElementById('pdfProgressBar');
-        if (txt) {
-          if (phase === 'preparing') txt.textContent = 'Preparing...';
-          else if (phase === 'generating') txt.textContent = 'Generating...';
-          else if (phase === 'sending') txt.textContent = 'Sending...';
-        }
-        if (bar) {
-          bar.style.background = phaseColors[phase] || '#DA006B';
-        }
+        if (!txt) return;
+        if (phase === 'preparing') txt.textContent = 'Preparing...';
+        else if (phase === 'generating') txt.textContent = 'Generating...';
+        else if (phase === 'sending') txt.textContent = 'Sending...';
         phaseStartTime = Date.now();
         phaseStartProgress = progress;
       }
 
       function getPhaseConfig(phase) {
-        // Preparing: quick ramp to 15%
-        // Generating: bulk of progress to 80%
-        // Sending: final stretch to 95%
-        if (phase === 'preparing') return { target: 15, duration: 500 };
-        if (phase === 'generating') return { target: 80, duration: 8000 };
-        return { target: 95, duration: 800 };
+        if (phase === 'preparing') return { target: 10, duration: 400 };
+        if (phase === 'generating') return { target: 85, duration: 6000 };
+        return { target: 95, duration: 1200 };
       }
 
       function startProgressAnimation() {
@@ -1905,8 +1899,7 @@
           const { target, duration } = getPhaseConfig(currentPhase);
           const elapsed = Math.min(Date.now() - phaseStartTime, duration);
           const t = duration > 0 ? elapsed / duration : 1;
-          // Ease-out for smooth deceleration
-          const eased = 1 - Math.pow(1 - t, 3);
+          const eased = 1 - Math.pow(1 - t, 2);
           const next = phaseStartProgress + (target - phaseStartProgress) * eased;
           if (next > progress) {
             progress = next;
@@ -1923,10 +1916,10 @@
         // Determine initial phase based on PDF readiness
         const pdfAlreadyReady = !!(isPdfReady || cachedPdfBase64 || window.LAST_PDF_BASE64);
         
-        // Setup progress bar with smooth transitions
+        // Setup progress bar
         statusEl.innerHTML = `
           <div style="width:100%; max-width:280px; height:6px; background:var(--progress-bg, #e0e0e0); border-radius:999px; overflow:hidden; margin:10px auto 0;">
-            <div id="pdfProgressBar" style="width:0%; height:100%; background:#DA006B; transition:background 0.3s ease;"></div>
+            <div id="pdfProgressBar" style="width:0%; height:100%; background:var(--brand-pink, #e91e63); transition:width 0.05s linear;"></div>
           </div>
           <div id="pdfProgressText" style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;"></div>
         `;
@@ -1959,31 +1952,27 @@
           pdfBase64: cachedPdfBase64 || window.LAST_PDF_BASE64 || null
         };
         
-        // Minimum durations for each visible phase
-        const minPreparingMs = 500;
-        const minGeneratingMs = 800;
+        const minPreparingMs = 400;
+        const minGeneratingMs = 600;
         await new Promise(r => setTimeout(r, minPreparingMs));
 
-        // Switch to orange "Generating..." phase
         setPhase('generating');
         const generatingStart = Date.now();
         if (!payload.pdfBase64 && !isPdfReady) {
           // Wait up to 20 seconds for PDF to be ready (scale 6 takes longer)
           let waitTime = 0;
           while (!isPdfReady && !cachedPdfBase64 && waitTime < 20000) {
-            await new Promise(r => setTimeout(r, 200));
-            waitTime += 200;
+            await new Promise(r => setTimeout(r, 300));
+            waitTime += 300;
             if (cachedPdfBase64 || window.LAST_PDF_BASE64) {
               payload.pdfBase64 = cachedPdfBase64 || window.LAST_PDF_BASE64;
               break;
             }
           }
         } else {
-          // PDF already ready, show generating phase briefly
           await new Promise(r => setTimeout(r, minGeneratingMs));
         }
 
-        // Ensure minimum generating time for visual consistency
         const elapsedGenerating = Date.now() - generatingStart;
         if (elapsedGenerating < minGeneratingMs) {
           await new Promise(r => setTimeout(r, minGeneratingMs - elapsedGenerating));
@@ -1995,18 +1984,15 @@
           return;
         }
         
-        // Switch to green "Sending..." phase
+        // Switch to sending phase
         setPhase('sending');
         
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         
-        // Complete - show 100% in green
+        // Complete!
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
         const bar = document.getElementById('pdfProgressBar');
-        if (bar) {
-          bar.style.width = '100%';
-          bar.style.background = '#4CAF50'; // Keep green for completion
-        }
+        if (bar) bar.style.width = '100%';
         
         if (!res.ok) { throw new Error('Failed to send'); }
         
