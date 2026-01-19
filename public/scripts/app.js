@@ -1858,9 +1858,11 @@
         return;
       }
       
-      let progressInterval = null;
+      let animationFrameId = null;
       let progress = 0;
       let currentPhase = 'preparing'; // preparing -> generating -> sending
+      let phaseStartTime = 0;
+      let phaseStartProgress = 0;
       
       // Helper to update progress text
       function setPhase(phase) {
@@ -1870,6 +1872,33 @@
         if (phase === 'preparing') txt.textContent = 'Preparing...';
         else if (phase === 'generating') txt.textContent = 'Generating...';
         else if (phase === 'sending') txt.textContent = 'Sending...';
+        phaseStartTime = Date.now();
+        phaseStartProgress = progress;
+      }
+
+      function getPhaseConfig(phase) {
+        if (phase === 'preparing') return { target: 10, duration: 400 };
+        if (phase === 'generating') return { target: 85, duration: 6000 };
+        return { target: 95, duration: 1200 };
+      }
+
+      function startProgressAnimation() {
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
+        const tick = () => {
+          const bar = document.getElementById('pdfProgressBar');
+          if (!bar) return;
+          const { target, duration } = getPhaseConfig(currentPhase);
+          const elapsed = Math.min(Date.now() - phaseStartTime, duration);
+          const t = duration > 0 ? elapsed / duration : 1;
+          const eased = 1 - Math.pow(1 - t, 2);
+          const next = phaseStartProgress + (target - phaseStartProgress) * eased;
+          if (next > progress) {
+            progress = next;
+            bar.style.width = `${progress.toFixed(1)}%`;
+          }
+          animationFrameId = requestAnimationFrame(tick);
+        };
+        tick();
       }
       
       try {
@@ -1877,7 +1906,6 @@
         
         // Determine initial phase based on PDF readiness
         const pdfAlreadyReady = !!(isPdfReady || cachedPdfBase64 || window.LAST_PDF_BASE64);
-        const initialPhase = pdfAlreadyReady ? 'sending' : 'preparing';
         
         // Setup progress bar
         statusEl.innerHTML = `
@@ -1887,26 +1915,8 @@
           <div id="pdfProgressText" style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;"></div>
         `;
         statusEl.style.display = 'block';
-        setPhase(initialPhase);
-        
-        // Linear smooth progress - consistent speed throughout
-        progressInterval = setInterval(() => {
-          const bar = document.getElementById('pdfProgressBar');
-          if (!bar) return;
-          
-          // Consistent linear progress, auto-update phase labels at milestones
-          if (progress < 90) {
-            progress += 0.5; // Steady linear increment
-            bar.style.width = progress + '%';
-            
-            // Auto-update phase text based on progress
-            if (progress >= 5 && progress < 80 && currentPhase === 'preparing') {
-              setPhase('generating');
-            } else if (progress >= 80 && currentPhase === 'generating') {
-              setPhase('sending');
-            }
-          }
-        }, 50);
+        setPhase('preparing');
+        startProgressAnimation();
 
         const results = (typeof window !== 'undefined' && window.LATEST_RESULTS) ? window.LATEST_RESULTS : null;
         try {
@@ -1933,7 +1943,12 @@
           pdfBase64: cachedPdfBase64 || window.LAST_PDF_BASE64 || null
         };
         
-        // If no PDF ready, wait for pre-generation to finish
+        const minPreparingMs = 400;
+        const minGeneratingMs = 600;
+        await new Promise(r => setTimeout(r, minPreparingMs));
+
+        setPhase('generating');
+        const generatingStart = Date.now();
         if (!payload.pdfBase64 && !isPdfReady) {
           // Wait up to 20 seconds for PDF to be ready (scale 6 takes longer)
           let waitTime = 0;
@@ -1945,23 +1960,28 @@
               break;
             }
           }
+        } else {
+          await new Promise(r => setTimeout(r, minGeneratingMs));
+        }
+
+        const elapsedGenerating = Date.now() - generatingStart;
+        if (elapsedGenerating < minGeneratingMs) {
+          await new Promise(r => setTimeout(r, minGeneratingMs - elapsedGenerating));
         }
         
         if (!payload.pdfBase64) {
-          if (progressInterval) clearInterval(progressInterval);
+          if (animationFrameId) cancelAnimationFrame(animationFrameId);
           statusEl.textContent = 'Could not prepare PDF. Please try again.';
           return;
         }
         
-        // Ensure we're in sending phase (may already be there from auto-update)
-        if (currentPhase !== 'sending') {
-          setPhase('sending');
-        }
+        // Switch to sending phase
+        setPhase('sending');
         
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         
         // Complete!
-        if (progressInterval) clearInterval(progressInterval);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
         const bar = document.getElementById('pdfProgressBar');
         if (bar) bar.style.width = '100%';
         
@@ -1971,11 +1991,11 @@
         await new Promise(r => setTimeout(r, 300));
         showSent();
       } catch (e) {
-        if (progressInterval) clearInterval(progressInterval);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
         statusEl.textContent = 'Something went wrong. Please try again.';
         statusEl.style.display = 'block';
       } finally {
-        if (progressInterval) clearInterval(progressInterval);
+        if (animationFrameId) cancelAnimationFrame(animationFrameId);
         if (sendBtn) { sendBtn.disabled = false; }
       }
     }
