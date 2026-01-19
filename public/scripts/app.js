@@ -1780,7 +1780,7 @@
           
           if (win.html2canvas && win.jspdf?.jsPDF) {
             const canvasOpts = { 
-              scale: 5, 
+              scale: 6, 
               useCORS: true, 
               width: 595, 
               height: 842, 
@@ -1860,28 +1860,51 @@
       
       let progressInterval = null;
       let progress = 0;
+      let currentPhase = 'preparing'; // preparing -> generating -> sending
+      
+      // Helper to update progress text
+      function setPhase(phase) {
+        currentPhase = phase;
+        const txt = document.getElementById('pdfProgressText');
+        if (!txt) return;
+        if (phase === 'preparing') txt.textContent = 'Preparing...';
+        else if (phase === 'generating') txt.textContent = 'Generating...';
+        else if (phase === 'sending') txt.textContent = 'Sending...';
+      }
       
       try {
         if (sendBtn) { sendBtn.disabled = true; }
         
-        // Determine initial message based on PDF readiness
-        const initialMessage = (isPdfReady || cachedPdfBase64) ? 'Sending...' : 'Preparing your report...';
+        // Determine initial phase based on PDF readiness
+        const pdfAlreadyReady = !!(isPdfReady || cachedPdfBase64 || window.LAST_PDF_BASE64);
+        const initialPhase = pdfAlreadyReady ? 'sending' : 'preparing';
         
         // Setup progress bar
         statusEl.innerHTML = `
           <div style="width:100%; max-width:280px; height:6px; background:var(--progress-bg, #e0e0e0); border-radius:999px; overflow:hidden; margin:10px auto 0;">
             <div id="pdfProgressBar" style="width:0%; height:100%; background:var(--brand-pink, #e91e63); transition:width 0.05s linear;"></div>
           </div>
-          <div id="pdfProgressText" style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;">${initialMessage}</div>
+          <div id="pdfProgressText" style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;"></div>
         `;
         statusEl.style.display = 'block';
+        setPhase(initialPhase);
         
-        // Smooth progress animation
+        // Smooth progress animation with phase-aware speed
         progressInterval = setInterval(() => {
-          if (progress < 90) {
-            progress += 0.5;
-            const bar = document.getElementById('pdfProgressBar');
-            if (bar) bar.style.width = progress + '%';
+          const bar = document.getElementById('pdfProgressBar');
+          if (!bar) return;
+          
+          let maxProgress = 95;
+          let speed = 0.4;
+          
+          // Adjust based on phase
+          if (currentPhase === 'preparing') { maxProgress = 30; speed = 0.8; }
+          else if (currentPhase === 'generating') { maxProgress = 70; speed = 0.3; }
+          else if (currentPhase === 'sending') { maxProgress = 95; speed = 0.5; }
+          
+          if (progress < maxProgress) {
+            progress += speed;
+            bar.style.width = progress + '%';
           }
         }, 50);
 
@@ -1912,11 +1935,12 @@
         
         // If no PDF ready, wait for pre-generation to finish
         if (!payload.pdfBase64 && !isPdfReady) {
-          // Wait up to 10 seconds for PDF to be ready
+          setPhase('generating');
+          // Wait up to 15 seconds for PDF to be ready
           let waitTime = 0;
-          while (!isPdfReady && !cachedPdfBase64 && waitTime < 10000) {
-            await new Promise(r => setTimeout(r, 500));
-            waitTime += 500;
+          while (!isPdfReady && !cachedPdfBase64 && waitTime < 15000) {
+            await new Promise(r => setTimeout(r, 300));
+            waitTime += 300;
             if (cachedPdfBase64 || window.LAST_PDF_BASE64) {
               payload.pdfBase64 = cachedPdfBase64 || window.LAST_PDF_BASE64;
               break;
@@ -1924,17 +1948,14 @@
           }
         }
         
-        // Update to "Sending..." if we were preparing
-        const txt = document.getElementById('pdfProgressText');
-        if (txt && txt.textContent !== 'Sending...') {
-          txt.textContent = 'Sending...';
-        }
-        
         if (!payload.pdfBase64) {
           if (progressInterval) clearInterval(progressInterval);
           statusEl.textContent = 'Could not prepare PDF. Please try again.';
           return;
         }
+        
+        // Switch to sending phase
+        setPhase('sending');
         
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         
