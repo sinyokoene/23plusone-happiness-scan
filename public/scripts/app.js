@@ -1890,6 +1890,7 @@
         setPhase(initialPhase);
         
         // Smooth progress animation with phase-aware speed
+        // Real time breakdown: Generating=80%, Sending=20%
         progressInterval = setInterval(() => {
           const bar = document.getElementById('pdfProgressBar');
           if (!bar) return;
@@ -1897,10 +1898,10 @@
           let maxProgress = 95;
           let speed = 0.4;
           
-          // Adjust based on phase
-          if (currentPhase === 'preparing') { maxProgress = 30; speed = 0.8; }
-          else if (currentPhase === 'generating') { maxProgress = 70; speed = 0.3; }
-          else if (currentPhase === 'sending') { maxProgress = 95; speed = 0.5; }
+          // Adjust based on phase - Generating is the bottleneck (most of the bar)
+          if (currentPhase === 'preparing') { maxProgress = 10; speed = 1.5; }
+          else if (currentPhase === 'generating') { maxProgress = 85; speed = 0.25; }
+          else if (currentPhase === 'sending') { maxProgress = 95; speed = 1.2; }
           
           if (progress < maxProgress) {
             progress += speed;
@@ -1936,9 +1937,9 @@
         // If no PDF ready, wait for pre-generation to finish
         if (!payload.pdfBase64 && !isPdfReady) {
           setPhase('generating');
-          // Wait up to 15 seconds for PDF to be ready
+          // Wait up to 20 seconds for PDF to be ready (scale 6 takes longer)
           let waitTime = 0;
-          while (!isPdfReady && !cachedPdfBase64 && waitTime < 15000) {
+          while (!isPdfReady && !cachedPdfBase64 && waitTime < 20000) {
             await new Promise(r => setTimeout(r, 300));
             waitTime += 300;
             if (cachedPdfBase64 || window.LAST_PDF_BASE64) {
@@ -1954,8 +1955,13 @@
           return;
         }
         
-        // Switch to sending phase
+        // Switch to sending phase - jump progress to 85% if we were generating
         setPhase('sending');
+        if (progress < 85) {
+          progress = 85;
+          const bar = document.getElementById('pdfProgressBar');
+          if (bar) bar.style.width = '85%';
+        }
         
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         
@@ -1978,7 +1984,13 @@
         if (sendBtn) { sendBtn.disabled = false; }
       }
     }
-    if (sendBtn) sendBtn.addEventListener('click', sendRequest);
+    if (sendBtn) {
+      sendBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        sendRequest();
+      });
+    }
   }
   
   function getBenchmarkData(results) {
