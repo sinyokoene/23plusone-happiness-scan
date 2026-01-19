@@ -1697,30 +1697,11 @@
     function showSent(){ formBlock.style.display = 'none'; sentBlock.style.display = 'block'; }
     function validateEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim()); }
 
-    // Pre-generate PDF when overlay opens
+    // Pre-generate PDF when overlay opens (silently in background)
     async function preGeneratePDF() {
       if (isPdfReady || cachedPdfBase64) return; // Already generated
       
       try {
-        // Show progress bar
-        statusEl.innerHTML = `
-          <div style="width:100%; max-width:280px; height:6px; background:var(--progress-bg, #e0e0e0); border-radius:999px; overflow:hidden; margin:10px auto 0;">
-            <div id="pdfProgressBar" style="width:0%; height:100%; background:var(--brand-pink, #e91e63); transition:width 0.05s linear;"></div>
-          </div>
-          <div id="pdfProgressText" style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;">Preparing your report...</div>
-        `;
-        statusEl.style.display = 'block';
-        
-        // Smooth progress animation
-        pdfGenerationProgress = 0;
-        pdfGenerationInterval = setInterval(() => {
-          if (pdfGenerationProgress < 90) {
-            pdfGenerationProgress += 0.4;
-            const bar = document.getElementById('pdfProgressBar');
-            if (bar) bar.style.width = pdfGenerationProgress + '%';
-          }
-        }, 50);
-
         const results = (typeof window !== 'undefined' && window.LATEST_RESULTS) ? window.LATEST_RESULTS : null;
         
         // Build benchmark data
@@ -1844,21 +1825,12 @@
         
         try { document.body.removeChild(iframe); } catch(_){}
         
-        // Complete progress
-        if (pdfGenerationInterval) clearInterval(pdfGenerationInterval);
-        const bar = document.getElementById('pdfProgressBar');
-        if (bar) bar.style.width = '100%';
-        
         isPdfReady = true;
-        
-        // Hide progress after a moment
-        await new Promise(r => setTimeout(r, 400));
-        statusEl.style.display = 'none';
+        console.log('PDF pre-generation complete');
         
       } catch(e) {
         console.error('PDF pre-generation failed:', e);
-        if (pdfGenerationInterval) clearInterval(pdfGenerationInterval);
-        statusEl.style.display = 'none';
+        isPdfReady = false;
       }
     }
 
@@ -1892,19 +1864,22 @@
       try {
         if (sendBtn) { sendBtn.disabled = true; }
         
-        // Setup sending progress bar
+        // Determine initial message based on PDF readiness
+        const initialMessage = (isPdfReady || cachedPdfBase64) ? 'Sending...' : 'Preparing your report...';
+        
+        // Setup progress bar
         statusEl.innerHTML = `
           <div style="width:100%; max-width:280px; height:6px; background:var(--progress-bg, #e0e0e0); border-radius:999px; overflow:hidden; margin:10px auto 0;">
             <div id="pdfProgressBar" style="width:0%; height:100%; background:var(--brand-pink, #e91e63); transition:width 0.05s linear;"></div>
           </div>
-          <div id="pdfProgressText" style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;">Sending...</div>
+          <div id="pdfProgressText" style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;">${initialMessage}</div>
         `;
         statusEl.style.display = 'block';
         
-        // Smooth progress while sending
+        // Smooth progress animation
         progressInterval = setInterval(() => {
-          if (progress < 95) {
-            progress += 0.8;
+          if (progress < 90) {
+            progress += 0.5;
             const bar = document.getElementById('pdfProgressBar');
             if (bar) bar.style.width = progress + '%';
           }
@@ -1935,11 +1910,8 @@
           pdfBase64: cachedPdfBase64 || window.LAST_PDF_BASE64 || null
         };
         
-        // If no PDF ready, wait a bit for pre-generation to finish
+        // If no PDF ready, wait for pre-generation to finish
         if (!payload.pdfBase64 && !isPdfReady) {
-          const txt = document.getElementById('pdfProgressText');
-          if (txt) txt.textContent = 'Finishing report preparation...';
-          
           // Wait up to 10 seconds for PDF to be ready
           let waitTime = 0;
           while (!isPdfReady && !cachedPdfBase64 && waitTime < 10000) {
@@ -1950,8 +1922,12 @@
               break;
             }
           }
-          
-          if (txt) txt.textContent = 'Sending...';
+        }
+        
+        // Update to "Sending..." if we were preparing
+        const txt = document.getElementById('pdfProgressText');
+        if (txt && txt.textContent !== 'Sending...') {
+          txt.textContent = 'Sending...';
         }
         
         if (!payload.pdfBase64) {
