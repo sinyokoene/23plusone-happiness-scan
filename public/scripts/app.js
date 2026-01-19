@@ -191,13 +191,16 @@
   const letsGoBtn = document.getElementById('letsGoBtn');
   const practiceMoreBtn = document.getElementById('practiceMoreBtn');
 
-  // Disable buttons initially until images preload
+  // Hide buttons initially until images preload (fade in effect)
   if (startBtn) {
-    startBtn.disabled = true;
-    startBtn.textContent = 'Loading images...';
+    startBtn.style.opacity = '0';
+    startBtn.style.pointerEvents = 'none';
+    startBtn.style.transition = 'opacity 0.6s ease-in';
   }
   if (letsGoBtn) {
-    letsGoBtn.disabled = true;
+    letsGoBtn.style.opacity = '0';
+    letsGoBtn.style.pointerEvents = 'none';
+    letsGoBtn.style.transition = 'opacity 0.6s ease-in';
   }
 
   const practiceImages = [
@@ -767,22 +770,18 @@
       img.onload = () => {
         loadedCount++;
         
-        // Update button text with progress
-        if (startBtn && loadedCount < totalImages) {
-          startBtn.textContent = `Loading images... ${loadedCount}/${totalImages}`;
-        }
-        
         // All images loaded
         if (loadedCount === totalImages) {
           console.log('✅ All card images preloaded!');
           
-          // Enable buttons now that images are ready
+          // Fade in buttons now that images are ready
           if (startBtn) {
-            startBtn.disabled = false;
-            startBtn.textContent = 'Continue';
+            startBtn.style.opacity = '1';
+            startBtn.style.pointerEvents = 'auto';
           }
           if (letsGoBtn) {
-            letsGoBtn.disabled = false;
+            letsGoBtn.style.opacity = '1';
+            letsGoBtn.style.pointerEvents = 'auto';
           }
         }
       };
@@ -791,21 +790,17 @@
         console.warn(`⚠️ Failed to preload image: ${card.images[0]}`);
         loadedCount++; // Count it anyway to prevent hanging
         
-        // Update button text with progress
-        if (startBtn && loadedCount < totalImages) {
-          startBtn.textContent = `Loading images... ${loadedCount}/${totalImages}`;
-        }
-        
         if (loadedCount === totalImages) {
           console.log('✅ Image preloading complete (some failed)');
           
-          // Enable buttons even if some images failed
+          // Fade in buttons even if some images failed
           if (startBtn) {
-            startBtn.disabled = false;
-            startBtn.textContent = 'Continue';
+            startBtn.style.opacity = '1';
+            startBtn.style.pointerEvents = 'auto';
           }
           if (letsGoBtn) {
-            letsGoBtn.disabled = false;
+            letsGoBtn.style.opacity = '1';
+            letsGoBtn.style.pointerEvents = 'auto';
           }
         }
       };
