@@ -1691,7 +1691,159 @@
     function showSent(){ formBlock.style.display = 'none'; sentBlock.style.display = 'block'; }
     function validateEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim()); }
 
-    openBtn.addEventListener('click', () => { try { showOverlay(); showForm(); errorEl.style.display='none'; statusEl.style.display='none'; } catch(_){ } });
+    // We'll store the ongoing PDF generation promise here
+    let currentPdfPromise = null;
+
+    openBtn.addEventListener('click', () => { 
+      try { 
+        showOverlay(); 
+        showForm(); 
+        errorEl.style.display='none'; 
+        statusEl.style.display='none';
+        
+        // Start generating PDF immediately when modal opens
+        currentPdfPromise = generatePDFBase64();
+      } catch(e){ 
+        console.error('Error opening report modal:', e);
+      } 
+    });
+
+    // Helper: Generate PDF and return base64 (or cached)
+    async function generatePDFBase64() {
+      // Check cache first (unless we want to force regenerate, but cache is usually fine per session)
+      if (window.LAST_PDF_BASE64) return window.LAST_PDF_BASE64;
+
+      const results = (typeof window !== 'undefined' && window.LATEST_RESULTS) ? window.LATEST_RESULTS : null;
+      try {
+        if (typeof window !== 'undefined') {
+          if (results && typeof results.completionTime === 'number') window.LATEST_COMPLETION_TIME = results.completionTime;
+          if (results && typeof results.unansweredCount === 'number') window.LATEST_UNANSWERED = results.unansweredCount;
+        }
+      } catch(_){ }
+
+      // Build a small, ASCII-safe benchmark object
+      const fullBm = (typeof window !== 'undefined' ? (window.LATEST_BENCHMARK || null) : null);
+      const safeBenchmark = fullBm ? {
+        ihsPercentile: typeof fullBm.ihsPercentile === 'number' ? fullBm.ihsPercentile : null,
+        totalResponses: typeof fullBm.totalResponses === 'number' ? fullBm.totalResponses : null,
+        context: {
+          averageScore: (fullBm.context && typeof fullBm.context.averageScore === 'number') ? fullBm.context.averageScore : null
+        }
+      } : null;
+
+      const dataPayload = { 
+        results, 
+        benchmark: safeBenchmark, 
+        completionTime: (typeof window !== 'undefined' ? (window.LATEST_COMPLETION_TIME ?? null) : null), 
+        unansweredCount: (typeof window !== 'undefined' ? (window.LATEST_UNANSWERED ?? null) : null),
+        selectedCardIds: (typeof window !== 'undefined' ? (window.LATEST_SELECTED_CARDS || []) : []),
+        answers: (typeof window !== 'undefined' ? (window.LATEST_ANSWERS || []) : [])
+      };
+
+      const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(dataPayload)))))}&preview=1`;
+      const iframe = document.createElement('iframe');
+      
+      iframe.style.position = 'fixed';
+      iframe.style.left = '0';
+      iframe.style.top = '0';
+      iframe.style.visibility = 'hidden';
+      iframe.style.pointerEvents = 'none';
+      iframe.style.width = '210mm';
+      iframe.style.height = '297mm';
+      iframe.src = reportUrl;
+      
+      document.body.appendChild(iframe);
+      
+      try {
+        await new Promise(resolve => { iframe.onload = resolve; });
+        await new Promise(r => setTimeout(r, 250));
+        
+        const doc = iframe.contentDocument;
+        const win = iframe.contentWindow;
+        
+        // Wait for ready flag
+        let waited = 0;
+        while (waited < 4000 && !(win && win.__REPORT_READY__)) { 
+          await new Promise(r => setTimeout(r, 200)); 
+          waited += 200; 
+        }
+        
+        try { doc.body.classList.add('pdf-render'); } catch(_) {}
+        await new Promise(r => setTimeout(r, 100));
+        
+        const page = doc && (doc.querySelector('#report-page') || doc.querySelector('.page'));
+        
+        // Ensure libs
+        async function load(url) {
+          return await new Promise(resolve => {
+            const sc = doc.createElement('script');
+            sc.src = url;
+            sc.referrerPolicy = 'no-referrer';
+            sc.onload = () => resolve(true);
+            sc.onerror = () => resolve(false);
+            doc.head.appendChild(sc);
+          });
+        }
+        
+        if (!(win && win.html2canvas)) await load('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
+        if (!(win && win.jspdf?.jsPDF)) await load('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
+        await new Promise(r => setTimeout(r, 100));
+
+        let tries = 0;
+        while (tries < 8 && !(win?.html2canvas && win?.jspdf?.jsPDF)) {
+          await new Promise(r => setTimeout(r, 200));
+          tries++;
+        }
+
+        if (win.html2canvas && win.jspdf?.jsPDF && page) {
+           const canvasOpts = { 
+              scale: 5, 
+              useCORS: true, 
+              width: 595, 
+              height: 842, 
+              windowWidth: 595, 
+              windowHeight: 842, 
+              x: 0, 
+              y: 0, 
+              scrollX: 0, 
+              scrollY: 0, 
+              backgroundColor: '#ffffff' 
+           };
+           
+           let canvas;
+           try { 
+             canvas = await win.html2canvas(page, canvasOpts); 
+           } catch(_) { 
+             canvas = await win.html2canvas(page, { ...canvasOpts, scale: 2 }); 
+           }
+           
+           const imgData = canvas.toDataURL('image/png');
+           const pdf = new win.jspdf.jsPDF({ 
+             unit: 'px', 
+             format: [595, 842], 
+             orientation: 'portrait', 
+             hotfixes: ['px_scaling'], 
+             compress: true 
+           });
+           pdf.addImage(imgData, 'PNG', 0, 0, 595, 842);
+           const blob = pdf.output('blob');
+           const dataUri = await new Promise((resolve) => { 
+             const fr = new FileReader(); 
+             fr.onload = () => resolve(fr.result); 
+             fr.readAsDataURL(blob); 
+           });
+           
+           const base64 = String(dataUri);
+           try { window.LAST_PDF_BASE64 = base64; } catch(_) {}
+           return base64;
+        }
+      } catch(e) {
+        console.warn('PDF gen error', e);
+      } finally {
+        try { document.body.removeChild(iframe); } catch(_){}
+      }
+      return null;
+    }
     if (backBtn) backBtn.addEventListener('click', hideOverlay);
     if (overlay) overlay.addEventListener('click', function(e){ if (e.target === overlay) hideOverlay(); });
     if (tryAgainBtn) tryAgainBtn.addEventListener('click', () => { try { location.reload(); } catch(_) { showForm(); } });
@@ -1715,16 +1867,15 @@
         
         // Setup progress bar
         statusEl.innerHTML = `
-          <div style="width:100%; max-width:280px; height:6px; background:var(--progress-bg, #e0e0e0); border-radius:999px; overflow:hidden; margin:0 auto;">
+          <div style="width:100%; max-width:280px; height:6px; background:var(--progress-bg, #e0e0e0); border-radius:999px; overflow:hidden; margin:10px auto 0;">
             <div id="pdfProgressBar" style="width:0%; height:100%; background:var(--brand-pink, #e91e63); transition:width 0.05s linear;"></div>
           </div>
           <div id="pdfProgressText" style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;">Preparing your report...</div>
         `;
         statusEl.style.display = 'block';
         
-        // Smoother progress animation
-        // Phase 1: 0-75% (Preparation)
-        // Phase 2: 75-95% (Sending)
+        // Start progress animation
+        // If PDF is already ready (because we started on modal open), this will jump to 75% quickly
         progressInterval = setInterval(() => {
           const bar = document.getElementById('pdfProgressBar');
           if (!bar) return;
@@ -1732,7 +1883,7 @@
           if (!isSending) {
              // Phase 1: Preparing (slowly approach 75%)
              if (progress < 75) {
-               progress += 0.5; // smoother increments
+               progress += 0.5;
                bar.style.width = progress + '%';
              }
           } else {
@@ -1744,13 +1895,15 @@
           }
         }, 50);
 
+        // Get base64 from our preloaded promise (or start new if missing)
+        let pdfBase64 = null;
+        if (currentPdfPromise) {
+          pdfBase64 = await currentPdfPromise;
+        } else {
+          pdfBase64 = await generatePDFBase64();
+        }
+
         const results = (typeof window !== 'undefined' && window.LATEST_RESULTS) ? window.LATEST_RESULTS : null;
-        try {
-          if (typeof window !== 'undefined') {
-            if (results && typeof results.completionTime === 'number') window.LATEST_COMPLETION_TIME = results.completionTime;
-            if (results && typeof results.unansweredCount === 'number') window.LATEST_UNANSWERED = results.unansweredCount;
-          }
-        } catch(_){ }
         const payload = {
           sessionId: participantId,
           email,
@@ -1764,132 +1917,10 @@
             domainCounts: results.domainCounts || null,
             domainAffirmations: results.domainAffirmations || null
           } : null,
-          userAgent: navigator.userAgent
+          userAgent: navigator.userAgent,
+          pdfBase64: pdfBase64
         };
-        // Generate PDF in browser
-        try {
-          // Build a small, ASCII-safe benchmark object to avoid btoa Unicode errors (emoji, etc.)
-          const fullBm = (typeof window !== 'undefined' ? (window.LATEST_BENCHMARK || null) : null);
-          console.log('PDF Generation - LATEST_BENCHMARK:', fullBm);
-          console.log('PDF Generation - ihsPercentile:', fullBm?.ihsPercentile);
-          const safeBenchmark = fullBm ? {
-            ihsPercentile: typeof fullBm.ihsPercentile === 'number' ? fullBm.ihsPercentile : null,
-            totalResponses: typeof fullBm.totalResponses === 'number' ? fullBm.totalResponses : null,
-            context: {
-              averageScore: (fullBm.context && typeof fullBm.context.averageScore === 'number') ? fullBm.context.averageScore : null
-            }
-          } : null;
-          console.log('PDF Generation - safeBenchmark:', safeBenchmark);
-          const dataPayload = { 
-            results, 
-            benchmark: safeBenchmark, 
-            completionTime: (typeof window !== 'undefined' ? (window.LATEST_COMPLETION_TIME ?? null) : null), 
-            unansweredCount: (typeof window !== 'undefined' ? (window.LATEST_UNANSWERED ?? null) : null),
-            selectedCardIds: (typeof window !== 'undefined' ? (window.LATEST_SELECTED_CARDS || []) : []),
-            answers: (typeof window !== 'undefined' ? (window.LATEST_ANSWERS || []) : [])
-          };
-          const reportUrl = `/report/preview?data=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(dataPayload)))))}&preview=1`;
-          const iframe = document.createElement('iframe');
-          // Keep iframe on-screen (but hidden) so Safari/WebKit paints it
-          iframe.style.position = 'fixed';
-          iframe.style.left = '0';
-          iframe.style.top = '0';
-          iframe.style.visibility = 'hidden';
-          iframe.style.pointerEvents = 'none';
-          iframe.style.width = '210mm';
-          iframe.style.height = '297mm';
-          iframe.src = reportUrl;
-          document.body.appendChild(iframe);
-          await new Promise(resolve => { iframe.onload = resolve; });
-          // Give fonts/layout a moment even after onload
-          await new Promise(r => setTimeout(r, 250));
-          const doc = iframe.contentDocument;
-          const win = iframe.contentWindow;
-          // wait for layout/fonts ready flag inside iframe
-          let waited = 0;
-          while (waited < 4000 && !(win && win.__REPORT_READY__)) { await new Promise(r => setTimeout(r, 200)); waited += 200; }
-          // Add pdf-render class to body for proper positioning
-          try { doc.body.classList.add('pdf-render'); } catch(_) {}
-          await new Promise(r => setTimeout(r, 100)); // Let styles apply
-          const page = doc && (doc.querySelector('#report-page') || doc.querySelector('.page'));
-          let blob = null;
-          // Load html2canvas + jsPDF if not available
-          async function ensureLibsLoaded() {
-            async function load(url) {
-              return await new Promise(resolve => {
-                const sc = doc.createElement('script');
-                sc.src = url;
-                sc.referrerPolicy = 'no-referrer';
-                sc.onload = () => resolve(true);
-                sc.onerror = () => resolve(false);
-                doc.head.appendChild(sc);
-              });
-            }
-            if (!(win && win.html2canvas)) await load('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js');
-            if (!(win && win.jspdf?.jsPDF)) await load('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');
-            await new Promise(r => setTimeout(r, 100));
-          }
-          
-          // Generate PDF with html2canvas + jsPDF
-          if (page) {
-            try {
-              // Wait for libs or load them
-              let tries = 0;
-              while (tries < 8 && !(win?.html2canvas && win?.jspdf?.jsPDF)) {
-                await new Promise(r => setTimeout(r, 200));
-                tries++;
-              }
-              if (!(win?.html2canvas && win?.jspdf?.jsPDF)) await ensureLibsLoaded();
-              
-              if (win.html2canvas && win.jspdf?.jsPDF) {
-                // Scale 5 = high quality with better performance
-                const canvasOpts = { 
-                  scale: 5, 
-                  useCORS: true, 
-                  width: 595, 
-                  height: 842, 
-                  windowWidth: 595, 
-                  windowHeight: 842, 
-                  x: 0, 
-                  y: 0, 
-                  scrollX: 0, 
-                  scrollY: 0, 
-                  backgroundColor: '#ffffff' 
-                };
-                
-                let canvas;
-                try { 
-                  canvas = await win.html2canvas(page, canvasOpts); 
-                } catch(_) { 
-                  // Low-memory fallback
-                  canvas = await win.html2canvas(page, { ...canvasOpts, scale: 2 }); 
-                }
-                
-                const imgData = canvas.toDataURL('image/png');
-                const pdf = new win.jspdf.jsPDF({ 
-                  unit: 'px', 
-                  format: [595, 842], 
-                  orientation: 'portrait', 
-                  hotfixes: ['px_scaling'], 
-                  compress: true 
-                });
-                pdf.addImage(imgData, 'PNG', 0, 0, 595, 842);
-                blob = pdf.output('blob');
-              }
-            } catch(_) {}
-          }
-          if (blob) {
-            // Convert to base64
-            const dataUri = await new Promise((resolve) => { const fr = new FileReader(); fr.onload = () => resolve(fr.result); fr.readAsDataURL(blob); });
-            payload.pdfBase64 = String(dataUri);
-            try { window.LAST_PDF_BASE64 = payload.pdfBase64; } catch(_) {}
-          }
-          try { document.body.removeChild(iframe); } catch(_){}
-        } catch(_) {}
-        // Use client-generated PDF
-        if (!payload.pdfBase64 && window.LAST_PDF_BASE64) {
-          payload.pdfBase64 = window.LAST_PDF_BASE64;
-        }
+
         if (!payload.pdfBase64) {
           if (progressInterval) clearInterval(progressInterval);
           statusEl.textContent = 'Could not prepare PDF. Please try again.';
@@ -1920,6 +1951,7 @@
         // Small delay to let user see 100%
         await new Promise(r => setTimeout(r, 300));
         showSent();
+      } catch (e) {
       } catch (e) {
         if (progressInterval) clearInterval(progressInterval);
         statusEl.textContent = 'Something went wrong. Please try again.';
