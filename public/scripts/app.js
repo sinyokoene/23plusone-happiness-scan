@@ -253,11 +253,33 @@
     }
 
     const imgSrc = practiceImages[practiceIndex];
-    practiceCardDiv.innerHTML = `
-      <div id="practiceCardImages" class="w-full h-full max-h-full flex items-center justify-center">
-        <img src="${imgSrc}" alt="Practice card" class="practice-card-image w-auto h-auto max-w-full max-h-full object-contain rounded-[16px] shadow-[0_10px_15px_rgba(0,0,0,0.15)]" tabindex="0" role="img" onerror="this.style.display='none'" style="opacity: 1 !important;">
-      </div>
-    `;
+    
+    // Reuse or create the practice card container and image element
+    let imagesContainer = document.getElementById('practiceCardImages');
+    if (!imagesContainer) {
+      imagesContainer = document.createElement('div');
+      imagesContainer.id = 'practiceCardImages';
+      imagesContainer.className = 'w-full h-full max-h-full flex items-center justify-center';
+      practiceCardDiv.replaceChildren(imagesContainer);
+    }
+    
+    let img = imagesContainer.querySelector('.practice-card-image');
+    if (!img) {
+      img = document.createElement('img');
+      img.className = 'practice-card-image w-auto h-auto max-w-full max-h-full object-contain rounded-[16px] shadow-[0_10px_15px_rgba(0,0,0,0.15)]';
+      img.setAttribute('tabindex', '0');
+      img.setAttribute('role', 'img');
+      img.alt = 'Practice card';
+      imagesContainer.appendChild(img);
+    }
+    
+    // Hide image before loading new source
+    img.style.visibility = 'hidden';
+    img.style.transition = 'none';
+    img.style.transform = '';
+    img.style.opacity = '1';
+    // Force reflow
+    void img.offsetWidth;
 
     // Update practice instructions text based on device
     try {
@@ -385,29 +407,49 @@
       }
     }, 100);
 
-    // Start timer: on the very first practice card, wait for the user's first interaction
-    if (practiceIndex === 0) {
-      const startIfIdle = () => {
-        if (!practiceTimerActive) { startPracticeTimer(); }
-        removePulse();
-        disablePracticeTilt();
-      };
-      const cardImage = document.querySelector('.practice-card-image');
-      if (cardImage) {
-        const onceOpts = { once: true };
-        cardImage.addEventListener('touchstart', startIfIdle, onceOpts);
-        cardImage.addEventListener('mousedown', startIfIdle, onceOpts);
-        cardImage.addEventListener('click', startIfIdle, onceOpts);
-        cardImage.addEventListener('keydown', (e) => {
-          if (e && (e.key === 'Enter' || e.key === ' ')) startIfIdle();
-        }, onceOpts);
+    // Function to start timer after image loads
+    const startTimerAfterLoad = () => {
+      // Start timer: on the very first practice card, wait for the user's first interaction
+      if (practiceIndex === 0) {
+        const startIfIdle = () => {
+          if (!practiceTimerActive) { startPracticeTimer(); }
+          removePulse();
+          disablePracticeTilt();
+        };
+        const cardImage = document.querySelector('.practice-card-image');
+        if (cardImage) {
+          const onceOpts = { once: true };
+          cardImage.addEventListener('touchstart', startIfIdle, onceOpts);
+          cardImage.addEventListener('mousedown', startIfIdle, onceOpts);
+          cardImage.addEventListener('click', startIfIdle, onceOpts);
+          cardImage.addEventListener('keydown', (e) => {
+            if (e && (e.key === 'Enter' || e.key === ' ')) startIfIdle();
+          }, onceOpts);
+        } else {
+          // Fallback: if image not found for any reason, start immediately
+          startPracticeTimer();
+        }
       } else {
-        // Fallback: if image not found for any reason, start immediately
         startPracticeTimer();
       }
-    } else {
-      startPracticeTimer();
-    }
+    };
+    
+    // Wait for image to load before starting timer
+    img.onload = function() {
+      img.style.visibility = 'visible';
+      img.style.transition = '';
+      img.onload = null;
+      startTimerAfterLoad();
+    };
+    
+    // Also start timer on error so practice doesn't get stuck
+    img.onerror = function() {
+      this.style.display = 'none';
+      startTimerAfterLoad();
+    };
+    
+    // Set the image source to trigger loading
+    img.src = imgSrc;
   }
 
   function startPracticeTimer() {
