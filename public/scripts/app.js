@@ -191,6 +191,15 @@
   const letsGoBtn = document.getElementById('letsGoBtn');
   const practiceMoreBtn = document.getElementById('practiceMoreBtn');
 
+  // Disable buttons initially until images preload
+  if (startBtn) {
+    startBtn.disabled = true;
+    startBtn.textContent = 'Loading images...';
+  }
+  if (letsGoBtn) {
+    letsGoBtn.disabled = true;
+  }
+
   const practiceImages = [
     'fakeCards/25. resilience_strength.jpeg',
     'fakeCards/26. expression_extravegance.jpeg',
@@ -253,33 +262,11 @@
     }
 
     const imgSrc = practiceImages[practiceIndex];
-    
-    // Reuse or create the practice card container and image element
-    let imagesContainer = document.getElementById('practiceCardImages');
-    if (!imagesContainer) {
-      imagesContainer = document.createElement('div');
-      imagesContainer.id = 'practiceCardImages';
-      imagesContainer.className = 'w-full h-full max-h-full flex items-center justify-center';
-      practiceCardDiv.replaceChildren(imagesContainer);
-    }
-    
-    let img = imagesContainer.querySelector('.practice-card-image');
-    if (!img) {
-      img = document.createElement('img');
-      img.className = 'practice-card-image w-auto h-auto max-w-full max-h-full object-contain rounded-[16px] shadow-[0_10px_15px_rgba(0,0,0,0.15)]';
-      img.setAttribute('tabindex', '0');
-      img.setAttribute('role', 'img');
-      img.alt = 'Practice card';
-      imagesContainer.appendChild(img);
-    }
-    
-    // Hide image before loading new source
-    img.style.visibility = 'hidden';
-    img.style.transition = 'none';
-    img.style.transform = '';
-    img.style.opacity = '1';
-    // Force reflow
-    void img.offsetWidth;
+    practiceCardDiv.innerHTML = `
+      <div id="practiceCardImages" class="w-full h-full max-h-full flex items-center justify-center">
+        <img src="${imgSrc}" alt="Practice card" class="practice-card-image w-auto h-auto max-w-full max-h-full object-contain rounded-[16px] shadow-[0_10px_15px_rgba(0,0,0,0.15)]" tabindex="0" role="img" onerror="this.style.display='none'" style="opacity: 1 !important;">
+      </div>
+    `;
 
     // Update practice instructions text based on device
     try {
@@ -407,49 +394,29 @@
       }
     }, 100);
 
-    // Function to start timer after image loads
-    const startTimerAfterLoad = () => {
-      // Start timer: on the very first practice card, wait for the user's first interaction
-      if (practiceIndex === 0) {
-        const startIfIdle = () => {
-          if (!practiceTimerActive) { startPracticeTimer(); }
-          removePulse();
-          disablePracticeTilt();
-        };
-        const cardImage = document.querySelector('.practice-card-image');
-        if (cardImage) {
-          const onceOpts = { once: true };
-          cardImage.addEventListener('touchstart', startIfIdle, onceOpts);
-          cardImage.addEventListener('mousedown', startIfIdle, onceOpts);
-          cardImage.addEventListener('click', startIfIdle, onceOpts);
-          cardImage.addEventListener('keydown', (e) => {
-            if (e && (e.key === 'Enter' || e.key === ' ')) startIfIdle();
-          }, onceOpts);
-        } else {
-          // Fallback: if image not found for any reason, start immediately
-          startPracticeTimer();
-        }
+    // Start timer: on the very first practice card, wait for the user's first interaction
+    if (practiceIndex === 0) {
+      const startIfIdle = () => {
+        if (!practiceTimerActive) { startPracticeTimer(); }
+        removePulse();
+        disablePracticeTilt();
+      };
+      const cardImage = document.querySelector('.practice-card-image');
+      if (cardImage) {
+        const onceOpts = { once: true };
+        cardImage.addEventListener('touchstart', startIfIdle, onceOpts);
+        cardImage.addEventListener('mousedown', startIfIdle, onceOpts);
+        cardImage.addEventListener('click', startIfIdle, onceOpts);
+        cardImage.addEventListener('keydown', (e) => {
+          if (e && (e.key === 'Enter' || e.key === ' ')) startIfIdle();
+        }, onceOpts);
       } else {
+        // Fallback: if image not found for any reason, start immediately
         startPracticeTimer();
       }
-    };
-    
-    // Wait for image to load before starting timer
-    img.onload = function() {
-      img.style.visibility = 'visible';
-      img.style.transition = '';
-      img.onload = null;
-      startTimerAfterLoad();
-    };
-    
-    // Also start timer on error so practice doesn't get stuck
-    img.onerror = function() {
-      this.style.display = 'none';
-      startTimerAfterLoad();
-    };
-    
-    // Set the image source to trigger loading
-    img.src = imgSrc;
+    } else {
+      startPracticeTimer();
+    }
   }
 
   function startPracticeTimer() {
@@ -800,9 +767,23 @@
       img.onload = () => {
         loadedCount++;
         
+        // Update button text with progress
+        if (startBtn && loadedCount < totalImages) {
+          startBtn.textContent = `Loading images... ${loadedCount}/${totalImages}`;
+        }
+        
         // All images loaded
         if (loadedCount === totalImages) {
           console.log('✅ All card images preloaded!');
+          
+          // Enable buttons now that images are ready
+          if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.textContent = 'Continue';
+          }
+          if (letsGoBtn) {
+            letsGoBtn.disabled = false;
+          }
         }
       };
       
@@ -810,8 +791,22 @@
         console.warn(`⚠️ Failed to preload image: ${card.images[0]}`);
         loadedCount++; // Count it anyway to prevent hanging
         
+        // Update button text with progress
+        if (startBtn && loadedCount < totalImages) {
+          startBtn.textContent = `Loading images... ${loadedCount}/${totalImages}`;
+        }
+        
         if (loadedCount === totalImages) {
           console.log('✅ Image preloading complete (some failed)');
+          
+          // Enable buttons even if some images failed
+          if (startBtn) {
+            startBtn.disabled = false;
+            startBtn.textContent = 'Continue';
+          }
+          if (letsGoBtn) {
+            letsGoBtn.disabled = false;
+          }
         }
       };
       
@@ -886,6 +881,7 @@
       img.setAttribute('tabindex', '0');
       img.setAttribute('role', 'img');
       img.alt = 'Happiness card';
+      img.onerror = function(){ this.style.display = 'none'; };
       imagesContainer.appendChild(img);
       // Attach keyboard navigation once to the persistent image
       setupKeyboardNavigation();
@@ -899,24 +895,8 @@
     img.style.opacity = '1';
     // Force reflow so transition removal takes effect immediately
     void img.offsetWidth;
-    // Reveal only after the new image has loaded; start timer only when image is visible
-    img.onload = function() {
-      img.style.visibility = 'visible';
-      img.style.transition = '';
-      img.onload = null;
-      
-      // Start timer only after image is loaded and visible
-      startTimer();
-      // Record start time for individual card response time
-      startTime = Date.now();
-    };
-    // Also start timer on error so scan doesn't get stuck
-    img.onerror = function() {
-      this.style.display = 'none';
-      // Still start timer even if image fails, so scan can continue
-      startTimer();
-      startTime = Date.now();
-    };
+    // Reveal only after the new image has loaded; restore transition to default afterwards
+    img.onload = function() { img.style.visibility = 'visible'; img.style.transition = ''; img.onload = null; };
     img.src = card.images[0];
     
     // Show timer and buttons
@@ -927,6 +907,12 @@
     try { if (typeof showKeyboardHintsIfDesktop === 'function') { showKeyboardHintsIfDesktop(); } } catch (_) {}
     
     // Ensure card is fully visible and reset any lingering styles (already done above)
+    
+    // Reset and start timer
+    startTimer();
+    
+    // Record start time for individual card response time
+    startTime = Date.now();
   }
   
   function startTimer() {
