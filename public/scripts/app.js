@@ -1807,9 +1807,9 @@
               if (!(win?.html2canvas && win?.jspdf?.jsPDF)) await ensureLibsLoaded();
               
               if (win.html2canvas && win.jspdf?.jsPDF) {
-                // Scale 6 = ultra sharpness, PNG for lossless text
+                // Scale 4 = high quality with better performance
                 const canvasOpts = { 
-                  scale: 6, 
+                  scale: 4, 
                   useCORS: true, 
                   width: 595, 
                   height: 842, 
