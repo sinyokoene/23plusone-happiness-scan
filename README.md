@@ -157,7 +157,7 @@ IHS = 0.4 × N1% + 0.4 × N2% + 0.2 × N3%
 - All "No" → invalid; too fast total completion (<5s) → invalid
 - Server protections: duplicate session guard; per‑IP rate limit (configurable)
 
-Implementation: see `public/scripts/app.js`, function `calculateIHS`.
+Implementation: see `public/scripts/app/scan.js`, function `calculateIHS`.
 
 ## 🌐 Deployment
 

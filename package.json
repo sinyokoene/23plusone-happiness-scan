@@ -10,6 +10,11 @@
   },
   "scripts": {
     "build:css": "tailwindcss -i public/styles/tw.css -o public/styles/tw.build.css --watch",
-    "build:css:once": "tailwindcss -i public/styles/tw.css -o public/styles/tw.build.css"
+    "build:css:once": "tailwindcss -i public/styles/tw.css -o public/styles/tw.build.css",
+    "dev": "python3 -m http.server 5173 --directory public",
+    "lint": "npm run lint:js && npm run lint:css",
+    "lint:js": "eslint \"public/scripts/**/*.js\"",
+    "lint:css": "stylelint \"public/styles/**/*.css\"",
+    "format": "prettier --write \"public/**/*.{js,css,html,md}\""
   }
 }

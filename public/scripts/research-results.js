@@ -79,8 +79,8 @@
   let cardIdToDomain = new Map();
   async function ensureCardDomains(){
     if (cardIdToDomain.size > 0) return;
-    // Try /data/cards.json first, fallback to /cards.json
-    const sources = ['/data/cards.json', '/cards.json'];
+    // Canonical card data lives under /data
+    const sources = ['/data/cards.json'];
     for (const src of sources) {
       try {
         const r = await fetch(src, { cache: 'no-store' });
