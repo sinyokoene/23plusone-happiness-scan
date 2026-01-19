@@ -1708,6 +1708,7 @@
       // Variables for progress animation
       let progressInterval = null;
       let progress = 0;
+      let isSending = false;
       
       try {
         if (sendBtn) { sendBtn.disabled = true; }
@@ -1715,21 +1716,33 @@
         // Setup progress bar
         statusEl.innerHTML = `
           <div style="width:100%; max-width:280px; height:6px; background:var(--progress-bg, #e0e0e0); border-radius:999px; overflow:hidden; margin:0 auto;">
-            <div id="pdfProgressBar" style="width:0%; height:100%; background:var(--brand-pink, #e91e63); transition:width 0.2s ease;"></div>
+            <div id="pdfProgressBar" style="width:0%; height:100%; background:var(--brand-pink, #e91e63); transition:width 0.05s linear;"></div>
           </div>
-          <div style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;">Preparing your report...</div>
+          <div id="pdfProgressText" style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;">Preparing your report...</div>
         `;
         statusEl.style.display = 'block';
         
-        // Start fake progress animation (stops at 90% until done)
+        // Smoother progress animation
+        // Phase 1: 0-75% (Preparation)
+        // Phase 2: 75-95% (Sending)
         progressInterval = setInterval(() => {
-          if (progress < 90) {
-            progress += Math.random() * 3;
-            if (progress > 90) progress = 90;
-            const bar = document.getElementById('pdfProgressBar');
-            if (bar) bar.style.width = progress + '%';
+          const bar = document.getElementById('pdfProgressBar');
+          if (!bar) return;
+
+          if (!isSending) {
+             // Phase 1: Preparing (slowly approach 75%)
+             if (progress < 75) {
+               progress += 0.5; // smoother increments
+               bar.style.width = progress + '%';
+             }
+          } else {
+             // Phase 2: Sending (slowly approach 95%)
+             if (progress < 95) {
+               progress += 0.2; 
+               bar.style.width = progress + '%';
+             }
           }
-        }, 150);
+        }, 50);
 
         const results = (typeof window !== 'undefined' && window.LATEST_RESULTS) ? window.LATEST_RESULTS : null;
         try {
@@ -1883,16 +1896,29 @@
           return;
         }
         
-        // Set to 100% and update text
+        // Switch to sending phase
+        isSending = true;
+        const txt = document.getElementById('pdfProgressText');
+        if (txt) txt.textContent = 'Sending...';
+        
+        // Ensure we're at least at 75% for visual continuity
+        if (progress < 75) {
+          progress = 75;
+          const bar = document.getElementById('pdfProgressBar');
+          if (bar) bar.style.width = '75%';
+        }
+        
+        const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+        
+        // Complete!
         if (progressInterval) clearInterval(progressInterval);
         const bar = document.getElementById('pdfProgressBar');
         if (bar) bar.style.width = '100%';
-        // Keep the bar but update text below it, or just replace text if needed. 
-        // User wants visual bar so let's keep it and say "Sending..."
-        if (statusEl.lastElementChild) statusEl.lastElementChild.textContent = 'Sending...';
         
-        const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if (!res.ok) { throw new Error('Failed to send'); }
+        
+        // Small delay to let user see 100%
+        await new Promise(r => setTimeout(r, 300));
         showSent();
       } catch (e) {
         if (progressInterval) clearInterval(progressInterval);
