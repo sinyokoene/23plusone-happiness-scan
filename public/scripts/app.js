@@ -1705,10 +1705,32 @@
         errorEl.style.display = 'block';
         return;
       }
+      // Variables for progress animation
+      let progressInterval = null;
+      let progress = 0;
+      
       try {
         if (sendBtn) { sendBtn.disabled = true; }
-        statusEl.textContent = 'Preparing PDF…';
+        
+        // Setup progress bar
+        statusEl.innerHTML = `
+          <div style="width:100%; max-width:280px; height:6px; background:var(--progress-bg, #e0e0e0); border-radius:999px; overflow:hidden; margin:0 auto;">
+            <div id="pdfProgressBar" style="width:0%; height:100%; background:var(--brand-pink, #e91e63); transition:width 0.2s ease;"></div>
+          </div>
+          <div style="text-align:center; font-size:12px; margin-top:6px; color:#5DA1BB;">Preparing your report...</div>
+        `;
         statusEl.style.display = 'block';
+        
+        // Start fake progress animation (stops at 90% until done)
+        progressInterval = setInterval(() => {
+          if (progress < 90) {
+            progress += Math.random() * 3;
+            if (progress > 90) progress = 90;
+            const bar = document.getElementById('pdfProgressBar');
+            if (bar) bar.style.width = progress + '%';
+          }
+        }, 150);
+
         const results = (typeof window !== 'undefined' && window.LATEST_RESULTS) ? window.LATEST_RESULTS : null;
         try {
           if (typeof window !== 'undefined') {
@@ -1807,9 +1829,9 @@
               if (!(win?.html2canvas && win?.jspdf?.jsPDF)) await ensureLibsLoaded();
               
               if (win.html2canvas && win.jspdf?.jsPDF) {
-                // Scale 4 = high quality with better performance
+                // Scale 5 = high quality with better performance
                 const canvasOpts = { 
-                  scale: 4, 
+                  scale: 5, 
                   useCORS: true, 
                   width: 595, 
                   height: 842, 
@@ -1856,17 +1878,28 @@
           payload.pdfBase64 = window.LAST_PDF_BASE64;
         }
         if (!payload.pdfBase64) {
+          if (progressInterval) clearInterval(progressInterval);
           statusEl.textContent = 'Could not prepare PDF. Please try again.';
           return;
         }
-        statusEl.textContent = 'Sending…';
+        
+        // Set to 100% and update text
+        if (progressInterval) clearInterval(progressInterval);
+        const bar = document.getElementById('pdfProgressBar');
+        if (bar) bar.style.width = '100%';
+        // Keep the bar but update text below it, or just replace text if needed. 
+        // User wants visual bar so let's keep it and say "Sending..."
+        if (statusEl.lastElementChild) statusEl.lastElementChild.textContent = 'Sending...';
+        
         const res = await fetch('/api/report', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
         if (!res.ok) { throw new Error('Failed to send'); }
         showSent();
       } catch (e) {
+        if (progressInterval) clearInterval(progressInterval);
         statusEl.textContent = 'Something went wrong. Please try again.';
         statusEl.style.display = 'block';
       } finally {
+        if (progressInterval) clearInterval(progressInterval);
         if (sendBtn) { sendBtn.disabled = false; }
       }
     }
