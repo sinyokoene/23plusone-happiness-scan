@@ -787,6 +787,11 @@ function setupReportRequestUI(){
         await new Promise(r => setTimeout(r, minGeneratingMs - elapsedGenerating));
       }
 
+      // Re-check for PDF after waiting (fixes race condition where loop exits before updating payload)
+      if (!payload.pdfBase64) {
+        payload.pdfBase64 = cachedPdfBase64 || window.LAST_PDF_BASE64 || null;
+      }
+
       if (!payload.pdfBase64) {
         if (animationFrameId) cancelAnimationFrame(animationFrameId);
         statusEl.textContent = 'Could not prepare PDF. Please try again.';
