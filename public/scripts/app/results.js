@@ -498,7 +498,7 @@ function setupReportRequestUI(){
   function hideOverlay(){ overlay.style.display = 'none'; }
   function showForm(){ formBlock.style.display = 'block'; sentBlock.style.display = 'none'; }
   function showSent(){ formBlock.style.display = 'none'; sentBlock.style.display = 'block'; }
-  function validateEmail(v){ return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(String(v||'').trim()); }
+  function validateEmail(v){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v||'').trim()); }
 
   // Pre-generate PDF when overlay opens (silently in background)
   async function preGeneratePDF() {
