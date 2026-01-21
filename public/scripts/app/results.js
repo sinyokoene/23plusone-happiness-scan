@@ -479,6 +479,11 @@ function setupReportRequestUI(){
   const statusEl = document.getElementById('reportStatus');
   const sentBlock = document.getElementById('reportSentBlock');
   const formBlock = document.getElementById('reportFormBlock');
+  
+  // Debug: Log if consent element is missing
+  if (!consent) {
+    console.warn('Report consent checkbox not found. Check if reportConsent element exists.');
+  }
   const tryAgainBtn = document.getElementById('reportTryAgainBtn');
   const shareBtn = document.getElementById('reportShareBtn');
   if (!openBtn || !overlay) return;
@@ -651,7 +656,22 @@ function setupReportRequestUI(){
     errorEl.style.display = 'none';
     statusEl.style.display = 'none';
     const email = emailInput ? emailInput.value.trim() : '';
-    if (!validateEmail(email) || !(consent && consent.checked)) {
+    const isEmailValid = validateEmail(email);
+    const isConsentChecked = consent && consent.checked;
+    
+    // More specific error messages
+    if (!isEmailValid && !isConsentChecked) {
+      errorEl.textContent = errorEl.getAttribute('data-error-both') || 'Please enter a valid email address and agree to receive your report.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    if (!isEmailValid) {
+      errorEl.textContent = errorEl.getAttribute('data-error-email') || 'Please enter a valid email address.';
+      errorEl.style.display = 'block';
+      return;
+    }
+    if (!isConsentChecked) {
+      errorEl.textContent = errorEl.getAttribute('data-error-consent') || 'Please agree to receive your report.';
       errorEl.style.display = 'block';
       return;
     }
