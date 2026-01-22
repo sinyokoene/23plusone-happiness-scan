@@ -120,14 +120,14 @@
           <div class="w-80 flex justify-start items-start">
             <div class="flex-1 inline-flex flex-col justify-start items-start">
               <div class="self-stretch inline-flex justify-between items-start">
-                <div class="justify-start text-yellow-950 text-[9px] font-semibold font-['Poppins']">Overall Drive Score</div>
-                <div id="overallScoreLabel" class="justify-start text-yellow-950 text-[9px] font-semibold font-['Poppins']">-- | --</div>
+                <div class="justify-start text-secondary-900 text-[9px] font-semibold font-['Poppins']">Overall Drive Score</div>
+                <div id="overallScoreLabel" class="justify-start text-secondary-900 text-[9px] font-semibold font-['Poppins']">-- | --</div>
               </div>
               <div class="self-stretch h-0.5 mt-1.5 bg-neutral-200/95 inline-flex justify-start items-start gap-2 overflow-hidden">
                 <div id="overallBar" class="w-0 self-stretch bg-yellow-950 transition-all duration-500"></div>
               </div>
               <div class="self-stretch pt-1.5 inline-flex justify-center items-center gap-2">
-                <div id="overallNote" class="flex-1 justify-start text-yellow-950 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;">
+                <div id="overallNote" class="flex-1 justify-start text-secondary-900 text-[8px] font-medium font-['Poppins']" style="line-height: 11px;">
                   <!-- Dynamic note inserted here -->
                 </div>
               </div>
@@ -136,9 +136,9 @@
           <div class="flex justify-start items-start">
             <div class="w-52 self-stretch px-2.5 rounded-lg flex justify-center items-center gap-2">
               <div class="flex-1 justify-start">
-                <div class="text-yellow-950 text-[9px] font-semibold font-['Poppins']" style="line-height: 11px;">Benchmarks</div>
-                <div class="text-yellow-950 text-[9px] font-medium font-['Poppins']" style="line-height: 11px;">Percentile: <span id="percentile">--</span></div>
-                <div class="text-yellow-950 text-[9px] font-medium font-['Poppins']" style="line-height: 11px;">Cohort average: <span id="cohortAvg">--</span></div>
+                <div class="text-secondary-900 text-[9px] font-semibold font-['Poppins']" style="line-height: 11px;">Benchmarks</div>
+                <div class="text-secondary-900 text-[9px] font-medium font-['Poppins']" style="line-height: 11px;">Percentile: <span id="percentile">--</span></div>
+                <div class="text-secondary-900 text-[9px] font-medium font-['Poppins']" style="line-height: 11px;">Cohort average: <span id="cohortAvg">--</span></div>
               </div>
             </div>
           </div>
@@ -825,34 +825,34 @@
           const matchedValues = matchedCardIds.map(id => cardMeta[id]?.value).filter(Boolean);
           const triggeredBy = matchedValues.length > 0 ? ' (driven by your ' + matchedValues.join(' & ') + ')' : '';
           
-          var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + mainPattern.name + triggeredBy + ': </span>' +
-                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">' + mainPattern.insight + '</span>';
+          var noteHtml = '<span class="text-secondary-900 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + mainPattern.name + triggeredBy + ': </span>' +
+                         '<span class="text-secondary-900 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">' + mainPattern.insight + '</span>';
           
           // Add fast response insight if there are fast cards outside the pattern
           const extraFastValues = fastValuesNotInPattern(matchedCardIds);
           if (extraFastValues) {
-            noteHtml += ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Your quick responses to ' + extraFastValues + ' also reveal strong instincts.</span>';
+            noteHtml += ' <span class="text-secondary-900 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Your quick responses to ' + extraFastValues + ' also reveal strong instincts.</span>';
           } else if (secondary) {
             // Only mention secondary if we do not have extra fast values (to keep text length manageable)
-            noteHtml += ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">You also show elements of ' + secondary.name + '.</span>';
+            noteHtml += ' <span class="text-secondary-900 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">You also show elements of ' + secondary.name + '.</span>';
           }
           // Encourage looking at coach blocks for growth
-          noteHtml += ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Check the tips below to round out your drives.</span>';
+          noteHtml += ' <span class="text-secondary-900 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Check the tips below to round out your drives.</span>';
           setHTML('overallNote', noteHtml);
         } else if (fastCards.length >= 2) {
           // Use specific values from fastest responses
           const valuesStr = fastCards.slice(0, 2).map(c => c.value).join(' & ');
-          var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">Your quick responses to ' + valuesStr + ' reveal what truly drives you: </span>' +
-                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">these themes are core to who you are.</span>' +
-                         ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Check the tips below to round out your drives.</span>';
+          var noteHtml = '<span class="text-secondary-900 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">Your quick responses to ' + valuesStr + ' reveal what truly drives you: </span>' +
+                         '<span class="text-secondary-900 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">these themes are core to who you are.</span>' +
+                         ' <span class="text-secondary-900 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Check the tips below to round out your drives.</span>';
           setHTML('overallNote', noteHtml);
         } else if (entries.length >= 2 && entries[0][1] > 0) {
           // Fallback to domain names
           const d1 = entries[0][0];
           const d2 = entries[1][0];
-          var noteHtml = '<span class="text-yellow-950 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + d1 + ' & ' + d2 + '</span>' +
-                         '<span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;"> stand out clearly — your reactions here were fast and consistent.</span>' +
-                         ' <span class="text-yellow-950 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Check the tips below to round out your drives.</span>';
+          var noteHtml = '<span class="text-secondary-900 text-[8px] font-semibold font-[\'Poppins\']" style="line-height: 11px;">' + d1 + ' & ' + d2 + '</span>' +
+                         '<span class="text-secondary-900 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;"> stand out clearly — your reactions here were fast and consistent.</span>' +
+                         ' <span class="text-secondary-900 text-[8px] font-medium font-[\'Poppins\']" style="line-height: 11px;">Check the tips below to round out your drives.</span>';
           setHTML('overallNote', noteHtml);
         }
       } catch(_) {}
