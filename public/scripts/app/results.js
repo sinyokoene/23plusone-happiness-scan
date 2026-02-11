@@ -329,8 +329,8 @@ function submitResults(results) {
 
 function setupSharing(results) {
   const nativeShareBtn = document.getElementById('nativeShareBtn');
-  // Use full report btn as harmless anchor for status text if needed
-  const fallbackStatusBtn = document.getElementById('fullReportBtn');
+  // Keep fallback status on the Share button itself so feedback is visible.
+  const fallbackStatusBtn = nativeShareBtn || document.getElementById('fullReportBtn');
 
   const shareText = `I just completed the 23plusone Happiness Scan and scored ${results.n1} (N1). Discover what drives your happiness.`;
   const shareUrl = window.location.href;
@@ -344,49 +344,49 @@ function setupSharing(results) {
           text: shareText,
           url: shareUrl
         });
+        return;
       } catch (err) {
-        // User cancelled or error occurred, fallback to copy
-        // Silently ignore if cancelled
+        // Skip fallback only when the user explicitly cancels share.
+        if (err && err.name === 'AbortError') return;
       }
-    } else {
-      // Fallback for browsers without Web Share API
-      copyToClipboard(shareUrl, fallbackStatusBtn);
     }
+    // Fallback for browsers without Web Share API, or when native share fails.
+    copyToClipboard(shareUrl, fallbackStatusBtn);
   });
 
   // No separate copy button in UI; keep function for fallback use
 
   async function copyToClipboard(text, button) {
+    const showCopiedState = () => {
+      if (!button) return;
+      const original = button.getAttribute('data-original-label') || button.innerHTML;
+      button.setAttribute('data-original-label', original);
+      button.innerHTML = '<span>Copied!</span>';
+      button.classList.add('copied');
+      setTimeout(() => {
+        button.innerHTML = button.getAttribute('data-original-label');
+        button.classList.remove('copied');
+      }, 2000);
+    };
+
     try {
-      await navigator.clipboard.writeText(text);
-      if (button) {
-        const original = button.getAttribute('data-original-label') || button.innerHTML;
-        button.setAttribute('data-original-label', original);
-        button.innerHTML = '<span>Copied!</span>';
-        button.classList.add('copied');
-        setTimeout(() => {
-          button.innerHTML = button.getAttribute('data-original-label');
-          button.classList.remove('copied');
-        }, 2000);
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(text);
+      } else {
+        throw new Error('Clipboard API unavailable');
       }
+      showCopiedState();
     } catch (err) {
       // Fallback for older browsers
-      const textArea = document.createElement('textarea');
-      textArea.value = text;
-      document.body.appendChild(textArea);
-      textArea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textArea);
-      if (button) {
-        const original = button.getAttribute('data-original-label') || button.innerHTML;
-        button.setAttribute('data-original-label', original);
-        button.innerHTML = '<span>Copied!</span>';
-        button.classList.add('copied');
-        setTimeout(() => {
-          button.innerHTML = button.getAttribute('data-original-label');
-          button.classList.remove('copied');
-        }, 2000);
-      }
+      try {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        showCopiedState();
+      } catch (_) {}
     }
   }
 }
