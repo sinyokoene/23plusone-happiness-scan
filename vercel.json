@@ -12,6 +12,18 @@
   ],
   "routes": [
     {
+      "src": "/",
+      "has": [{ "type": "host", "value": "23plusone-happiness-scan-iota.vercel.app" }],
+      "status": 308,
+      "headers": { "Location": "https://23plusone-happiness-scan.br-ndpeople.com/" }
+    },
+    {
+      "src": "/scan",
+      "has": [{ "type": "host", "value": "23plusone-happiness-scan-iota.vercel.app" }],
+      "status": 308,
+      "headers": { "Location": "https://23plusone-happiness-scan.br-ndpeople.com/scan" }
+    },
+    {
       "src": "/api/(.*)",
       "dest": "/server/server.js"
     },
