@@ -28,7 +28,7 @@ router.post('/report', async (req, res) => {
     }
 
     // Send email
-    const from = process.env.MAIL_FROM || 'no-reply@23plusone.org';
+    const from = process.env.MAIL_FROM || process.env.SMTP_USER || 'no-reply@br-ndpeople.com';
     const transport = buildTransport();
     const info = await transport.sendMail({
       from,

@@ -40,7 +40,7 @@
       "dest": "/public/23plusoneCards/$1"
     },
     {
-      "src": "/(.*\\.(html|css|js|json|jpg|jpeg|png|gif|svg|webp))",
+      "src": "/(.*\\.(html|css|js|json|jpg|jpeg|png|gif|svg|webp|txt|xml|ico))",
       "dest": "/public/$1"
     },
     {

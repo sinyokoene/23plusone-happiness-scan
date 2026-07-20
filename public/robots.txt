@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /report/
+Disallow: /research
+Disallow: /research-results
